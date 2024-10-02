@@ -5,13 +5,26 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
     // Liste des utilisateurs
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::all();
+        $query = User::query();
+
+        // Filtre par nom
+        if ($request->has('name') && $request->input('name') !== '') {
+            $query->where('name', 'LIKE', '%' . $request->input('name') . '%');
+        }
+
+        // Filtre par email
+        if ($request->has('email') && $request->input('email') !== '') {
+            $query->where('email', 'LIKE', '%' . $request->input('email') . '%');
+        }
+
+        $users = $query->paginate(10);
         return view('users.index', compact('users'));
     }
 
@@ -31,12 +44,16 @@ class UserController extends Controller
             'role' => 'required|string|in:tresorier,acct,direction,superviseur,admin',
         ]);
 
-        User::create([
+        // Crée un nouvel utilisateur
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
+            'active' => 1, // Par défaut, l'utilisateur est actif
         ]);
+
+        // Assigne le rôle à l'utilisateur
+        $user->assignRole($request->role);
 
         return redirect()->route('users.index')->with('success', 'Utilisateur créé avec succès.');
     }
@@ -59,8 +76,10 @@ class UserController extends Controller
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
-            'role' => $request->role,
         ]);
+
+        // Met à jour le rôle de l'utilisateur
+        $user->syncRoles([$request->role]);
 
         return redirect()->route('users.index')->with('success', 'Utilisateur mis à jour avec succès.');
     }
@@ -70,5 +89,29 @@ class UserController extends Controller
     {
         $user->delete();
         return redirect()->route('users.index')->with('success', 'Utilisateur supprimé avec succès.');
+    }
+
+    public function deactivate($id)
+    {
+        $user = User::findOrFail($id);
+        $user->active = false; // Désactive l'utilisateur
+        $user->save();
+    
+        return response()->json(['success' => 'Utilisateur désactivé']);
+    }
+    
+    public function activate($id)
+    {
+        $user = User::findOrFail($id);
+        $user->active = true; // Active l'utilisateur
+        $user->save();
+    
+        return response()->json(['success' => 'Utilisateur activé']);
+    }
+
+    public function showUsers()
+    {
+        $users = User::all();
+        return view('users', compact('users'));
     }
 }

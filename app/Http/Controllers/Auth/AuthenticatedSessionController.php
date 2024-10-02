@@ -38,7 +38,7 @@ class AuthenticatedSessionController extends Controller
     }
 
     // Redirection après une connexion réussie
-    return redirect()->intended('accueil');
+    return redirect()->intended('/dashboard');
 }
 
     /**

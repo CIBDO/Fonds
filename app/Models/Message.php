@@ -9,24 +9,30 @@ class Message extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['sujet', 'contenu', 'sender_id'];
+    protected $fillable = ['sender_id', 'receiver_id', 'subject', 'body', 'status'];
 
-    // Relation avec l'expéditeur (l'utilisateur qui a envoyé le message)
+    // Relation avec l'expéditeur (sender)
     public function sender()
     {
         return $this->belongsTo(User::class, 'sender_id');
     }
 
-    // Relation avec les destinataires du message
-    public function recipients()
+    // Relation avec le destinataire (receiver)
+    public function receiver()
     {
-        return $this->belongsToMany(User::class, 'message_users', 'message_id', 'user_id')
-                    ->withPivot('lu', 'type')->withTimestamps();
+        return $this->belongsTo(User::class, 'receiver_id');
     }
 
-    // Relation avec les pièces jointes
-    public function attachments()
-    {
-        return $this->hasMany(Attachment::class);
-    }
+    public function recipients()
+{
+    return $this->belongsToMany(User::class, 'message_recipients')->withPivot('type', 'lu'); // Assurez-vous que le nom de la table pivot est correct
 }
+// Message.php
+public function attachments()
+{
+    return $this->hasMany(Attachment::class);
+}
+
+
+}
+

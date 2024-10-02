@@ -17,6 +17,7 @@ class RoleMiddleware
      */
     public function handle($request, Closure $next, $role)
     {
+        
         if (!Auth::check() || Auth::user()->role !== $role) {
             abort(403, 'Accès non autorisé. Veuillez contacter votre Administeur Système');
         }

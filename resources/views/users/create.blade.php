@@ -60,7 +60,7 @@
                             <div class="form-group custom-select">
                                 <label>Rôle <span class="login-danger">*</span></label>
                                 <select class="form-control" name="role">
-                                    <option value="">Select Role</option>
+                                    <option value="">Choisir un rôle</option>
                                     <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
                                     <option value="tresorier" {{ old('role') == 'tresorier' ? 'selected' : '' }}>Trésorier</option>
                                     <option value="acct" {{ old('role') == 'acct' ? 'selected' : '' }}>ACCT</option>

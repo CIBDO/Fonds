@@ -9,9 +9,8 @@ class Attachment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nom_fichier', 'chemin', 'message_id'];
+    protected $fillable = ['message_id', 'filename', 'filepath'];
 
-    // Relation avec le message auquel appartient la pièce jointe
     public function message()
     {
         return $this->belongsTo(Message::class);

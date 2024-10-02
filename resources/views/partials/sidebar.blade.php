@@ -18,8 +18,8 @@
                             <a href="#"><i class="fas fa-building"></i> <span> Demandes de Fonds</span> <span
                                     class="menu-arrow"></span></a>
                             <ul>
-                                <li><a href="#">Faire une DF</a></li>
-                                <li><a href="#">Liste des DF</a></li>
+                                <li><a href="{{route('demandes-fonds.create')}}">Faire une DF</a></li>
+                                <li><a href="{{route('demandes-fonds.index')}}">Liste des DF</a></li>
                                 <li><a href="#">Suivi des DF</a></li>
                             </ul>
                         </li>
@@ -33,7 +33,7 @@
                             </ul>
                         </li>
                         <li class="submenu">
-                            <a href="#"><i class="fas fa-building"></i> <span> Réception et Paiement</span> <span
+                            <a href="#"><i class="fas fa-building"></i> <span> Réception Paiement</span> <span
                                     class="menu-arrow"></span></a>
                             <ul>
                                 <li><a href="#">Réception & Paiement</a></li>
@@ -42,7 +42,7 @@
                             </ul>
                         </li>
                         <li class="submenu">
-                            <a href="#"><i class="fas fa-book-reader"></i> <span> Rapports et Statistiques</span> <span
+                            <a href="#"><i class="fas fa-book-reader"></i> <span> Rapports Statistiques</span> <span
                                     class="menu-arrow"></span></a>
                             <ul>
                                 <li><a href="#">Rapport Mensuel des DF</a></li>
@@ -54,9 +54,9 @@
                             <a href="#"><i class="fas fa-clipboard"></i> <span> Messagerie</span> <span
                                     class="menu-arrow"></span></a>
                             <ul>
-                                <li><a href="#">Boîte de Réception</a></li>
-                                <li><a href="#">Boîte d’Envoi</a></li>
-                                <li><a href="#">Nouveau Message</a></li>
+                                <li><a href="{{route('messages.index')}}">Boîte de Réception</a></li>
+                                <li><a href="{{route('messages.sent')}}">Boîte d’Envoi</a></li>
+                                <li><a href="{{route('messages.create')}}">Nouveau Message</a></li>
                                 <li><a href="#">Brouillons</a></li>
                             </ul>
                         </li>
@@ -68,8 +68,19 @@
                                     class="menu-arrow"></span></a>
                             <ul>
                                 <li><a href="{{route('users.create')}}">Créer un Compte</a></li>
-                                <li><a href="#">Liste des Utilisateurs</a></li>
+                                <li><a href="{{route('users.index')}}">Liste des Utilisateurs</a></li>
                             </ul>
+                        </li>
+                        <li class="menu-title">
+                            <span>Paramètres</span>
+                        </li>
+                        <li class="submenu">
+                            <a href="{{route('postes.index')}}"><i class="fas fa-users"></i> <span>Postes</span> <span
+                                    class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="{{route('postes.index')}}">Créer un Poste</a></li>
+                              
+                            </ul> 
                         </li>
                     </ul>
                 </div>
