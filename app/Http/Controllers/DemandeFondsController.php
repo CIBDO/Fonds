@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DemandeFonds;
+use App\Notifications\DemandeFondsNotification;
 use App\Models\User;
 use App\Models\Poste;
 use Illuminate\Http\Request;
@@ -11,17 +12,45 @@ use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade as PDF;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Illuminate\Support\Facades\View; // Pour utiliser la vue
+use RealRashid\SweetAlert\Facades\Alert;
+use App\Notifications\DemandeFondsStatusUpdated; // Assurez-vous que le chemin est correct
 
 
 
 class DemandeFondsController extends Controller
 {
-    public function index()
+    public function index(Request $request)
 {
-    // Afficher toutes les demandes de fonds
-    $demandeFonds = DemandeFonds::with('user', 'poste')->orderBy('created_at', 'desc')->paginate(6);
-    return view('demandes.index', compact('demandeFonds'));
-}
+        $query = DemandeFonds::query();
+    
+        // Filtrer par référence si le champ est renseigné
+        if ($request->filled('poste')) {
+                $query->whereHas('poste', function($q) use ($request) {
+                    $q->where('nom', 'like', '%' . $request->input('poste') . '%');
+            });
+        }
+    
+        // Filtrer par expéditeur si le champ est renseigné
+        if ($request->filled('mois')) {
+            $query->where('mois', 'like', '%' . $request->input('mois') . '%');
+        }
+    
+        // Filtrer par montant total courant si le champ est renseigné
+        if ($request->filled('total_courant')) {
+            $query->where('total_courant', 'like', '%' . $request->input('total_courant') . '%');
+        }
+    
+        // Filtrer par date d'arrivée si le champ est renseigné
+        if ($request->filled('created_at')) {
+            $query->whereDate('created_at', $request->input('created_at'));
+        }
+    
+        // Afficher toutes les demandes de fonds
+        $demandeFonds = $query->with('user', 'poste')->orderBy('created_at', 'desc')->paginate(8);
+         
+        return view('demandes.index', compact('demandeFonds'));
+    }
+    
 
     public function create()
     {
@@ -185,8 +214,18 @@ class DemandeFondsController extends Controller
         'total_ancien' => $total_ancien,
         'user_id' => $request->user_id,
     ]);
+// Récupérer les utilisateurs avec le rôle "acct"
+/* $users = User::role('acct')->get(); */
 
-    return redirect()->route('demandes-fonds.index')->with('success', 'Demande de fonds créée avec succès.');
+// Assurez-vous que $demandeFonds est défini avant la boucle
+/* $demandeFonds = DemandeFonds::latest()->first(); // Initialisation appropriée de $demandeFonds
+
+// Envoyer la notification
+foreach ($users as $user) {
+    $user->notify(new DemandeFondsNotification($demandeFonds));
+} */
+Alert::success('Success', 'Demande de fonds créée avec succès.');
+return redirect()->route('demandes-fonds.index')->with('success', 'Demande de fonds créée avec succès.');
 }
 
     
@@ -258,14 +297,15 @@ class DemandeFondsController extends Controller
 
     
         // ... code existant ...
-
-        return redirect()->route('demandes.index')->with('success', 'Demande de fonds mise à jour avec succès.'); 
+        Alert::success('Success', 'Demande de fonds mise à jour avec succès.');
+        return redirect()->route('demandes-fonds.index')->with('success', 'Demande de fonds mise à jour avec succès.'); 
     }
 
     public function destroy(DemandeFonds $demandeFonds)
     {
         // Supprimer la demande de fonds
         $demandeFonds->delete();
+        Alert::success('Success', 'Demande de fonds supprimée avec succès.');
         return redirect()->route('demandes-fonds.index')->with('success', 'Demande de fonds supprimée avec succès.');
     }
 
@@ -359,5 +399,30 @@ $demandeFonds->total_ancien = $demandeFonds->fonctionnaires_bcs_salaire_ancien +
         // Retourner le PDF pour le téléchargement
         return $pdf->download('demande_fonds_' . $demandeFonds->id . '.pdf');
     }
+
+   public function updateStatus(Request $request, $id)
+{
+    // Validation des données
+    $validatedData = $request->validate([
+        'status' => 'required|in:approuve,rejete',
+        'montant' => 'required|numeric',
+        'observation' => 'required|string|max:255',
+    ]);
+
+    // Trouver la demande avec l'ID fourni
+    $demande = DemandeFonds::findOrFail($id);
+
+    // Mettre à jour le statut, le montant, et les observations
+    $demande->status = $validatedData['status'];
+    $demande->montant_accorde = $validatedData['montant']; // Par exemple
+    $demande->observation = $validatedData['observation'];
+    $demande->save();
+
+    // Envoyer une notification à l'agent qui a fait la demande
+     $demande->user->notify(new DemandeFondsNotification($demande)); 
+
+    return redirect()->route('demandes-fonds.index')->with('success', 'Le statut de la demande a été mis à jour.');
+}
+
 
 }

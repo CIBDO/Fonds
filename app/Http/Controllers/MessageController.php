@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Notifications\MessageSent;
-
+use RealRashid\SweetAlert\Facades\Alert;
 
 class MessageController extends Controller
 {

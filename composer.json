@@ -11,6 +11,7 @@
         "hepplerdotnet/flash-toastr": "^5.6",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
+        "realrashid/sweet-alert": "^7.2",
         "spatie/laravel-permission": "^6.9"
     },
     "require-dev": {

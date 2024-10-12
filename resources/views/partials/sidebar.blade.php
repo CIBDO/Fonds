@@ -27,7 +27,7 @@
                             <a href="#"><i class="fas fa-chalkboard-teacher"></i> <span> Envoi de Fonds </span> <span
                                     class="menu-arrow"></span></a>
                             <ul>
-                                <li><a href="#">Approuver les DF</a></li>
+                                <li><a href="{{route('envois-fonds.index')}}">Approuver les DF</a></li>
                                 <li><a href="#">Envoyer de Fonds</a></li>
                                 <li><a href="#">Situation des DF</a></li>
                             </ul>

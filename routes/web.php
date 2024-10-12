@@ -12,6 +12,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\TresorierController;
 use App\Http\Controllers\AcctController;
 use App\Http\Controllers\PosteController;
+use App\Http\Controllers\EnvoisFondsController;
 use App\Http\Controllers\SuperviseurController;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
@@ -41,6 +42,7 @@ Route::middleware(['auth'])->group(function () {
     
     Route::get('/notifications', [MessageController::class, 'notifications'])->name('messages.notifications');
     Route::resource('demandes-fonds', DemandeFondsController::class);
+    Route::resource('envois-fonds', EnvoisFondsController::class);
     Route::resource('users', UserController::class);
     Route::resource('receptions-fonds', ReceptionFondsController::class);
     Route::resource('rapports-paiements', RapportPaiementController::class);
@@ -54,6 +56,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('attachments/preview/{filename}', [MessageController::class, 'preview'])->name('attachments.preview');
     Route::get('attachments/download/{id}', [MessageController::class, 'downloadAttachment'])->name('attachments.download');
     Route::get('/demande-fonds/{id}/generate-pdf', [DemandeFondsController::class, 'generatePdf'])->name('demande-fonds.generate.pdf');
+    Route::patch('/demandes-fonds/{id}/update-status', [DemandeFondsController::class, 'updateStatus'])->name('demandes-fonds.update-status');
+
+
 
 });
 

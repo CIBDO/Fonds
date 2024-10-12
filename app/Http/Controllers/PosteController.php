@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Poste;
 use Illuminate\Http\Request;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class PosteController extends Controller
 {
@@ -34,6 +35,7 @@ class PosteController extends Controller
         'nom' => $request->nom,
     ]);
 
+    Alert::success('Success', 'Poste créé avec succès.');
     return redirect()->route('postes.index')->with('success', 'Poste créé avec succès.');
 }
 
@@ -58,6 +60,7 @@ class PosteController extends Controller
 
         $poste->update($request->all());
 
+        Alert::success('Success', 'Poste mis à jour avec succès.');
         return redirect()->route('postes.index')->with('success', 'Poste mis à jour avec succès.');
     }
 
@@ -66,6 +69,7 @@ class PosteController extends Controller
     {
         $poste->delete();
 
+        Alert::success('Success', 'Poste supprimé avec succès.');
         return redirect()->route('postes.index')->with('success', 'Poste supprimé avec succès.');
     }
 }

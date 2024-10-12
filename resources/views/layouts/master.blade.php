@@ -23,7 +23,7 @@
 
         @include('partials.header')
         @include('partials.sidebar')
-        @include('flash-toastr::message')
+        @include('sweetalert::alert')
         <div class="page-wrapper">
             @yield('content')
             @include('partials.footer')

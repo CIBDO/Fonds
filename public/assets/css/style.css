@@ -11204,3 +11204,8 @@ body[data-layout-mode=dark] .alertify .ajs-footer .ajs-buttons .ajs-button.ajs-o
     height: 10px;
     pointer-events: none;
 }
+.pagination-wrapper {
+    clear: both;
+    width: 100%;
+    margin-top: 10px;
+}
