@@ -10,13 +10,18 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Notifications\MessageSent;
 
+
 class MessageController extends Controller
 {
+    
     // Afficher la boîte de réception
     public function index()
     {
-        // Récupère les messages reçus par l'utilisateur connecté
-        $messages = Message::where('receiver_id', Auth::id())->get();
+        // Récupère les messages reçus par l'utilisateur connecté via la table pivot et les trie par ordre décroissant
+        $messages = Message::whereHas('recipients', function ($query) {
+            $query->where('user_id', Auth::id());
+        })->orderBy('created_at', 'desc')->get(); // Ajout du tri par date de création
+
         return view('messages.inbox', compact('messages'));
     }
 
@@ -24,9 +29,19 @@ class MessageController extends Controller
     public function sent()
     {
         // Récupère les messages envoyés par l'utilisateur connecté
-        $messages = Message::where('sender_id', Auth::id())->get();
+        $messages = Message::where('sender_id', Auth::id())->orderBy('created_at', 'desc') ->get();
         return view('messages.sent', compact('messages'));
     }
+
+    /* // Afficher les messages reçus
+    public function received()
+    {
+        // Récupère les messages reçus par l'utilisateur connecté
+        $messages = Message::whereHas('recipients', function ($query) {
+            $query->where('user_id', Auth::id());
+        })->get();
+        return view('messages.received', compact('messages'));
+    } */
 
     // Afficher le formulaire de nouveau message
     public function create()
@@ -38,62 +53,85 @@ class MessageController extends Controller
 
     // Enregistrer un nouveau message
     public function store(Request $request)
-    {
-        // Validation des données du formulaire
-        $request->validate([
-            'subject' => 'required|string|max:255',
-            'body' => 'required|string',
-            'receiver_ids' => 'required|array', // Validation des destinataires
-            'receiver_ids.*' => 'exists:users,id', // Validation des destinataires
-            'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,docx,zip|max:2048' // Validation des fichiers joints
-        ]);
-   
-        // Création du message
-        $message = Message::create([
-            'subject' => $request->subject,
-            'body' => $request->body,
-            'sender_id' => Auth::id(),
-            'status' => 'unread', // Le message est initialement non lu
-        ]);
+{
+    // Validation des données du formulaire
+    $request->validate([
+        'subject' => 'required|string|max:255',
+        'body' => 'required|string',
+        'receiver_ids' => 'required|array', // Validation des destinataires
+        'receiver_ids.*' => 'exists:users,id', // Validation des destinataires
+        'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,docx,zip|max:2048' // Validation des fichiers joints
+    ]);
     
-        // Attacher les destinataires au message
-        foreach ($request->receiver_ids as $receiverId) {
-            $message->recipients()->attach($receiverId, ['type' => 'reception']);
-            // Envoyer une notification à chaque destinataire
-            $user = User::find($receiverId);
-            $user->notify(new MessageSent($message));
-        }
-    
-        // Gestion des fichiers joints
-        if ($request->hasFile('attachments')) {
-            foreach ($request->file('attachments') as $file) {
-                $path = $file->store('attachments'); // Stocker le fichier
-    
-                Attachment::create([
-                    'filename' => $file->getClientOriginalName(),
-                    'filepath' => $path,
-                    'message_id' => $message->id,
-                ]);
-            }
-        }
-    
-        // Redirection après l'envoi du message
-        return redirect()->route('messages.sent')->with('success', 'Message envoyé avec succès.');
+    // Création du message
+    $message = Message::create([
+        'subject' => $request->subject,
+        'body' => $request->body,
+        'sender_id' => Auth::id(),
+        'status' => 'unread', // Le message est initialement non lu
+        'sent_at' => now(), // Date et heure d'envoi
+    ]);
+
+    // Attacher les destinataires au message
+    foreach ($request->receiver_ids as $receiverId) {
+        $message->recipients()->attach($receiverId, ['type' => 'reception']);
+        $message->received_at = now(); // Date et heure de réception
+        $message->save();   
+        
+        // Envoyer une notification à chaque destinataire
+        $user = User::find($receiverId);
+        $user->notify(new MessageSent($message));
     }
+
+    // Gestion des fichiers joints
+   // Gestion des fichiers joints
+if ($request->hasFile('attachments')) {
+    foreach ($request->file('attachments') as $file) {
+        // Stocker les fichiers dans le dossier public via le lien symbolique
+        $path = $file->storeAs('attachments', $file->getClientOriginalName(), 'public');
+        Attachment::create([
+            'filename' => $file->getClientOriginalName(),
+            'filepath' => $path,
+            'message_id' => $message->id,
+        ]);
+    }
+}
+
+
+    // Redirection après l'envoi du message
+    return redirect()->route('messages.sent')->with('success', 'Message envoyé avec succès.');
+}
+
     
     // Afficher un message spécifique
-    public function show(Message $message)
+    public function show($id)
     {
+        // Récupérer le message par ID et vérifier si l'utilisateur a accès
+        $message = Message::with(['sender', 'recipients', 'attachments'])->findOrFail($id);
+    
         // Vérifie si l'utilisateur courant est le destinataire ou l'expéditeur
-        if ($message->receiver_id !== Auth::id() && $message->sender_id !== Auth::id()) {
+        $userIsRecipient = $message->recipients()->where('user_id', Auth::id())->exists();
+        if (!$userIsRecipient && $message->sender_id !== Auth::id()) {
             abort(403, 'Accès interdit.');
         }
     
         // Marque le message comme lu pour le destinataire courant
-        $message->recipients()->updateExistingPivot(Auth::id(), ['lu' => true]);
+        if ($userIsRecipient) {
+            $message->recipients()->updateExistingPivot(Auth::id(), ['lu' => true, 'received_at' => now()]);
+        }
+    
+        // Accéder aux URLs publiques des fichiers attachés
+        // Accéder aux URLs publiques des fichiers attachés
+foreach ($message->attachments as $attachment) {
+    // Utiliser le lien symbolique pour accéder aux fichiers
+    $attachment->public_url = Storage::url($attachment->filepath);
+}
+
     
         return view('messages.show', compact('message'));
     }
+    
+
     
     // Afficher les notifications
     public function notifications()
@@ -117,4 +155,90 @@ class MessageController extends Controller
         $notification->delete();
         return redirect()->back()->with('success', 'Notification supprimée avec succès.');
     }
+
+    public function reply($id, Request $request)
+{
+    // Validation des données de la réponse
+    $request->validate([
+        'body' => 'required|string',
+        'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,docx,zip|max:2048' // Validation des fichiers joints
+    ]);
+
+    // Récupération du message original
+    $originalMessage = Message::findOrFail($id);
+
+    // Création de la réponse comme un nouveau message
+    $replyMessage = Message::create([
+        'subject' => 'RE: ' . $originalMessage->subject,  // Préfixe de réponse
+        'body' => $request->body,
+        'sender_id' => Auth::id(),
+        'status' => 'unread', // Le message est initialement non lu
+        'parent_id' => $originalMessage->id,  // Référence au message original
+    ]);
+
+    // Attacher l'expéditeur original comme destinataire de la réponse
+    $replyMessage->recipients()->attach($originalMessage->sender_id, ['type' => 'reception']);
+
+    // Notifier l'expéditeur original de la réponse
+    $originalMessage->sender->notify(new MessageSent($replyMessage));
+
+    // Gestion des fichiers joints (si présents)
+    if ($request->hasFile('attachments')) {
+        foreach ($request->file('attachments') as $file) {
+            $fileName = time() . '-' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('public/attachments/attachments', $fileName);
+
+            // Enregistrer les informations du fichier joint
+            Attachment::create([
+                'message_id' => $message->id,
+                'filename' => $fileName,
+                'filepath' => 'attachments/attachments/' . $fileName,
+            ]);
+        }
+    }
+    
+    // Redirection vers la boîte de réception après l'envoi de la réponse
+    return redirect()->route('messages.index')->with('success', 'Réponse envoyée avec succès.');
+}
+public function showReplyForm($id)
+{
+    $message = Message::findOrFail($id); // Récupération du message
+    return view('messages.reply', compact('message')); // Retourne la vue de réponse avec le message
+}
+
+public function preview($filename)
+{
+    // Utiliser le chemin public pour la prévisualisation
+    $path = public_path('storage/attachments/' . $filename);
+    // Vérifier si le fichier existe
+    if (!file_exists($path)) {
+        abort(404, "Le fichier n'existe pas.");
+    }
+
+    // Obtenir le type MIME du fichier
+    $fileType = mime_content_type($path);
+
+    // Si le fichier est une image ou un PDF, on le prévisualise
+    if (str_contains($fileType, 'pdf') || str_contains($fileType, 'image')) {
+        return response()->file($path);
+    }
+
+    // Pour les autres types de fichiers, proposer un téléchargement
+    return response()->download($path);
+}
+
+
+public function downloadAttachment($id)
+{
+    // Utiliser le chemin public pour le téléchargement
+    $attachment = Attachment::findOrFail($id);
+    $filePath = public_path('storage/' . $attachment->filepath);
+
+    if (file_exists($filePath)) {
+        return response()->download($filePath);
+    }
+
+    return redirect()->back()->with('error', 'Fichier non trouvé.');
+}
+
 }

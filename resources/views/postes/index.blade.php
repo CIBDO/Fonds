@@ -1,93 +1,94 @@
 @extends('layouts.master')
 
 @section('content')
-<div class="container">
-    <h1 class="text-center">Liste des Postes</h1>
+<div class="page-header">
+    <div class="row align-items-center">
+        <div class="col">
+            <h3 class="page-title">Postes</h3>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{route('dashboard')}}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Postes</li>
+            </ul>
+        </div>
+    </div>
+</div>
 
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
+<div class="demande-group-form">
+    <div class="row">
+        <div class="col-lg-3 col-md-6">
+            <div class="form-group">
+                <input type="text" class="form-control" placeholder="Rechercher par poste ...">
+            </div>
+        </div>
+        <div class="col-lg-2">
+            <div class="search-student-btn">
+                <button type="btn" class="btn btn-primary">Rechercher</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card card-table">
+            <div class="card-body">
 
-    <div class="card">
-        <div class="card-body">
-            <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addPosteModal">
-                Ajouter un Poste
-            </button>
-
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Libellé</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($postes as $poste)
-                        <tr>
-                            <td>{{ $poste->id }}</td>
-                            <td>{{ $poste->nom }}</td>
-                            <td>
-                                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editPosteModal{{ $poste->id }}">
-                                    Éditer
-                                </button>
-                                <form action="{{ route('postes.destroy', $poste) }}" method="POST" style="display:inline-block;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce poste ?')">Supprimer</button>
-                                </form>
-                            </td>
-                        </tr>
-
-                        <!-- Modale pour éditer un poste -->
-                        <div class="modal fade" id="editPosteModal{{ $poste->id }}" tabindex="-1" aria-labelledby="editPosteModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="editPosteModalLabel">Modifier le Poste</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form action="{{ route('postes.update', $poste) }}" method="POST">
-                                            @csrf
-                                            @method('PUT')
-                                            <div class="mb-3">
-                                                <label for="nom" class="form-label">Libellé</label>
-                                                <input type="text" name="nom" class="form-control" value="{{ $poste->nom }}" required>
-                                            </div>
-                                            <button type="submit" class="btn btn-primary">Mettre à jour</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
+                <div class="page-header">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h3 class="page-title">Postes</h3>
                         </div>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<!-- Modale pour ajouter un nouveau poste -->
-<div class="modal fade" id="addPosteModal" tabindex="-1" aria-labelledby="addPosteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addPosteModalLabel">Ajouter un Poste</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="{{ route('postes.store') }}" method="POST">
-                    @csrf
-                    <div class="mb-3">
-                        <label for="nom" class="form-label">Libellé</label>
-                        <input type="text" name="nom" class="form-control" required>
+                        <div class="col-auto text-end float-end ms-auto download-grp">
+                            <a href="#" class="btn btn-outline-gray me-2 active"><i
+                                    class="feather-list"></i></a>
+                            <a href="#" class="btn btn-outline-gray me-2"><i
+                                    class="feather-grid"></i></a>
+                            <a href="#" class="btn btn-outline-primary me-2"><i class="fas fa-download"></i>
+                                Download</a>
+                            <a href= class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPosteModal"><i class="fas fa-plus"></i></a>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Ajouter</button>
-                </form>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table border-0 star-student table-hover table-center mb-0 datatable table-striped">
+                        <thead class="student-thread">
+                            <tr>
+                                {{-- <th>
+                                    <div class="form-check check-tables">
+                                        <input class="form-check-input" type="checkbox" value="something">
+                                    </div>
+                                </th> --}}
+                                <th>#</th>
+                                <th>Nom du poste</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($postes as $poste)
+                            <tr>
+                                <td>{{ $poste->id }}</td>
+                                <td>{{ $poste->nom }}</td>
+                                        <td class="text-end">
+                                            <div class="actions">
+                                                <a href="{{route('postes.show', $poste->id)}}" class="btn btn-sm bg-success-light me-2">
+                                                    <i class="feather-eye"></i>
+                                                </a>
+                                                <a href="#" class="btn btn-sm bg-danger-light" data-bs-toggle="modal" data-bs-target="#editPosteModal{{ $poste->id }}">
+                                                    <i class="feather-edit"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                            </tr>
+                            @endforeach   
+                          
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
+</div>
+@include('postes.add')  
+@include('postes.edit')  
 @endsection

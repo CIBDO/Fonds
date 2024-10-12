@@ -31,10 +31,9 @@ return [
     'disks' => [
 
         'local' => [
-            'driver' => 'local',
-            'root' => storage_path('app/private'),
-            'serve' => true,
-            'throw' => false,
+        'driver' => 'local',
+        'root' => storage_path('app'), // Répertoire de stockage des fichiers
+        'throw' => false,
         ],
 
         'public' => [
@@ -45,6 +44,14 @@ return [
             'throw' => false,
         ],
 
+        'attachments' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/attachments'),
+            'url' => env('APP_URL').'/storage/attachments',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+    
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

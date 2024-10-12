@@ -9,6 +9,8 @@ class DemandeFonds extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'id';
+
     protected $table = 'demande_fonds';
 
     protected $fillable = [
@@ -42,8 +44,28 @@ class DemandeFonds extends Model
         'epn_total_courant',
         'epn_salaire_ancien',
         'epn_total_demande',
+        'ced_net',
+        'ced_revers',
+        'ced_total_courant',
+        'ced_salaire_ancien',
+        'ced_total_demande',
+        'ecom_net',
+        'ecom_revers',
+        'ecom_total_courant',
+        'ecom_salaire_ancien',
+        'ecom_total_demande',
+        'cfp_cpam_net',
+        'cfp_cpam_revers',
+        'cfp_cpam_total_courant',
+        'cfp_cpam_salaire_ancien',
+        'cfp_cpam_total_demande',
         'poste_id',
+        'total_net',
+        'total_revers',
+        'total_courant',
+        'total_ancien',
         'date_reception',
+
     ];
 
     // Relation avec l'utilisateur

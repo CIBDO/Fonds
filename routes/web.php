@@ -13,6 +13,8 @@ use App\Http\Controllers\TresorierController;
 use App\Http\Controllers\AcctController;
 use App\Http\Controllers\PosteController;
 use App\Http\Controllers\SuperviseurController;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use App\Models\Attachment;
 use App\Models\RapportPaiement;
 use App\Models\ReceptionFonds;
@@ -20,7 +22,9 @@ use App\Models\User;
 
 Route::get('/', function () {
     return view('auth.login');
-})->name('login');
+})->name('custom.login');
+
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -33,7 +37,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/messages/sent', [MessageController::class, 'sent'])->name('messages.sent');
     Route::get('/messages/create', [MessageController::class, 'create'])->name('messages.create');
     Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
-    Route::get('/messages/{message}', [MessageController::class, 'show'])->name('messages.show');
+    Route::get('messages/{id}', [MessageController::class, 'show'])->name('messages.show'); 
+    
     Route::get('/notifications', [MessageController::class, 'notifications'])->name('messages.notifications');
     Route::resource('demandes-fonds', DemandeFondsController::class);
     Route::resource('users', UserController::class);
@@ -41,10 +46,15 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('rapports-paiements', RapportPaiementController::class);
     Route::resource('attachments', AttachmentController::class);
     Route::resource('postes', PosteController::class);
-    Route::resource('receptions-fonds', ReceptionFondsController::class);
-    Route::resource('rapports-paiements', RapportPaiementController::class);  
     Route::post('/notifications/{notification}/mark-as-read', [MessageController::class, 'markAsRead'])->name('markAsRead');
     Route::delete('/notifications/{notification}', [MessageController::class, 'deleteNotification'])->name('deleteNotification');  
+    /* Route::post('/messages/{id}/reply', [App\Http\Controllers\MessageController::class, 'reply'])->name('messages.reply'); */
+    Route::post('messages/{id}/reply', [MessageController::class, 'reply'])->name('messages.reply');
+    Route::get('messages/{id}/reply', [MessageController::class, 'showReplyForm'])->name('messages.reply.form');
+    Route::get('attachments/preview/{filename}', [MessageController::class, 'preview'])->name('attachments.preview');
+    Route::get('attachments/download/{id}', [MessageController::class, 'downloadAttachment'])->name('attachments.download');
+    Route::get('/demande-fonds/{id}/generate-pdf', [DemandeFondsController::class, 'generatePdf'])->name('demande-fonds.generate.pdf');
+
 });
 
 // Routes pour les trésoriers

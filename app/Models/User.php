@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
-
+use Illuminate\Notifications\DatabaseNotification as Notification;
 class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasRoles; // Ajoutez HasRoles ici
@@ -55,5 +55,10 @@ class User extends Authenticatable
     public function isActive()
     {
         return $this->active;
+    }
+
+    public function notifications()
+    {
+        return $this->morphMany(Notification::class, 'notifiable')->orderBy('created_at', 'desc');
     }
 }

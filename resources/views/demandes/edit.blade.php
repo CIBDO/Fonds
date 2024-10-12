@@ -1,6 +1,17 @@
 @extends('layouts.master')
 
 @section('content')
+@if(session('success'))
+       <div class="alert alert-success">
+           {{ session('success') }}
+       </div>
+@endif
+
+   @if(session('error'))
+       <div class="alert alert-danger">
+           {{ session('error') }}
+       </div>
+ @endif
 <div class="container">
     <h2 class="my-4">Modifier la Demande de Fonds</h2>
     <form method="POST" action="{{ route('demandes-fonds.update', $demande->id) }}">
@@ -46,11 +57,9 @@
                     </select>
                 </div>
             </div>
+            <input type="hidden" name="status" value="{{ $demande->status }}">
         </div>
-
-        @include('demandes._form')
-
-        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+        @include('demandes._edit')
     </form>
 </div>
 <script>

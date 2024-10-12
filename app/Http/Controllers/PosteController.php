@@ -10,7 +10,7 @@ class PosteController extends Controller
     // Afficher la liste des postes
     public function index()
     {
-        $postes = Poste::all();
+        $postes = Poste::paginate(10); 
         return view('postes.index', compact('postes'));
     }
 
@@ -18,7 +18,7 @@ class PosteController extends Controller
     public function create()
     {
        
-        return view('postes.create');
+        return view('postes.add');
     }
 
     // Enregistrer un nouveau poste

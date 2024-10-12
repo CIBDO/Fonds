@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Message extends Model
 {
     use HasFactory;
-
+    protected $dates = ['sent_at', 'received_at'];
     protected $fillable = ['sender_id', 'receiver_id', 'subject', 'body', 'status'];
 
     // Relation avec l'expéditeur (sender)
