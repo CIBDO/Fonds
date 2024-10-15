@@ -404,43 +404,26 @@ return redirect()->route('demandes-fonds.index')->with('success', 'Demande de fo
         }
 
         public function updateStatus(Request $request, $id)
-        {
-            // Validation des données en fonction du statut
-            $rules = [
-                'status' => 'required|in:approuve,rejete',
-                'date_envois' => 'required|date'
-            ];
-        
-            if ($request->input('status') == 'approuve') {
-                $rules['montant'] = 'required|numeric';
-                $rules['observation'] = 'nullable|string';
-            }
-        
-            $request->validate($rules);
-        
-            // Récupérer la demande de fonds à mettre à jour
-            $demande = DemandeFonds::findOrFail($id);
-        
-            // Mise à jour des champs
-            $demande->status = $request->input('status');
-            $demande->date_envois = $request->input('date_envois');
-        
-            if ($request->input('status') == 'approuve') {
-                $demande->montant = $request->input('montant');
-                $demande->observation = $request->input('observation');
-            } else {
-                // Réinitialiser les champs si nécessaire lors du rejet
-                $demande->montant = null;
-                $demande->observation = null;
-            }
-        
-            // Sauvegarder les modifications
-            $demande->save();
-        
-            // Retourner à la vue avec un message de succès
-            
-            return redirect()->route('demandes-fonds.envois')->with('success', 'La demande de fonds a été mise à jour avec succès.');
-        }
+{
+    $demande = DemandeFonds::findOrFail($id);
+    
+    // Vérifier si le statut est approuvé ou rejeté
+    if ($request->status == 'approuve') {
+        $demande->status = 'approuve';
+        $demande->montant = $request->montant;
+        $demande->observation = $request->observation;
+    } elseif ($request->status == 'rejete') {
+        $demande->status = 'rejete';
+        $demande->observation = $request->observation; // Assurez-vous d'avoir un champ 'reason' dans votre table
+    }
+
+    // Enregistrer les modifications
+    $demande->date_envois = $request->date_envois;
+    $demande->save();
+
+    return redirect()->route('demandes-fonds.envois')->with('success', 'Demande mise à jour avec succès');
+}
+
         
         
  
