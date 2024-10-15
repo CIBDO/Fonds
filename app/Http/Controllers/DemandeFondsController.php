@@ -403,35 +403,46 @@ return redirect()->route('demandes-fonds.index')->with('success', 'Demande de fo
             return $pdf->download('demande_fonds_' . $demandeFonds->id . '.pdf');
         }
 
-         public function updateStatus(Request $request, $id)
+        public function updateStatus(Request $request, $id)
         {
-            // Validation des données reçues
-            $request->validate([
-        'status' => 'required|in:approuve,rejete',
-        'montant' => 'required|numeric',
-        'date_envois' => 'required|date',
-        'observation' => 'nullable|string'
-    ]);
-   
-    // Récupérer la demande de fonds à mettre à jour
-    $demande = DemandeFonds::findOrFail($id);
-
-    // Mise à jour des champs
-    $demande->status = $request->input('status');
-    $demande->montant = $request->input('montant');
-    $demande->date_envois = $request->input('date_envois');
-    $demande->observation = $request->input('observation');
-    
-    // Sauvegarder les modifications
-    $demande->save();
-
-    // Notification à l'initiateur de la demande (décommenter si nécessaire)
-    // $demande->user->notify(new DemandeFondsStatusNotification($demande));
-    
-    // Retourner à la vue avec un message de succès
-    Alert::success('Success', 'Le Fonds a été envoyé avec succès.');
-    return redirect()->route('demandes-fonds.envois')->with('success', 'Le Fonds a été envoyé avec succès.');
-    }
+            // Validation des données en fonction du statut
+            $rules = [
+                'status' => 'required|in:approuve,rejete',
+                'date_envois' => 'required|date'
+            ];
+        
+            if ($request->input('status') == 'approuve') {
+                $rules['montant'] = 'required|numeric';
+                $rules['observation'] = 'nullable|string';
+            }
+        
+            $request->validate($rules);
+        
+            // Récupérer la demande de fonds à mettre à jour
+            $demande = DemandeFonds::findOrFail($id);
+        
+            // Mise à jour des champs
+            $demande->status = $request->input('status');
+            $demande->date_envois = $request->input('date_envois');
+        
+            if ($request->input('status') == 'approuve') {
+                $demande->montant = $request->input('montant');
+                $demande->observation = $request->input('observation');
+            } else {
+                // Réinitialiser les champs si nécessaire lors du rejet
+                $demande->montant = null;
+                $demande->observation = null;
+            }
+        
+            // Sauvegarder les modifications
+            $demande->save();
+        
+            // Retourner à la vue avec un message de succès
+            
+            return redirect()->route('demandes-fonds.envois')->with('success', 'La demande de fonds a été mise à jour avec succès.');
+        }
+        
+        
  
      public function EnvoisFonds(Request $request)
     {

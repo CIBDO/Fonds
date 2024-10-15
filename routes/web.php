@@ -63,17 +63,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('attachments/download/{id}', [MessageController::class, 'downloadAttachment'])->name('attachments.download');
 
     Route::get('/demande-fonds/{id}/generate-pdf', [DemandeFondsController::class, 'generatePdf'])->name('demande-fonds.generate.pdf');
-    /*Route::patch('/demandes-fonds/{id}/update-status', [DemandeFondsController::class, 'updateStatus'])->name('demandes-fonds.update-status'); */
-   /*  Route::patch('/envois-fonds/{id}/update-status', [EnvoisFondsController::class, 'updateStatus'])->name('envois-fonds.update-status'); */
     Route::put('/demandes-fonds/{id}/update-status', [DemandeFondsController::class, 'updateStatus'])->name('demandes-fonds.update-status');
-/*    Route::post('/demandes-fonds/{id}/update-status', [DemandeFondsController::class, 'updateStatus'])->name('demandes-fonds.updateStatus'); */
- 
-   /*  Route::post('/demandes-fonds/{id}/update-status', [DemandeFondsController::class, 'updateStatus'])->name('demandes-fonds.updateStatus'); */
-   /*  Route::patch('/demandes-fonds/{id}/updateStatus', [DemandeFondsController::class, 'updateStatus'])->name('demandes-fonds.updateStatus'); */
-   /*  Route::patch('/envois-fonds/{id}/updateStatus', [EnvoisFondsController::class, 'updateStatus'])->name('envois-fonds.updateStatus'); */
 
-   
-    
 
 });
 

@@ -1,64 +1,26 @@
 @extends('layouts.master')
 @section('content')
+
 <div class="page-header">
     <div class="row align-items-center">
         <div class="col">
-            <h3 class="page-title">Demandes</h3>
+            <h3 class="page-title">Demandes de fonds</h3>
             <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                <li class="breadcrumb-item active">Demandes</li>
+                <li class="breadcrumb-item active">Demandes de fonds</li>
             </ul>
         </div>
     </div>
 </div>
-<form action="{{ route('demandes-fonds.update-status', ['id' => $demandeFonds->first()->id]) }}" method="POST" enctype="multipart/form-data">
-    
-    @method('PUT') <!-- Si tu utilises PATCH ou PUT, change ceci -->
-    <div class="demande-group-form">
-        <div class="row">
-            <div class="col-lg-3 col-md-6">
-                <div class="form-group">
-                    <input type="text" name="poste" class="form-control" placeholder="Rechercher par poste ..." value="{{ request('poste') }}">
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="form-group">
-                    <input type="text" name="mois" class="form-control" placeholder="Rechercher par mois ..." value="{{ request('mois') }}">
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="form-group">
-                    <input type="text" name="total_courant" class="form-control" placeholder="Rechercher par montant ..." value="{{ request('total_courant') }}">
-                </div>
-            </div>
-            <div class="col-lg-2">
-                <div class="search-student-btn">
-                    <button type="submit" class="btn btn-primary">Rechercher</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</form>
+
 <div class="row">
     <div class="col-sm-12">
         <div class="card card-table">
             <div class="card-body">
-                <div class="page-header">
-                    <div class="row align-items-center">
-                        <div class="col">
-                            <h3 class="page-title">Demandes</h3>
-                        </div>
-                        <div class="col-auto text-end float-end ms-auto download-grp">
-                            <!-- Boutons d'action -->
-                        </div>
-                    </div>
-                </div>
-
                 <div class="table-responsive">
-                    <table class="table border-0 star-student table-hover table-center mb-0 datatable table-striped">
-                        <thead class="student-thread">
+                    <table class="table border-0 table-hover table-center mb-0 datatable table-striped">
+                        <thead>
                             <tr>
-                                <!-- Assurez-vous que le nombre de <th> ici correspond au nombre de <td> dans chaque <tr> de <tbody> -->
                                 <th>Mois</th>
                                 <th>Date de réception</th>
                                 <th>Poste</th>
@@ -68,7 +30,7 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="demandes-table-body">
+                        <tbody>
                             @foreach($demandeFonds as $demande)
                             <tr>
                                 <td>{{ $demande->mois }}</td>
@@ -77,24 +39,60 @@
                                 <td>{{ number_format($demande->total_courant, 0, ',', ' ') }}</td>
                                 <td>{{ $demande->created_at }}</td>
                                 <td>{{ $demande->status }}</td>
-                                <td class="text-end">
+                                <td>
                                     <div class="actions">
-                                        <a href="{{ route('demandes-fonds.show', $demande->id) }}" class="btn btn-sm bg-success-light me-2">
-                                            <i class="feather-eye"></i>
-                                        </a>
-                                        {{-- <a href="{{ route('demandes-fonds.edit', $demande->id) }}" class="btn btn-sm bg-danger-light">
-                                            <i class="feather-edit"></i>
-                                        </a> --}}
-                                        <a href="#" class="btn btn-sm bg-primary-light" data-bs-toggle="modal" data-bs-target="#statusModal" data-id="{{ $demande->id }}">
-                                            <i class="feather-check"></i>
-                                        </a>
-                                        <a href="{{ route('demande-fonds.generate.pdf', $demande->id) }}" class="btn btn-sm bg-info-light">
-                                            <i class="feather-printer"></i> 
-                                        </a>
+                                        <button type="button" class="btn btn-sm bg-primary-light" data-bs-toggle="modal" data-bs-target="#statusModal-{{ $demande->id }}">
+                                            <i class="feather-check"></i> Changer le statut
+                                        </button>
                                     </div>
                                 </td>
-                                
                             </tr>
+
+                            <!-- Modal pour approuver ou rejeter la demande -->
+                            <div class="modal fade" id="statusModal-{{ $demande->id }}" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Approuvé ou Rejeté la demande </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <form action="{{ route('demandes-fonds.update-status', $demande->id) }}" method="POST">
+                                            @csrf
+                                            @method('PUT')
+                                            <div class="modal-body">
+                                                <div class="form-group">
+                                                    <label for="date_envois">Date d'envoi :</label>
+                                                    <input type="date" name="date_envois" class="form-control" value="{{ now()->format('Y-m-d') }}">
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="status">Statut :</label>
+                                                    <select name="status" class="form-select" required id="status-{{ $demande->id }}">
+                                                        <option value="approuve" {{ $demande->status == 'approuve' ? 'selected' : '' }}>Approuvé</option>
+                                                        <option value="rejete" {{ $demande->status == 'rejete' ? 'selected' : '' }}>Rejeté</option>
+                                                    </select>
+                                                </div>
+
+                                                <div id="montantFields-{{ $demande->id }}" style="display: {{ $demande->status == 'approuve' ? 'block' : 'none' }};">
+                                                    <div class="form-group mt-3">
+                                                        <label for="montant">Montant :</label>
+                                                        <input type="number" name="montant" class="form-control" value="{{ old('montant', $demande->montant) }}">
+                                                    </div>
+
+                                                    <div class="form-group mt-3">
+                                                        <label for="observation">Observation :</label>
+                                                        <textarea name="observation" class="form-control" rows="3">{{ old('observation', $demande->observation) }}</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                                <button type="submit" class="btn btn-primary">Soumettre</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                             @endforeach
                         </tbody>
                     </table>
@@ -102,95 +100,39 @@
             </div>
         </div>
     </div>
-
-    <div class="pagination-wrapper">
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center">
-                <!-- Ajout de la classe Bootstrap pour la pagination -->
-                {{ $demandeFonds->links('pagination::bootstrap-4') }}
-            </ul>
-        </nav>
-    </div>
 </div>
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-<!-- Modale pour l'approbation/rejet -->
-<div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="statusModalLabel">Approuver ou Rejeter la Demande</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="statusForm" method="POST" action="{{ route('demandes-fonds.update-status', ['id' => $demandeFonds->first()->id]) }}">
-                @csrf
-              @method('PUT')
-                <!-- Supprimer la directive -->
-                <div class="modal-body">
-                    {{-- <input type="hidden" name="demande_id" id="demande-id"> --}}
-                    <div class="form-group">
-                        <label for="date_envois">Date :</label>
-                        <input type="date" name="date_envois" class="form-control" value="{{ now()->format('Y-m-d') }}">
-                        @error('date_envois')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
 
-                    <div class="form-group">
-                        <label for="status">Statut :</label>
-                        <select name="status" class="form-select" required>
-                            <option value="approuve">Approuver</option>
-                            <option value="rejete">Rejeter</option>
-                        </select>
-                        @error('status')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    <div class="form-group mt-3">
-                        <label for="montant">Montant :</label>
-                        <input type="number" name="montant" class="form-control" required>
-                        @error('montant')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    <div class="form-group mt-3">
-                        <label for="observation">Observation :</label>
-                        <textarea name="observation" class="form-control" rows="4" ></textarea>
-                        @error('observation')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn btn-primary">Soumettre</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+<!-- Script pour afficher/cacher les champs du montant -->
 @push('scripts')
 <script>
-    var statusModal = document.getElementById('statusModal');
-    statusModal.addEventListener('show.bs.modal', function (event) {
-        var button = event.relatedTarget; // Le bouton qui a déclenché la modal
-        var demandeId = button.getAttribute('data-id'); // Récupérer l'ID de la demande à partir du bouton
-        
-        // Sélectionner le formulaire dans la modal
-        var form = statusModal.querySelector('form');
-        
-        // Mettre à jour l'action du formulaire avec l'ID de la demande
-        form.action = "/demandes-fonds/" + demandeId + "/updateStatus";
+    document.addEventListener('DOMContentLoaded', function () {
+        // Fonction pour afficher ou cacher les champs en fonction du statut sélectionné
+        function toggleMontantFields(statusSelectId, montantFieldsId) {
+            const statusSelect = document.getElementById(statusSelectId);
+            const montantFields = document.getElementById(montantFieldsId);
+
+            // Vérifiez si le statut sélectionné est "approuve"
+            if (statusSelect.value === 'approuve') {
+                montantFields.style.display = 'block'; // Affichez les champs
+            } else {
+                montantFields.style.display = 'none'; // Cachez les champs
+            }
+        }
+
+        @foreach($demandeFonds as $demande)
+            const statusSelectId = 'status-{{ $demande->id }}';
+            const montantFieldsId = 'montantFields-{{ $demande->id }}';
+
+            // Écouteur d'événement pour le changement de statut
+            document.getElementById(statusSelectId).addEventListener('change', function() {
+                toggleMontantFields(statusSelectId, montantFieldsId);
+            });
+
+            // Appeler la fonction lors du chargement de la page pour définir l'état initial
+            toggleMontantFields(statusSelectId, montantFieldsId);
+        @endforeach
     });
 </script>
-
 @endpush
 
 @endsection
