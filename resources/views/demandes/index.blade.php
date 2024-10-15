@@ -79,7 +79,15 @@
                                 <td>{{ $demande->poste->nom }}</td>
                                 <td>{{ number_format($demande->total_courant, 0, ',', ' ') }}</td>
                                 <td>{{ $demande->created_at }}</td>
-                                <td>{{ $demande->status }}</td>
+                                <td> @if($demande->status === 'en_attente')
+                                    <span class="status-en-attente">En attente</span>
+                                @elseif($demande->status === 'approuve')
+                                    <span class="status-approuve">Approuvé</span>
+                                @elseif($demande->status === 'rejete')
+                                    <span class="status-rejete">Rejeté</span>
+                                @else
+                                    <span>{{ $demande->status }}</span>
+                                @endif</td>
                                 <td class="text-end">
                                     <div class="actions">
                                         <a href="{{ route('demandes-fonds.show', $demande->id) }}" class="btn btn-sm bg-success-light me-2">

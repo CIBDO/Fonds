@@ -790,7 +790,10 @@ table.table td h2 span {
     background-color: #3d5ee1 !important;
     color: #fff !important
 }
-
+.actions button:hover {
+    background-color: #3d5ee1 !important;
+    color: #fff !important
+}
 .bg-purple-light {
     background-color: rgba(197, 128, 255, .12) !important;
     color: #c580ff !important
@@ -11209,3 +11212,24 @@ body[data-layout-mode=dark] .alertify .ajs-footer .ajs-buttons .ajs-button.ajs-o
     width: 100%;
     margin-top: 10px;
 }
+
+.status-en-attente {
+            background-color: yellow; /* Couleur pour "En attente" */
+            color: black;
+            padding: 5px;
+            border-radius: 4px;
+        }
+    
+        .status-approuve {
+            background-color: green; /* Couleur pour "Approuvé" */
+            color: white;
+            padding: 5px;
+            border-radius: 4px;
+        }
+    
+        .status-rejete {
+            background-color: red; /* Couleur pour "Rejeté" */
+            color: white;
+            padding: 5px;
+            border-radius: 4px;
+        }

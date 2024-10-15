@@ -27,7 +27,7 @@
                                 <th>Montant</th>
                                 <th>Date de création</th>
                                 <th>Statut</th>
-                                <th>Actions</th>
+                                <th style="text-align: center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -38,15 +38,31 @@
                                 <td>{{ $demande->poste->nom }}</td>
                                 <td>{{ number_format($demande->total_courant, 0, ',', ' ') }}</td>
                                 <td>{{ $demande->created_at }}</td>
-                                <td>{{ $demande->status }}</td>
+                                <td>
+                                    @if($demande->status === 'en_attente')
+                                    <span class="status-en-attente">En attente</span>
+                                @elseif($demande->status === 'approuve')
+                                    <span class="status-approuve">Approuvé</span>
+                                @elseif($demande->status === 'rejete')
+                                    <span class="status-rejete">Rejeté</span>
+                                @else
+                                    <span>{{ $demande->status }}</span>
+                                @endif
+                                </td>
                                 <td>
                                     <div class="actions">
+                                        <a href="{{ route('demandes-fonds.show', $demande->id) }}" class="btn btn-sm bg-success-light me-2">
+                                            <i class="feather-eye"></i>
+                                        </a>
                                         <button type="button" class="btn btn-sm bg-primary-light" data-bs-toggle="modal" data-bs-target="#approveModal-{{ $demande->id }}">
-                                            <i class="feather-check"></i> Approuver
+                                            <i class="feather-check"></i>Valider
                                         </button>
-                                        <button type="button" class="btn btn-sm bg-danger-light" data-bs-toggle="modal" data-bs-target="#rejectModal-{{ $demande->id }}">
-                                            <i class="feather-x"></i> Rejeter
+                                        <button type="button" class="btn btn-sm bg-danger-light " data-bs-toggle="modal" data-bs-target="#rejectModal-{{ $demande->id }}">
+                                            <i class="feather-X"></i>Rejeter 
                                         </button>
+                                        <a href="{{ route('demande-fonds.generate.pdf', $demande->id) }}" class="btn btn-sm bg-info-light">
+                                            <i class="feather-printer"></i> 
+                                        </a>
                                     </div>
                                 </td>
                             </tr>

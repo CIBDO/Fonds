@@ -12,7 +12,34 @@
         </div>
     </div>
 </div>
-
+<form action="<?php echo e(route('demandes-fonds.update-status', ['id' => $demandeFonds->first()->id])); ?>" method="POST" enctype="multipart/form-data">
+    
+    <?php echo method_field('PUT'); ?> <!-- Si tu utilises PATCH ou PUT, change ceci -->
+    <div class="demande-group-form">
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="form-group">
+                    <input type="text" name="poste" class="form-control" placeholder="Rechercher par poste ..." value="<?php echo e(request('poste')); ?>">
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="form-group">
+                    <input type="text" name="mois" class="form-control" placeholder="Rechercher par mois ..." value="<?php echo e(request('mois')); ?>">
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="form-group">
+                    <input type="text" name="total_courant" class="form-control" placeholder="Rechercher par montant ..." value="<?php echo e(request('total_courant')); ?>">
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="search-student-btn">
+                    <button type="submit" class="btn btn-primary">Rechercher</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
 <div class="row">
     <div class="col-sm-12">
         <div class="card card-table">
@@ -27,7 +54,7 @@
                                 <th>Montant</th>
                                 <th>Date de création</th>
                                 <th>Statut</th>
-                                <th>Actions</th>
+                                <th style="text-align: center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -38,15 +65,31 @@
                                 <td><?php echo e($demande->poste->nom); ?></td>
                                 <td><?php echo e(number_format($demande->total_courant, 0, ',', ' ')); ?></td>
                                 <td><?php echo e($demande->created_at); ?></td>
-                                <td><?php echo e($demande->status); ?></td>
+                                <td>
+                                    <?php if($demande->status === 'en_attente'): ?>
+                                    <span class="status-en-attente">En attente</span>
+                                <?php elseif($demande->status === 'approuve'): ?>
+                                    <span class="status-approuve">Approuvé</span>
+                                <?php elseif($demande->status === 'rejete'): ?>
+                                    <span class="status-rejete">Rejeté</span>
+                                <?php else: ?>
+                                    <span><?php echo e($demande->status); ?></span>
+                                <?php endif; ?>
+                                </td>
                                 <td>
                                     <div class="actions">
+                                        <a href="<?php echo e(route('demandes-fonds.show', $demande->id)); ?>" class="btn btn-sm bg-success-light me-2">
+                                            <i class="feather-eye"></i>
+                                        </a>
                                         <button type="button" class="btn btn-sm bg-primary-light" data-bs-toggle="modal" data-bs-target="#approveModal-<?php echo e($demande->id); ?>">
-                                            <i class="feather-check"></i> Approuver
+                                            <i class="feather-check"></i>Valider
                                         </button>
-                                        <button type="button" class="btn btn-sm bg-danger-light" data-bs-toggle="modal" data-bs-target="#rejectModal-<?php echo e($demande->id); ?>">
-                                            <i class="feather-x"></i> Rejeter
+                                        <button type="button" class="btn btn-sm bg-danger-light " data-bs-toggle="modal" data-bs-target="#rejectModal-<?php echo e($demande->id); ?>">
+                                            <i class="feather-X"></i>Rejeter 
                                         </button>
+                                        <a href="<?php echo e(route('demande-fonds.generate.pdf', $demande->id)); ?>" class="btn btn-sm bg-info-light">
+                                            <i class="feather-printer"></i> 
+                                        </a>
                                     </div>
                                 </td>
                             </tr>
