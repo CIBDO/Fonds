@@ -1,5 +1,4 @@
 @extends('layouts.master')
-
 @section('content')
 <div class="page-header">
     <div class="row align-items-center">
@@ -12,10 +11,9 @@
         </div>
     </div>
 </div>
-
-<form action="{{ route('envois-fonds.updateStatus', ['id' => $demandeFonds->first()->id]) }}" method="POST" enctype="multipart/form-data">
-    @csrf
-    @method('PATCH')
+<form action="{{ route('demandes-fonds.update-status', ['id' => $demandeFonds->first()->id]) }}" method="POST" enctype="multipart/form-data">
+    
+    @method('PUT') <!-- Si tu utilises PATCH ou PUT, change ceci -->
     <div class="demande-group-form">
         <div class="row">
             <div class="col-lg-3 col-md-6">
@@ -41,7 +39,6 @@
         </div>
     </div>
 </form>
-
 <div class="row">
     <div class="col-sm-12">
         <div class="card card-table">
@@ -85,9 +82,9 @@
                                         <a href="{{ route('demandes-fonds.show', $demande->id) }}" class="btn btn-sm bg-success-light me-2">
                                             <i class="feather-eye"></i>
                                         </a>
-                                        <a href="{{ route('demandes-fonds.edit', $demande->id) }}" class="btn btn-sm bg-danger-light">
+                                        {{-- <a href="{{ route('demandes-fonds.edit', $demande->id) }}" class="btn btn-sm bg-danger-light">
                                             <i class="feather-edit"></i>
-                                        </a>
+                                        </a> --}}
                                         <a href="#" class="btn btn-sm bg-primary-light" data-bs-toggle="modal" data-bs-target="#statusModal" data-id="{{ $demande->id }}">
                                             <i class="feather-check"></i>
                                         </a>
@@ -115,6 +112,15 @@
         </nav>
     </div>
 </div>
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 <!-- Modale pour l'approbation/rejet -->
 <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -123,29 +129,43 @@
                 <h5 class="modal-title" id="statusModalLabel">Approuver ou Rejeter la Demande</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="statusFor" method="POST">
+            <form id="statusForm" method="POST" action="{{ route('demandes-fonds.update-status', ['id' => $demandeFonds->first()->id]) }}">
                 @csrf
+              @method('PUT')
                 <!-- Supprimer la directive -->
                 <div class="modal-body">
-                    <input type="hidden" name="demande_id" id="demande-id">
+                    {{-- <input type="hidden" name="demande_id" id="demande-id"> --}}
                     <div class="form-group">
                         <label for="date_envois">Date :</label>
                         <input type="date" name="date_envois" class="form-control" value="{{ now()->format('Y-m-d') }}">
+                        @error('date_envois')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
                     </div>
+
                     <div class="form-group">
                         <label for="status">Statut :</label>
                         <select name="status" class="form-select" required>
                             <option value="approuve">Approuver</option>
                             <option value="rejete">Rejeter</option>
                         </select>
+                        @error('status')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
                     </div>
                     <div class="form-group mt-3">
                         <label for="montant">Montant :</label>
                         <input type="number" name="montant" class="form-control" required>
+                        @error('montant')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
                     </div>
                     <div class="form-group mt-3">
                         <label for="observation">Observation :</label>
                         <textarea name="observation" class="form-control" rows="4" ></textarea>
+                        @error('observation')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -160,17 +180,17 @@
 <script>
     var statusModal = document.getElementById('statusModal');
     statusModal.addEventListener('show.bs.modal', function (event) {
-        var button = event.relatedTarget;
-        var demandeId = button.getAttribute('data-id');
-
-        // Modifier l'action du formulaire pour inclure l'ID dans l'URL
-        var form = document.getElementById('statusForm');
-        form.action = "/envois-fonds/" + demandeId + "/updateStatus";
+        var button = event.relatedTarget; // Le bouton qui a déclenché la modal
+        var demandeId = button.getAttribute('data-id'); // Récupérer l'ID de la demande à partir du bouton
         
-        // Mettre à jour le champ caché avec l'ID de la demande
-        document.getElementById('demande-id').value = demandeId;
+        // Sélectionner le formulaire dans la modal
+        var form = statusModal.querySelector('form');
+        
+        // Mettre à jour l'action du formulaire avec l'ID de la demande
+        form.action = "/demandes-fonds/" + demandeId + "/updateStatus";
     });
 </script>
+
 @endpush
 
 @endsection

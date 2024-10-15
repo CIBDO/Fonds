@@ -65,6 +65,11 @@ class DemandeFonds extends Model
         'total_courant',
         'total_ancien',
         'date_reception',
+        'date_envois',
+        'montant',
+        'observation',
+        /* 'montant_disponible',
+        'solde', */
 
     ];
 

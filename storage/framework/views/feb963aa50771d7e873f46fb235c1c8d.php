@@ -56,7 +56,7 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="poste">Poste/Service :</label>
-                    <select name="poste_id" class="form-control" required>
+                    <select name="poste_id" class="form-select" required>
                         <option value="" disabled selected>-- Sélectionnez un poste --</option>
                         <?php $__currentLoopData = $postes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $poste): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <option value="<?php echo e($poste->id); ?>"><?php echo e($poste->nom); ?></option>
@@ -154,7 +154,7 @@
         netFields.forEach(field => field.addEventListener('input', calculateTotals));
         reversFields.forEach(field => field.addEventListener('input', calculateTotals));
         salaireAncienFields.forEach(field => field.addEventListener('input', calculateTotals));
-        
+
         // Calculer les totaux au chargement de la page
         calculateTotals();
     });

@@ -6,6 +6,7 @@ use App\Models\DemandeFonds;
 use App\Notifications\DemandeFondsNotification;
 use App\Models\User;
 use App\Models\Poste;
+use App\Notifications\DemandeFondsStatusNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -14,6 +15,7 @@ use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Illuminate\Support\Facades\View; // Pour utiliser la vue
 use RealRashid\SweetAlert\Facades\Alert;
 use App\Notifications\DemandeFondsStatusUpdated; // Assurez-vous que le chemin est correct
+use App\Notifications\DemandeStatusUpdated; // Assurez-vous que le chemin d'importation est correct
 
 
 
@@ -41,9 +43,9 @@ class DemandeFondsController extends Controller
         }
     
         // Filtrer par date d'arrivée si le champ est renseigné
-        if ($request->filled('created_at')) {
+       /*  if ($request->filled('created_at')) {
             $query->whereDate('created_at', $request->input('created_at'));
-        }
+        } */
     
         // Afficher toutes les demandes de fonds
         $demandeFonds = $query->with('user', 'poste')->orderBy('created_at', 'desc')->paginate(8);
@@ -63,53 +65,54 @@ class DemandeFondsController extends Controller
 {
     // Validation des données
     $request->validate([
-        'date' => 'required|date',
-        'date_reception' => 'required|date',
-        'mois' => 'required|string',
-        'annee' => 'required|numeric',
-        'poste_id' => 'required|integer',
-        'status' => 'required|string',
-        'fonctionnaires_bcs_net' => 'required|numeric',
-        'fonctionnaires_bcs_revers' => 'required|numeric',
+        'date' => 'nullable|date',
+        'date_reception' => 'nullable|date',    
+        'mois' => 'nullable|string',
+        'annee' => 'nullable|numeric',
+        'poste_id' => 'nullable|integer',
+        'status' => 'nullable|string',
+        'fonctionnaires_bcs_net' => 'nullable|numeric',
+        'fonctionnaires_bcs_revers' => 'nullable|numeric',
         'fonctionnaires_bcs_total_courant' => 'required|numeric',
-        'fonctionnaires_bcs_salaire_ancien' => 'required|numeric',
-        'fonctionnaires_bcs_total_demande' => 'required|numeric',
-        'collectivite_sante_net' => 'required|numeric',
-        'collectivite_sante_revers' => 'required|numeric',
-        'collectivite_sante_total_courant' => 'required|numeric',
-        'collectivite_sante_salaire_ancien' => 'required|numeric',
-        'collectivite_sante_total_demande' => 'required|numeric',
-        'collectivite_education_net' => 'required|numeric',
-        'collectivite_education_revers' => 'required|numeric',
-        'collectivite_education_total_courant' => 'required|numeric',
-        'collectivite_education_salaire_ancien' => 'required|numeric',
-        'collectivite_education_total_demande' => 'required|numeric',
-        'personnels_saisonniers_net' => 'required|numeric',
-        'personnels_saisonniers_revers' => 'required|numeric',
-        'personnels_saisonniers_total_courant' => 'required|numeric',
-        'personnels_saisonniers_salaire_ancien' => 'required|numeric',
-        'personnels_saisonniers_total_demande' => 'required|numeric',
-        'epn_net' => 'required|numeric',
-        'epn_revers' => 'required|numeric',
-        'epn_total_courant' => 'required|numeric',
-        'epn_salaire_ancien' => 'required|numeric',
-        'epn_total_demande' => 'required|numeric',
-        'ced_net' => 'required|numeric',
-        'ced_revers' => 'required|numeric',
-        'ced_total_courant' => 'required|numeric',
-        'ced_salaire_ancien' => 'required|numeric',
-        'ced_total_demande' => 'required|numeric',
-        'ecom_net' => 'required|numeric',
-        'ecom_revers' => 'required|numeric',
-        'ecom_total_courant' => 'required|numeric',
-        'ecom_salaire_ancien' => 'required|numeric',
-        'ecom_total_demande' => 'required|numeric',
-        'cfp_cpam_net' => 'required|numeric',
-        'cfp_cpam_revers' => 'required|numeric',
-        'cfp_cpam_total_courant' => 'required|numeric',
-        'cfp_cpam_salaire_ancien' => 'required|numeric',
-        'cfp_cpam_total_demande' => 'required|numeric',
+        'fonctionnaires_bcs_salaire_ancien' => 'nullable|numeric',
+        'fonctionnaires_bcs_total_demande' => 'nullable|numeric',
+        'collectivite_sante_net' => 'nullable|numeric',
+        'collectivite_sante_revers' => 'nullable|numeric',
+        'collectivite_sante_total_courant' => 'nullable|numeric',
+        'collectivite_sante_salaire_ancien' => 'nullable|numeric',
+        'collectivite_sante_total_demande' => 'nullable|numeric',
+        'collectivite_education_net' => 'nullable|numeric',
+        'collectivite_education_revers' => 'nullable|numeric',
+        'collectivite_education_total_courant' => 'nullable|numeric',
+        'collectivite_education_salaire_ancien' => 'nullable|numeric',
+        'collectivite_education_total_demande' => 'nullable|numeric',
+        'personnels_saisonniers_net' => 'nullable|numeric',
+        'personnels_saisonniers_revers' => 'nullable|numeric',
+        'personnels_saisonniers_total_courant' => 'nullable|numeric',
+        'personnels_saisonniers_salaire_ancien' => 'nullable|numeric',
+        'personnels_saisonniers_total_demande' => 'nullable|numeric',
+        'epn_net' => 'nullable|numeric',
+        'epn_revers' => 'nullable|numeric',
+        'epn_total_courant' => 'nullable|numeric',
+        'epn_salaire_ancien' => 'nullable|numeric',
+        'epn_total_demande' => 'nullable|numeric',
+        'ced_net' => 'nullable|numeric',
+        'ced_revers' => 'nullable|numeric',
+        'ced_total_courant' => 'nullable|numeric',
+        'ced_salaire_ancien' => 'nullable|numeric',
+        'ced_total_demande' => 'nullable|numeric',
+        'ecom_net' => 'nullable|numeric',
+        'ecom_revers' => 'nullable|numeric',
+        'ecom_total_courant' => 'nullable|numeric',
+        'ecom_salaire_ancien' => 'nullable|numeric',
+        'ecom_total_demande' => 'nullable|numeric',
+        'cfp_cpam_net' => 'nullable|numeric',
+        'cfp_cpam_revers' => 'nullable|numeric',
+        'cfp_cpam_total_courant' => 'nullable|numeric',
+        'cfp_cpam_salaire_ancien' => 'nullable|numeric',
+        'cfp_cpam_total_demande' => 'nullable|numeric',
         'user_id' => 'required|integer',
+        
     ]);
 
     // Calcul des totaux
@@ -239,14 +242,14 @@ return redirect()->route('demandes-fonds.index')->with('success', 'Demande de fo
         return view('demandes.edit', compact('demande', 'postes'));
     }
 
-    public function update(Request $request, DemandeFonds $demandeFonds)
+      public function update(Request $request, DemandeFonds $demandeFonds)
     {
         // Valider les champs de la requête
         $request->validate([
-            'mois' => 'required|string|max:20',
-            'annee' => 'required|numeric',
-            'total_demande' => 'required|numeric',
-            'status' => 'required|string',
+            'mois' => 'nullable|string|max:20',
+            'annee' => 'nullable|numeric',
+            'total_demande' => 'nullable|numeric',
+            'status' => 'nullable|string',
             'fonctionnaires_bcs_net' => 'nullable|numeric',
             'fonctionnaires_bcs_revers' => 'nullable|numeric',
             'fonctionnaires_bcs_total_courant' => 'nullable|numeric',
@@ -272,8 +275,8 @@ return redirect()->route('demandes-fonds.index')->with('success', 'Demande de fo
             'epn_total_courant' => 'nullable|numeric',
             'epn_salaire_ancien' => 'nullable|numeric',
             'epn_total_demande' => 'nullable|numeric',
-            'poste_id' => 'required|exists:postes,id',
-            'date_reception' => 'required|date',
+            'poste_id' => 'nullable|exists:postes,id',
+            'date_reception' => 'nullable|date',
             'ced_net' => 'nullable|numeric',
             'ced_revers' => 'nullable|numeric',
             'ced_total_courant' => 'nullable|numeric',
@@ -289,17 +292,17 @@ return redirect()->route('demandes-fonds.index')->with('success', 'Demande de fo
             'cfp_cpam_total_courant' => 'nullable|numeric',
             'cfp_cpam_salaire_ancien' => 'nullable|numeric',
             'cfp_cpam_total_demande' => 'nullable|numeric',
-            'total_net' => 'required|numeric',
-            'total_revers' => 'required|numeric',
-            'total_courant' => 'required|numeric',
-            'total_ancien' => 'required|numeric',
+            'total_net' => 'nullable|numeric',
+            'total_revers' => 'nullable|numeric',
+            'total_courant' => 'nullable|numeric',
+            'total_ancien' => 'nullable|numeric',
         ]);
 
     
         // ... code existant ...
         Alert::success('Success', 'Demande de fonds mise à jour avec succès.');
         return redirect()->route('demandes-fonds.index')->with('success', 'Demande de fonds mise à jour avec succès.'); 
-    }
+    }  
 
     public function destroy(DemandeFonds $demandeFonds)
     {
@@ -353,76 +356,91 @@ return redirect()->route('demandes-fonds.index')->with('success', 'Demande de fo
     
         return view('demandes.show', compact('demandeFonds'));
     }
-    
-   public function generatePDF($id)
-    {
-        // Récupérer la demande de fonds par son ID
-        $demandeFonds = DemandeFonds::findOrFail($id);
-    
-        // Générer le PDF avec la vue et passer la variable
-        $pdf = FacadePdf::loadView('pdf.demande_fonds', compact('demandeFonds'))->setPaper('a4', 'landscape');
-        $demandeFonds->total_net = $demandeFonds->fonctionnaires_bcs_net + 
-        $demandeFonds->collectivite_sante_net + 
-        $demandeFonds->collectivite_education_net + 
-        $demandeFonds->personnels_saisonniers_net + 
-        $demandeFonds->epn_net + 
-        $demandeFonds->ced_net + 
-        $demandeFonds->ecom_net + 
-        $demandeFonds->cfp_cpam_net;
+        
+    public function generatePDF($id)
+        {
+            // Récupérer la demande de fonds par son ID
+            $demandeFonds = DemandeFonds::findOrFail($id);
+        
+            // Générer le PDF avec la vue et passer la variable
+            $pdf = FacadePdf::loadView('pdf.demande_fonds', compact('demandeFonds'))->setPaper('a4', 'landscape');
+            $demandeFonds->total_net = $demandeFonds->fonctionnaires_bcs_net + 
+            $demandeFonds->collectivite_sante_net + 
+            $demandeFonds->collectivite_education_net + 
+            $demandeFonds->personnels_saisonniers_net + 
+            $demandeFonds->epn_net + 
+            $demandeFonds->ced_net + 
+            $demandeFonds->ecom_net + 
+            $demandeFonds->cfp_cpam_net;
 
-$demandeFonds->total_revers = $demandeFonds->fonctionnaires_bcs_revers + 
-            $demandeFonds->collectivite_sante_revers + 
-            $demandeFonds->collectivite_education_revers + 
-            $demandeFonds->personnels_saisonniers_revers + 
-            $demandeFonds->epn_revers + 
-            $demandeFonds->ced_revers + 
-            $demandeFonds->ecom_revers + 
-            $demandeFonds->cfp_cpam_revers;
+    $demandeFonds->total_revers = $demandeFonds->fonctionnaires_bcs_revers + 
+                $demandeFonds->collectivite_sante_revers + 
+                $demandeFonds->collectivite_education_revers + 
+                $demandeFonds->personnels_saisonniers_revers + 
+                $demandeFonds->epn_revers + 
+                $demandeFonds->ced_revers + 
+                $demandeFonds->ecom_revers + 
+                $demandeFonds->cfp_cpam_revers;
 
-$demandeFonds->total_courant = $demandeFonds->fonctionnaires_bcs_total_courant + 
-             $demandeFonds->collectivite_sante_total_courant + 
-             $demandeFonds->collectivite_education_total_courant + 
-             $demandeFonds->personnels_saisonniers_total_courant + 
-             $demandeFonds->epn_total_courant + 
-             $demandeFonds->ced_total_courant + 
-             $demandeFonds->ecom_total_courant + 
-             $demandeFonds->cfp_cpam_total_courant;
+    $demandeFonds->total_courant = $demandeFonds->fonctionnaires_bcs_total_courant + 
+                $demandeFonds->collectivite_sante_total_courant + 
+                $demandeFonds->collectivite_education_total_courant + 
+                $demandeFonds->personnels_saisonniers_total_courant + 
+                $demandeFonds->epn_total_courant + 
+                $demandeFonds->ced_total_courant + 
+                $demandeFonds->ecom_total_courant + 
+                $demandeFonds->cfp_cpam_total_courant;
 
-$demandeFonds->total_ancien = $demandeFonds->fonctionnaires_bcs_salaire_ancien + 
-            $demandeFonds->collectivite_sante_salaire_ancien + 
-            $demandeFonds->collectivite_education_salaire_ancien + 
-            $demandeFonds->personnels_saisonniers_salaire_ancien + 
-            $demandeFonds->epn_salaire_ancien + 
-            $demandeFonds->ced_salaire_ancien + 
-            $demandeFonds->ecom_salaire_ancien + 
-            $demandeFonds->cfp_cpam_salaire_ancien;
-        // Retourner le PDF pour le téléchargement
-        return $pdf->download('demande_fonds_' . $demandeFonds->id . '.pdf');
-    }
+    $demandeFonds->total_ancien = $demandeFonds->fonctionnaires_bcs_salaire_ancien + 
+                $demandeFonds->collectivite_sante_salaire_ancien + 
+                $demandeFonds->collectivite_education_salaire_ancien + 
+                $demandeFonds->personnels_saisonniers_salaire_ancien + 
+                $demandeFonds->epn_salaire_ancien + 
+                $demandeFonds->ced_salaire_ancien + 
+                $demandeFonds->ecom_salaire_ancien + 
+                $demandeFonds->cfp_cpam_salaire_ancien;
+            // Retourner le PDF pour le téléchargement
+            return $pdf->download('demande_fonds_' . $demandeFonds->id . '.pdf');
+        }
 
-   public function updateStatus(Request $request, $id)
-{
-    // Validation des données
-    $validatedData = $request->validate([
+         public function updateStatus(Request $request, $id)
+        {
+            // Validation des données reçues
+            $request->validate([
         'status' => 'required|in:approuve,rejete',
         'montant' => 'required|numeric',
-        'observation' => 'required|string|max:255',
+        'date_envois' => 'required|date',
+        'observation' => 'nullable|string'
     ]);
-
-    // Trouver la demande avec l'ID fourni
+   
+    // Récupérer la demande de fonds à mettre à jour
     $demande = DemandeFonds::findOrFail($id);
 
-    // Mettre à jour le statut, le montant, et les observations
-    $demande->status = $validatedData['status'];
-    $demande->montant_accorde = $validatedData['montant']; // Par exemple
-    $demande->observation = $validatedData['observation'];
+    // Mise à jour des champs
+    $demande->status = $request->input('status');
+    $demande->montant = $request->input('montant');
+    $demande->date_envois = $request->input('date_envois');
+    $demande->observation = $request->input('observation');
+    
+    // Sauvegarder les modifications
     $demande->save();
 
-    // Envoyer une notification à l'agent qui a fait la demande
-     $demande->user->notify(new DemandeFondsNotification($demande)); 
-
-    return redirect()->route('demandes-fonds.index')->with('success', 'Le statut de la demande a été mis à jour.');
-}
-
-
+    // Notification à l'initiateur de la demande (décommenter si nécessaire)
+    // $demande->user->notify(new DemandeFondsStatusNotification($demande));
+    
+    // Retourner à la vue avec un message de succès
+    Alert::success('Success', 'Le Fonds a été envoyé avec succès.');
+    return redirect()->route('demandes-fonds.envois')->with('success', 'Le Fonds a été envoyé avec succès.');
+    }
+ 
+     public function EnvoisFonds(Request $request)
+    {
+        $demandeFonds = DemandeFonds::with('user', 'poste')
+            ->orderBy('created_at', 'desc')
+            ->paginate(8)
+            ->appends($request->except('page'));
+    
+        return view('demandes.envois', compact('demandeFonds'));
+    } 
+  
 }
