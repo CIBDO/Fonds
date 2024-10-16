@@ -13,22 +13,27 @@
     </div>
 </div>
 
-<form action="<?php echo e(route('demandes-fonds.index')); ?>" method="GET">
+<form action="<?php echo e(route('demandes-fonds.situation')); ?>" method="GET">
     <div class="demande-group-form">
         <div class="row">
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-2 col-md-6">
                 <div class="form-group">
                     <input type="text" name="poste" class="form-control" placeholder="Rechercher par poste ..." value="<?php echo e(request('poste')); ?>">
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-2 col-md-6">
                 <div class="form-group">
                     <input type="text" name="mois" class="form-control" placeholder="Rechercher par mois ..." value="<?php echo e(request('mois')); ?>">
                 </div>
             </div>
-            <div class="col-lg-4 col-md-6">
+            <div class="col-lg-2 col-md-6">
                 <div class="form-group">
-                    <input type="text" name="total_courant" class="form-control" placeholder="Rechercher par montant ..." value="<?php echo e(request('total_courant')); ?>">
+                    <input type="date" name="date_debut" class="form-control" placeholder="Date de début" value="<?php echo e(request('date_debut')); ?>">
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-6">
+                <div class="form-group">
+                    <input type="date" name="date_fin" class="form-control" placeholder="Date de fin" value="<?php echo e(request('date_fin')); ?>">
                 </div>
             </div>
             <div class="col-lg-2">
@@ -49,12 +54,6 @@
                         <div class="col">
                             <h3 class="page-title">Demandes</h3>
                         </div>
-                        <div class="col-auto text-end float-end ms-auto download-grp">
-                            <a href="#" class="btn btn-outline-gray me-2 active"><i class="feather-list"></i></a>
-                            <a href="#" class="btn btn-outline-gray me-2"><i class="feather-grid"></i></a>
-                            <a href="#" class="btn btn-outline-primary me-2"><i class="fas fa-download"></i> Download</a>
-                            <a href="<?php echo e(route('demandes-fonds.create')); ?>" class="btn btn-primary"><i class="fas fa-plus"></i></a>
-                        </div>
                     </div>
                 </div>
 
@@ -63,44 +62,21 @@
                         <thead class="student-thread">
                             <tr>
                                 <th>Mois</th>
-                                <th>Date de Réception</th>
+                                <th>Date d'Envois</th>
                                 <th>Poste</th>
-                                <th>Montant demandé</th>
-                                <th>Date de la demande</th>
-                                <th>Statut</th>
-                                <th class="text-end">Action</th>
+                                <th>Fonds demandés</th>
+                                <th>Fonds alloués</th>
+                               
                             </tr>
                         </thead>
-                        <tbody id="demandes-table-body">
+                        <tbody>
                             <?php $__currentLoopData = $demandeFonds; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $demande): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <tr>
                                 <td><?php echo e($demande->mois); ?></td>
-                                <td><?php echo e($demande->date_reception); ?></td>
+                                <td><?php echo e($demande->date_envois); ?></td>
                                 <td><?php echo e($demande->poste->nom); ?></td>
                                 <td><?php echo e(number_format($demande->total_courant, 0, ',', ' ')); ?></td>
-                                <td><?php echo e($demande->created_at); ?></td>
-                                <td> <?php if($demande->status === 'en_attente'): ?>
-                                    <span class="status-en-attente">En attente</span>
-                                <?php elseif($demande->status === 'approuve'): ?>
-                                    <span class="status-approuve">Approuvé</span>
-                                <?php elseif($demande->status === 'rejete'): ?>
-                                    <span class="status-rejete">Rejeté</span>
-                                <?php else: ?>
-                                    <span><?php echo e($demande->status); ?></span>
-                                <?php endif; ?></td>
-                                <td class="text-end">
-                                    <div class="actions">
-                                        <a href="<?php echo e(route('demandes-fonds.show', $demande->id)); ?>" class="btn btn-sm bg-success-light me-2">
-                                            <i class="feather-eye"></i>
-                                        </a>
-                                        <a href="<?php echo e(route('demandes-fonds.edit', $demande->id)); ?>" class="btn btn-sm bg-danger-light">
-                                            <i class="feather-edit"></i>
-                                        </a>
-                                        <a href="<?php echo e(route('demande-fonds.generate.pdf', $demande->id)); ?>" class="btn btn-sm bg-info-light">
-                                            <i class="feather-printer"></i> 
-                                        </a>
-                                    </div>
-                                </td>
+                                <td><?php echo e(number_format($demande->montant, 0, ',', ' ')); ?></td>
                             </tr>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>   
                         </tbody>
@@ -108,16 +84,6 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="pagination-wrapper">
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center">
-                <!-- Ajout de la classe Bootstrap pour la pagination -->
-                <?php echo e($demandeFonds->links('pagination::bootstrap-4')); ?>
-
-            </ul>
-        </nav>
     </div>
 </div>
 <?php $__env->startSection('add-js'); ?>
@@ -157,4 +123,4 @@
 <?php $__env->stopSection(); ?>
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('layouts.master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\BDO\Desktop\Fonds\resources\views/demandes/index.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\BDO\Desktop\Fonds\resources\views/demandes/situation.blade.php ENDPATH**/ ?>

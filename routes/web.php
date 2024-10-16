@@ -26,7 +26,7 @@ Route::get('/dashboard', fn() => view('dashboard'))
     ->middleware(['auth', 'verified'])->name('dashboard');
     Route::get('/demandes-fonds/envois', [DemandeFondsController::class, 'EnvoisFonds'])->name('demandes-fonds.envois');
     Route::post('/demandes-envois/{id}/updateStatus', [DemandeFondsController::class, 'updateStatus'])->name('demandes-envois.updateStatus');
-    
+    Route::get('/demandes-fonds/situation', [DemandeFondsController::class, 'SituationFonds'])->name('demandes-fonds.situation');
 
 // Routes protégées par authentification
 Route::middleware(['auth'])->group(function () {

@@ -112,6 +112,8 @@ class DemandeFondsController extends Controller
         'cfp_cpam_salaire_ancien' => 'nullable|numeric',
         'cfp_cpam_total_demande' => 'nullable|numeric',
         'user_id' => 'required|integer',
+        'montant_disponible' => 'nullable|numeric',
+        'solde' => 'nullable|numeric',
         
     ]);
 
@@ -216,6 +218,8 @@ class DemandeFondsController extends Controller
         'total_courant' => $total_courant,
         'total_ancien' => $total_ancien,
         'user_id' => $request->user_id,
+        'montant_disponible' => $request->montant_disponible,
+        'solde' => $request->solde
     ]);
 // Récupérer les utilisateurs avec le rôle "acct"
 /* $users = User::role('acct')->get(); */
@@ -296,6 +300,8 @@ return redirect()->route('demandes-fonds.index')->with('success', 'Demande de fo
             'total_revers' => 'nullable|numeric',
             'total_courant' => 'nullable|numeric',
             'total_ancien' => 'nullable|numeric',
+            'total_disponibilite' => 'nullable|numeric',
+            'solde' => 'nullable|numeric',
         ]);
 
     
@@ -424,17 +430,80 @@ return redirect()->route('demandes-fonds.index')->with('success', 'Demande de fo
     return redirect()->route('demandes-fonds.envois')->with('success', 'Demande mise à jour avec succès');
 }
 
-        
-        
- 
-     public function EnvoisFonds(Request $request)
-    {
-        $demandeFonds = DemandeFonds::with('user', 'poste')
-            ->orderBy('created_at', 'desc')
-            ->paginate(8)
-            ->appends($request->except('page'));
-    
-        return view('demandes.envois', compact('demandeFonds'));
-    } 
-  
+public function EnvoisFonds(Request $request)
+{
+    // Commencer par obtenir toutes les demandes de fonds
+    $query = DemandeFonds::with('user', 'poste');
+
+    // Filtrer par poste si un poste est fourni dans la requête
+    if ($request->filled('poste')) {
+        $query->whereHas('poste', function ($q) use ($request) {
+            $q->where('nom', 'like', '%' . $request->poste . '%');
+        });
+    }
+
+    // Filtrer par mois si un mois est fourni dans la requête
+    if ($request->filled('mois')) {
+        $query->where('mois', 'like', '%' . $request->mois . '%');
+    }
+
+    // Filtrer par plage de dates (date d'envoi des demandes de fonds)
+    if ($request->filled('date_debut') && $request->filled('date_fin')) {
+        $query->whereBetween('date_envois', [$request->date_debut, $request->date_fin]);
+    } elseif ($request->filled('date_debut')) {
+        // Si seulement la date de début est fournie, filtrer à partir de cette date
+        $query->where('date_envois', '>=', $request->date_debut);
+    } elseif ($request->filled('date_fin')) {
+        // Si seulement la date de fin est fournie, filtrer jusqu'à cette date
+        $query->where('date_envois', '<=', $request->date_fin);
+    }
+
+    // Exécuter la requête et paginer les résultats
+    $demandeFonds = $query->orderBy('created_at', 'desc')
+        ->paginate(8)
+        ->appends($request->except('page'));
+
+    // Retourner la vue avec les résultats filtrés
+    return view('demandes.envois', compact('demandeFonds'));
+}
+
+
+    public function SituationFonds(Request $request)
+{
+    // Commencer par obtenir toutes les demandes de fonds avec les statuts "approuvé" ou "rejeté"
+    $query = DemandeFonds::with('user', 'poste')
+        ->whereIn('status', ['approuve', 'rejete']);
+
+    // Filtrer par poste si un poste est fourni dans la requête
+    if ($request->filled('poste')) {
+        $query->whereHas('poste', function ($q) use ($request) {
+            $q->where('nom', 'like', '%' . $request->poste . '%');
+        });
+    }
+
+    // Filtrer par mois si un mois est fourni dans la requête
+    if ($request->filled('mois')) {
+        $query->where('mois', 'like', '%' . $request->mois . '%');
+    }
+
+    // Filtrer par plage de dates (date d'envoi des demandes de fonds)
+    if ($request->filled('date_debut') && $request->filled('date_fin')) {
+        $query->whereBetween('date_envois', [$request->date_debut, $request->date_fin]);
+    } elseif ($request->filled('date_debut')) {
+        // Si seulement la date de début est fournie, filtrer à partir de cette date
+        $query->where('date_envois', '>=', $request->date_debut);
+    } elseif ($request->filled('date_fin')) {
+        // Si seulement la date de fin est fournie, filtrer jusqu'à cette date
+        $query->where('date_envois', '<=', $request->date_fin);
+    }
+
+    // Exécuter la requête et paginer les résultats
+    $demandeFonds = $query->orderBy('created_at', 'desc')
+        ->paginate(8)
+        ->appends($request->except('page'));
+
+    // Retourner la vue avec les résultats filtrés
+    return view('demandes.situation', compact('demandeFonds'));
+}
+
 }

@@ -68,8 +68,8 @@ class DemandeFonds extends Model
         'date_envois',
         'montant',
         'observation',
-        /* 'montant_disponible',
-        'solde', */
+        'montant_disponible',
+        'solde',
 
     ];
 

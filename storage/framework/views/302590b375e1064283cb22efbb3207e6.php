@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/style.css')); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- Inclure DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
+    
 </head>
 
 <body>
@@ -27,7 +27,7 @@
         <div class="page-wrapper">
             <?php echo $__env->yieldContent('content'); ?>
             <?php echo $__env->make('partials.footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
-            <meta name="user-id" content="<?php echo e(auth()->user()->id); ?>">
+            
         </div>  
     </div>
 
@@ -38,12 +38,12 @@
     <script src="<?php echo e(asset('assets/plugins/apexchart/apexcharts.min.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/plugins/apexchart/chart-data.js')); ?>"></script>
     <!-- Inclure DataTables JS -->
-    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+    
     <script src="<?php echo e(asset('assets/js/script.js')); ?>"></script>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
-     
+    <?php echo $__env->yieldContent('add-js'); ?> 
 </body>
 
 </html>

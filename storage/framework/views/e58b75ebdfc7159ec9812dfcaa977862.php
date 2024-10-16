@@ -17,9 +17,9 @@
                             <a href="#"><i class="fas fa-building"></i> <span> Demandes de Fonds</span> <span
                                     class="menu-arrow"></span></a>
                             <ul>
-                                <li><a href="<?php echo e(route('demandes-fonds.create')); ?>">Faire une DF</a></li>
+                                <li><a href="<?php echo e(route('demandes-fonds.create')); ?>"><i class="fas fa-"></i>Faire une DF</a></li>
                                 <li><a href="<?php echo e(route('demandes-fonds.index')); ?>">Liste des DF</a></li>
-                                <li><a href="#">Suivi des DF</a></li>
+                                <li><a href="<?php echo e(route('demandes-fonds.situation')); ?>">Suivi des DF</a></li>
                             </ul>
                         </li>
                         <li class="submenu">
@@ -27,7 +27,7 @@
                                     class="menu-arrow"></span></a>
                             <ul>
                                 <li><a href="<?php echo e(route('demandes-fonds.envois')); ?>">Envoyer de Fonds</a></li>
-                                <li><a href="#">Situation des DF</a></li>
+                                <li><a href="<?php echo e(route('demandes-fonds.situation')); ?>">Situation des DF</a></li>
                             </ul>
                         </li>
                         <li class="submenu">
@@ -42,9 +42,9 @@
                             <a href="#"><i class="fas fa-book-reader"></i> <span> Rapports Statistiques</span> <span
                                     class="menu-arrow"></span></a>
                             <ul>
-                                <li><a href="#">Rapport Mensuel des DF</a></li>
-                                <li><a href="add-subject.html">Rapport Mensuel des FE</a></li>
-                                <li><a href="edit-subject.html">Tableau Comparatif des DF/Poste</a></li>
+                                <li><a href="<?php echo e(route('demandes-fonds.index')); ?>">Rapport Mensuel des DF</a></li>
+                                <li><a href="<?php echo e(route('demandes-fonds.envois')); ?>">Rapport Mensuel des FE</a></li>
+                                <li><a href="<?php echo e(route('demandes-fonds.situation')); ?>">Tableau Comparatif des DF/Poste</a></li>
                             </ul>
                         </li>
                         <li class="submenu">

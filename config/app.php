@@ -222,6 +222,8 @@ return [
        /*  'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
  */
+         Yajra\DataTables\DataTablesServiceProvider::class,
+
         'PDF' => Barryvdh\DomPDF\Facade\Pdf::class, 
     ],
 
