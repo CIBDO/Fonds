@@ -107,6 +107,9 @@
             <label>Poste : <strong><?php echo e($demandeFonds->poste->nom ?? 'N/A'); ?></strong></label>
         </div>
         <div>
+            <label>liquidité: <strong><?php echo e(number_format($demandeFonds->montant_disponible, 0, ',', ' ')); ?></strong></label>
+        </div>
+        <div>
             <label>Salaire du mois de : <strong><?php echo e($demandeFonds->mois . ' ' . $demandeFonds->annee); ?></strong></label>
         </div>
     </div>
@@ -200,6 +203,6 @@
     </table>
     </div>
 </body>
-<Label style="text-align: center; font-weight: bold; font-size: 22px;">Veuillez mettre à notre disposition la somme de : <?php echo e(number_format($demandeFonds->total_courant, 0, ',', ' ')); ?></Label>
+<Label style="text-align: center; font-weight: bold; font-size: 22px;">Veuillez mettre à notre disposition la somme de : <?php echo e(number_format($demandeFonds->solde, 0, ',', ' ')); ?></Label>
 </html>
 <?php /**PATH C:\Users\BDO\Desktop\Fonds\resources\views/demandes/show.blade.php ENDPATH**/ ?>

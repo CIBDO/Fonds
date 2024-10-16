@@ -98,6 +98,9 @@
             <label>Poste : <strong>{{ $demandeFonds->poste->nom ?? 'N/A' }}</strong></label>
         </div>
         <div>
+            <label>liquidité: <strong>{{ number_format($demandeFonds->montant_disponible, 0, ',', ' ') }}</strong></label>
+        </div>
+        <div>
             <label>Salaire du mois de : <strong>{{ $demandeFonds->mois . ' ' . $demandeFonds->annee }}</strong></label>
         </div>
     </div>
@@ -190,7 +193,7 @@
         </tbody>
     </table>
     </div>
-    <Label style="text-align: center; font-weight: bold; font-size: 22px;">Veuillez mettre à notre disposition la somme de : {{ number_format($demandeFonds->total_courant, 0, ',', ' ') }}</Label>
+    <Label style="text-align: center; font-weight: bold; font-size: 22px;">Veuillez mettre à notre disposition la somme de : {{ number_format($demandeFonds->solde, 0, ',', ' ') }}</Label>
 </body>
 
 </html>

@@ -55,7 +55,7 @@
                                 <th>Mois</th>
                                 <th>Date de réception</th>
                                 <th>Poste</th>
-                                <th>Montant</th>
+                                <th>Fonds Demandés</th>
                                 <th>Date de création</th>
                                 <th>Statut</th>
                                 <th style="text-align: center">Actions</th>

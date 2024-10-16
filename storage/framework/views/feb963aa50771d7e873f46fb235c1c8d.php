@@ -82,6 +82,24 @@
         <input type="hidden" id="total_net" name="total_net" value="0">
         <input type="hidden" id="total_revers" name="total_revers" value="0">
         <input type="hidden" id="total_courant" name="total_courant" value="0">
+        
+        <!-- Champs pour Montant Disponible et Solde -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="montant_disponible">Montant Disponible :</label>
+                    <input type="number" id="montant_disponible" name="montant_disponible" class="form-control" value="0" required>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="solde">Fonds a demandé :</label>
+                    <input type="number" id="solde" name="solde" class="form-control" value="0" readonly>
+                </div>
+            </div>
+    
+        </div>
+
         <!-- Bouton d'envoi -->
         <div class="button-container" style="text-align: center; margin-top: 20px;">
             <button type="submit" class="submit-button">Soumettre la demande</button>
@@ -108,6 +126,11 @@
         const totalSalaireAncienField = document.getElementById('total_salaire_ancien');
         const totalDemandeField = document.getElementById('total_demande');
         const totalAncienField = document.getElementById('total_ancien');
+
+        // Champs pour Montant Disponible et Solde
+        const montantDisponibleField = document.getElementById('montant_disponible');
+        const soldeField = document.getElementById('solde');
+
         // Fonction pour recalculer les totaux
         function calculateTotals() {
             let totalNet = 0;
@@ -150,10 +173,20 @@
             totalAncienField.value = totalAncien.toFixed(0);
         }
 
+        // Fonction pour calculer le solde
+        function calculateSolde() {
+            const totalCourant = parseFloat(totalCourantField.value) || 0;
+            const montantDisponible = parseFloat(montantDisponibleField.value) || 0;
+            const solde = totalCourant - montantDisponible;
+
+            soldeField.value = solde.toFixed(0);
+        }
+
         // Ajouter des écouteurs pour recalculer lorsque les valeurs changent
         netFields.forEach(field => field.addEventListener('input', calculateTotals));
         reversFields.forEach(field => field.addEventListener('input', calculateTotals));
         salaireAncienFields.forEach(field => field.addEventListener('input', calculateTotals));
+        montantDisponibleField.addEventListener('input', calculateSolde);
 
         // Calculer les totaux au chargement de la page
         calculateTotals();

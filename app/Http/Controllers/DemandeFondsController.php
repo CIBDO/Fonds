@@ -157,12 +157,17 @@ class DemandeFondsController extends Controller
         $request->ced_salaire_ancien +
         $request->ecom_salaire_ancien +
         $request->cfp_cpam_salaire_ancien;
-
+        
+        $montant_disponible = $request->montant_disponible ?? 0; // Assurez-vous qu'il a une valeur par défaut
+        $solde = $total_courant - $montant_disponible; // Calcul du solde
+        
         $request->merge([
             'total_net' => $total_net,
             'total_revers' => $total_revers,
             'total_courant' => $total_courant,
-            'total_ancien' => $total_ancien,  // Ajoutez ceci
+            'total_ancien' => $total_ancien,
+            'montant_disponible' => $montant_disponible,
+            'solde' => $solde
         ]);
     
     // Enregistrement dans la base de données
@@ -246,7 +251,7 @@ return redirect()->route('demandes-fonds.index')->with('success', 'Demande de fo
         return view('demandes.edit', compact('demande', 'postes'));
     }
 
-      public function update(Request $request, DemandeFonds $demandeFonds)
+    public function update(Request $request, DemandeFonds $demandeFonds)
     {
         // Valider les champs de la requête
         $request->validate([
@@ -302,13 +307,85 @@ return redirect()->route('demandes-fonds.index')->with('success', 'Demande de fo
             'total_ancien' => 'nullable|numeric',
             'total_disponibilite' => 'nullable|numeric',
             'solde' => 'nullable|numeric',
+            'user_id' => 'nullable|exists:users,id',
+            'poste_id' => 'nullable|exists:postes,id',
+            'date_reception' => 'nullable|date'
         ]);
-
     
-        // ... code existant ...
-        Alert::success('Success', 'Demande de fonds mise à jour avec succès.');
-        return redirect()->route('demandes-fonds.index')->with('success', 'Demande de fonds mise à jour avec succès.'); 
-    }  
+        // Mise à jour des attributs du modèle
+        $demandeFonds->mois = $request->input('mois');
+        $demandeFonds->annee = $request->input('annee');
+        $demandeFonds->total_demande = $request->input('total_demande');
+        $demandeFonds->status = $request->input('status');
+        $demandeFonds->user_id = $request->input('user_id');
+        $demandeFonds->poste_id = $request->input('poste_id');
+        $demandeFonds->date_reception = $request->input('date_reception');
+        
+        // Mettre à jour les champs spécifiques
+        $demandeFonds->fonctionnaires_bcs_net = $request->input('fonctionnaires_bcs_net');
+        $demandeFonds->fonctionnaires_bcs_revers = $request->input('fonctionnaires_bcs_revers');
+        $demandeFonds->fonctionnaires_bcs_total_courant = $request->input('fonctionnaires_bcs_total_courant');
+        $demandeFonds->fonctionnaires_bcs_salaire_ancien = $request->input('fonctionnaires_bcs_salaire_ancien');
+        $demandeFonds->fonctionnaires_bcs_total_demande = $request->input('fonctionnaires_bcs_total_demande');
+    
+        $demandeFonds->collectivite_sante_net = $request->input('collectivite_sante_net');
+        $demandeFonds->collectivite_sante_revers = $request->input('collectivite_sante_revers');
+        $demandeFonds->collectivite_sante_total_courant = $request->input('collectivite_sante_total_courant');
+        $demandeFonds->collectivite_sante_salaire_ancien = $request->input('collectivite_sante_salaire_ancien');
+        $demandeFonds->collectivite_sante_total_demande = $request->input('collectivite_sante_total_demande');
+    
+        $demandeFonds->collectivite_education_net = $request->input('collectivite_education_net');
+        $demandeFonds->collectivite_education_revers = $request->input('collectivite_education_revers');
+        $demandeFonds->collectivite_education_total_courant = $request->input('collectivite_education_total_courant');
+        $demandeFonds->collectivite_education_salaire_ancien = $request->input('collectivite_education_salaire_ancien');
+        $demandeFonds->collectivite_education_total_demande = $request->input('collectivite_education_total_demande');
+    
+        $demandeFonds->personnels_saisonniers_net = $request->input('personnels_saisonniers_net');
+        $demandeFonds->personnels_saisonniers_revers = $request->input('personnels_saisonniers_revers');
+        $demandeFonds->personnels_saisonniers_total_courant = $request->input('personnels_saisonniers_total_courant');
+        $demandeFonds->personnels_saisonniers_salaire_ancien = $request->input('personnels_saisonniers_salaire_ancien');
+        $demandeFonds->personnels_saisonniers_total_demande = $request->input('personnels_saisonniers_total_demande');
+    
+        $demandeFonds->epn_net = $request->input('epn_net');
+        $demandeFonds->epn_revers = $request->input('epn_revers');
+        $demandeFonds->epn_total_courant = $request->input('epn_total_courant');
+        $demandeFonds->epn_salaire_ancien = $request->input('epn_salaire_ancien');
+        $demandeFonds->epn_total_demande = $request->input('epn_total_demande');
+    
+        $demandeFonds->ced_net = $request->input('ced_net');
+        $demandeFonds->ced_revers = $request->input('ced_revers');
+        $demandeFonds->ced_total_courant = $request->input('ced_total_courant');
+        $demandeFonds->ced_salaire_ancien = $request->input('ced_salaire_ancien');
+        $demandeFonds->ced_total_demande = $request->input('ced_total_demande');
+    
+        $demandeFonds->ecom_net = $request->input('ecom_net');
+        $demandeFonds->ecom_revers = $request->input('ecom_revers');
+        $demandeFonds->ecom_total_courant = $request->input('ecom_total_courant');
+        $demandeFonds->ecom_salaire_ancien = $request->input('ecom_salaire_ancien');
+        $demandeFonds->ecom_total_demande = $request->input('ecom_total_demande');
+    
+        $demandeFonds->cfp_cpam_net = $request->input('cfp_cpam_net');
+        $demandeFonds->cfp_cpam_revers = $request->input('cfp_cpam_revers');
+        $demandeFonds->cfp_cpam_total_courant = $request->input('cfp_cpam_total_courant');
+        $demandeFonds->cfp_cpam_salaire_ancien = $request->input('cfp_cpam_salaire_ancien');
+        $demandeFonds->cfp_cpam_total_demande = $request->input('cfp_cpam_total_demande');
+    
+        // Mettre à jour les totaux si nécessaire
+        $demandeFonds->total_net = $request->input('total_net');
+        $demandeFonds->total_revers = $request->input('total_revers');
+        $demandeFonds->total_courant = $request->input('total_courant');
+        $demandeFonds->total_ancien = $request->input('total_ancien');
+        $demandeFonds->montant_disponible = $request->input('montant_disponible');
+        $demandeFonds->solde = $request->input('solde');
+        
+        // Sauvegarder les changements dans la base de données
+        $demandeFonds->save();
+    
+        // Rediriger avec un message de succès
+        
+        return redirect()->route('demandes-fonds.index')->with('success', 'Demande de fonds mise à jour avec succès.');
+    }
+    
 
     public function destroy(DemandeFonds $demandeFonds)
     {
@@ -359,7 +436,8 @@ return redirect()->route('demandes-fonds.index')->with('success', 'Demande de fo
                                        $demandeFonds->ced_salaire_ancien + 
                                        $demandeFonds->ecom_salaire_ancien + 
                                        $demandeFonds->cfp_cpam_salaire_ancien;
-    
+
+     $demandeFonds->solde = $demandeFonds->total_courant - $demandeFonds->montant_disponible;
         return view('demandes.show', compact('demandeFonds'));
     }
         
@@ -406,6 +484,7 @@ return redirect()->route('demandes-fonds.index')->with('success', 'Demande de fo
                 $demandeFonds->ecom_salaire_ancien + 
                 $demandeFonds->cfp_cpam_salaire_ancien;
             // Retourner le PDF pour le téléchargement
+            $demandeFonds->solde = $demandeFonds->total_courant - $demandeFonds->montant_disponible;
             return $pdf->download('demande_fonds_' . $demandeFonds->id . '.pdf');
         }
 
@@ -505,5 +584,119 @@ public function EnvoisFonds(Request $request)
     // Retourner la vue avec les résultats filtrés
     return view('demandes.situation', compact('demandeFonds'));
 }
+
+public function SituationDF(Request $request)
+{
+    // Commencer par obtenir toutes les demandes de fonds avec les statuts "approuvé" ou "rejeté"
+    $query = DemandeFonds::with('user', 'poste')
+        ->whereIn('status', ['approuve', 'rejete']);
+
+    // Filtrer par poste si un poste est fourni dans la requête
+    if ($request->filled('poste')) {
+        $query->whereHas('poste', function ($q) use ($request) {
+            $q->where('nom', 'like', '%' . $request->poste . '%');
+        });
+    }
+
+    // Filtrer par mois si un mois est fourni dans la requête
+    if ($request->filled('mois')) {
+        $query->where('mois', 'like', '%' . $request->mois . '%');
+    }
+
+    // Filtrer par plage de dates (date d'envoi des demandes de fonds)
+    if ($request->filled('date_debut') && $request->filled('date_fin')) {
+        $query->whereBetween('date_envois', [$request->date_debut, $request->date_fin]);
+    } elseif ($request->filled('date_debut')) {
+        // Si seulement la date de début est fournie, filtrer à partir de cette date
+        $query->where('date_envois', '>=', $request->date_debut);
+    } elseif ($request->filled('date_fin')) {
+        // Si seulement la date de fin est fournie, filtrer jusqu'à cette date
+        $query->where('date_envois', '<=', $request->date_fin);
+    }
+
+    // Exécuter la requête et paginer les résultats
+    $demandeFonds = $query->orderBy('created_at', 'desc')
+        ->paginate(8)
+        ->appends($request->except('page'));
+
+    // Retourner la vue avec les résultats filtrés
+    return view('demandes.situationDF', compact('demandeFonds'));
+}
+public function SituationFE(Request $request)
+{
+    // Commencer par obtenir toutes les demandes de fonds avec les statuts "approuvé" ou "rejeté"
+    $query = DemandeFonds::with('user', 'poste')
+        ->whereIn('status', ['approuve', 'rejete']);
+
+    // Filtrer par poste si un poste est fourni dans la requête
+    if ($request->filled('poste')) {
+        $query->whereHas('poste', function ($q) use ($request) {
+            $q->where('nom', 'like', '%' . $request->poste . '%');
+        });
+    }
+
+    // Filtrer par mois si un mois est fourni dans la requête
+    if ($request->filled('mois')) {
+        $query->where('mois', 'like', '%' . $request->mois . '%');
+    }
+
+    // Filtrer par plage de dates (date d'envoi des demandes de fonds)
+    if ($request->filled('date_debut') && $request->filled('date_fin')) {
+        $query->whereBetween('date_envois', [$request->date_debut, $request->date_fin]);
+    } elseif ($request->filled('date_debut')) {
+        // Si seulement la date de début est fournie, filtrer à partir de cette date
+        $query->where('date_envois', '>=', $request->date_debut);
+    } elseif ($request->filled('date_fin')) {
+        // Si seulement la date de fin est fournie, filtrer jusqu'à cette date
+        $query->where('date_envois', '<=', $request->date_fin);
+    }
+
+    // Exécuter la requête et paginer les résultats
+    $demandeFonds = $query->orderBy('created_at', 'desc')
+        ->paginate(8)
+        ->appends($request->except('page'));
+
+    // Retourner la vue avec les résultats filtrés
+    return view('demandes.situationFE', compact('demandeFonds'));
+}
+
+public function Recap(Request $request)
+{
+    // Commencer par obtenir toutes les demandes de fonds avec les statuts "approuvé" ou "rejeté"
+    $query = DemandeFonds::with('user', 'poste')
+        ->whereIn('status', ['approuve', 'rejete']);
+
+    // Filtrer par poste si un poste est fourni dans la requête
+    if ($request->filled('poste')) {
+        $query->whereHas('poste', function ($q) use ($request) {
+            $q->where('nom', 'like', '%' . $request->poste . '%');
+        });
+    }
+
+    // Filtrer par mois si un mois est fourni dans la requête
+    if ($request->filled('mois')) {
+        $query->where('mois', 'like', '%' . $request->mois . '%');
+    }
+
+    // Filtrer par plage de dates (date d'envoi des demandes de fonds)
+    if ($request->filled('date_debut') && $request->filled('date_fin')) {
+        $query->whereBetween('date_envois', [$request->date_debut, $request->date_fin]);
+    } elseif ($request->filled('date_debut')) {
+        // Si seulement la date de début est fournie, filtrer à partir de cette date
+        $query->where('date_envois', '>=', $request->date_debut);
+    } elseif ($request->filled('date_fin')) {
+        // Si seulement la date de fin est fournie, filtrer jusqu'à cette date
+        $query->where('date_envois', '<=', $request->date_fin);
+    }
+
+    // Exécuter la requête et paginer les résultats
+    $demandeFonds = $query->orderBy('created_at', 'desc')
+        ->paginate(8)
+        ->appends($request->except('page'));
+
+    // Retourner la vue avec les résultats filtrés
+    return view('demandes.recap', compact('demandeFonds'));
+}
+
 
 }
