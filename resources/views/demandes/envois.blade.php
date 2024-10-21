@@ -123,7 +123,7 @@
 
                                                 <div class="form-group">
                                                     <label for="observation">Observation :</label>
-                                                    <textarea name="observation" class="form-control" rows="3" required></textarea>
+                                                    <textarea name="observation" class="form-control" rows="3"></textarea>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
