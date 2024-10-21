@@ -55,17 +55,24 @@
                                 <input class="form-control pass-confirm" type="password" name="password_confirmation">
                                 <span class="profile-views feather-eye reg-toggle-password"></span>
                             </div>
-
                             <!-- Champ Rôle -->
                             <div class="form-group custom-select">
                                 <label>Rôle <span class="login-danger">*</span></label>
-                                <select class="form-control" name="role">
+                                <select class="select2" name="role">
                                     <option value="">Choisir un rôle</option>
                                     <option value="admin" <?php echo e(old('role') == 'admin' ? 'selected' : ''); ?>>Admin</option>
                                     <option value="tresorier" <?php echo e(old('role') == 'tresorier' ? 'selected' : ''); ?>>Trésorier</option>
                                     <option value="acct" <?php echo e(old('role') == 'acct' ? 'selected' : ''); ?>>ACCT</option>
                                     <option value="superviseur" <?php echo e(old('role') == 'superviseur' ? 'selected' : ''); ?>>Superviseur</option>
                                     <!-- Ajoutez d'autres rôles si nécessaire -->
+                                </select>
+                            </div>
+                            <div class="form-group custom-select">
+                                <label>Statut <span class="login-danger">*</span></label>
+                                <select class="select2" name="active">
+                                    <option value="1" <?php echo e(old('active') == '1' ? 'selected' : ''); ?>>Actif</option>
+                                    <option value="0" <?php echo e(old('active') == '0' ? 'selected' : ''); ?>>Inactif</option>
+                                    <span class="profile-views"><i class="fas fa-envelope"></i></span>
                                 </select>
                             </div>
 

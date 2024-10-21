@@ -16,46 +16,76 @@ use Illuminate\Support\Facades\View; // Pour utiliser la vue
 use RealRashid\SweetAlert\Facades\Alert;
 use App\Notifications\DemandeFondsStatusUpdated; // Assurez-vous que le chemin est correct
 use App\Notifications\DemandeStatusUpdated; // Assurez-vous que le chemin d'importation est correct
-
-
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Policies\UserPolicy;
+use Illuminate\Routing\Controller as BaseController; // Ajoutez cette ligne
+use App\Http\Middleware\Rolemiddleware;
 
 class DemandeFondsController extends Controller
 {
-    public function index(Request $request)
-{
-        $query = DemandeFonds::query();
+    use AuthorizesRequests;
+
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+        
+        $this->middleware('role:tresorier')->only(['create', 'store', 'edit', 'update','index']);
+        $this->middleware('role:acct,admin,superviseur')->only('index');
+        $this->middleware('role:admin,tresorier,superviseur,acct')->only('generatePDF');
+        $this->middleware('role:admin,acct,superviseur')->only('EnvoisFonds');
+        $this->middleware('role:admin,acct')->only('updateStatus');
+        
+        $this->middleware(function ($request, $next) {
+            if (Auth::check() && Auth::user()->role === 'tresorier') {
+                $this->middleware('role:tresorier')->only('SituationFonds');
+            } else {
+                $this->middleware('role:admin,acct,superviseur')->only('SituationFonds');
+            }
+            return $next($request);
+        });
+        
+        $this->middleware('role:admin,acct,superviseur')->only(['SituationDF', 'Recap', 'SituationFE']);
+    }
     
-        // Filtrer par référence si le champ est renseigné
+
+    public function index(Request $request)
+    {
+        $query = DemandeFonds::query();
+        // Vérifier le rôle de l'utilisateur
+        if (Auth::user()->role === 'tresorier') {
+            // Récupérer les demandes initiées par l'utilisateur
+            $demandes = DemandeFonds::where('user_id', Auth::id())->get();
+        } else {
+            // Récupérer toutes les demandes pour les autres rôles
+            $demandes = DemandeFonds::all();
+        }
+        // Filtrer par poste
         if ($request->filled('poste')) {
-                $query->whereHas('poste', function($q) use ($request) {
-                    $q->where('nom', 'like', '%' . $request->input('poste') . '%');
+            $query->whereHas('poste', function($q) use ($request) {
+                $q->where('nom', 'like', '%' . $request->input('poste') . '%');
             });
         }
-    
-        // Filtrer par expéditeur si le champ est renseigné
+
+        // Filtrer par mois
         if ($request->filled('mois')) {
             $query->where('mois', 'like', '%' . $request->input('mois') . '%');
         }
-    
-        // Filtrer par montant total courant si le champ est renseigné
+
+        // Filtrer par montant total courant
         if ($request->filled('total_courant')) {
             $query->where('total_courant', 'like', '%' . $request->input('total_courant') . '%');
         }
-    
-        // Filtrer par date d'arrivée si le champ est renseigné
-       /*  if ($request->filled('created_at')) {
-            $query->whereDate('created_at', $request->input('created_at'));
-        } */
-    
         // Afficher toutes les demandes de fonds
         $demandeFonds = $query->with('user', 'poste')->orderBy('created_at', 'desc')->paginate(8);
-         
+
         return view('demandes.index', compact('demandeFonds'));
     }
     
 
     public function create()
     {
+ 
         // Récupérer les postes pour le formulaire de création
         $postes = \App\Models\Poste::all();
         return view('demandes.create', compact('postes'));

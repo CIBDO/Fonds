@@ -37,6 +37,7 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\Rolemiddleware::class,
         ],
 
         'api' => [
@@ -63,11 +64,15 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'role' => \App\Http\Middleware\RoleMiddleware::class,
+        /* 'role' => \App\Http\Middleware\CheckRole::class, */
+        'rolemiddleware' => \App\Http\Middleware\Rolemiddleware::class,
+
     ];
     protected $middlewareAliases = [
         'auth' => \App\Http\Middleware\Authenticate::class,
-        
+        /* 'role' => \App\Http\Middleware\CheckRole::class,  */
+        'rolemiddleware' => \App\Http\Middleware\Rolemiddleware::class,
+    
         // autres middlewares
     ];
    

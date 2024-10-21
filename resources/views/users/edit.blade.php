@@ -68,7 +68,13 @@
                                     <option value="superviseur" {{ old('role', $user->role) == 'superviseur' ? 'selected' : '' }}>Superviseur</option>
                                 </select>
                             </div>
-
+                            <div class="form-group custom-select">
+                                <label>Statut <span class="login-danger">*</span></label>
+                                <select class="form-control" name="active">
+                                    <option value="1" {{ old('active', $user->active) == '1' ? 'selected' : '' }}>Actif</option>
+                                    <option value="0" {{ old('active', $user->active) == '0' ? 'selected' : '' }}>Inactif</option>
+                                </select>
+                            </div>    
                             <div class="dont-have">Avez-vous déjà un compte ? <a href="{{ route('login') }}">Se Connecter</a></div>
 
                             <!-- Bouton Update -->

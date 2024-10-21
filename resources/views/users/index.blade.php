@@ -59,9 +59,9 @@
                             <table class="table border-0 table-hover table-center mb-0" id="userTable">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
                                         <th>Nom</th>
                                         <th>Email</th>
+                                        <th>Rôle</th>
                                         <th>Statut</th>
                                         <th class="text-end">Actions</th>
                                     </tr>
@@ -69,35 +69,32 @@
                                 <tbody>
                                     @foreach ($users as $user)
                                     <tr data-user-id="{{ $user->id }}">
-                                        <td>{{ $user->id }}</td>
                                         <td>{{ $user->name }}</td>
                                         <td>{{ $user->email }}</td>
-                                        <td class="text-end">
-                                            <button class="btn btn-sm {{ $user->active ? 'bg-danger-light' : 'bg-success-light' }}"
-                                                    @click="{{ $user->active ? 'deactivateUser' : 'activateUser' }}({{ $user->id }})">
-                                                <i class="feather-trash"></i> {{ $user->active ? 'Désactiver' : 'Activer' }}
-                                            </button>
-                                        </td>                                                                            
+                                        <td>{{ $user->role }}</td>
+                                        <td>{{ $user->isActive() ? 'Actif' : 'Inactif' }}</td>                                                              
                                         <td class="text-end">
                                             <a href="{{ route('users.edit', $user->id) }}" class="btn btn-sm btn-warning">
                                                 <i class="feather-edit"></i> Éditer
                                             </a>
-                                            @if($user->active)  <!-- Bouton visible uniquement si l'utilisateur est actif -->
-                                            <button class="btn btn-sm bg-danger-light deactivate-button">
-                                                <i class="feather-trash"></i> Désactiver
-                                            </button>
-                                            @else  <!-- Affiche le bouton "Activer" si l'utilisateur est désactivé -->
-                                            <button class="btn btn-sm bg-success-light activate-button">
-                                                <i class="feather-check"></i> Activer
-                                            </button>
-                                            @endif
-                                            <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline-block;">
+                                            @if($user->isActive())
+                                            <form action="{{ route('users.deactivate', $user->id) }} " method="POST" style="display:inline-block;">
+                                                @csrf
+                                                <button type="submit">Désactiver</button>
+                                            </form>
+                                                 @else
+                                            <form action="{{ route('users.activate', $user->id) }}" method="POST" style="display:inline-block;">
+                                                @csrf
+                                                <button type="submit">Activer</button>
+                                            </form>
+                                                 @endif
+                                            {{-- <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline-block;">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
                                                     <i class="feather-trash"></i> Supprimer
                                                 </button>
-                                            </form>
+                                            </form> --}}
                                         </td>
                                     </tr>
                                     @endforeach

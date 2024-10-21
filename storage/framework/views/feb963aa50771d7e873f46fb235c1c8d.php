@@ -93,7 +93,7 @@
             </div>
             <div class="col-md-4">
                 <div class="form-group">
-                    <label for="solde">Fonds a demandé :</label>
+                    <label for="solde">Montant de la Demande:</label>
                     <input type="number" id="solde" name="solde" class="form-control" value="0" readonly>
                 </div>
             </div>

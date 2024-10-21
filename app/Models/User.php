@@ -5,60 +5,54 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Notifications\DatabaseNotification as Notification;
+
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles; // Ajoutez HasRoles ici
+    use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'email',
         'password',
-        'active',
         'role',
+        'active', // Ajout de la gestion du statut actif
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
+
+    // Vérifier si l'utilisateur est admin
+    public function isAdmin()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->role === 'admin';
     }
 
-    public function hasRole($role)
+    // Vérifier si l'utilisateur est superviseur
+    public function isSuperviseur()
     {
-        return $this->role === $role;
+        return $this->role === 'superviseur';
     }
-    
+
+    // Vérifier si l'utilisateur est actif
     public function isActive()
     {
         return $this->active;
     }
 
-    public function notifications()
+    // Vérifier si l'utilisateur a un rôle spécifique
+    public function hasRole($role)
     {
-        return $this->morphMany(Notification::class, 'notifiable')->orderBy('created_at', 'desc');
+        return $this->role === $role;
+    }
+   
+    public function hasAnyRole(array $roles)
+    {
+        return in_array($this->role, $roles);
     }
 }

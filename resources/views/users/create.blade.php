@@ -55,17 +55,24 @@
                                 <input class="form-control pass-confirm" type="password" name="password_confirmation">
                                 <span class="profile-views feather-eye reg-toggle-password"></span>
                             </div>
-
                             <!-- Champ Rôle -->
                             <div class="form-group custom-select">
                                 <label>Rôle <span class="login-danger">*</span></label>
-                                <select class="form-control" name="role">
+                                <select class="select2" name="role">
                                     <option value="">Choisir un rôle</option>
                                     <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
                                     <option value="tresorier" {{ old('role') == 'tresorier' ? 'selected' : '' }}>Trésorier</option>
                                     <option value="acct" {{ old('role') == 'acct' ? 'selected' : '' }}>ACCT</option>
                                     <option value="superviseur" {{ old('role') == 'superviseur' ? 'selected' : '' }}>Superviseur</option>
                                     <!-- Ajoutez d'autres rôles si nécessaire -->
+                                </select>
+                            </div>
+                            <div class="form-group custom-select">
+                                <label>Statut <span class="login-danger">*</span></label>
+                                <select class="select2" name="active">
+                                    <option value="1" {{ old('active') == '1' ? 'selected' : '' }}>Actif</option>
+                                    <option value="0" {{ old('active') == '0' ? 'selected' : '' }}>Inactif</option>
+                                    <span class="profile-views"><i class="fas fa-envelope"></i></span>
                                 </select>
                             </div>
 
