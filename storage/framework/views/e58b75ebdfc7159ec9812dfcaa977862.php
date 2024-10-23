@@ -9,7 +9,7 @@
                             <a href="#"><i class="feather-grid"></i> <span> Tableu de Bord</span> <span
                                     class="menu-arrow"></span></a>
                             <ul>
-                                <li><a href="#" class="active">Administrateur</a></li>
+                                <li><a href="<?php echo e(route('login')); ?>" class="active">Administrateur</a></li>
                                 
                             </ul>
                         </li>
@@ -17,7 +17,7 @@
                             <a href="#"><i class="fas fa-building"></i> <span> Demandes de Fonds</span> <span
                                     class="menu-arrow"></span></a>
                             <ul>
-                                <li><a href="<?php echo e(route('demandes-fonds.create')); ?>"><i class="fas fa-"></i>Faire une DF</a></li>
+                                <li><a href="<?php echo e(route('demandes-fonds.create')); ?>">Faire une DF</a></li>
                                 <li><a href="<?php echo e(route('demandes-fonds.index')); ?>">Liste des DF</a></li>
                                 <li><a href="<?php echo e(route('demandes-fonds.situation')); ?>">Suivi des DF</a></li>
                             </ul>

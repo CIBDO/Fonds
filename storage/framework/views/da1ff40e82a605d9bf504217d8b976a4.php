@@ -1,19 +1,15 @@
 
 
 <?php $__env->startSection('content'); ?>
-<?php if(session('success')): ?>
-       <div class="alert alert-success">
-           <?php echo e(session('success')); ?>
-
-       </div>
+<?php if($errors->any()): ?>
+    <div class="alert alert-danger">
+        <ul>
+            <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <li><?php echo e($error); ?></li>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        </ul>
+    </div>
 <?php endif; ?>
-
-   <?php if(session('error')): ?>
-       <div class="alert alert-danger">
-           <?php echo e(session('error')); ?>
-
-       </div>
- <?php endif; ?>
 <div class="container">
     <h2 class="my-4">Modifier la Demande de Fonds</h2>
     <form method="POST" action="<?php echo e(route('demandes-fonds.update', $demande->id)); ?>">
@@ -68,8 +64,16 @@
                     <input type="number" id="solde" name="solde" class="form-control" value="0" readonly>
                 </div>
             </div>
-            <input type="hidden" name="status" value="<?php echo e($demande->status); ?>">
             <input type="hidden" name="user_id" value="<?php echo e(Auth::user()->id); ?>">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="user_id">Utilisateur :</label>
+                    <input type="text" id="user_id_display" class="form-control" value="<?php echo e(Auth::user()->name); ?>" readonly>
+                    <input type="hidden" name="user_id" value="<?php echo e(Auth::user()->id); ?>">
+                </div>
+            </div>
+            
+            <input type="hidden" name="status" value="<?php echo e($demande->status); ?>">
         </div>
         <?php echo $__env->make('demandes._edit', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
     </form>

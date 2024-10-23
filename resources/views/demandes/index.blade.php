@@ -77,7 +77,7 @@
                                 <td>{{ $demande->mois }}</td>
                                 <td>{{ $demande->date_reception }}</td>
                                 <td>{{ $demande->poste->nom }}</td>
-                                <td>{{ number_format($demande->total_courant, 0, ',', ' ') }}</td>
+                                <td>{{ number_format($demande->solde, 0, ',', ' ') }}</td>
                                 <td>{{ $demande->created_at }}</td>
                                 <td> @if($demande->status === 'en_attente')
                                     <span class="status-en-attente">En attente</span>

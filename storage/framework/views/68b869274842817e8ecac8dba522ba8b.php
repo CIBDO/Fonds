@@ -33,26 +33,53 @@
                         </div>
                     </div>
                 </li>
-
                 <li class="nav-item dropdown noti-dropdown me-2">
                     <a href="#" class="dropdown-toggle nav-link header-nav-list" data-bs-toggle="dropdown">
-                        <img src="assets/img/icons/header-icon-05.svg" alt="">
+                        <img src="<?php echo e(asset('assets/img/icons/header-icon-05.svg')); ?>" alt="">
+                        <span class="badge bg-danger"><?php echo e(auth()->user()->unreadNotifications->count()); ?></span>
                     </a>
                     <div class="dropdown-menu notifications">
                         <div class="topnav-dropdown-header">
                             <span class="notification-title">Notifications</span>
-                            <a href="javascript:void(0)" class="clear-noti"> lire </a>
+                            <a href="<?php echo e(route('notifications.markAllAsRead')); ?>" class="clear-noti">
+                                Tout marquer comme lu
+                            </a>
                         </div>
-                        
+                        <div class="noti-content">
+                            <ul class="notification-list">
+                                <?php $__empty_1 = true; $__currentLoopData = auth()->user()->unreadNotifications; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notification): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                    <li class="notification-message">
+                                        <?php if($notification->data['type'] === 'message'): ?>
+                                            <a href="<?php echo e(route('messages.show', $notification->data['message_id'])); ?>">
+                                        <?php elseif($notification->data['type'] === 'demande_fonds' || $notification->data['type'] === 'status_update'): ?>
+                                            <a href="<?php echo e(route('demandes-fonds.show', $notification->data['demande_id'])); ?>">
+                                        <?php endif; ?>
+                                            <div class="media d-flex">
+                                                <div class="media-body">
+                                                    <p class="noti-details"><?php echo e($notification->data['message']); ?></p>
+                                                    <p class="noti-time">
+                                                        <span class="notification-time"><?php echo e($notification->created_at->diffForHumans()); ?></span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                                    <li class="notification-message">
+                                        <p class="text-center p-3">Aucune notification non lue</p>
+                                    </li>
+                                <?php endif; ?>
+                            </ul>
+                        </div>
                         <div class="topnav-dropdown-footer">
-                            <a href="#">Voir les Notifications</a>
+                            <a href="<?php echo e(route('notifications.index')); ?>">Voir toutes les Notifications</a>
                         </div>
                     </div>
                 </li>
-
+                
                 <li class="nav-item zoom-screen me-2">
                     <a href="#" class="nav-link header-nav-list win-maximize">
-                        <img src="assets/img/icons/header-icon-04.svg" alt="">
+                        <img src="<?php echo e(asset('assets/img/icons/header-icon-04.svg')); ?>" alt="">
                     </a>
                 </li>
                 <li class="nav-item dropdown has-arrow new-user-menus">

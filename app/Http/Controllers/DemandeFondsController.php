@@ -180,66 +180,18 @@ class DemandeFondsController extends Controller
             'solde' => $solde
         ]);
 
-        // Enregistrement dans la base de données
-        DemandeFonds::create([
-            'date' => $request->date,
-            'date_reception' => $request->date_reception,
-            'mois' => $request->mois,
-            'annee' => $request->annee,
-            'poste_id' => $request->poste_id,
-            'status' => $request->status,
-            'fonctionnaires_bcs_net' => $request->fonctionnaires_bcs_net,
-            'fonctionnaires_bcs_revers' => $request->fonctionnaires_bcs_revers,
-            'fonctionnaires_bcs_total_courant' => $request->fonctionnaires_bcs_total_courant,
-            'fonctionnaires_bcs_salaire_ancien' => $request->fonctionnaires_bcs_salaire_ancien,
-            'fonctionnaires_bcs_total_demande' => $request->fonctionnaires_bcs_total_demande,
-            'collectivite_sante_net' => $request->collectivite_sante_net,
-            'collectivite_sante_revers' => $request->collectivite_sante_revers,
-            'collectivite_sante_total_courant' => $request->collectivite_sante_total_courant,
-            'collectivite_sante_salaire_ancien' => $request->collectivite_sante_salaire_ancien,
-            'collectivite_sante_total_demande' => $request->collectivite_sante_total_demande,
-            'collectivite_education_net' => $request->collectivite_education_net,
-            'collectivite_education_revers' => $request->collectivite_education_revers,
-            'collectivite_education_total_courant' => $request->collectivite_education_total_courant,
-            'collectivite_education_salaire_ancien' => $request->collectivite_education_salaire_ancien,
-            'collectivite_education_total_demande' => $request->collectivite_education_total_demande,
-            'personnels_saisonniers_net' => $request->personnels_saisonniers_net,
-            'personnels_saisonniers_revers' => $request->personnels_saisonniers_revers,
-            'personnels_saisonniers_total_courant' => $request->personnels_saisonniers_total_courant,
-            'personnels_saisonniers_salaire_ancien' => $request->personnels_saisonniers_salaire_ancien,
-            'personnels_saisonniers_total_demande' => $request->personnels_saisonniers_total_demande,
-            'epn_net' => $request->epn_net,
-            'epn_revers' => $request->epn_revers,
-            'epn_total_courant' => $request->epn_total_courant,
-            'epn_salaire_ancien' => $request->epn_salaire_ancien,
-            'epn_total_demande' => $request->epn_total_demande,
-            'ced_net' => $request->ced_net,
-            'ced_revers' => $request->ced_revers,
-            'ced_total_courant' => $request->ced_total_courant,
-            'ced_salaire_ancien' => $request->ced_salaire_ancien,
-            'ced_total_demande' => $request->ced_total_demande,
-            'ecom_net' => $request->ecom_net,
-            'ecom_revers' => $request->ecom_revers,
-            'ecom_total_courant' => $request->ecom_total_courant,
-            'ecom_salaire_ancien' => $request->ecom_salaire_ancien,
-            'ecom_total_demande' => $request->ecom_total_demande,
-            'cfp_cpam_net' => $request->cfp_cpam_net,
-            'cfp_cpam_revers' => $request->cfp_cpam_revers,
-            'cfp_cpam_total_courant' => $request->cfp_cpam_total_courant,
-            'cfp_cpam_salaire_ancien' => $request->cfp_cpam_salaire_ancien,
-            'cfp_cpam_total_demande' => $request->cfp_cpam_total_demande,
-            'total_net' => $total_net,
-            'total_revers' => $total_revers,
-            'total_courant' => $total_courant,
-            'total_ancien' => $total_ancien,
-            'user_id' => $request->user_id,
-            'montant_disponible' => $request->montant_disponible,
-            'solde' => $request->solde
-        ]);
+       
+        // Enregistrement dans la base de données avec les valeurs calculées
+        $demandeFonds = DemandeFonds::create($request->all());
         
+        $acctUsers = User::whereIn('role', ['acct'])->get();
+        foreach($acctUsers as $acctUser) {
+            $acctUser->notify(new DemandeFondsNotification($demandeFonds));
+        }
         Alert::success('Success', 'Demande de fonds créée avec succès.');
         return redirect()->route('demandes-fonds.index')->with('success', 'Demande de fonds créée avec succès.');
     }
+
 
     public function edit($id)
     {
@@ -247,13 +199,20 @@ class DemandeFondsController extends Controller
         // Récupérer les postes pour le formulaire de modification
         $demande = DemandeFonds::findOrFail($id);
         $postes = \App\Models\Poste::all();
-
-        return view('demandes.edit', compact('demande', 'postes'));
+        $users = User::all();
+        return view('demandes.edit', compact('demande', 'postes', 'users'));
     }
 
     public function update(Request $request, DemandeFonds $demandeFonds)
-    {
+    { 
         $this->authorizeRole(['tresorier', 'admin']);
+        $user = Auth::user();
+
+    // Vérifier si l'utilisateur est admin ou propriétaire de la demande
+    if (!$user->isadmin() && $demandeFonds->user_id !== $user->id) {
+        return redirect()->back()->withErrors(['error' => 'Vous n\'avez pas la permission de modifier cette demande.']);
+    }
+
         // Valider les champs de la requête
         $request->validate([
             'mois' => 'nullable|string|max:20',
@@ -313,75 +272,8 @@ class DemandeFondsController extends Controller
             'date_reception' => 'nullable|date'
         ]);
 
-        // Mise à jour des attributs du modèle
-        $demandeFonds->mois = $request->input('mois');
-        $demandeFonds->annee = $request->input('annee');
-        $demandeFonds->total_demande = $request->input('total_demande');
-        $demandeFonds->status = $request->input('status');
-        $demandeFonds->user_id = $request->input('user_id');
-        $demandeFonds->poste_id = $request->input('poste_id');
-        $demandeFonds->date_reception = $request->input('date_reception');
-
-        // Mettre à jour les champs spécifiques
-        $demandeFonds->fonctionnaires_bcs_net = $request->input('fonctionnaires_bcs_net');
-        $demandeFonds->fonctionnaires_bcs_revers = $request->input('fonctionnaires_bcs_revers');
-        $demandeFonds->fonctionnaires_bcs_total_courant = $request->input('fonctionnaires_bcs_total_courant');
-        $demandeFonds->fonctionnaires_bcs_salaire_ancien = $request->input('fonctionnaires_bcs_salaire_ancien');
-        $demandeFonds->fonctionnaires_bcs_total_demande = $request->input('fonctionnaires_bcs_total_demande');
-
-        $demandeFonds->collectivite_sante_net = $request->input('collectivite_sante_net');
-        $demandeFonds->collectivite_sante_revers = $request->input('collectivite_sante_revers');
-        $demandeFonds->collectivite_sante_total_courant = $request->input('collectivite_sante_total_courant');
-        $demandeFonds->collectivite_sante_salaire_ancien = $request->input('collectivite_sante_salaire_ancien');
-        $demandeFonds->collectivite_sante_total_demande = $request->input('collectivite_sante_total_demande');
-
-        $demandeFonds->collectivite_education_net = $request->input('collectivite_education_net');
-        $demandeFonds->collectivite_education_revers = $request->input('collectivite_education_revers');
-        $demandeFonds->collectivite_education_total_courant = $request->input('collectivite_education_total_courant');
-        $demandeFonds->collectivite_education_salaire_ancien = $request->input('collectivite_education_salaire_ancien');
-        $demandeFonds->collectivite_education_total_demande = $request->input('collectivite_education_total_demande');
-
-        $demandeFonds->personnels_saisonniers_net = $request->input('personnels_saisonniers_net');
-        $demandeFonds->personnels_saisonniers_revers = $request->input('personnels_saisonniers_revers');
-        $demandeFonds->personnels_saisonniers_total_courant = $request->input('personnels_saisonniers_total_courant');
-        $demandeFonds->personnels_saisonniers_salaire_ancien = $request->input('personnels_saisonniers_salaire_ancien');
-        $demandeFonds->personnels_saisonniers_total_demande = $request->input('personnels_saisonniers_total_demande');
-
-        $demandeFonds->epn_net = $request->input('epn_net');
-        $demandeFonds->epn_revers = $request->input('epn_revers');
-        $demandeFonds->epn_total_courant = $request->input('epn_total_courant');
-        $demandeFonds->epn_salaire_ancien = $request->input('epn_salaire_ancien');
-        $demandeFonds->epn_total_demande = $request->input('epn_total_demande');
-
-        $demandeFonds->ced_net = $request->input('ced_net');
-        $demandeFonds->ced_revers = $request->input('ced_revers');
-        $demandeFonds->ced_total_courant = $request->input('ced_total_courant');
-        $demandeFonds->ced_salaire_ancien = $request->input('ced_salaire_ancien');
-        $demandeFonds->ced_total_demande = $request->input('ced_total_demande');
-
-        $demandeFonds->ecom_net = $request->input('ecom_net');
-        $demandeFonds->ecom_revers = $request->input('ecom_revers');
-        $demandeFonds->ecom_total_courant = $request->input('ecom_total_courant');
-        $demandeFonds->ecom_salaire_ancien = $request->input('ecom_salaire_ancien');
-        $demandeFonds->ecom_total_demande = $request->input('ecom_total_demande');
-
-        $demandeFonds->cfp_cpam_net = $request->input('cfp_cpam_net');
-        $demandeFonds->cfp_cpam_revers = $request->input('cfp_cpam_revers');
-        $demandeFonds->cfp_cpam_total_courant = $request->input('cfp_cpam_total_courant');
-        $demandeFonds->cfp_cpam_salaire_ancien = $request->input('cfp_cpam_salaire_ancien');
-        $demandeFonds->cfp_cpam_total_demande = $request->input('cfp_cpam_total_demande');
-
-        // Mettre à jour les totaux si nécessaire
-        $demandeFonds->total_net = $request->input('total_net');
-        $demandeFonds->total_revers = $request->input('total_revers');
-        $demandeFonds->total_courant = $request->input('total_courant');
-        $demandeFonds->total_ancien = $request->input('total_ancien');
-        $demandeFonds->montant_disponible = $request->input('montant_disponible');
-        $demandeFonds->solde = $request->input('solde');
-
-        // Sauvegarder les changements dans la base de données
-        $demandeFonds->save();
-
+       
+        $demandeFonds->update($request->all());
         // Rediriger avec un message de succès
         Alert::success('Success', 'Demande de fonds mise à jour avec succès.');
         return redirect()->route('demandes-fonds.index')->with('success', 'Demande de fonds mise à jour avec succès.');
@@ -510,8 +402,15 @@ class DemandeFondsController extends Controller
         // Enregistrer les modifications
         $demande->date_envois = $request->date_envois;
         $demande->save();
-        Alert::success('Success', 'Demande mise à jour avec succès');
-        return redirect()->route('demandes-fonds.envois')->with('success', 'Demande mise à jour avec succès');
+        $demande->user->notify(new DemandeFondsStatusNotification($demande));
+        $tresoriers = User::where('role', 'tresorier')->get();
+        foreach($tresoriers as $tresorier) {
+        if($tresorier->id !== auth::id()) {
+        $tresorier->notify(new DemandeFondsStatusNotification($demande));
+        }
+        }
+        Alert::success('Success', 'Fonds envoyés avec succès');
+        return redirect()->route('demandes-fonds.envois')->with('success', 'Fonds envoyés avec succès');
     }
 
     public function EnvoisFonds(Request $request)

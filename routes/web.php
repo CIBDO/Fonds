@@ -13,6 +13,7 @@ use App\Http\Controllers\{
     PosteController,
     EnvoisFondsController,
     SuperviseurController,
+    NotificationController,
 };
 
 use Illuminate\Support\Facades\Route;
@@ -30,7 +31,7 @@ Route::middleware(['auth'])->group(function () {
     /* Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard'); */
     Route::get('/notifications', [MessageController::class, 'notifications'])->name('messages.notifications');
     
-    
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('/demandes-fonds/envois', [DemandeFondsController::class, 'EnvoisFonds'])
         ->middleware('role:acct,admin,superviseur') // Accès pour tous sauf trésorier
         ->name('demandes-fonds.envois');
@@ -70,7 +71,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('attachments', AttachmentController::class);
     Route::resource('postes', PosteController::class);
 
-    Route::post('/notifications/{notification}/mark-as-read', [MessageController::class, 'markAsRead'])->name('markAsRead');
+    Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
     Route::delete('/notifications/{notification}', [MessageController::class, 'deleteNotification'])->name('deleteNotification');
     Route::post('messages/{id}/reply', [MessageController::class, 'reply'])->name('messages.reply');
     Route::get('messages/{id}/reply', [MessageController::class, 'showReplyForm'])->name('messages.reply.form');
@@ -87,7 +88,7 @@ Route::middleware(['auth', 'role:tresorier'])->group(function () {
 });
 
 // Routes pour les comptes ACCT
-Route::middleware(['auth', 'role:acct,superviseur,tresorier'])->group(function () {
+Route::middleware(['auth', 'role:acct,superviseur,tresorier,admin',])->group(function () {
     Route::get('/acct', [AcctController::class, 'index'])->name('acct.dashboard');
     Route::put('/demandes-fonds/{id}/update-status', [DemandeFondsController::class, 'updateStatus'])->name('demandes-fonds.update-status');
     Route::get('/demandes-fonds', [DemandeFondsController::class, 'index'])->name('demandes-fonds.index');

@@ -20,4 +20,9 @@ class Notification extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function scopeUnread($query)
+    {
+        return $query->where('status', 'non_lu');
+    }
 }

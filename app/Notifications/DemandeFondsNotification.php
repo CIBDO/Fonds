@@ -4,11 +4,9 @@ namespace App\Notifications;
 
 use App\Models\DemandeFonds;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class DemandeFondsNotification extends Notification implements ShouldQueue
+class DemandeFondsNotification extends Notification
 {
     use Queueable;
 
@@ -21,7 +19,7 @@ class DemandeFondsNotification extends Notification implements ShouldQueue
 
     public function via($notifiable)
     {
-        return ['database']; // Vous pouvez aussi envoyer par mail si nécessaire
+        return ['database'];
     }
 
     public function toArray($notifiable)
@@ -32,6 +30,8 @@ class DemandeFondsNotification extends Notification implements ShouldQueue
             'mois' => $this->demandeFonds->mois,
             'montant' => $this->demandeFonds->total_courant,
             'statut' => $this->demandeFonds->status,
+            'message' => "Nouvelle demande de fonds créée pour {$this->demandeFonds->poste->nom}",
+            'type' => 'demande_fonds'
         ];
     }
 }

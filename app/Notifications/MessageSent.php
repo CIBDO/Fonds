@@ -4,8 +4,6 @@ namespace App\Notifications;
 
 use App\Models\Message;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class MessageSent extends Notification
@@ -21,26 +19,18 @@ class MessageSent extends Notification
 
     public function via($notifiable)
     {
-        return ['database', 'broadcast']; // Vous pouvez ajouter d'autres canaux comme 'mail' si nécessaire
+        return ['database'];
     }
 
-    public function toDatabase($notifiable)
+    public function toArray($notifiable)
     {
         return [
             'message_id' => $this->message->id,
-            'sujet' => $this->message->sujet,
-            'contenu' => $this->message->contenu,
+            'sujet' => $this->message->subject,
+            'contenu' => $this->message->body,
             'sender_id' => $this->message->sender_id,
-        ];
-    }
-
-    public function toBroadcast($notifiable)
-    {
-        return [
-            'message_id' => $this->message->id,
-            'sujet' => $this->message->sujet,
-            'contenu' => $this->message->contenu,
-            'sender_id' => $this->message->sender_id,
+            'sender_name' => $this->message->sender->name,
+            'type' => 'message'
         ];
     }
 }

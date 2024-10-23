@@ -1,17 +1,15 @@
 @extends('layouts.master')
 
 @section('content')
-@if(session('success'))
-       <div class="alert alert-success">
-           {{ session('success') }}
-       </div>
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
 @endif
-
-   @if(session('error'))
-       <div class="alert alert-danger">
-           {{ session('error') }}
-       </div>
- @endif
 <div class="container">
     <h2 class="my-4">Modifier la Demande de Fonds</h2>
     <form method="POST" action="{{ route('demandes-fonds.update', $demande->id) }}">
@@ -66,8 +64,16 @@
                     <input type="number" id="solde" name="solde" class="form-control" value="0" readonly>
                 </div>
             </div>
-            <input type="hidden" name="status" value="{{ $demande->status }}">
             <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="user_id">Utilisateur :</label>
+                    <input type="text" id="user_id_display" class="form-control" value="{{ Auth::user()->name }}" readonly>
+                    <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
+                </div>
+            </div>
+            
+            <input type="hidden" name="status" value="{{ $demande->status }}">
         </div>
         @include('demandes._edit')
     </form>

@@ -77,7 +77,7 @@
                                 <td><?php echo e($demande->mois); ?></td>
                                 <td><?php echo e($demande->date_reception); ?></td>
                                 <td><?php echo e($demande->poste->nom); ?></td>
-                                <td><?php echo e(number_format($demande->total_courant, 0, ',', ' ')); ?></td>
+                                <td><?php echo e(number_format($demande->solde, 0, ',', ' ')); ?></td>
                                 <td><?php echo e($demande->created_at); ?></td>
                                 <td> <?php if($demande->status === 'en_attente'): ?>
                                     <span class="status-en-attente">En attente</span>

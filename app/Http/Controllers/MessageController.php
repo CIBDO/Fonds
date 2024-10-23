@@ -21,7 +21,9 @@ class MessageController extends Controller
         $messages = Message::whereHas('recipients', function ($query) {
             $query->where('user_id', Auth::id());
         })->orderBy('created_at', 'desc')->get(); // Ajout du tri par date de création
-
+        foreach ($messages as $message) {
+            $message->recipient->notify(new MessageSent($message));
+        }
         return view('messages.inbox', compact('messages'));
     }
 
@@ -73,14 +75,16 @@ class MessageController extends Controller
     ]);
 
     // Attacher les destinataires au message
+        // Attacher les destinataires et envoyer les notifications
     foreach ($request->receiver_ids as $receiverId) {
-        $message->recipients()->attach($receiverId, ['type' => 'reception']);
-        $message->received_at = now(); // Date et heure de réception
-        $message->save();   
+        $message->recipients()->attach($receiverId, [
+            'type' => 'reception',
+            'read_at' => null
+        ]);
         
-        // Envoyer une notification à chaque destinataire
-        $user = User::find($receiverId);
-        $user->notify(new MessageSent($message));
+        // Envoyer la notification immédiatement
+        $recipient = User::find($receiverId);
+        $recipient->notify(new MessageSent($message));
     }
 
     // Gestion des fichiers joints
@@ -108,24 +112,28 @@ if ($request->hasFile('attachments')) {
     {
         // Récupérer le message par ID et vérifier si l'utilisateur a accès
         $message = Message::with(['sender', 'recipients', 'attachments'])->findOrFail($id);
-    
-        // Vérifie si l'utilisateur courant est le destinataire ou l'expéditeur
-        $userIsRecipient = $message->recipients()->where('user_id', Auth::id())->exists();
-        if (!$userIsRecipient && $message->sender_id !== Auth::id()) {
-            abort(403, 'Accès interdit.');
+
+        // Vérifier si l'utilisateur connecté est un destinataire du message
+        $userIsRecipient = $message->recipients->contains(Auth::id());
+
+        // Marquer comme lu et enregistrer la date de lecture
+        if ($userIsRecipient && !$message->read_at) {
+            $message->recipients()->updateExistingPivot(Auth::id(), [
+                'read_at' => now()
+            ]);
+            
+            // Marquer les notifications comme lues
+            Auth::user()
+                ->notifications()
+                ->where('type', MessageSent::class)
+                ->where('data->message_id', $message->id)
+                ->update(['read_at' => now()]);
         }
-    
-        // Marque le message comme lu pour le destinataire courant
-        if ($userIsRecipient) {
-            $message->recipients()->updateExistingPivot(Auth::id(), ['lu' => true, 'received_at' => now()]);
-        }
-    
-        // Accéder aux URLs publiques des fichiers attachés
-        // Accéder aux URLs publiques des fichiers attachés
-foreach ($message->attachments as $attachment) {
-    // Utiliser le lien symbolique pour accéder aux fichiers
-    $attachment->public_url = Storage::url($attachment->filepath);
-}
+        
+            foreach ($message->attachments as $attachment) {
+                // Utiliser le lien symbolique pour accéder aux fichiers
+                $attachment->public_url = Storage::url($attachment->filepath);
+            }
 
     
         return view('messages.show', compact('message'));
@@ -190,7 +198,7 @@ foreach ($message->attachments as $attachment) {
 
             // Enregistrer les informations du fichier joint
             Attachment::create([
-                'message_id' => $message->id,
+                'message_id' => $replyMessage->id, // Utiliser $replyMessage au lieu de $message
                 'filename' => $fileName,
                 'filepath' => 'attachments/attachments/' . $fileName,
             ]);
