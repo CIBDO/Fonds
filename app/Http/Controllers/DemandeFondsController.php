@@ -212,7 +212,11 @@ class DemandeFondsController extends Controller
     if (!$user->isadmin() && $demandeFonds->user_id !== $user->id) {
         return redirect()->back()->withErrors(['error' => 'Vous n\'avez pas la permission de modifier cette demande.']);
     }
-
+    // Empêcher la modification si la demande est déjà approuvée
+    if ($demandeFonds->status === 'approuve') {
+        return redirect()->back()->withErrors(['error' => 'Vous ne pouvez pas modifier une demande déjà approuvée.']);
+    }
+    
         // Valider les champs de la requête
         $request->validate([
             'mois' => 'nullable|string|max:20',
@@ -403,12 +407,12 @@ class DemandeFondsController extends Controller
         $demande->date_envois = $request->date_envois;
         $demande->save();
         $demande->user->notify(new DemandeFondsStatusNotification($demande));
-        $tresoriers = User::where('role', 'tresorier')->get();
+       /*  $tresoriers = User::where('role', 'tresorier')->get();
         foreach($tresoriers as $tresorier) {
         if($tresorier->id !== auth::id()) {
         $tresorier->notify(new DemandeFondsStatusNotification($demande));
         }
-        }
+        } */
         Alert::success('Success', 'Fonds envoyés avec succès');
         return redirect()->route('demandes-fonds.envois')->with('success', 'Fonds envoyés avec succès');
     }

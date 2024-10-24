@@ -32,33 +32,36 @@
                             </div>
                         </div>
                     </div>
-                </li>
+                </li>   
                 <li class="nav-item dropdown noti-dropdown me-2">
                     <a href="#" class="dropdown-toggle nav-link header-nav-list" data-bs-toggle="dropdown">
                         <img src="{{asset('assets/img/icons/header-icon-05.svg')}}" alt="">
-                        <span class="badge bg-danger">{{ auth()->user()->unreadNotifications->count() }}</span>
+                        <span class="badge rounded-pill bg-danger notification-count">{{ auth()->user()->unreadNotifications->count() }}</span>
                     </a>
                     <div class="dropdown-menu notifications">
                         <div class="topnav-dropdown-header">
                             <span class="notification-title">Notifications</span>
-                            <a href="{{ route('notifications.markAllAsRead') }}" class="clear-noti">
-                                Tout marquer comme lu
-                            </a>
+                            <a href="javascript:void(0)" class="clear-noti" id="markAllAsRead"> Tout marquer comme lu </a>
                         </div>
                         <div class="noti-content">
                             <ul class="notification-list">
                                 @forelse(auth()->user()->unreadNotifications as $notification)
-                                    <li class="notification-message">
-                                        @if($notification->data['type'] === 'message')
-                                            <a href="{{ route('messages.show', $notification->data['message_id']) }}">
-                                        @elseif($notification->data['type'] === 'demande_fonds' || $notification->data['type'] === 'status_update')
-                                            <a href="{{ route('demandes-fonds.show', $notification->data['demande_id']) }}">
-                                        @endif
+                                    <li class="notification-message" data-notification-id="{{ $notification->id }}">
+                                        <a href="#" class="notification-link" data-url="{{ $notification->data['url'] ?? '#' }}">
                                             <div class="media d-flex">
                                                 <div class="media-body">
-                                                    <p class="noti-details">{{ $notification->data['message'] }}</p>
+                                                    <p class="noti-details fw-bold text-primary">
+                                                        @if($notification->type === 'App\Notifications\DemandeFondsStatusNotification')
+                                                            <span class="text-danger">Demande de fonds:</span>
+                                                        @elseif($notification->type === 'App\Notifications\MessageSent')
+                                                            <span class="text-success">Nouveau message:</span>
+                                                        @endif
+                                                        {{ $notification->data['message'] }}
+                                                    </p>
                                                     <p class="noti-time">
-                                                        <span class="notification-time">{{ $notification->created_at->diffForHumans() }}</span>
+                                                        <span class="notification-time text-muted">
+                                                            {{ $notification->created_at->diffForHumans() }}
+                                                        </span>
                                                     </p>
                                                 </div>
                                             </div>
@@ -66,17 +69,16 @@
                                     </li>
                                 @empty
                                     <li class="notification-message">
-                                        <p class="text-center p-3">Aucune notification non lue</p>
+                                        <p class="text-center text-muted py-3">Aucune notification non lue</p>
                                     </li>
                                 @endforelse
                             </ul>
                         </div>
                         <div class="topnav-dropdown-footer">
-                            <a href="{{ route('notifications.index') }}">Voir toutes les Notifications</a>
+                            <a href="{{ route('demandes-fonds.situation') }}">Voir toutes les Notifications</a>
                         </div>
                     </div>
-                </li>
-                
+                </li>        
                 <li class="nav-item zoom-screen me-2">
                     <a href="#" class="nav-link header-nav-list win-maximize">
                         <img src="{{asset('assets/img/icons/header-icon-04.svg')}}" alt="">

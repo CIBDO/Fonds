@@ -32,33 +32,38 @@
                             </div>
                         </div>
                     </div>
-                </li>
+                </li>   
                 <li class="nav-item dropdown noti-dropdown me-2">
                     <a href="#" class="dropdown-toggle nav-link header-nav-list" data-bs-toggle="dropdown">
                         <img src="<?php echo e(asset('assets/img/icons/header-icon-05.svg')); ?>" alt="">
-                        <span class="badge bg-danger"><?php echo e(auth()->user()->unreadNotifications->count()); ?></span>
+                        <span class="badge rounded-pill bg-danger notification-count"><?php echo e(auth()->user()->unreadNotifications->count()); ?></span>
                     </a>
                     <div class="dropdown-menu notifications">
                         <div class="topnav-dropdown-header">
                             <span class="notification-title">Notifications</span>
-                            <a href="<?php echo e(route('notifications.markAllAsRead')); ?>" class="clear-noti">
-                                Tout marquer comme lu
-                            </a>
+                            <a href="javascript:void(0)" class="clear-noti" id="markAllAsRead"> Tout marquer comme lu </a>
                         </div>
                         <div class="noti-content">
                             <ul class="notification-list">
                                 <?php $__empty_1 = true; $__currentLoopData = auth()->user()->unreadNotifications; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notification): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                    <li class="notification-message">
-                                        <?php if($notification->data['type'] === 'message'): ?>
-                                            <a href="<?php echo e(route('messages.show', $notification->data['message_id'])); ?>">
-                                        <?php elseif($notification->data['type'] === 'demande_fonds' || $notification->data['type'] === 'status_update'): ?>
-                                            <a href="<?php echo e(route('demandes-fonds.show', $notification->data['demande_id'])); ?>">
-                                        <?php endif; ?>
+                                    <li class="notification-message" data-notification-id="<?php echo e($notification->id); ?>">
+                                        <a href="#" class="notification-link" data-url="<?php echo e($notification->data['url'] ?? '#'); ?>">
                                             <div class="media d-flex">
                                                 <div class="media-body">
-                                                    <p class="noti-details"><?php echo e($notification->data['message']); ?></p>
+                                                    <p class="noti-details fw-bold text-primary">
+                                                        <?php if($notification->type === 'App\Notifications\DemandeFondsStatusNotification'): ?>
+                                                            <span class="text-danger">Demande de fonds:</span>
+                                                        <?php elseif($notification->type === 'App\Notifications\MessageSent'): ?>
+                                                            <span class="text-success">Nouveau message:</span>
+                                                        <?php endif; ?>
+                                                        <?php echo e($notification->data['message']); ?>
+
+                                                    </p>
                                                     <p class="noti-time">
-                                                        <span class="notification-time"><?php echo e($notification->created_at->diffForHumans()); ?></span>
+                                                        <span class="notification-time text-muted">
+                                                            <?php echo e($notification->created_at->diffForHumans()); ?>
+
+                                                        </span>
                                                     </p>
                                                 </div>
                                             </div>
@@ -66,17 +71,16 @@
                                     </li>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                     <li class="notification-message">
-                                        <p class="text-center p-3">Aucune notification non lue</p>
+                                        <p class="text-center text-muted py-3">Aucune notification non lue</p>
                                     </li>
                                 <?php endif; ?>
                             </ul>
                         </div>
                         <div class="topnav-dropdown-footer">
-                            <a href="<?php echo e(route('notifications.index')); ?>">Voir toutes les Notifications</a>
+                            <a href="<?php echo e(route('demandes-fonds.situation')); ?>">Voir toutes les Notifications</a>
                         </div>
                     </div>
-                </li>
-                
+                </li>        
                 <li class="nav-item zoom-screen me-2">
                     <a href="#" class="nav-link header-nav-list win-maximize">
                         <img src="<?php echo e(asset('assets/img/icons/header-icon-04.svg')); ?>" alt="">

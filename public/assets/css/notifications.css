@@ -1,0 +1,57 @@
+/* public/assets/css/notifications.css */
+.notification-message {
+    transition: all 0.3s ease;
+}
+
+.notification-message:hover {
+    background-color: #f8f9fa;
+}
+
+.noti-details {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
+}
+
+.notification-time {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.badge.notification-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.notification-title {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.clear-noti {
+    color: #007bff;
+    font-size: 0.85rem;
+    text-decoration: none;
+}
+
+.clear-noti:hover {
+    text-decoration: underline;
+}
+
+.noti-content {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.notification-message .text-danger {
+    color: #dc3545 !important;
+    font-weight: 600;
+}
+
+.notification-message .text-success {
+    color: #28a745 !important;
+    font-weight: 600;
+}

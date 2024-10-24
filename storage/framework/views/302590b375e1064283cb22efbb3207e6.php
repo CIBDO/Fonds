@@ -15,6 +15,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- Inclure DataTables CSS -->
     
+    <link href="<?php echo e(asset('assets/css/notifications.css')); ?>" rel="stylesheet">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
 </head>
 
 <body>
@@ -43,7 +45,9 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+    <script src="<?php echo e(asset('assets/js/notifications.js')); ?>"></script>
     <?php echo $__env->yieldContent('add-js'); ?> 
+   
 </body>
 
 </html>

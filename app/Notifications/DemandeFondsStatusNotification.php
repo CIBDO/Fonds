@@ -29,7 +29,9 @@ class DemandeFondsStatusNotification extends Notification
             'message' => "Votre demande de fonds pour le mois de {$this->demande->mois} a été {$statusMessage}",
             'montant' => $this->demande->montant,
             'observation' => $this->demande->observation,
-            'type' => 'status_update'
+            'type' => 'status_update',
+            /* 'url' => url("/demandes-fonds/{$this->demande->id}")   */
+            'url' => route('demandes-fonds.situation')
         ];
     }
 }

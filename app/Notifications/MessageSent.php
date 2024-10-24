@@ -30,7 +30,8 @@ class MessageSent extends Notification
             'contenu' => $this->message->body,
             'sender_id' => $this->message->sender_id,
             'sender_name' => $this->message->sender->name,
-            'type' => 'message'
+            'type' => 'message',
+            'url' => url("/messages/{$this->message->id}")
         ];
     }
 }

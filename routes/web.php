@@ -71,7 +71,9 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('attachments', AttachmentController::class);
     Route::resource('postes', PosteController::class);
 
+    Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
     Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+
     Route::delete('/notifications/{notification}', [MessageController::class, 'deleteNotification'])->name('deleteNotification');
     Route::post('messages/{id}/reply', [MessageController::class, 'reply'])->name('messages.reply');
     Route::get('messages/{id}/reply', [MessageController::class, 'showReplyForm'])->name('messages.reply.form');
