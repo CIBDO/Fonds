@@ -246,7 +246,25 @@
             order: [[1, 'desc']],
             dom: 'Bfrtip',
             buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print'
+                {
+                    extend: 'excel',
+                    text: 'Exporter en Excel',
+                    title: 'Demandes de Fonds',
+                    exportOptions: {
+                        format: {
+                            body: function(data, row, column, node) {
+                                // Vérifiez si c'est une ligne de total
+                                if ($(node).hasClass('total-row')) {
+                                    return $(node).find('td').map(function() {
+                                        return $(this).text();
+                                    }).get().join(',');
+                                }
+                                return data;
+                            }
+                        }
+                    }
+                },
+                'copy', 'csv', 'pdf', 'print'
             ],
             language: {
                 url: "//cdn.datatables.net/plug-ins/1.11.5/i18n/fr-FR.json"
@@ -317,6 +335,8 @@
         }
     });
 </script>
+
+
 
 <?php $__env->stopSection(); ?> 
 
