@@ -87,7 +87,7 @@
         <div class="row mb-4">
             <div class="col-md-4">
                 <div class="form-group">
-                    <label for="montant_disponible">Montant Disponible :</label>
+                    <label for="montant_disponible">Recettes en Douanes :</label>
                     <input type="number" id="montant_disponible" name="montant_disponible" class="form-control" value="0" required>
                 </div>
             </div>

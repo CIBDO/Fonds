@@ -30,7 +30,8 @@ Route::middleware(['auth'])->group(function () {
     // Route pour les demandes de fonds
     /* Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard'); */
     Route::get('/notifications', [MessageController::class, 'notifications'])->name('messages.notifications');
-    
+    Route::get('/demandes/export', [DemandeFondsController::class, 'export'])->name('demandes-fonds.export');
+    Route::get('/demandes-fonds/detail', [DemandeFondsController::class, 'Detail'])->name('demandes-fonds.detail');
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('/demandes-fonds/envois', [DemandeFondsController::class, 'EnvoisFonds'])
         ->middleware('role:acct,admin,superviseur') // Accès pour tous sauf trésorier
@@ -100,6 +101,7 @@ Route::middleware(['auth', 'role:acct,superviseur,tresorier,admin',])->group(fun
     Route::get('/demandes-fonds/situationDF', [DemandeFondsController::class, 'SituationDF'])->name('demandes-fonds.situationDF');
     Route::get('/demandes-fonds/situationFE', [DemandeFondsController::class, 'SituationFE'])->name('demandes-fonds.situationFE');
     Route::get('/demandes-fonds/recap', [DemandeFondsController::class, 'Recap'])->name('demandes-fonds.recap');
+    Route::get('/demandes-fonds/paiement', [DemandeFondsController::class, 'Paiement'])->name('demandes-fonds.paiement');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

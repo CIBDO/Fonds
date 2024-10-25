@@ -48,21 +48,21 @@
                     <table id="demandes-table" class="table border-0 star-student table-hover table-center mb-0 datatable table-striped">
                         <thead class="student-thread">
                             <tr>
-                                <th>Mois</th>
-                                <th>Date de Réception Salaire</th>
-                                <th>Poste</th>
+                                <th>Postes</th>
                                 <th>Montant demandé</th>
-                                <th>Date de la demande</th>
+                                <th>Recettes Douanières</th>
+                                <th>Montant à Envoyer</th>
+                                <th>Mois</th>
                             </tr>
                         </thead>
                         <tbody id="demandes-table-body">
                             @foreach($demandeFonds as $demande)
                             <tr>
-                                <td>{{ $demande->mois }}</td>
-                                <td>{{ $demande->date_reception }}</td>
                                 <td>{{ $demande->poste->nom }}</td>
                                 <td>{{ number_format($demande->total_courant, 0, ',', ' ') }}</td>
-                                <td>{{ $demande->created_at }}</td>
+                                <td>{{ number_format($demande->montant_disponible, 0, ',', ' ') }}</td>
+                                <td>{{ number_format($demande->solde, 0, ',', ' ') }}</td>
+                                <td>{{ $demande->mois . ' ' . $demande->annee }}</td>
                             </tr>
                             @endforeach   
                         </tbody>

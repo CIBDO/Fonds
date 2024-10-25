@@ -47,7 +47,8 @@
                             <ul>
                                 <li><a href="{{route('demandes-fonds.situationDF')}}">Rapport Mensuel des DF</a></li>
                                 <li><a href="{{route('demandes-fonds.situationFE')}}">Rapport Mensuel des FE</a></li>
-                                <li><a href="{{route('demandes-fonds.recap')}}">Tableau Comparatif des DF/Poste</a></li>
+                                <li><a href="{{route('demandes-fonds.recap')}}">Tableau Détaillé des DF</a></li>
+                                <li><a href="{{route('demandes-fonds.detail')}}">Situation Globale des DF</a></li>
                             </ul>
                         </li>
                         <li class="submenu">

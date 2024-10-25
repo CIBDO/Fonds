@@ -52,22 +52,23 @@
                     <table id="demandes-table" class="table border-0 table-hover table-center mb-0 datatable table-striped">
                         <thead>
                             <tr>
-                                <th>Poste</th>
-                                <th>Fonds Demandés</th>
-                                <th>Fonds alloués</th>
+                                <th>Postes</th>
+                                <th>Montant demandé</th>
+                                <th>Recettes Douanières</th>
+                                <th>Montant Envoyer</th>
                                 <th>Mois</th>
-                                <th>Date d'Envois</th>
+                                <th>Date d'envois</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php $__currentLoopData = $demandeFonds; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $demande): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <tr>
                                 <td><?php echo e($demande->poste->nom); ?></td>
-                                <td><?php echo e(number_format($demande->solde, 0, ',', ' ')); ?></td>
+                                <td><?php echo e(number_format($demande->total_courant, 0, ',', ' ')); ?></td>
+                                <td><?php echo e(number_format($demande->montant_disponible, 0, ',', ' ')); ?></td>
                                 <td><?php echo e(number_format($demande->montant, 0, ',', ' ')); ?></td>
-                                <td><?php echo e($demande->mois); ?></td>
+                                <td><?php echo e($demande->mois . ' ' . $demande->annee); ?></td>
                                 <td><?php echo e($demande->date_envois); ?></td>
-                               
                             </tr>
 
                             <!-- Modal pour approuver la demande -->

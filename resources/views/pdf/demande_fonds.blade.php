@@ -118,77 +118,98 @@
             </tr>
         </thead>
         <tbody>
+            @if($demandeFonds->fonctionnaires_bcs_net || $demandeFonds->fonctionnaires_bcs_revers || $demandeFonds->fonctionnaires_bcs_total_courant || $demandeFonds->fonctionnaires_bcs_salaire_ancien)
             <tr>
                 <td>Fonctionnaires BCS</td>
-                <td>{{ number_format($demandeFonds->fonctionnaires_bcs_net, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->fonctionnaires_bcs_revers, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->fonctionnaires_bcs_total_courant, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->fonctionnaires_bcs_salaire_ancien, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->fonctionnaires_bcs_total_courant - $demandeFonds->fonctionnaires_bcs_salaire_ancien, 0, ',', ' ') }}</td>
+                <td>{{ $demandeFonds->fonctionnaires_bcs_net ? number_format($demandeFonds->fonctionnaires_bcs_net, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->fonctionnaires_bcs_revers ? number_format($demandeFonds->fonctionnaires_bcs_revers, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->fonctionnaires_bcs_total_courant ? number_format($demandeFonds->fonctionnaires_bcs_total_courant, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->fonctionnaires_bcs_salaire_ancien ? number_format($demandeFonds->fonctionnaires_bcs_salaire_ancien, 0, ',', ' ') : '' }}</td>
+                <td>{{ ($demandeFonds->fonctionnaires_bcs_total_courant && $demandeFonds->fonctionnaires_bcs_salaire_ancien) ? number_format($demandeFonds->fonctionnaires_bcs_total_courant - $demandeFonds->fonctionnaires_bcs_salaire_ancien, 0, ',', ' ') : '' }}</td>
             </tr>
+            @endif
+        
+            @if($demandeFonds->collectivite_sante_net || $demandeFonds->collectivite_sante_revers || $demandeFonds->collectivite_sante_total_courant || $demandeFonds->collectivite_sante_salaire_ancien)
             <tr>
                 <td>Personnel Collectivité Santé</td>
-                <td>{{ number_format($demandeFonds->collectivite_sante_net, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->collectivite_sante_revers, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->collectivite_sante_total_courant, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->collectivite_sante_salaire_ancien, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->collectivite_sante_total_courant - $demandeFonds->collectivite_sante_salaire_ancien, 0, ',', ' ') }}</td>
+                <td>{{ $demandeFonds->collectivite_sante_net ? number_format($demandeFonds->collectivite_sante_net, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->collectivite_sante_revers ? number_format($demandeFonds->collectivite_sante_revers, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->collectivite_sante_total_courant ? number_format($demandeFonds->collectivite_sante_total_courant, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->collectivite_sante_salaire_ancien ? number_format($demandeFonds->collectivite_sante_salaire_ancien, 0, ',', ' ') : '' }}</td>
+                <td>{{ ($demandeFonds->collectivite_sante_total_courant && $demandeFonds->collectivite_sante_salaire_ancien) ? number_format($demandeFonds->collectivite_sante_total_courant - $demandeFonds->collectivite_sante_salaire_ancien, 0, ',', ' ') : '' }}</td>
             </tr>
+            @endif
+        
+            @if($demandeFonds->collectivite_education_net || $demandeFonds->collectivite_education_revers || $demandeFonds->collectivite_education_total_courant || $demandeFonds->collectivite_education_salaire_ancien)
             <tr>
                 <td>Personnel Collectivité Éducation</td>
-                <td>{{ number_format($demandeFonds->collectivite_education_net, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->collectivite_education_revers, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->collectivite_education_total_courant, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->collectivite_education_salaire_ancien, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->collectivite_education_total_courant - $demandeFonds->collectivite_education_salaire_ancien, 0, ',', ' ') }}</td>
+                <td>{{ $demandeFonds->collectivite_education_net ? number_format($demandeFonds->collectivite_education_net, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->collectivite_education_revers ? number_format($demandeFonds->collectivite_education_revers, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->collectivite_education_total_courant ? number_format($demandeFonds->collectivite_education_total_courant, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->collectivite_education_salaire_ancien ? number_format($demandeFonds->collectivite_education_salaire_ancien, 0, ',', ' ') : '' }}</td>
+                <td>{{ ($demandeFonds->collectivite_education_total_courant && $demandeFonds->collectivite_education_salaire_ancien) ? number_format($demandeFonds->collectivite_education_total_courant - $demandeFonds->collectivite_education_salaire_ancien, 0, ',', ' ') : '' }}</td>
             </tr>
+            @endif
+        
+            @if($demandeFonds->personnels_saisonniers_net || $demandeFonds->personnels_saisonniers_revers || $demandeFonds->personnels_saisonniers_total_courant || $demandeFonds->personnels_saisonniers_salaire_ancien)
             <tr>
                 <td>Personnels Saisonniers</td>
-                <td>{{ number_format($demandeFonds->personnels_saisonniers_net, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->personnels_saisonniers_revers, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->personnels_saisonniers_total_courant, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->personnels_saisonniers_salaire_ancien, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->personnels_saisonniers_total_courant - $demandeFonds->personnels_saisonniers_salaire_ancien, 0, ',', ' ') }}</td>
+                <td>{{ $demandeFonds->personnels_saisonniers_net ? number_format($demandeFonds->personnels_saisonniers_net, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->personnels_saisonniers_revers ? number_format($demandeFonds->personnels_saisonniers_revers, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->personnels_saisonniers_total_courant ? number_format($demandeFonds->personnels_saisonniers_total_courant, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->personnels_saisonniers_salaire_ancien ? number_format($demandeFonds->personnels_saisonniers_salaire_ancien, 0, ',', ' ') : '' }}</td>
+                <td>{{ ($demandeFonds->personnels_saisonniers_total_courant && $demandeFonds->personnels_saisonniers_salaire_ancien) ? number_format($demandeFonds->personnels_saisonniers_total_courant - $demandeFonds->personnels_saisonniers_salaire_ancien, 0, ',', ' ') : '' }}</td>
             </tr>
+            @endif
+        
+            @if($demandeFonds->epn_net || $demandeFonds->epn_revers || $demandeFonds->epn_total_courant || $demandeFonds->epn_salaire_ancien)
             <tr>
                 <td>EPN</td>
-                <td>{{ number_format($demandeFonds->epn_net, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->epn_revers, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->epn_total_courant, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->epn_salaire_ancien, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->epn_total_courant - $demandeFonds->epn_salaire_ancien, 0, ',', ' ') }}</td>
+                <td>{{ $demandeFonds->epn_net ? number_format($demandeFonds->epn_net, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->epn_revers ? number_format($demandeFonds->epn_revers, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->epn_total_courant ? number_format($demandeFonds->epn_total_courant, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->epn_salaire_ancien ? number_format($demandeFonds->epn_salaire_ancien, 0, ',', ' ') : '' }}</td>
+                <td>{{ ($demandeFonds->epn_total_courant && $demandeFonds->epn_salaire_ancien) ? number_format($demandeFonds->epn_total_courant - $demandeFonds->epn_salaire_ancien, 0, ',', ' ') : '' }}</td>
             </tr>
+            @endif
+        
+            @if($demandeFonds->ced_net || $demandeFonds->ced_revers || $demandeFonds->ced_total_courant || $demandeFonds->ced_salaire_ancien)
             <tr>
                 <td>CED</td>
-                <td>{{ number_format($demandeFonds->ced_net, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->ced_revers, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->ced_total_courant, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->ced_salaire_ancien, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->ced_total_courant - $demandeFonds->ced_salaire_ancien, 0, ',', ' ') }}</td>
+                <td>{{ $demandeFonds->ced_net ? number_format($demandeFonds->ced_net, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->ced_revers ? number_format($demandeFonds->ced_revers, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->ced_total_courant ? number_format($demandeFonds->ced_total_courant, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->ced_salaire_ancien ? number_format($demandeFonds->ced_salaire_ancien, 0, ',', ' ') : '' }}</td>
+                <td>{{ ($demandeFonds->ced_total_courant && $demandeFonds->ced_salaire_ancien) ? number_format($demandeFonds->ced_total_courant - $demandeFonds->ced_salaire_ancien, 0, ',', ' ') : '' }}</td>
             </tr>
+            @endif
+            @if($demandeFonds->ecom_net || $demandeFonds->ecom_revers || $demandeFonds->ecom_total_courant || $demandeFonds->ecom_salaire_ancien)   
             <tr>
                 <td>ECOM</td>
-                <td>{{ number_format($demandeFonds->ecom_net, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->ecom_revers, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->ecom_total_courant, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->ecom_salaire_ancien, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->ecom_total_courant - $demandeFonds->ecom_salaire_ancien, 0, ',', ' ') }}</td>
+                <td>{{ $demandeFonds->ecom_net ? number_format($demandeFonds->ecom_net, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->ecom_revers ? number_format($demandeFonds->ecom_revers, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->ecom_total_courant ? number_format($demandeFonds->ecom_total_courant, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->ecom_salaire_ancien ? number_format($demandeFonds->ecom_salaire_ancien, 0, ',', ' ') : '' }}</td>
+                <td>{{ ($demandeFonds->ecom_total_courant && $demandeFonds->ecom_salaire_ancien) ? number_format($demandeFonds->ecom_total_courant - $demandeFonds->ecom_salaire_ancien, 0, ',', ' ') : '' }}</td>
             </tr>
+            @endif
+            @if($demandeFonds->cfp_cpam_net || $demandeFonds->cfp_cpam_revers || $demandeFonds->cfp_cpam_total_courant || $demandeFonds->cfp_cpam_salaire_ancien)   
             <tr>
                 <td>CFP CPAM</td>
-                <td>{{ number_format($demandeFonds->cfp_cpam_net, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->cfp_cpam_revers, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->cfp_cpam_total_courant, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->cfp_cpam_salaire_ancien, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->cfp_cpam_total_courant - $demandeFonds->cfp_cpam_salaire_ancien, 0, ',', ' ') }}</td>
+                <td>{{ $demandeFonds->cfp_cpam_net ? number_format($demandeFonds->cfp_cpam_net, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->cfp_cpam_revers ? number_format($demandeFonds->cfp_cpam_revers, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->cfp_cpam_total_courant ? number_format($demandeFonds->cfp_cpam_total_courant, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->cfp_cpam_salaire_ancien ? number_format($demandeFonds->cfp_cpam_salaire_ancien, 0, ',', ' ') : '' }}</td>
+                <td>{{ ($demandeFonds->cfp_cpam_total_courant && $demandeFonds->cfp_cpam_salaire_ancien) ? number_format($demandeFonds->cfp_cpam_total_courant - $demandeFonds->cfp_cpam_salaire_ancien, 0, ',', ' ') : '' }}</td>
             </tr>
-            <tr class="total-row">
+            @endif
+                <tr class="total-row">
                 <td>Total</td>
-                <td>{{ number_format($demandeFonds->total_net, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->total_revers, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->total_courant, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->total_ancien, 0, ',', ' ') }}</td>
-                <td>{{ number_format($demandeFonds->total_courant - $demandeFonds->total_ancien, 0, ',', ' ') }}</td>
+                <td>{{ $demandeFonds->total_net ? number_format($demandeFonds->total_net, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->total_revers ? number_format($demandeFonds->total_revers, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->total_courant ? number_format($demandeFonds->total_courant, 0, ',', ' ') : '' }}</td>
+                <td>{{ $demandeFonds->total_ancien ? number_format($demandeFonds->total_ancien, 0, ',', ' ') : '' }}</td>
+                <td>{{ ($demandeFonds->total_courant && $demandeFonds->total_ancien) ? number_format($demandeFonds->total_courant - $demandeFonds->total_ancien, 0, ',', ' ') : '' }}</td>
             </tr>
         </tbody>
     </table>

@@ -621,4 +621,249 @@ class DemandeFondsController extends Controller
         // Retourner la vue avec les résultats filtrés
         return view('demandes.recap', compact('demandeFonds'));
     }
+   
+    public function Paiement(Request $request, $demande)
+    {
+        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+        // Commencer par obtenir toutes les demandes de fonds avec les statuts "approuvé" ou "rejeté"
+        $query = DemandeFonds::with('user', 'poste')
+            ->whereIn('status', ['approuve', 'rejete']);
+
+        // Filtrer par poste si un poste est fourni dans la requête
+        if ($request->filled('poste')) {
+            $query->whereHas('poste', function ($q) use ($request) {
+                $q->where('nom', 'like', '%' . $request->poste . '%');
+            });
+        }
+
+        // Filtrer par mois si un mois est fourni dans la requête
+        if ($request->filled('mois')) {
+            $query->where('mois', 'like', '%' . $request->mois . '%');
+        }
+
+        // Filtrer par plage de dates (date d'envoi des demandes de fonds)
+        if ($request->filled('date_debut') && $request->filled('date_fin')) {
+            $query->whereBetween('date_envois', [$request->date_debut, $request->date_fin]);
+        } elseif ($request->filled('date_debut')) {
+            // Si seulement la date de début est fournie, filtrer à partir de cette date
+            $query->where('date_envois', '>=', $request->date_debut);
+        } elseif ($request->filled('date_fin')) {
+            // Si seulement la date de fin est fournie, filtrer jusqu'à cette date
+            $query->where('date_envois', '<=', $request->date_fin);
+        }
+
+        // Exécuter la requête et paginer les résultats
+        $demandeFonds = $query->orderBy('created_at', 'desc')
+            ->paginate(8)
+            ->appends($request->except('page'));
+
+        // Retourner la vue avec les résultats filtrés
+        return view('demandes.paiement', compact('demandeFonds'));
+    }
+
+    public function detail(Request $request)
+    {
+        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+        $query = DemandeFonds::with('user', 'poste')
+            ->whereIn('status', ['approuve', 'rejete']);
+
+        // Filtrer par poste si un poste est fourni dans la requête
+        if ($request->filled('poste')) {
+            $query->whereHas('poste', function ($q) use ($request) {
+                $q->where('nom', 'like', '%' . $request->poste . '%');
+            });
+        }
+
+        // Filtrer par mois si un mois est fourni dans la requête
+        if ($request->filled('mois')) {
+            $query->where('mois', 'like', '%' . $request->mois . '%');
+        }
+
+        // Filtrer par plage de dates (date d'envoi des demandes de fonds)
+        if ($request->filled('date_debut') && $request->filled('date_fin')) {
+            $query->whereBetween('date_envois', [$request->date_debut, $request->date_fin]);
+        } elseif ($request->filled('date_debut')) {
+            $query->where('date_envois', '>=', $request->date_debut);
+        } elseif ($request->filled('date_fin')) {
+            $query->where('date_envois', '<=', $request->date_fin);
+        }
+
+        // Exécuter la requête et paginer les résultats
+        $demandeFonds = $query->orderBy('created_at', 'desc')
+            ->paginate(25)
+            ->appends($request->except('page'));
+
+        // Assurez-vous de traiter chaque demande individuellement
+        $typesFonctionnaires = [];
+        foreach ($demandeFonds as $demande) {
+            $typesFonctionnaires[] = [
+                'BCS' => [
+                    'designation' => 'Fonctionnaires BCS',
+                    'net' => $demande->fonctionnaires_bcs_net,
+                    'revers' => $demande->fonctionnaires_bcs_revers,
+                    'total_courant' => $demande->fonctionnaires_bcs_total_courant,
+                    'salaire_ancien' => $demande->fonctionnaires_bcs_salaire_ancien,
+                ],
+                'Collectivité Santé' => [
+                    'designation' => 'Collectivité Santé',
+                    'net' => $demande->collectivite_sante_net,
+                    'revers' => $demande->collectivite_sante_revers,
+                    'total_courant' => $demande->collectivite_sante_total_courant,
+                    'salaire_ancien' => $demande->collectivite_sante_salaire_ancien,
+                ],
+                'Collectivité Education' => [
+                    'designation' => 'Collectivité Education',
+                    'net' => $demande->collectivite_education_net,
+                    'revers' => $demande->collectivite_education_revers,
+                    'total_courant' => $demande->collectivite_education_total_courant,
+                    'salaire_ancien' => $demande->collectivite_education_salaire_ancien,
+                ],
+                'PersonnelsSaisonniers' => [
+                    'designation' => 'Personnels Saisonniers',
+                    'net' => $demande->personnels_saisonniers_net,
+                    'revers' => $demande->personnels_saisonniers_revers,
+                    'total_courant' => $demande->personnels_saisonniers_total_courant,
+                    'salaire_ancien' => $demande->personnels_saisonniers_salaire_ancien,
+                ],  
+                'PersonnelsEpn' => [
+                    'designation' => 'Personnels EPN',
+                    'net' => $demande->epn_net,
+                    'revers' => $demande->epn_revers,
+                    'total_courant' => $demande->epn_total_courant,
+                    'salaire_ancien' => $demande->epn_salaire_ancien,
+                ],
+                'PersonnelsCed' => [
+                    'designation' => 'Personnels CED',
+                    'net' => $demande->ced_net,
+                    'revers' => $demande->ced_revers,
+                    'total_courant' => $demande->ced_total_courant,
+                    'salaire_ancien' => $demande->ced_salaire_ancien,
+                ],
+                'PersonnelsEcom' => [
+                    'designation' => 'Personnels ECOM',
+                    'net' => $demande->ecom_net,
+                    'revers' => $demande->ecom_revers,
+                    'total_courant' => $demande->ecom_total_courant,
+                    'salaire_ancien' => $demande->ecom_salaire_ancien,
+                ],
+                'PersonnelsCfpCpam' => [
+                    'designation' => 'Personnels CFPCPAM',
+                    'net' => $demande->cfp_cpam_net,
+                    'revers' => $demande->cfp_cpam_revers,
+                    'total_courant' => $demande->cfp_cpam_total_courant,
+                    'salaire_ancien' => $demande->cfp_cpam_salaire_ancien,
+                ],
+                // Ajoutez d'autres types de fonctionnaires ici si nécessaire
+            ];
+        }
+
+        // Calcul du total global
+            $totaux = [
+                'net' => $demandeFonds->sum('total_net'),
+                'revers' => $demandeFonds->sum('total_revers'),
+                'total_courant' => $demandeFonds->sum('total_courant'),
+                'total_ancien' => $demandeFonds->sum('total_ancien'),
+                'total_ecart' => $demandeFonds->sum('total_ecart'),
+            ];
+
+        return view('demandes.detail', compact('typesFonctionnaires', 'totaux', 'demandeFonds'));
+    }
+    public function export(Request $request,)
+    {
+        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+        
+        $demande = DemandeFonds::findOrFail($request->demande);
+    
+        $typesFonctionnaires = [
+            'BCS' => [
+                'designation' => 'Fonctionnaires BCS',
+                'net' => $demande->fonctionnaires_bcs_net,
+                'revers' => $demande->fonctionnaires_bcs_revers,
+                'total_courant' => $demande->fonctionnaires_bcs_total_courant,
+                'salaire_ancien' => $demande->fonctionnaires_bcs_salaire_ancien,
+            ],
+            'Collectivité Santé' => [
+                'designation' => 'Collectivité Santé',
+                'net' => $demande->collectivite_sante_net,
+                'revers' => $demande->collectivite_sante_revers,
+                'total_courant' => $demande->collectivite_sante_total_courant,
+                'salaire_ancien' => $demande->collectivite_sante_salaire_ancien,
+            ],
+            'Collectivité Education' => [
+                'designation' => 'Collectivité Education',
+                'net' => $demande->collectivite_education_net,
+                'revers' => $demande->collectivite_education_revers,
+                'total_courant' => $demande->collectivite_education_total_courant,
+                'salaire_ancien' => $demande->collectivite_education_salaire_ancien,
+            ],
+            'PersonnelsSaisonniers' => [
+                'designation' => 'Personnels Saisonniers',
+                'net' => $demande->personnels_saisonniers_net,
+                'revers' => $demande->personnels_saisonniers_revers,
+                'total_courant' => $demande->personnels_saisonniers_total_courant,
+                'salaire_ancien' => $demande->personnels_saisonniers_salaire_ancien,
+            ],  
+            'PersonnelsEpn' => [
+                'designation' => 'Personnels EPN',
+                'net' => $demande->epn_net,
+                'revers' => $demande->epn_revers,
+                'total_courant' => $demande->epn_total_courant,
+                'salaire_ancien' => $demande->epn_salaire_ancien,
+            ],
+            'PersonnelsCed' => [
+                'designation' => 'Personnels CED',
+                'net' => $demande->ced_net,
+                'revers' => $demande->ced_revers,
+                'total_courant' => $demande->ced_total_courant,
+                'salaire_ancien' => $demande->ced_salaire_ancien,
+            ],
+            'PersonnelsEcom' => [
+                'designation' => 'Personnels ECOM',
+                'net' => $demande->ecom_net,
+                'revers' => $demande->ecom_revers,
+                'total_courant' => $demande->ecom_total_courant,
+                'salaire_ancien' => $demande->ecom_salaire_ancien,
+            ],
+            'PersonnelsCfpCpam' => [
+                'designation' => 'Personnels CFPCPAM',
+                'net' => $demande->cfp_cpam_net,
+                'revers' => $demande->cfp_cpam_revers,
+                'total_courant' => $demande->cfp_cpam_total_courant,
+                'salaire_ancien' => $demande->cfp_cpam_salaire_ancien,
+            ],
+            // ... (même structure que dans la méthode detail)
+        ];
+    
+        $fileName = 'demande_fonds_' . $demande->id . '.csv';
+    
+        $headers = array(
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        );
+    
+        $columns = ['Désignation', 'Salaire Net', 'Revers/Salaire', 'Total mois courant', 'Salaire mois antérieur', 'Écart'];
+    
+        $callback = function() use($typesFonctionnaires, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+    
+            foreach ($typesFonctionnaires as $type => $data) {
+                fputcsv($file, [
+                    $data['designation'],
+                    $data['net'],
+                    $data['revers'],
+                    $data['total_courant'],
+                    $data['salaire_ancien'],
+                    $data['total_courant'] - $data['salaire_ancien']
+                ]);
+            }
+    
+            fclose($file);
+        };
+    
+        return response()->stream($callback, 200, $headers);
+    }
 }
