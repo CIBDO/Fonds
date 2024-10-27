@@ -19,7 +19,7 @@ class MessageController extends Controller
         // Récupère les messages reçus par l'utilisateur connecté via la table pivot et les trie par ordre décroissant
         $messages = Message::whereHas('recipients', function ($query) {
             $query->where('user_id', Auth::id());
-        })->orderBy('created_at', 'desc')->get();
+        })->orderBy('created_at', 'desc')->paginate(8);
         
         return view('messages.inbox', compact('messages'));
     }
@@ -27,7 +27,7 @@ class MessageController extends Controller
     // Afficher la boîte d'envoi
     public function sent()
     {
-        $messages = Message::where('sender_id', Auth::id())->orderBy('created_at', 'desc')->get();
+        $messages = Message::where('sender_id', Auth::id())->orderBy('created_at', 'desc')->paginate(8);
         return view('messages.sent', compact('messages'));
     }
 
@@ -57,13 +57,21 @@ class MessageController extends Controller
             'sent_at' => now(), // Enregistre l'heure d'envoi
         ]);
       
-        foreach ($request->receiver_ids as $receiverId) {
+        /* foreach ($request->receiver_ids as $receiverId) {
             $recipient = User::find($receiverId);
             if ($recipient) {
                 $recipient->notify(new MessageSent($message));
             }
+        } */
+        foreach ($request->receiver_ids as $receiverId) {
+            $recipient = User::find($receiverId);
+            if ($recipient) {
+                // Attachez le destinataire avec le type 'reception' pour la boîte de réception
+                $message->recipients()->attach($receiverId, ['type' => 'reception']);
+                $recipient->notify(new MessageSent($message));
+            }
         }
-
+        
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
                 $path = $file->storeAs('attachments', $file->getClientOriginalName(), 'public');

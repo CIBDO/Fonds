@@ -57,4 +57,9 @@
         </ul>
     @endif
 </div>
+
+<div class="pagination">
+    {{ $messages->links() }}
+</div>
+
 @endsection

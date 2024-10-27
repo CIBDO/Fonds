@@ -57,7 +57,7 @@
                                                             <span class="text-success">Nouveau message:</span>
                                                         <?php endif; ?>
                                                         <p>Vous avez un message de la part de <?php echo e($notification->data['sender_name'] ?? 'Expéditeur inconnu'); ?>.</p>
-                                                        <p>Sujet: <?php echo e($notification->data['subject'] ?? 'Sujet non disponible'); ?></p>
+                                                        <p>Objet: <?php echo e($notification->data['subject'] ?? 'Sujet non disponible'); ?></p>
                                                     </p>
                                                     
                                                     <p class="noti-time">

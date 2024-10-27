@@ -22,11 +22,19 @@ class Message extends Model
     {
         return $this->belongsTo(User::class, 'receiver_id');
     }
-    public function recipients()
+    /* public function recipients()
     {
         return $this->belongsToMany(User::class, 'message_recipients')
                     ->withPivot('created_at', 'received_at'); // Inclure les colonnes pivot que vous souhaitez récupérer
-    }
+    } */
+
+    public function recipients()
+{
+    return $this->belongsToMany(User::class, 'message_recipients')
+                ->withPivot('type', 'created_at', 'received_at', 'lu')
+                ->withTimestamps();
+}
+
 
 
 // Message.php

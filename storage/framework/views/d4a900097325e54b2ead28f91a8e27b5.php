@@ -53,6 +53,12 @@
         </ul>
     <?php endif; ?>
 </div>
+
+<div class="pagination">
+    <?php echo e($messages->links()); ?>
+
+</div>
+
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\BDO\Desktop\Fonds\resources\views/messages/sent.blade.php ENDPATH**/ ?>
