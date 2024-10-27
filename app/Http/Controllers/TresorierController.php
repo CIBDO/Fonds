@@ -2,63 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DemandeFonds;
 use Illuminate\Http\Request;
 
 class TresorierController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Affiche le tableau de bord pour le trésorier.
      */
     public function index()
     {
-        //
-    }
+        // Filtrer les demandes pour les demandes de trésorerie
+        $demandesFonds = DemandeFonds::with('poste')->whereHas('poste', function ($query) {
+            $query->where('id', 1); // ID du poste trésorier
+        })->paginate(8);
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+        // Calculs spécifiques
+        $fondsDemandes = DemandeFonds::sum('total_courant');
+        $fondsRecettes = DemandeFonds::sum('montant_disponible');
+        $fondsEnCours = DemandeFonds::sum('solde');
+        $paiementsEffectues = DemandeFonds::sum('montant');
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return view('dashboard.tresorier', compact('demandesFonds', 'fondsDemandes', 'fondsRecettes', 'fondsEnCours', 'paiementsEffectues'));
     }
 }

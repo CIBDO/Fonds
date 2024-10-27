@@ -1,6 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\DemandeFonds;
+use App\Models\Paiement;
+use App\Models\Poste;
+use App\Models\Tresorerie;
 
 use Illuminate\Http\Request;
 
@@ -9,10 +13,21 @@ class AdminController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+        public function index()
     {
-        //
+        $demandesFonds = DemandeFonds::with('poste')->paginate(8);
+        $fondsDemandes = DemandeFonds::sum('total_courant'); // Total des fonds envoyés
+        $fondsRecettes = DemandeFonds::sum('montant_disponible'); // Total des fonds envoyés
+        $fondsEnCours = DemandeFonds::sum('solde'); // Total des fonds demandés en cours
+        $paiementsEffectues = DemandeFonds::sum('montant'); // Nombre de fonds envoyés
+
+       /*  $dataTPR = DemandeFonds::where('type', 'TPR')->get();
+        $dataACCT = DemandeFonds::where('type', 'ACCT')->get();
+ */
+
+        return view('dashboard.admin', compact('demandesFonds', 'fondsDemandes', 'fondsRecettes', 'fondsEnCours', 'paiementsEffectues'));
     }
+    
 
     /**
      * Show the form for creating a new resource.

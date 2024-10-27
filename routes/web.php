@@ -17,13 +17,23 @@ use App\Http\Controllers\{
 };
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 // Route pour la page d'accueil (connexion)
 Route::get('/', fn() => view('auth.login'))->name('custom.login');
 
 // Route pour le tableau de bord
-Route::get('/dashboard', fn() => view('dashboard'))
-    ->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', function () {
+    $user = Auth::user();
+    if ($user && $user->role === 'admin') {
+        return redirect()->route('dashboard.admin');
+    } elseif ($user && $user->role === 'tresorier') {
+        return redirect()->route('dashboard.tresorier');
+    } elseif ($user && $user->role === 'acct') {
+        return redirect()->route('dashboard.acct');
+    }
+    // Ajoutez une redirection par défaut ou une gestion d'erreur ici si nécessaire
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 // Routes protégées par authentification
 Route::middleware(['auth'])->group(function () {
@@ -84,7 +94,7 @@ Route::middleware(['auth'])->group(function () {
 
 // Routes pour les trésoriers
 Route::middleware(['auth', 'role:tresorier'])->group(function () {
-    Route::get('/tresorier', [TresorierController::class, 'index'])->name('tresorier.dashboard');
+    Route::get('/tresorier', [TresorierController::class, 'index'])->name('dashboard.tresorier');
     Route::get('/demandes-fonds', [DemandeFondsController::class, 'index'])->name('demandes-fonds.index');
     Route::resource('demandes-fonds', DemandeFondsController::class);
 
@@ -92,7 +102,7 @@ Route::middleware(['auth', 'role:tresorier'])->group(function () {
 
 // Routes pour les comptes ACCT
 Route::middleware(['auth', 'role:acct,superviseur,tresorier,admin',])->group(function () {
-    Route::get('/acct', [AcctController::class, 'index'])->name('acct.dashboard');
+    Route::get('/acct', [AcctController::class, 'index'])->name('dashboard.acct');
     Route::put('/demandes-fonds/{id}/update-status', [DemandeFondsController::class, 'updateStatus'])->name('demandes-fonds.update-status');
     Route::get('/demandes-fonds', [DemandeFondsController::class, 'index'])->name('demandes-fonds.index');
     Route::resource('demandes-fonds', DemandeFondsController::class);
@@ -120,7 +130,7 @@ Route::middleware(['auth', 'role:superviseur'])->group(function () {
 
 // Routes pour les admins
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin', [AdminController::class, 'index'])->name('dashboard.admin');
 });
 
 // Ajoutez la route d'authentification
