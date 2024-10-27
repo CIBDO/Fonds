@@ -48,10 +48,10 @@
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <span><?php echo e($attachment->file_name); ?></span>
                             <div>
-                                <a href="<?php echo e(asset('storage/attachments/' . $attachment->file_name)); ?>" class="btn btn-outline-secondary btn-sm me-2" download>
+                                <a href="<?php echo e(route('attachments.download', $attachment->id)); ?>" class="btn btn-outline-secondary btn-sm me-2">
                                     <i class="fas fa-download"></i> Télécharger
                                 </a>
-                                <button class="btn btn-outline-info btn-sm" onclick="previewAttachment('<?php echo e(asset('storage/attachments/' . $attachment->file_name)); ?>')">
+                                <button class="btn btn-outline-info btn-sm" onclick="previewAttachment('<?php echo e(Storage::url($attachment->filepath)); ?>')">
                                     <i class="fas fa-eye"></i> Aperçu
                                 </button>
                             </div>
@@ -99,5 +99,6 @@ function previewAttachment(url) {
 }
 </script>
 <?php $__env->stopSection(); ?>
+
 
 <?php echo $__env->make('layouts.master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\BDO\Desktop\Fonds\resources\views/messages/show.blade.php ENDPATH**/ ?>

@@ -60,7 +60,6 @@ class MessageController extends Controller
         foreach ($request->receiver_ids as $receiverId) {
             $recipient = User::find($receiverId);
             if ($recipient) {
-                $message->recipients()->attach($receiverId, ['type' => 'reception']);
                 $recipient->notify(new MessageSent($message));
             }
         }
@@ -185,7 +184,7 @@ class MessageController extends Controller
     public function downloadAttachment($id)
     {
         $attachment = Attachment::findOrFail($id);
-        $filePath = public_path('storage/' . $attachment->filepath);
+        $filePath = storage_path('app/public/' . $attachment->filepath);
 
         if (file_exists($filePath)) {
             return response()->download($filePath);

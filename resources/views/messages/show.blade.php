@@ -44,10 +44,10 @@
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <span>{{ $attachment->file_name }}</span>
                             <div>
-                                <a href="{{ asset('storage/attachments/' . $attachment->file_name) }}" class="btn btn-outline-secondary btn-sm me-2" download>
+                                <a href="{{ route('attachments.download', $attachment->id) }}" class="btn btn-outline-secondary btn-sm me-2">
                                     <i class="fas fa-download"></i> Télécharger
                                 </a>
-                                <button class="btn btn-outline-info btn-sm" onclick="previewAttachment('{{ asset('storage/attachments/' . $attachment->file_name) }}')">
+                                <button class="btn btn-outline-info btn-sm" onclick="previewAttachment('{{ Storage::url($attachment->filepath) }}')">
                                     <i class="fas fa-eye"></i> Aperçu
                                 </button>
                             </div>
@@ -95,3 +95,4 @@ function previewAttachment(url) {
 }
 </script>
 @endsection
+

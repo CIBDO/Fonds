@@ -26,12 +26,9 @@ class MessageSent extends Notification
     {
         return [
             'message_id' => $this->message->id,
-            'sujet' => $this->message->subject,
-            'contenu' => $this->message->body,
-            'sender_id' => $this->message->sender_id,
+            'subject' => $this->message->subject,
             'sender_name' => $this->message->sender->name,
-            'type' => 'message',
-            'url' => url("/messages/{$this->message->id}")
+            // Ajoutez d'autres données si nécessaire
         ];
     }
 }
