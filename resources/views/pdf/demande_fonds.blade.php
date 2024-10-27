@@ -98,7 +98,7 @@
             <label>Poste : <strong>{{ $demandeFonds->poste->nom ?? 'N/A' }}</strong></label>
         </div>
         <div>
-            <label>liquidité: <strong>{{ number_format($demandeFonds->montant_disponible, 0, ',', ' ') }}</strong></label>
+            <label>Recette Douanière: <strong>{{ number_format($demandeFonds->montant_disponible, 0, ',', ' ') }}</strong></label>
         </div>
         <div>
             <label>Salaire du mois de : <strong>{{ $demandeFonds->mois . ' ' . $demandeFonds->annee }}</strong></label>

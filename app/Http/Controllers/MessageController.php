@@ -46,7 +46,7 @@ class MessageController extends Controller
             'body' => 'required|string',
             'receiver_ids' => 'required|array',
             'receiver_ids.*' => 'exists:users,id',
-            'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,docx,zip|max:2048'
+            'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,docx,zip|max:51200'
         ]);
          
         $message = Message::create([
@@ -82,7 +82,7 @@ class MessageController extends Controller
                 ]);
             }
         }
-
+        Alert::success('Message envoyé avec succès.');
         return redirect()->route('messages.sent')->with('success', 'Message envoyé avec succès.');
     }
 
@@ -162,6 +162,7 @@ class MessageController extends Controller
             }
         }
 
+        Alert::success('Réponse envoyée avec succès.'); 
         return redirect()->route('messages.index')->with('success', 'Réponse envoyée avec succès.');
     }
 
