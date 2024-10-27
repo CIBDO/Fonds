@@ -53,12 +53,13 @@
                                                     <p class="noti-details fw-bold text-primary">
                                                         <?php if($notification->type === 'App\Notifications\DemandeFondsStatusNotification'): ?>
                                                             <span class="text-danger">Demande de fonds:</span>
-                                                        <?php elseif($notification->type === 'App\Notifications\MessageSent'): ?>
+                                                         <?php elseif($notification->type === 'App\Notifications\MessageSent'): ?>
                                                             <span class="text-success">Nouveau message:</span>
                                                         <?php endif; ?>
-                                                        <?php echo e($notification->data['message'] ?? 'Message non disponible'); ?>
-
+                                                        <p>Vous avez un message de la part de <?php echo e($notification->data['sender_name'] ?? 'Expéditeur inconnu'); ?>.</p>
+                                                        <p>Sujet: <?php echo e($notification->data['subject'] ?? 'Sujet non disponible'); ?></p>
                                                     </p>
+                                                    
                                                     <p class="noti-time">
                                                         <span class="notification-time text-muted">
                                                             <?php echo e($notification->created_at->diffForHumans()); ?>

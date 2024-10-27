@@ -53,11 +53,13 @@
                                                     <p class="noti-details fw-bold text-primary">
                                                         @if($notification->type === 'App\Notifications\DemandeFondsStatusNotification')
                                                             <span class="text-danger">Demande de fonds:</span>
-                                                        @elseif($notification->type === 'App\Notifications\MessageSent')
+                                                         @elseif($notification->type === 'App\Notifications\MessageSent')
                                                             <span class="text-success">Nouveau message:</span>
                                                         @endif
-                                                        {{ $notification->data['message'] ?? 'Message non disponible' }}
+                                                        <p>Vous avez un message de la part de {{ $notification->data['sender_name'] ?? 'Expéditeur inconnu' }}.</p>
+                                                        <p>Objet: {{ $notification->data['subject'] ?? 'Sujet non disponible' }}</p>
                                                     </p>
+                                                    
                                                     <p class="noti-time">
                                                         <span class="notification-time text-muted">
                                                             {{ $notification->created_at->diffForHumans() }}
