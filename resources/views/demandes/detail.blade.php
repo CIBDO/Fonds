@@ -95,7 +95,7 @@
                 </div>
             </form>
         </div>
-        <table id="demandes-table" class="table table-bordered">
+        <table id="demandes-table" class="table table-bordered table-responsive">
             <thead>
                 <tr> 
                     <th>Poste</th>
@@ -294,38 +294,8 @@
     <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 
-     {{-- <script>
-        $(document).ready(function() {
-            $('#demandes-table').DataTable({
-                order: [[1, 'desc']],
-                dom: 'Bfrtip',
-                buttons: [
-                    'copy', 'csv', 'excel', 'pdf', 'print'
-                ],
-                language: {
-                    url: "//cdn.datatables.net/plug-ins/1.11.5/i18n/fr-FR.json"
-                },
-                rowGroup: {
-                    dataSrc: 3 // Groupe par désignation (index de la colonne)
-                },
-                ordering: true,
-                responsive: true,
-                pageLength: 8,
-                drawCallback: function(settings) {
-                    var api = this.api();
-                    var rows = api.rows({page: 'current'}).nodes();
-                    var last = null;
-     
-                    // Gestion des lignes de total
-                    $('.total-row').each(function() {
-                        $(this).prev('.data-row').after(this);
-                    });
-                }
-            });
-        });
-    </script> 
- --}}
  <script>
     $(document).ready(function() {
         var table = $('#demandes-table').DataTable({

@@ -56,7 +56,7 @@
                                                         @elseif($notification->type === 'App\Notifications\MessageSent')
                                                             <span class="text-success">Nouveau message:</span>
                                                         @endif
-                                                        {{ $notification->data['message'] }}
+                                                        {{ $notification->data['message'] ?? 'Message non disponible' }}
                                                     </p>
                                                     <p class="noti-time">
                                                         <span class="notification-time text-muted">

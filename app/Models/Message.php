@@ -9,7 +9,7 @@ class Message extends Model
 {
     use HasFactory;
     protected $dates = ['sent_at', 'received_at'];
-    protected $fillable = ['sender_id', 'receiver_id', 'subject', 'body', 'status'];
+    protected $fillable = ['sender_id', 'receiver_id', 'subject', 'body', 'status', 'sent_at'];
 
     // Relation avec l'expéditeur (sender)
     public function sender()
@@ -22,11 +22,13 @@ class Message extends Model
     {
         return $this->belongsTo(User::class, 'receiver_id');
     }
-
     public function recipients()
-{
-    return $this->belongsToMany(User::class, 'message_recipients')->withPivot('type', 'lu'); // Assurez-vous que le nom de la table pivot est correct
-}
+    {
+        return $this->belongsToMany(User::class, 'message_recipients')
+                    ->withPivot('created_at', 'received_at'); // Inclure les colonnes pivot que vous souhaitez récupérer
+    }
+
+
 // Message.php
 public function attachments()
 {
@@ -35,4 +37,5 @@ public function attachments()
 
 
 }
+
 

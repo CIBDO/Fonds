@@ -56,7 +56,7 @@
                                                         <?php elseif($notification->type === 'App\Notifications\MessageSent'): ?>
                                                             <span class="text-success">Nouveau message:</span>
                                                         <?php endif; ?>
-                                                        <?php echo e($notification->data['message']); ?>
+                                                        <?php echo e($notification->data['message'] ?? 'Message non disponible'); ?>
 
                                                     </p>
                                                     <p class="noti-time">

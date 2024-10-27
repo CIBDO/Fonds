@@ -2,14 +2,19 @@
 
 @section('content')
 <div class="container mt-5">
-    <div class="card">
-        <div class="card-header d-flex justify-content-between">
-            <h4>{{ $message->subject }}</h4>
-            <span class="badge bg-secondary">{{ $message->status == 'unread' ? 'Non lu' : 'Lu' }}</span>
+    <div class="card shadow">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="fas fa-envelope"></i> {{ $message->subject }}</h4>
+            <span class="badge bg-{{ $message->status == 'unread' ? 'warning' : 'success' }}">
+                {{ $message->status == 'unread' ? 'Non lu' : 'Lu' }}
+            </span>
         </div>
+
         <div class="card-body">
-            <div class="d-flex mb-3">
-                <img src="{{ asset('assets/img/profiles/' . ($message->sender->avatar ?: 'Avatar-01.png')) }}" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px;">
+            <!-- Informations sur l'expéditeur et les destinataires -->
+            <div class="d-flex align-items-center mb-3">
+                <img src="{{ asset('assets/img/profiles/' . ($message->sender->avatar ?: 'Avatar-01.png')) }}" alt="Avatar"
+                     class="rounded-circle" style="width: 50px; height: 50px;">
                 <div class="ms-3">
                     <strong>De:</strong> {{ $message->sender->name ?? 'Expéditeur inconnu' }}<br>
                     <strong>À:</strong> 
@@ -18,52 +23,61 @@
                     @endforeach
                 </div>
             </div>
-            <p><strong>Date et Heure d'envoi :</strong> {{ $message->sent_at ? \Carbon\Carbon::parse($message->sent_at)->format('d/m/Y H:i:s') : 'Non spécifiée' }}</p>
-            <p><strong>Date et Heure de réception :</strong> {{ $message->received_at ? \Carbon\Carbon::parse($message->received_at)->format('d/m/Y H:i:s') : 'Non spécifiée' }}</p>
+            
+            <p><strong>Date et Heure d'envoi :</strong> 
+                {{ $message->created_at ? $message->created_at->format('d/m/Y H:i:s') : 'Non défini' }}
+            </p>
+            
+            <p><strong>Date et Heure de réception :</strong> 
+                {{ $recipient && $recipient->pivot->received_at ? 
+                    \Carbon\Carbon::parse($recipient->pivot->received_at)->format('d/m/Y H:i:s') : 'Non défini' }}
+            </p>
 
-            <p>{{ $message->body }}</p>
+            <!-- Corps du message -->
+            <p class="mb-4">{{ $message->body }}</p>
 
+            <!-- Gestion des pièces jointes -->
             @if($message->attachments->isNotEmpty())
-                <h5>Pièces jointes :</h5>
-                <ul>
+                <h5><i class="fas fa-paperclip"></i> Pièces jointes</h5>
+                <ul class="list-group list-group-flush mb-3">
                     @foreach($message->attachments as $attachment)
-                        <li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
                             <span>{{ $attachment->file_name }}</span>
-                            <!-- Modifier le chemin pour utiliser le lien symbolique -->
-                            <a href="{{ asset('storage/' . $attachment->file_name) }}" class="btn btn-sm btn-secondary" download>
-                                <i class="fas fa-download"></i> Télécharger
-                            </a>
-                    
-                            @if (in_array(pathinfo($attachment->file_name, PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png', 'pdf']))
-                                <button class="btn btn-sm btn-info" onclick="previewAttachment('{{ asset('storage/' . $attachment->file_name) }}')">
-                                    Aperçu <i class="fas fa-eye"></i>
+                            <div>
+                                <a href="{{ asset('storage/attachments/' . $attachment->file_name) }}" class="btn btn-outline-secondary btn-sm me-2" download>
+                                    <i class="fas fa-download"></i> Télécharger
+                                </a>
+                                <button class="btn btn-outline-info btn-sm" onclick="previewAttachment('{{ asset('storage/attachments/' . $attachment->file_name) }}')">
+                                    <i class="fas fa-eye"></i> Aperçu
                                 </button>
-                            @endif
+                            </div>
                         </li>
                     @endforeach
                 </ul>
             @else
-                <p>Aucune pièce jointe.</p>
+                <p class="text-muted"><i class="fas fa-paperclip"></i> Aucune pièce jointe</p>
             @endif
         </div>
-        <div class="card-footer">
-            <a href="{{ route('messages.reply', $message->id) }}" class="btn btn-sm btn-primary">
+
+        <!-- Pied de page avec les boutons d'action -->
+        <div class="card-footer text-end">
+            <a href="{{ route('messages.reply', $message->id) }}" class="btn btn-primary">
                 <i class="fas fa-reply"></i> Répondre
             </a>
-            <a href="{{ route('messages.sent') }}" class="btn btn-sm btn-secondary">
-                Retour à la Boîte d'Envoi
+            <a href="{{ route('messages.sent') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour à la Boîte d'Envoi
             </a>
         </div>
     </div>
 </div>
 
-<!-- Modal d'aperçu -->
+<!-- Modal d'aperçu des pièces jointes -->
 <div class="modal fade" id="previewModal" tabindex="-1" role="dialog" aria-labelledby="previewModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="previewModalLabel">Aperçu de la pièce jointe</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <h5 class="modal-title" id="previewModalLabel"><i class="fas fa-eye"></i> Aperçu de la pièce jointe</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -77,7 +91,7 @@
 <script>
 function previewAttachment(url) {
     document.getElementById('attachmentPreview').src = url;
-    $('#previewModal').modal('show');
+    new bootstrap.Modal(document.getElementById('previewModal')).show();
 }
 </script>
 @endsection
