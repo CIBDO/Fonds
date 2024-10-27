@@ -51,15 +51,19 @@
                                             <div class="media d-flex">
                                                 <div class="media-body">
                                                     <p class="noti-details fw-bold text-primary">
-                                                        <?php if($notification->type === 'App\Notifications\DemandeFondsStatusNotification'): ?>
+                                                        <?php if($notification->type === 'App\Notifications\DemandeFondsNotification'): ?>
                                                             <span class="text-danger">Demande de fonds:</span>
-                                                         <?php elseif($notification->type === 'App\Notifications\MessageSent'): ?>
+                                                            <p><?php echo e($notification->data['message']); ?></p>
+                                                            <p>Montant: <?php echo e($notification->data['montant']); ?> FCFA</p>
+                                                        <?php elseif($notification->type === 'App\Notifications\DemandeFondsStatusNotification'): ?>
+                                                            <span class="text-warning">Mise à jour du statut:</span>
+                                                            <p><?php echo e($notification->data['message']); ?></p>
+                                                        <?php elseif($notification->type === 'App\Notifications\MessageSent'): ?>
                                                             <span class="text-success">Nouveau message:</span>
+                                                            <p>Expéditeur: <?php echo e($notification->data['sender_name']); ?></p>
+                                                            <p>Objet: <?php echo e($notification->data['subject']); ?></p>
                                                         <?php endif; ?>
-                                                        <p>Vous avez un message de la part de <?php echo e($notification->data['sender_name'] ?? 'Expéditeur inconnu'); ?>.</p>
-                                                        <p>Objet: <?php echo e($notification->data['subject'] ?? 'Sujet non disponible'); ?></p>
                                                     </p>
-                                                    
                                                     <p class="noti-time">
                                                         <span class="notification-time text-muted">
                                                             <?php echo e($notification->created_at->diffForHumans()); ?>
@@ -81,7 +85,8 @@
                             <a href="<?php echo e(route('demandes-fonds.situation')); ?>">Voir toutes les Notifications</a>
                         </div>
                     </div>
-                </li>        
+                </li>
+                       
                 <li class="nav-item zoom-screen me-2">
                     <a href="#" class="nav-link header-nav-list win-maximize">
                         <img src="<?php echo e(asset('assets/img/icons/header-icon-04.svg')); ?>" alt="">

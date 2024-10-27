@@ -35,7 +35,7 @@
                 </li>   
                 <li class="nav-item dropdown noti-dropdown me-2">
                     <a href="#" class="dropdown-toggle nav-link header-nav-list" data-bs-toggle="dropdown">
-                        <img src="{{asset('assets/img/icons/header-icon-05.svg')}}" alt="">
+                        <img src="{{ asset('assets/img/icons/header-icon-05.svg') }}" alt="">
                         <span class="badge rounded-pill bg-danger notification-count">{{ auth()->user()->unreadNotifications->count() }}</span>
                     </a>
                     <div class="dropdown-menu notifications">
@@ -51,15 +51,19 @@
                                             <div class="media d-flex">
                                                 <div class="media-body">
                                                     <p class="noti-details fw-bold text-primary">
-                                                        @if($notification->type === 'App\Notifications\DemandeFondsStatusNotification')
+                                                        @if($notification->type === 'App\Notifications\DemandeFondsNotification')
                                                             <span class="text-danger">Demande de fonds:</span>
-                                                         @elseif($notification->type === 'App\Notifications\MessageSent')
+                                                            <p>{{ $notification->data['message'] }}</p>
+                                                            <p>Montant: {{ $notification->data['montant'] }} FCFA</p>
+                                                        @elseif($notification->type === 'App\Notifications\DemandeFondsStatusNotification')
+                                                            <span class="text-warning">Mise à jour du statut:</span>
+                                                            <p>{{ $notification->data['message'] }}</p>
+                                                        @elseif($notification->type === 'App\Notifications\MessageSent')
                                                             <span class="text-success">Nouveau message:</span>
+                                                            <p>Expéditeur: {{ $notification->data['sender_name'] }}</p>
+                                                            <p>Objet: {{ $notification->data['subject'] }}</p>
                                                         @endif
-                                                        <p>Vous avez un message de la part de {{ $notification->data['sender_name'] ?? 'Expéditeur inconnu' }}.</p>
-                                                        <p>Objet: {{ $notification->data['subject'] ?? 'Sujet non disponible' }}</p>
                                                     </p>
-                                                    
                                                     <p class="noti-time">
                                                         <span class="notification-time text-muted">
                                                             {{ $notification->created_at->diffForHumans() }}
@@ -80,7 +84,8 @@
                             <a href="{{ route('demandes-fonds.situation') }}">Voir toutes les Notifications</a>
                         </div>
                     </div>
-                </li>        
+                </li>
+                       
                 <li class="nav-item zoom-screen me-2">
                     <a href="#" class="nav-link header-nav-list win-maximize">
                         <img src="{{asset('assets/img/icons/header-icon-04.svg')}}" alt="">

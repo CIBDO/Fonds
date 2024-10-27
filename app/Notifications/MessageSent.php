@@ -28,6 +28,7 @@ class MessageSent extends Notification
             'message_id' => $this->message->id,
             'subject' => $this->message->subject,
             'sender_name' => $this->message->sender->name,
+            'url' => route('messages.index', $this->message->id)
             // Ajoutez d'autres données si nécessaire
         ];
     }
