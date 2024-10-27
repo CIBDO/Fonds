@@ -26,9 +26,9 @@
     <div class="login-wrapper">
         <div class="container">
             <div class="loginbox">
-                <div class="login-left">
-                    <img class="img-fluid" src="{{ asset('assets/img/login.jpg') }}" alt="Logo">
-                </div>
+                {{-- <div class="login-left">
+                    <img class="img-fluid" src="{{ asset('#') }}" alt="Logo">
+                </div> --}}
                 <div class="login-right">
                     <div class="login-right-wrap">
                         <h2>S'identifier</h2>

@@ -33,7 +33,7 @@ class DemandeFondsNotification extends Notification
             'message' => "Nouvelle demande de fonds créée par {$this->demandeFonds->user->name} pour {$this->demandeFonds->poste->nom}",
             'type' => 'demande_fonds',
             /* 'url' => url("/demandes-fonds/{$this->demandeFonds->id}")  */
-            'url' => route('demandes-fonds.situation')
+            'url' => route('demandes-fonds.situationDF')
         ];
     }
 }

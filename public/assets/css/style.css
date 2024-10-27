@@ -10,6 +10,7 @@ body {
     height: 100%;
     line-height: 1.5;
     overflow-x: hidden
+    
 }
 
 h1,
@@ -2783,6 +2784,7 @@ footer p {
     margin: 0;
     padding: 0;
     position: relative
+    
 }
 
 .sidebar-menu li a {
@@ -3075,10 +3077,11 @@ footer p {
 }
 
 .login-wrapper {
-    width: 100%;
-    height: 100%;
+    width: 10%;
+    height: 10%;
     display: table-cell;
-    vertical-align: middle
+    vertical-align: middle;
+    background-image: url(../img/fond.png);
 }
 
 .login-wrapper .loginbox {
@@ -3087,7 +3090,7 @@ footer p {
     box-shadow: 0 0 10px rgba(0, 0, 0, .1);
     display: flex;
     margin: 1.875rem auto;
-    max-width: 800px;
+    max-width: 400px;
     min-height: 500px;
     width: 100%
 }
@@ -3106,7 +3109,6 @@ footer p {
 
 .login-wrapper .loginbox .login-left:before {
     content: "";
-    background-image: url(../img/login-icon-01.png);
     position: absolute;
     top: 0;
     left: 0;
@@ -3116,7 +3118,6 @@ footer p {
 
 .login-wrapper .loginbox .login-left:after {
     content: "";
-    background-image: url(../img/login-icon-02.png);
     position: absolute;
     top: 0;
     right: 0;
@@ -3129,7 +3130,7 @@ footer p {
     display: flex;
     justify-content: center;
     padding: 40px;
-    width: 400px
+    width: 400px;
 }
 
 .login-wrapper .loginbox .login-right .login-right-wrap {
