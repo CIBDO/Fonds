@@ -98,7 +98,7 @@
             <label>Poste : <strong><?php echo e($demandeFonds->poste->nom ?? 'N/A'); ?></strong></label>
         </div>
         <div>
-            <label>liquidité: <strong><?php echo e(number_format($demandeFonds->montant_disponible, 0, ',', ' ')); ?></strong></label>
+            <label>Recette Douanière: <strong><?php echo e(number_format($demandeFonds->montant_disponible, 0, ',', ' ')); ?></strong></label>
         </div>
         <div>
             <label>Salaire du mois de : <strong><?php echo e($demandeFonds->mois . ' ' . $demandeFonds->annee); ?></strong></label>

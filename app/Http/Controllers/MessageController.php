@@ -46,7 +46,7 @@ class MessageController extends Controller
             'body' => 'required|string',
             'receiver_ids' => 'required|array',
             'receiver_ids.*' => 'exists:users,id',
-            'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,docx,zip|max:51200'
+            'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,xlsx,xls,docx,zip|max:51200'
         ]);
          
         $message = Message::create([
