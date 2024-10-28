@@ -60,7 +60,7 @@
                                                             <p><?php echo e($notification->data['message']); ?></p>
                                                         <?php elseif($notification->type === 'App\Notifications\MessageSent'): ?>
                                                             <span class="text-success">Nouveau message:</span>
-                                                            <p>Expéditeur: <?php echo e($notification->data['sender_name']); ?></p>
+                                                            <p> <?php echo e($notification->data['sender_name']); ?></p>
                                                             <p>Objet: <?php echo e($notification->data['subject']); ?></p>
                                                         <?php endif; ?>
                                                     </p>

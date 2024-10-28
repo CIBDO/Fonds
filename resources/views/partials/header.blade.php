@@ -60,7 +60,7 @@
                                                             <p>{{ $notification->data['message'] }}</p>
                                                         @elseif($notification->type === 'App\Notifications\MessageSent')
                                                             <span class="text-success">Nouveau message:</span>
-                                                            <p>Expéditeur: {{ $notification->data['sender_name'] }}</p>
+                                                            <p> {{ $notification->data['sender_name'] }}</p>
                                                             <p>Objet: {{ $notification->data['subject'] }}</p>
                                                         @endif
                                                     </p>
