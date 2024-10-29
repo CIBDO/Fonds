@@ -90,6 +90,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('messages/{id}/reply', [MessageController::class, 'showReplyForm'])->name('messages.reply.form');
     Route::get('attachments/preview/{filename}', [MessageController::class, 'preview'])->name('attachments.preview');
     Route::get('attachments/download/{id}', [MessageController::class, 'downloadAttachment'])->name('attachments.download');
+    Route::get('/messages/{id}/forward', [MessageController::class, 'forward'])->name('messages.forward');
+    Route::post('/messages/{id}/forward', [MessageController::class, 'forwardStore'])->name('messages.forward.store');
+
+    Route::get('/messages/{id}/replyAll', [MessageController::class, 'replyAll'])->name('messages.replyAll');
+    Route::post('/messages/{id}/replyAll', [MessageController::class, 'replyAllStore'])->name('messages.replyAll.store');
+    
+    Route::get('/messages/{id}/replyAll', [MessageController::class, 'showReplyAllForm'])->name('messages.replyAllForm');
+    Route::post('/messages/{id}/replyAll', [MessageController::class, 'replyAll'])->name('messages.replyAll');
+
+
 });
 
 // Routes pour les trésoriers

@@ -1,6 +1,15 @@
 @extends('layouts.master')
 
 @section('content')
+@if ($errors->any())
+<div class="alert alert-danger">
+    <ul>
+        @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
 <div class="container mt-5">
     <div class="card shadow">
         <div class="card-header d-flex justify-content-between align-items-center">
@@ -60,14 +69,31 @@
         </div>
 
         <!-- Pied de page avec les boutons d'action -->
-        <div class="card-footer text-end">
+        {{-- <div class="card-footer text-end">
             <a href="{{ route('messages.reply', $message->id) }}" class="btn btn-primary">
                 <i class="fas fa-reply"></i> Répondre
             </a>
             <a href="{{ route('messages.sent') }}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Retour à la Boîte d'Envoi
             </a>
+        </div> --}}
+        <!-- Pied de page avec les boutons d'action -->
+        <div class="card-footer text-end">
+            <a href="{{ route('messages.reply', $message->id) }}" class="btn btn-primary">
+                <i class="fas fa-reply"></i> Répondre
+            </a>
+            <a href="{{ route('messages.replyAllForm', $message->id) }}" class="btn btn-warning">
+                <i class="fas fa-reply-all"></i> Répondre à tous
+            </a>
+            
+            <a href="{{ route('messages.forward', $message->id) }}" class="btn btn-success">
+                <i class="fas fa-share"></i> Transférer
+            </a>
+            <a href="{{ route('messages.sent') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour à la Boîte d'Envoi
+            </a>
         </div>
+
     </div>
 </div>
 

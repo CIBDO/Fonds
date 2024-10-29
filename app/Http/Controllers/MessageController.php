@@ -134,7 +134,7 @@ class MessageController extends Controller
     {
         $request->validate([
             'body' => 'required|string',
-            'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,docx,zip|max:2048'
+            'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,xlsx,xls,docx,zip|max:2048'
         ]);
 
         $originalMessage = Message::findOrFail($id);
@@ -164,7 +164,7 @@ class MessageController extends Controller
 
         Alert::success('Réponse envoyée avec succès.'); 
         return redirect()->route('messages.index')->with('success', 'Réponse envoyée avec succès.');
-    }
+    } 
 
     // Afficher le formulaire de réponse
     public function showReplyForm($id)
@@ -201,4 +201,120 @@ class MessageController extends Controller
 
         return redirect()->back()->with('error', 'Fichier non trouvé.');
     }
+
+    // Afficher le formulaire de transfert de message
+    public function forward($id)
+    {
+        $originalMessage = Message::with(['attachments'])->findOrFail($id);
+        $users = User::where('id', '!=', Auth::id())->get();
+
+        return view('messages.forward', compact('originalMessage', 'users'));
+    }
+
+    // Traiter le transfert de message
+    public function forwardStore(Request $request, $id)
+    {
+        $request->validate([
+            'subject' => 'required|string|max:255',
+            'body' => 'required|string',
+            'receiver_ids' => 'required|array',
+            'receiver_ids.*' => 'exists:users,id',
+            'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,xlsx,xls,docx,zip|max:51200'
+        ]);
+
+        $originalMessage = Message::findOrFail($id);
+
+        $forwardedMessage = Message::create([
+            'subject' => 'FW: ' . $originalMessage->subject,
+            'body' => $request->body,
+            'sender_id' => Auth::id(),
+            'status' => 'unread',
+            'sent_at' => now(),
+        ]);
+
+        foreach ($request->receiver_ids as $receiverId) {
+            $forwardedMessage->recipients()->attach($receiverId, ['type' => 'reception']);
+            User::find($receiverId)?->notify(new MessageSent($forwardedMessage));
+        }
+
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                $path = $file->storeAs('attachments', $file->getClientOriginalName(), 'public');
+                Attachment::create([
+                    'filename' => $file->getClientOriginalName(),
+                    'filepath' => $path,
+                    'message_id' => $forwardedMessage->id,
+                ]);
+            }
+        }
+
+        Alert::success('Message transféré avec succès.');
+        return redirect()->route('messages.sent')->with('success', 'Message transféré avec succès.');
+    }
+
+    public function replyAll($id, Request $request)
+    {
+       /*  dd('Méthode replyAll atteinte'); */
+      
+        $request->validate([
+            'body' => 'required|string',
+            'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,xlsx,xls,docx,zip|max:2048'
+        ]);
+        
+        $originalMessage = Message::with('recipients')->findOrFail($id);
+
+        // Créer le message de réponse
+        $replyMessage = Message::create([
+            'subject' => 'RE: ' . $originalMessage->subject,
+            'body' => $request->body,
+            'sender_id' => Auth::id(),
+            'status' => 'unread',
+            'sent_at' => now(),
+            'parent_id' => $originalMessage->id,
+        ]);
+        
+            // Récupérer les destinataires et l'expéditeur du message original
+        $recipientIds = $originalMessage->recipients->pluck('id')->toArray();
+        $recipientIds[] = $originalMessage->sender_id; // Inclure l'expéditeur original
+
+        // Exclure l'ID de l'utilisateur actuel pour éviter de s'envoyer le message à soi-même
+        $currentUserId = Auth::id();
+        $recipientIds = array_filter($recipientIds, fn($id) => $id !== $currentUserId);
+
+        // Attacher les destinataires uniques au message de réponse
+        $replyMessage->recipients()->attach(array_unique($recipientIds), ['type' => 'reception']);
+
+
+        // Envoyer une notification à chaque destinataire
+        foreach ($recipientIds as $recipientId) {
+            $recipient = User::find($recipientId);
+            if ($recipient) {
+                $recipient->notify(new MessageSent($replyMessage));
+            }
+        }
+
+        // Ajouter les pièces jointes
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                $fileName = time() . '-' . $file->getClientOriginalName();
+                $filePath = $file->storeAs('public/attachments', $fileName);
+                Attachment::create([
+                    'message_id' => $replyMessage->id,
+                    'filename' => $fileName,
+                    'filepath' => 'attachments/' . $fileName,
+                ]);
+            }
+        }
+
+        Alert::success('Réponse envoyée avec succès à tous les destinataires.');
+        return redirect()->route('messages.index')->with('success', 'Réponse envoyée avec succès à tous les destinataires.');
+    }
+
+        public function showReplyAllForm($id)
+    {
+        $message = Message::with('recipients', 'sender')->findOrFail($id);
+        return view('messages.replyAll', compact('message'));
+    }
+
+
 }

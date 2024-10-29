@@ -66,6 +66,7 @@
                                 <th>Poste</th>
                                 <th>Fonds demandés</th>
                                 <th>Fonds alloués</th>
+                                <th>Ecart</th>
                                
                             </tr>
                         </thead>
@@ -77,6 +78,7 @@
                                 <td><?php echo e($demande->poste->nom); ?></td>
                                 <td><?php echo e(number_format($demande->total_courant, 0, ',', ' ')); ?></td>
                                 <td><?php echo e(number_format($demande->montant, 0, ',', ' ')); ?></td>
+                                <td><?php echo e(number_format($demande->total_courant - $demande->montant, 0, ',', ' ')); ?></td>
                             </tr>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>   
                         </tbody>

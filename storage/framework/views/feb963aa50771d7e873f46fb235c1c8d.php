@@ -38,7 +38,21 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="mois">Mois :</label>
-                    <input type="text" name="mois" class="form-control" placeholder="Ex : Septembre" required>
+                    <select name="mois" class="form-select" required>
+                        <option value="" disabled selected>-- Sélectionnez un mois --</option>
+                        <option value="Janvier">Janvier</option>
+                        <option value="Fevrier">Février</option>
+                        <option value="Mars">Mars</option>
+                        <option value="Avril">Avril</option>
+                        <option value="Mai">Mai</option>
+                        <option value="Juin">Juin</option>
+                        <option value="Juillet">Juillet</option>
+                        <option value="Aout">Août</option>
+                        <option value="Septembre">Septembre</option>
+                        <option value="Octobre">Octobre</option>
+                        <option value="Novembre">Novembre</option>
+                        <option value="Decembre">Décembre</option>
+                    </select>
                 </div>
             </div>
         </div>

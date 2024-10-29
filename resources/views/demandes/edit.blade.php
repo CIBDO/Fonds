@@ -32,7 +32,21 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="mois">Mois :</label>
-                    <input type="text" name="mois" class="form-control" value="{{ $demande->mois }}" required>
+                    <select name="mois" class="form-select" required>
+                        <option value="" disabled selected>-- Sélectionnez un mois --</option>
+                        <option value="Janvier" {{ $demande->mois == 'Janvier' ? 'selected' : '' }}>Janvier</option>
+                        <option value="Février" {{ $demande->mois == 'Février' ? 'selected' : '' }}>Février</option>
+                        <option value="Mars" {{ $demande->mois == 'Mars' ? 'selected' : '' }}>Mars</option>
+                        <option value="Avril" {{ $demande->mois == 'Avril' ? 'selected' : '' }}>Avril</option>
+                        <option value="Mai" {{ $demande->mois == 'Mai' ? 'selected' : '' }}>Mai</option>
+                        <option value="Juin" {{ $demande->mois == 'Juin' ? 'selected' : '' }}>Juin</option>
+                        <option value="Juillet" {{ $demande->mois == 'Juillet' ? 'selected' : '' }}>Juillet</option>
+                        <option value="Aout" {{ $demande->mois == 'Aout' ? 'selected' : '' }}>Août</option>
+                        <option value="Septembre" {{ $demande->mois == 'Septembre' ? 'selected' : '' }}>Septembre</option>
+                        <option value="Octobre" {{ $demande->mois == 'Octobre' ? 'selected' : '' }}>Octobre</option>
+                        <option value="Novembre" {{ $demande->mois == 'Novembre' ? 'selected' : '' }}>Novembre</option>
+                        <option value="Decembre" {{ $demande->mois == 'Decembre' ? 'selected' : '' }}>Décembre</option>
+                    </select>
                 </div>
             </div>
             <div class="col-md-4">

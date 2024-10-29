@@ -77,7 +77,7 @@ class DemandeFondsController extends Controller
         $request->validate([
             'date' => 'nullable|date',
             'date_reception' => 'nullable|date',
-            'mois' => 'nullable|string',
+            'mois' => 'required|string',
             'annee' => 'nullable|numeric',
             'poste_id' => 'nullable|integer',
             'status' => 'nullable|string',
@@ -219,7 +219,7 @@ class DemandeFondsController extends Controller
     
         // Valider les champs de la requête
         $request->validate([
-            'mois' => 'nullable|string|max:20',
+            'mois' => 'required|string',
             'annee' => 'nullable|numeric',
             'total_demande' => 'nullable|numeric',
             'status' => 'nullable|string',

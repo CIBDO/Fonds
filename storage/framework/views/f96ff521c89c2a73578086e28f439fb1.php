@@ -1,6 +1,15 @@
 
 
 <?php $__env->startSection('content'); ?>
+<?php if($errors->any()): ?>
+<div class="alert alert-danger">
+    <ul>
+        <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <li><?php echo e($error); ?></li>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    </ul>
+</div>
+<?php endif; ?>
 <div class="container mt-5">
     <div class="card shadow">
         <div class="card-header d-flex justify-content-between align-items-center">
@@ -64,14 +73,24 @@
         </div>
 
         <!-- Pied de page avec les boutons d'action -->
+        
+        <!-- Pied de page avec les boutons d'action -->
         <div class="card-footer text-end">
             <a href="<?php echo e(route('messages.reply', $message->id)); ?>" class="btn btn-primary">
                 <i class="fas fa-reply"></i> Répondre
+            </a>
+            <a href="<?php echo e(route('messages.replyAllForm', $message->id)); ?>" class="btn btn-warning">
+                <i class="fas fa-reply-all"></i> Répondre à tous
+            </a>
+            
+            <a href="<?php echo e(route('messages.forward', $message->id)); ?>" class="btn btn-success">
+                <i class="fas fa-share"></i> Transférer
             </a>
             <a href="<?php echo e(route('messages.sent')); ?>" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Retour à la Boîte d'Envoi
             </a>
         </div>
+
     </div>
 </div>
 

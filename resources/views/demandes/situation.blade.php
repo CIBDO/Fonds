@@ -66,6 +66,7 @@
                                 <th>Poste</th>
                                 <th>Fonds demandés</th>
                                 <th>Fonds alloués</th>
+                                <th>Ecart</th>
                                {{--  <th class="text-end">Action</th> --}}
                             </tr>
                         </thead>
@@ -77,6 +78,7 @@
                                 <td>{{ $demande->poste->nom }}</td>
                                 <td>{{ number_format($demande->total_courant, 0, ',', ' ') }}</td>
                                 <td>{{ number_format($demande->montant, 0, ',', ' ') }}</td>
+                                <td>{{ number_format($demande->total_courant - $demande->montant, 0, ',', ' ') }}</td>
                             </tr>
                             @endforeach   
                         </tbody>

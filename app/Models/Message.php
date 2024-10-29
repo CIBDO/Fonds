@@ -36,7 +36,6 @@ class Message extends Model
 }
 
 
-
 // Message.php
 public function attachments()
 {

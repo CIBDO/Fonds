@@ -32,7 +32,21 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="mois">Mois :</label>
-                    <input type="text" name="mois" class="form-control" value="<?php echo e($demande->mois); ?>" required>
+                    <select name="mois" class="form-select" required>
+                        <option value="" disabled selected>-- Sélectionnez un mois --</option>
+                        <option value="Janvier" <?php echo e($demande->mois == 'Janvier' ? 'selected' : ''); ?>>Janvier</option>
+                        <option value="Février" <?php echo e($demande->mois == 'Février' ? 'selected' : ''); ?>>Février</option>
+                        <option value="Mars" <?php echo e($demande->mois == 'Mars' ? 'selected' : ''); ?>>Mars</option>
+                        <option value="Avril" <?php echo e($demande->mois == 'Avril' ? 'selected' : ''); ?>>Avril</option>
+                        <option value="Mai" <?php echo e($demande->mois == 'Mai' ? 'selected' : ''); ?>>Mai</option>
+                        <option value="Juin" <?php echo e($demande->mois == 'Juin' ? 'selected' : ''); ?>>Juin</option>
+                        <option value="Juillet" <?php echo e($demande->mois == 'Juillet' ? 'selected' : ''); ?>>Juillet</option>
+                        <option value="Aout" <?php echo e($demande->mois == 'Aout' ? 'selected' : ''); ?>>Août</option>
+                        <option value="Septembre" <?php echo e($demande->mois == 'Septembre' ? 'selected' : ''); ?>>Septembre</option>
+                        <option value="Octobre" <?php echo e($demande->mois == 'Octobre' ? 'selected' : ''); ?>>Octobre</option>
+                        <option value="Novembre" <?php echo e($demande->mois == 'Novembre' ? 'selected' : ''); ?>>Novembre</option>
+                        <option value="Decembre" <?php echo e($demande->mois == 'Decembre' ? 'selected' : ''); ?>>Décembre</option>
+                    </select>
                 </div>
             </div>
             <div class="col-md-4">
