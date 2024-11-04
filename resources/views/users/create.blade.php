@@ -67,10 +67,19 @@
                             </div>
                             <div class="form-group custom-select">
                                 <label>Statut <span class="login-danger">*</span></label>
-                                <select class="select2" name="active">
+                                <select class="form-select" name="active">
                                     <option value="1" {{ old('active') == '1' ? 'selected' : '' }}>Actif</option>
                                     <option value="0" {{ old('active') == '0' ? 'selected' : '' }}>Inactif</option>
                                     <span class="profile-views"><i class="fas fa-envelope"></i></span>
+                                </select>
+                            </div>
+                            <div class="form-group custom-select">
+                                <label>Poste <span class="login-danger">*</span></label>
+                                <select class="form-select" name="poste_id">
+                                    <option value="">Choisir un poste</option>
+                                    @foreach ($postes as $poste)
+                                        <option value="{{ $poste->id }}">{{ $poste->nom }}</option>
+                                    @endforeach
                                 </select>
                             </div>
 

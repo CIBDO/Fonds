@@ -7,6 +7,7 @@ use Illuminate\Console\View\Components\Alert;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Poste;
 
 class UserController extends Controller
 {
@@ -20,15 +21,17 @@ class UserController extends Controller
     public function index()
     {
         $this->authorizeRole(['admin']);
+        $postes = Poste::all();
         // On récupère tous les utilisateurs
         $users = User::all();
-        return view('users.index', compact('users'));
+        return view('users.index', compact('users', 'postes'));
     }
 
     public function create()
     {
         $this->authorizeRole(['admin']);
-        return view('users.create');
+        $postes = Poste::all();
+        return view('users.create', compact('postes'));
     }
 
     public function store(Request $request)
@@ -40,6 +43,7 @@ class UserController extends Controller
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|in:tresorier,acct,direction,superviseur,admin',
             'active' => 'required|boolean', // Ajouter un champ pour le statut actif/inactif
+            'poste_id' => 'required|exists:postes,id',
         ]);
 
         User::create([
@@ -47,7 +51,8 @@ class UserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
-            'active' => $request->active, // Ajouter l'activation
+                'active' => $request->active, // Ajouter l'activation
+            'poste_id' => $request->poste_id,
         ]);
         alert()->success('Success', 'Utilisateur créé avec succès.');
         return redirect()->route('users.index');
@@ -56,7 +61,8 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $this->authorizeRole(['admin']);
-        return view('users.edit', compact('user'));
+        $postes = Poste::all();
+        return view('users.edit', compact('user', 'postes'));
     }
 
     public function update(Request $request, User $user)
@@ -67,9 +73,10 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'role' => 'required|in:tresorier,acct,direction,superviseur,admin',
             'active' => 'required|boolean', // Validation du statut actif/inactif
+            'poste_id' => 'required|exists:postes,id',
         ]);
 
-        $user->update($request->only(['name', 'email', 'role', 'active']));
+        $user->update($request->only(['name', 'email', 'role', 'active', 'poste_id']));
 
         if ($request->filled('password')) {
             $request->validate([

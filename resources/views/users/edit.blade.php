@@ -75,6 +75,15 @@
                                     <option value="0" {{ old('active', $user->active) == '0' ? 'selected' : '' }}>Inactif</option>
                                 </select>
                             </div>    
+                            <div class="form-group custom-select">
+                                <label>Poste <span class="login-danger">*</span></label>
+                                <select class="form-select" name="poste_id">
+                                    <option value="">Choisir un poste</option>
+                                    @foreach ($postes as $poste)
+                                        <option value="{{ $poste->id }}" {{ old('poste_id', $user->poste_id) == $poste->id ? 'selected' : '' }}>{{ $poste->nom }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                             <div class="dont-have">Avez-vous déjà un compte ? <a href="{{ route('login') }}">Se Connecter</a></div>
 
                             <!-- Bouton Update -->

@@ -54,7 +54,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="row mb-4">
             <!-- Champ Année -->
             <div class="col-md-4">
@@ -63,20 +63,23 @@
                     <input type="number" name="annee" class="form-control" value="{{ now()->format('Y') }}" required>
                 </div>
             </div>
-        
+
             <!-- Champ Service -->
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="poste">Poste/Service :</label>
-                    <select name="poste_id" class="form-select" required>
-                        <option value="" disabled selected>-- Sélectionnez un poste --</option>
+                    <select name="poste_id" class="form-select" disabled>
+                        <option value="" disabled>-- Sélectionnez un poste --</option>
                         @foreach($postes as $poste)
-                            <option value="{{ $poste->id }}">{{ $poste->nom }}</option>
+                            <option value="{{ $poste->id }}" {{ Auth::user()->poste_id == $poste->id ? 'selected' : '' }}>
+                                {{ $poste->nom }}
+                            </option>
                         @endforeach
                     </select>
+                    <input type="hidden" name="poste_id" value="{{ Auth::user()->poste_id }}">
                 </div>
             </div>
-        
+
             <!-- Champ Utilisateur connecté -->
             <div class="col-md-4">
                 <div class="form-group">
@@ -84,7 +87,7 @@
                     <input type="text" class="form-control" value="{{ Auth::user()->name }}" readonly>
                 </div>
             </div>
-            
+
             <input type="hidden" name="status" value="en_attente">
         </div>
 
@@ -94,7 +97,7 @@
         <input type="hidden" id="total_net" name="total_net" value="0">
         <input type="hidden" id="total_revers" name="total_revers" value="0">
         <input type="hidden" id="total_courant" name="total_courant" value="0">
-        
+
         <!-- Champs pour Montant Disponible et Solde -->
         <div class="row mb-4">
             <div class="col-md-4">
@@ -109,16 +112,16 @@
                     <input type="number" id="solde" name="solde" class="form-control" value="0" readonly>
                 </div>
             </div>
-    
+
         </div>
 
         <!-- Bouton d'envoi -->
         <div class="button-container" style="text-align: center; margin-top: 20px;">
             <button type="submit" class="submit-button">Soumettre la demande</button>
         </div>
-        
+
     </form>
-    
+
 </div>
 
 <script>

@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="<?php echo e(asset('assets/plugins/fontawesome/css/all.min.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/style.css')); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
     <!-- Inclure DataTables CSS -->
     
     <link href="<?php echo e(asset('assets/css/notifications.css')); ?>" rel="stylesheet">
@@ -20,7 +21,7 @@
 </head>
 
 <body>
-    
+
     <div class="main-wrapper">
 
         <?php echo $__env->make('partials.header', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
@@ -30,7 +31,7 @@
             <?php echo $__env->yieldContent('content'); ?>
             <?php echo $__env->make('partials.footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
             
-        </div>  
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -46,8 +47,9 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
     <script src="<?php echo e(asset('assets/js/notifications.js')); ?>"></script>
-    <?php echo $__env->yieldContent('add-js'); ?> 
-   
+    <script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
+    <?php echo $__env->yieldContent('add-js'); ?>
+
 </body>
 
 </html>

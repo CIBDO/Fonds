@@ -136,7 +136,7 @@
             <td><input type="number" name="ced_salaire_ancien" class="form-control ancien_salaire"></td>
             <td><input type="number" name="ced_total_demande" class="form-control total_demande" readonly></td>
         </tr>
-        
+
         <tr>
             <td>ECOM</td>
             <td><input type="number" name="ecom_net" class="form-control net"></td>
@@ -148,10 +148,10 @@
 
         <tr>
             <td>CFP-CPAM</td>
-            <td><input type="number" name="cfp_cpam_net" class="form-control net"></td>
-            <td><input type="number" name="cfp_cpam_revers" class="form-control revers"></td>
-            <td><input type="number" name="cfp_cpam_total_courant" class="form-control total_courant"></td>
-            <td><input type="number" name="cfp_cpam_salaire_ancien" class="form-control ancien_salaire"></td>
+            <td><input type="number" name="cfp_cpam_net" class="form-control net" ></td>
+            <td><input type="number" name="cfp_cpam_revers" class="form-control revers" ></td>
+            <td><input type="number" name="cfp_cpam_total_courant" class="form-control total_courant" ></td>
+            <td><input type="number" name="cfp_cpam_salaire_ancien" class="form-control ancien_salaire" ></td>
             <td><input type="number" name="cfp_cpam_total_demande" class="form-control total_demande" readonly></td>
         </tr>
 
@@ -165,6 +165,7 @@
             <td><input type="number" name="total_demande" class="form-control" id="total_demande" readonly></td>
         </tr>
     </tbody>
-    
+
 </table>
+
 <?php /**PATH C:\Users\BDO\Desktop\Fonds\resources\views/demandes/_form.blade.php ENDPATH**/ ?>

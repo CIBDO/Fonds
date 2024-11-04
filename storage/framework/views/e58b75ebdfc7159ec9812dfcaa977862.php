@@ -96,7 +96,12 @@
                         <span>Paramètres</span>
                     </li>
                     <li class="submenu">
-                        <a href="<?php echo e(route('postes.index')); ?>"><i class="fas fa-users"></i> <span>Postes</span></a>
+                        <a href="#"><i class="fas fa-building"></i> <span>Postes</span> <span class="menu-arrow"></span></a>
+                        <ul>
+                            <li><a href="<?php echo e(route('postes.index')); ?>">Liste des Postes</a></li>
+                            <li><a href="<?php echo e(route('postes.create')); ?>">Créer un Poste</a></li>
+                        </ul>
+                        
                     </li>
                 <?php endif; ?>
             </ul>

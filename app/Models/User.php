@@ -16,6 +16,7 @@ class User extends Authenticatable
         'password',
         'role',
         'active', // Ajout de la gestion du statut actif
+        'poste_id',
     ];
 
     protected $hidden = [
@@ -54,6 +55,11 @@ class User extends Authenticatable
     public function hasAnyRole(array $roles)
     {
         return in_array($this->role, $roles);
+    }
+
+    public function poste()
+    {
+        return $this->belongsTo(Poste::class);
     }
 
     /* public function notifications()

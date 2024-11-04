@@ -67,10 +67,19 @@
                             </div>
                             <div class="form-group custom-select">
                                 <label>Statut <span class="login-danger">*</span></label>
-                                <select class="select2" name="active">
+                                <select class="form-select" name="active">
                                     <option value="1" <?php echo e(old('active') == '1' ? 'selected' : ''); ?>>Actif</option>
                                     <option value="0" <?php echo e(old('active') == '0' ? 'selected' : ''); ?>>Inactif</option>
                                     <span class="profile-views"><i class="fas fa-envelope"></i></span>
+                                </select>
+                            </div>
+                            <div class="form-group custom-select">
+                                <label>Poste <span class="login-danger">*</span></label>
+                                <select class="form-select" name="poste_id">
+                                    <option value="">Choisir un poste</option>
+                                    <?php $__currentLoopData = $postes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $poste): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($poste->id); ?>"><?php echo e($poste->nom); ?></option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </select>
                             </div>
 

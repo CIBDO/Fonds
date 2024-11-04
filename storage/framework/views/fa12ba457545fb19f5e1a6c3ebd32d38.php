@@ -75,6 +75,15 @@
                                     <option value="0" <?php echo e(old('active', $user->active) == '0' ? 'selected' : ''); ?>>Inactif</option>
                                 </select>
                             </div>    
+                            <div class="form-group custom-select">
+                                <label>Poste <span class="login-danger">*</span></label>
+                                <select class="form-select" name="poste_id">
+                                    <option value="">Choisir un poste</option>
+                                    <?php $__currentLoopData = $postes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $poste): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($poste->id); ?>" <?php echo e(old('poste_id', $user->poste_id) == $poste->id ? 'selected' : ''); ?>><?php echo e($poste->nom); ?></option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </select>
+                            </div>
                             <div class="dont-have">Avez-vous déjà un compte ? <a href="<?php echo e(route('login')); ?>">Se Connecter</a></div>
 
                             <!-- Bouton Update -->

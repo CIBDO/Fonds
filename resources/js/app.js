@@ -1,7 +1,7 @@
 import './bootstrap';
 
 import Alpine from 'alpinejs';
-
+import Cleave from 'cleave.js';
 window.Alpine = Alpine;
 
 Alpine.start();
@@ -24,3 +24,29 @@ Echo.private(`user.${userId}`)
         // Mettez à jour l'interface utilisateur pour afficher la nouvelle notification
         console.log(notification);
     });
+
+new Cleave('.net', {
+    numeral: true,
+    numeralThousandsGroupStyle: 'thousand'
+});
+
+new Cleave('.revers', {
+    numeral: true,
+    numeralThousandsGroupStyle: 'thousand'
+});
+
+new Cleave('.total_courant', {
+    numeral: true,
+    numeralThousandsGroupStyle: 'thousand'
+});
+
+new Cleave('.ancien_salaire', {
+    numeral: true,
+    numeralThousandsGroupStyle: 'thousand'
+});
+
+new Cleave('.total_demande', {
+    numeral: true,
+    numeralThousandsGroupStyle: 'thousand'
+});
+    
