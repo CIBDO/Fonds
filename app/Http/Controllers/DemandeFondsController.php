@@ -126,7 +126,21 @@ class DemandeFondsController extends Controller
             'solde' => 'nullable|numeric',
 
         ]);
+        $userId = $request->user_id;
+        $mois = $request->mois;
+        $annee = $request->annee;
 
+        // Vérifier si une demande existe déjà pour cet utilisateur, ce mois et cette année
+        $demandeExistante = DemandeFonds::where('user_id', $userId)
+            ->where('mois', $mois)
+            ->where('annee', $annee)
+            ->exists();
+
+            if ($demandeExistante) {
+                // Utilisez flash pour une alerte personnalisée ou withErrors pour afficher avec la validation
+                session()->flash('message_erreur', 'Vous avez déjà fait une demande pour ce mois.');
+                return redirect()->back();
+            }
         // Calcul des totaux
         $total_net =
             intval($request->fonctionnaires_bcs_net) +
@@ -180,10 +194,10 @@ class DemandeFondsController extends Controller
             'solde' => $solde
         ]);
 
-       
+
         // Enregistrement dans la base de données avec les valeurs calculées
         $demandeFonds = DemandeFonds::create($request->all());
-        
+
         $acctUsers = User::whereIn('role', ['acct'])->get();
         foreach($acctUsers as $acctUser) {
             $acctUser->notify(new DemandeFondsNotification($demandeFonds));
@@ -204,7 +218,7 @@ class DemandeFondsController extends Controller
     }
 
     public function update(Request $request, DemandeFonds $demandeFonds)
-    { 
+    {
         $this->authorizeRole(['tresorier', 'admin']);
         $user = Auth::user();
 
@@ -216,7 +230,7 @@ class DemandeFondsController extends Controller
     if ($demandeFonds->status === 'approuve') {
         return redirect()->back()->withErrors(['error' => 'Vous ne pouvez pas modifier une demande déjà approuvée.']);
     }
-    
+
         // Valider les champs de la requête
         $request->validate([
             'mois' => 'required|string',
@@ -276,7 +290,7 @@ class DemandeFondsController extends Controller
             'date_reception' => 'nullable|date'
         ]);
 
-       
+
         $demandeFonds->update($request->all());
         // Rediriger avec un message de succès
         Alert::success('Success', 'Demande de fonds mise à jour avec succès.');
@@ -460,7 +474,7 @@ class DemandeFondsController extends Controller
     {
         // Obtenir l'utilisateur connecté
         $user = Auth::user();
-    
+
         // Si l'utilisateur est trésorier, il ne voit que ses propres demandes
         if ($user->role === 'tresorier') {
             $query = DemandeFonds::with('user', 'poste')
@@ -471,19 +485,19 @@ class DemandeFondsController extends Controller
             $query = DemandeFonds::with('user', 'poste')
                 ->whereIn('status', ['approuve', 'rejete']);
         }
-    
+
         // Filtrer par poste si un poste est fourni dans la requête
         if ($request->filled('poste')) {
             $query->whereHas('poste', function ($q) use ($request) {
                 $q->where('nom', 'like', '%' . $request->poste . '%');
             });
         }
-    
+
         // Filtrer par mois si un mois est fourni dans la requête
         if ($request->filled('mois')) {
             $query->where('mois', 'like', '%' . $request->mois . '%');
         }
-    
+
         // Filtrer par plage de dates (date d'envoi des demandes de fonds)
         if ($request->filled('date_debut') && $request->filled('date_fin')) {
             $query->whereBetween('date_envois', [$request->date_debut, $request->date_fin]);
@@ -494,16 +508,16 @@ class DemandeFondsController extends Controller
             // Si seulement la date de fin est fournie, filtrer jusqu'à cette date
             $query->where('date_envois', '<=', $request->date_fin);
         }
-    
+
         // Exécuter la requête et paginer les résultats
         $demandeFonds = $query->orderBy('created_at', 'desc')
             ->paginate(8)
             ->appends($request->except('page'));
-    
+
         // Retourner la vue avec les résultats filtrés
         return view('demandes.situation', compact('demandeFonds'));
     }
-    
+
 
     public function SituationDF(Request $request)
     {
@@ -621,7 +635,7 @@ class DemandeFondsController extends Controller
         // Retourner la vue avec les résultats filtrés
         return view('demandes.recap', compact('demandeFonds'));
     }
-   
+
     public function Paiement(Request $request, $demande)
     {
         $this->authorizeRole(['acct', 'admin', 'superviseur']);
@@ -724,7 +738,7 @@ class DemandeFondsController extends Controller
                     'revers' => $demande->personnels_saisonniers_revers,
                     'total_courant' => $demande->personnels_saisonniers_total_courant,
                     'salaire_ancien' => $demande->personnels_saisonniers_salaire_ancien,
-                ],  
+                ],
                 'PersonnelsEpn' => [
                     'designation' => 'Personnels EPN',
                     'net' => $demande->epn_net,
@@ -771,9 +785,9 @@ class DemandeFondsController extends Controller
     public function export(Request $request,)
     {
         $this->authorizeRole(['acct', 'admin', 'superviseur']);
-        
+
         $demande = DemandeFonds::findOrFail($request->demande);
-    
+
         $typesFonctionnaires = [
             'BCS' => [
                 'designation' => 'Fonctionnaires BCS',
@@ -802,7 +816,7 @@ class DemandeFondsController extends Controller
                 'revers' => $demande->personnels_saisonniers_revers,
                 'total_courant' => $demande->personnels_saisonniers_total_courant,
                 'salaire_ancien' => $demande->personnels_saisonniers_salaire_ancien,
-            ],  
+            ],
             'PersonnelsEpn' => [
                 'designation' => 'Personnels EPN',
                 'net' => $demande->epn_net,
@@ -833,9 +847,9 @@ class DemandeFondsController extends Controller
             ],
             // ... (même structure que dans la méthode detail)
         ];
-    
+
         $fileName = 'demande_fonds_' . $demande->id . '.csv';
-    
+
         $headers = array(
             "Content-type"        => "text/csv",
             "Content-Disposition" => "attachment; filename=$fileName",
@@ -843,13 +857,13 @@ class DemandeFondsController extends Controller
             "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
             "Expires"             => "0"
         );
-    
+
         $columns = ['Désignation', 'Salaire Net', 'Revers/Salaire', 'Total mois courant', 'Salaire mois antérieur', 'Écart'];
-    
+
         $callback = function() use($typesFonctionnaires, $columns) {
             $file = fopen('php://output', 'w');
             fputcsv($file, $columns);
-    
+
             foreach ($typesFonctionnaires as $type => $data) {
                 fputcsv($file, [
                     $data['designation'],
@@ -860,10 +874,10 @@ class DemandeFondsController extends Controller
                     $data['total_courant'] - $data['salaire_ancien']
                 ]);
             }
-    
+
             fclose($file);
         };
-    
+
         return response()->stream($callback, 200, $headers);
     }
 }

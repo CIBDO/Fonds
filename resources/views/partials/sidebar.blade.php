@@ -5,7 +5,7 @@
                 <li class="menu-title">
                     <span>Menu Principal</span>
                 </li>
-                
+
                 <!-- Tableau de Bord -->
                 @if (Auth::user()->hasRole('admin'))
                     <li><a href="{{ route('dashboard.admin') }}"><i class="feather-grid"></i> Administrateur</a></li>
@@ -99,9 +99,9 @@
                         <a href="#"><i class="fas fa-building"></i> <span>Postes</span> <span class="menu-arrow"></span></a>
                         <ul>
                             <li><a href="{{ route('postes.index') }}">Liste des Postes</a></li>
-                            <li><a href="{{ route('postes.create') }}">Créer un Poste</a></li>
+                            {{-- <li><a href="{{ route('postes.create') }}">Créer un Poste</a></li> --}}
                         </ul>
-                        
+
                     </li>
                 @endif
             </ul>

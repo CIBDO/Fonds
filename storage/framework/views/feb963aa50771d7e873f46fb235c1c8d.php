@@ -12,11 +12,17 @@
 
        </div>
 <?php endif; ?>
+<?php if(session('message_erreur')): ?>
+    <div class="alert alert-danger">
+        <?php echo e(session('message_erreur')); ?>
+
+    </div>
+<?php endif; ?>
 <div class="container">
     <h2 class="my-4" style="text-align: center; color: #ebf0f4; background-color:
      #3d5ee1; padding: 20px; border-radius: 10px; font-weight: bold; font-size: 22px; font-family:Georgia, 'Times New Roman', Times, serif">Demande de fonds</h2>
     <!-- Formulaire pour envoyer la demande de fonds -->
-    <form method="POST" action="<?php echo e(route('demandes-fonds.store')); ?>">
+    <form method="POST" action="<?php echo e(route('demandes-fonds.store')); ?>" >
         <?php echo csrf_field(); ?>
         <!-- En-tête avec la date, le mois et l'année -->
         <div class="row mb-4">
@@ -116,10 +122,17 @@
 
         </div>
 
-        <!-- Bouton d'envoi -->
+        <div class="alert alert-info" style="margin-bottom: 20px;">
+            <strong>Important !</strong> Veuillez vérifier toutes les informations avant de soumettre la demande. Après soumission, vous ne pourrez plus modifier ces informations.
+        </div>
+
         <div class="button-container" style="text-align: center; margin-top: 20px;">
             <button type="submit" class="submit-button">Soumettre la demande</button>
         </div>
+
+
+        <!-- Bouton d'envoi -->
+        
 
     </form>
 
@@ -207,6 +220,7 @@
         // Calculer les totaux au chargement de la page
         calculateTotals();
     });
+
 </script>
 
 <?php $__env->stopSection(); ?>
