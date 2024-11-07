@@ -15,16 +15,15 @@ class TresorierController extends Controller
     {
         $user = Auth::user();
 
-    // Filtrer les demandes de fonds uniquement pour le poste de l'utilisateur
-    $demandesFonds = DemandeFonds::where('poste_id', $user->poste_id)->get();
-        // Calculs spécifiques
-        $demandesFonds = DemandeFonds::with('poste')->paginate(8);
-        $fondsDemandes = DemandeFonds::sum('total_courant');
-        $fondsRecettes = DemandeFonds::sum('montant_disponible');
-        $fondsEnCours = DemandeFonds::sum('solde');
-        $paiementsEffectues = DemandeFonds::sum('montant');
+        // Filtrer les demandes de fonds pour le poste de l'utilisateur connecté
+        $demandesFonds = DemandeFonds::where('poste_id', $user->poste_id)->with('poste')->paginate(8);
 
-            return view('dashboard.tresorier', compact('demandesFonds', 'fondsDemandes', 'fondsRecettes', 'fondsEnCours', 'paiementsEffectues'));
-        }
-        
+        // Calculs spécifiques pour les totaux uniquement pour le poste de l'utilisateur
+        $fondsDemandes = DemandeFonds::where('poste_id', $user->poste_id)->sum('total_courant');
+        $fondsRecettes = DemandeFonds::where('poste_id', $user->poste_id)->sum('montant_disponible');
+        $fondsEnCours = DemandeFonds::where('poste_id', $user->poste_id)->sum('solde');
+        $paiementsEffectues = DemandeFonds::where('poste_id', $user->poste_id)->sum('montant');
+
+        return view('dashboard.tresorier', compact('demandesFonds', 'fondsDemandes', 'fondsRecettes', 'fondsEnCours', 'paiementsEffectues'));
+    }
 }
