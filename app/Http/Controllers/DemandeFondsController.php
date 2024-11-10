@@ -61,14 +61,45 @@ class DemandeFondsController extends Controller
         return view('demandes.index', compact('demandeFonds'));
     }
 
-
     public function create()
-    {
-        $this->authorizeRole(['tresorier', 'admin']);
-        // Récupérer les postes pour le formulaire de création
-        $postes = \App\Models\Poste::all();
-        return view('demandes.create', compact('postes'));
+{
+    $this->authorizeRole(['tresorier', 'admin']);
+    $postes = \App\Models\Poste::all();
+
+    // Tableau des mois
+    $mois = [
+        'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+        'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+    ];
+
+    // Obtenir le mois actuel avec la première lettre en majuscule
+    $currentMonthName = ucfirst(Carbon::now()->locale('fr')->translatedFormat('F'));
+    $currentMonthIndex = array_search($currentMonthName, $mois);
+
+    // Si l'index n'est pas trouvé, renvoyer une erreur
+    if ($currentMonthIndex === false) {
+        return back()->withErrors(['message' => 'Le mois actuel est invalide : ' . $currentMonthName]);
     }
+
+    // Calculer l'index du mois précédent
+    $previousMonthIndex = ($currentMonthIndex === 0) ? 11 : $currentMonthIndex - 1;
+    $previousMonth = $mois[$previousMonthIndex];
+    $previousYear = ($currentMonthIndex === 0) ? Carbon::now()->subYear()->format('Y') : Carbon::now()->format('Y');
+
+    // Récupérer les données du mois précédent
+    $previousData = DemandeFonds::where('mois', $previousMonth)
+        ->where('annee', $previousYear)
+        ->where('user_id', Auth::id())
+        ->first();
+        /*
+        if (!$previousData) {
+            return back()->withErrors(['message' => 'Aucune donnée trouvée pour le mois précédent (' . $previousMonth . ').']);
+        }
+ */
+    return view('demandes.create', compact('postes', 'previousData'));
+}
+
+
 
     public function store(Request $request)
     {
@@ -129,7 +160,6 @@ class DemandeFondsController extends Controller
         $userId = $request->user_id;
         $mois = $request->mois;
         $annee = $request->annee;
-
         // Vérifier si une demande existe déjà pour cet utilisateur, ce mois et cette année
         $demandeExistante = DemandeFonds::where('user_id', $userId)
             ->where('mois', $mois)

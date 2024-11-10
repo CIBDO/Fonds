@@ -60,7 +60,6 @@
                 </div>
             </div>
         </div>
-
         <div class="row mb-4">
             <!-- Champ Année -->
             <div class="col-md-4">
@@ -69,7 +68,6 @@
                     <input type="number" name="annee" class="form-control" value="<?php echo e(now()->format('Y')); ?>" required>
                 </div>
             </div>
-
             <!-- Champ Service -->
             <div class="col-md-4">
                 <div class="form-group">
@@ -97,7 +95,6 @@
 
             <input type="hidden" name="status" value="en_attente">
         </div>
-
         <!-- Tableau des catégories de salariés -->
         <?php echo $__env->make('demandes._form', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
         <input type="hidden" name="user_id" value="<?php echo e(Auth::user()->id); ?>">
@@ -121,7 +118,6 @@
             </div>
 
         </div>
-
         <div class="alert alert-info" style="margin-bottom: 20px;">
             <strong>Important !</strong> Veuillez vérifier toutes les informations avant de soumettre la demande. Après soumission, vous ne pourrez plus modifier ces informations.
         </div>
@@ -129,13 +125,7 @@
         <div class="button-container" style="text-align: center; margin-top: 20px;">
             <button type="submit" class="submit-button">Soumettre la demande</button>
         </div>
-
-
-        <!-- Bouton d'envoi -->
-        
-
     </form>
-
 </div>
 
 <script>
