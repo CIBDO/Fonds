@@ -41,13 +41,13 @@ return [
             'host' => env('MAIL_HOST', 'smtp.gmail.com'),
             'port' => env('MAIL_PORT', 587),
             'encryption' => env('MAIL_ENCRYPTION', 'tls'),
-            'username' => env('MAIL_USERNAME', 'bdokeita100@gmail.com'),
+            'username' => env('MAIL_USERNAME', 'cifpdntcp260@gmail.com'),
             'password' => env('MAIL_PASSWORD', 'Bdokeita100'),
             'timeout' => null,
         ],
             ],
             'from' => [
-            'address' => env('MAIL_FROM_ADDRESS', 'bdokeita100@gmail.com'),
+            'address' => env('MAIL_FROM_ADDRESS', 'cifpdntcp260@gmail.com'),
             'name' => env('MAIL_FROM_NAME', 'Système de gestion des fonds'),
         ],
 
