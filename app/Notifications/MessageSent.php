@@ -20,10 +20,10 @@ class MessageSent extends Notification
 
     public function via($notifiable)
     {
-        return ['database', 'mail'];
+        return ['database'];
     }
 
-    public function toMail($notifiable)
+   /*  public function toMail($notifiable)
     {
         return (new MailMessage)
             ->subject('Vous avez reçu un nouveau message')
@@ -34,7 +34,7 @@ class MessageSent extends Notification
             ->action('Voir le message', route('messages.index', $this->message->id)) // Lien vers le message
             ->from('bdokeita100@gmail.com', 'Système de gestion des fonds');
     }
-
+ */
 
     public function toArray($notifiable)
     {

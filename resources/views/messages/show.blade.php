@@ -26,19 +26,19 @@
                      class="rounded-circle" style="width: 50px; height: 50px;">
                 <div class="ms-3">
                     <strong>De:</strong> {{ $message->sender->name ?? 'Expéditeur inconnu' }}<br>
-                    <strong>À:</strong> 
+                    <strong>À:</strong>
                     @foreach($message->recipients as $recipient)
                         <span class="badge bg-secondary">{{ $recipient->name }}</span>{{ !$loop->last ? ', ' : '' }}
                     @endforeach
                 </div>
             </div>
-            
-            <p><strong>Date et Heure d'envoi :</strong> 
+
+            <p><strong>Date et Heure d'envoi :</strong>
                 {{ $message->created_at ? $message->created_at->format('d/m/Y H:i:s') : 'Non défini' }}
             </p>
-            
-            <p><strong>Date et Heure de réception :</strong> 
-                {{ $recipient && $recipient->pivot->received_at ? 
+
+            <p><strong>Date et Heure de réception :</strong>
+                {{ $recipient && $recipient->pivot->received_at ?
                     \Carbon\Carbon::parse($recipient->pivot->received_at)->format('d/m/Y H:i:s') : 'Non défini' }}
             </p>
 
@@ -56,7 +56,7 @@
                                 <a href="{{ route('attachments.download', $attachment->id) }}" class="btn btn-outline-secondary btn-sm me-2">
                                     <i class="fas fa-download"></i> Télécharger
                                 </a>
-                                <button class="btn btn-outline-info btn-sm" onclick="previewAttachment('{{ Storage::url($attachment->filepath) }}')">
+                                <button class="btn btn-outline-info btn-sm" data-url="" onclick="previewAttachment('{{ Storage::url($attachment->filepath) }}')">
                                     <i class="fas fa-eye"></i> Aperçu
                                 </button>
                             </div>
@@ -85,7 +85,7 @@
             <a href="{{ route('messages.replyAllForm', $message->id) }}" class="btn btn-warning">
                 <i class="fas fa-reply-all"></i> Répondre à tous
             </a>
-            
+
             <a href="{{ route('messages.forward', $message->id) }}" class="btn btn-success">
                 <i class="fas fa-share"></i> Transférer
             </a>

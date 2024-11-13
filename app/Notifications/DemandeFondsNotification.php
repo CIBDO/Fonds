@@ -19,10 +19,10 @@ class DemandeFondsNotification extends Notification
 
     public function via($notifiable)
     {
-        return ['database', 'mail'];
+        return ['database'];
     }
 
-    public function toMail($notifiable)
+   /*  public function toMail($notifiable)
     {
         $url = route('login');  // URL de la page de connexion
         return (new MailMessage)
@@ -34,7 +34,7 @@ class DemandeFondsNotification extends Notification
             ->action('Voir la demande', $url)
             ->line('Merci de consulter la demande de fonds pour plus de détails.')
             ->from('bdokeita100@gmail.com', 'Système de gestion des fonds'); // Définir l'expéditeur
-    }
+    } */
 
     public function toArray($notifiable)
     {

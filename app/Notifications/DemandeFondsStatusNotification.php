@@ -16,9 +16,9 @@ class DemandeFondsStatusNotification extends Notification
 
     public function via($notifiable)
     {
-        return ['database', 'mail'];
+        return ['database'];
     }
-    public function toMail($notifiable)
+    /* public function toMail($notifiable)
     {
         // Déterminer le message en fonction du statut de la demande
         $statusMessage = $this->demande->status == 'approuve' ? 'approuvée' : 'rejetée';
@@ -35,7 +35,7 @@ class DemandeFondsStatusNotification extends Notification
             ->line('Vous pouvez consulter les détails de votre demande en suivant ce lien :')
             ->action('Voir la demande', $url) // Lien vers la page de situation de la demande
             ->from('bdokeita100@gmail.com', 'Système de gestion des fonds');
-    }
+    } */
     public function toArray($notifiable)
     {
         $statusMessage = $this->demande->status == 'approuve' ? 'approuvée' : 'rejetée';
