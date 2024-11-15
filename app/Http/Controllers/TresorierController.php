@@ -16,7 +16,7 @@ class TresorierController extends Controller
         $user = Auth::user();
 
         // Filtrer les demandes de fonds pour le poste de l'utilisateur connecté
-        $demandesFonds = DemandeFonds::where('poste_id', $user->poste_id)->with('poste')->paginate(8);
+        $demandesFonds = DemandeFonds::where('poste_id', $user->poste_id)->with('poste')->paginate(12);
 
         // Calculs spécifiques pour les totaux uniquement pour le poste de l'utilisateur
         $fondsDemandes = DemandeFonds::where('poste_id', $user->poste_id)->sum('total_courant');

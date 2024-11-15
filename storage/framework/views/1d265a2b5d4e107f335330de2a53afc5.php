@@ -1,4 +1,3 @@
-
 <?php $__env->startSection('content'); ?>
 <div class="content container-fluid">
 
@@ -81,31 +80,31 @@
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>Poste</th>
+                                <th>Mois</th>
                                 <th>Total Net</th>
                                 <th>Total Revers</th>
                                 <th>Total Courant</th>
                                 <th>Total Ancien</th>
-                                <th>Total Écart</th>
+                                <th>Date</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php $__currentLoopData = $demandesFonds; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $demande): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <tr>
-                                    <td><?php echo e($demande->poste->nom); ?></td>
+                                    <td><?php echo e($demande->mois); ?></td>
                                     <td><?php echo e(number_format($demande->total_net, 0, '', ' ')); ?></td>
                                     <td><?php echo e(number_format($demande->total_revers, 0, '', ' ')); ?></td>
                                     <td><?php echo e(number_format($demande->total_courant, 0, '', ' ')); ?></td>
                                     <td><?php echo e(number_format($demande->total_ancien, 0, '', ' ')); ?></td>
-                                    <td><?php echo e(number_format($demande->total_courant - $demande->total_ancien, 0, '', ' ')); ?></td>
+                                    <td><?php echo e($demande->created_at->format('d/m/Y')); ?></td>
                                 </tr>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </tbody>
                     </table>
                 </div>
-            
+
              </div>
-            
+
             <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\BDO\Desktop\Fonds\resources\views/dashboard/admin.blade.php ENDPATH**/ ?>

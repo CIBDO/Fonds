@@ -39,6 +39,12 @@ Route::get('/dashboard', function () {
 Route::middleware(['auth'])->group(function () {
     // Route pour les demandes de fonds
     /* Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard'); */
+    Route::get('/demandes-fonds/recettes', [DemandeFondsController::class, 'Recettes'])
+        ->middleware('role:acct,admin,superviseur,tresorier') // Tous les rôles sauf trésorier
+        ->name('demandes-fonds.recettes');
+    Route::get('/demandes-fonds/solde', [DemandeFondsController::class, 'Solde'])
+        ->middleware('role:acct,admin,superviseur,tresorier') // Tous les rôles sauf trésorier
+        ->name('demandes-fonds.solde');
     Route::get('/notifications', [MessageController::class, 'notifications'])->name('messages.notifications');
     Route::get('/demandes/export', [DemandeFondsController::class, 'export'])->name('demandes-fonds.export');
     Route::get('/demandes-fonds/detail', [DemandeFondsController::class, 'Detail'])->name('demandes-fonds.detail');
@@ -66,12 +72,14 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/users/{user}/deactivate', [UserController::class, 'deactivate'])->name('users.deactivate');
     Route::post('/users/{user}/activate', [UserController::class, 'activate'])->name('users.activate');
 
+
+
     // Routes spécifiques pour la création et la mise à jour des demandes de fonds
     Route::middleware(['role:tresorier,admin'])->group(function () {
         Route::resource('demandes-fonds', DemandeFondsController::class); // Ajouter la route index
     });
-    
-    
+
+
     // Accès public pour générer PDF
     Route::get('/demande-fonds/{id}/generate-pdf', [DemandeFondsController::class, 'generatePdf'])->name('demande-fonds.generate.pdf');
 
@@ -95,7 +103,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/messages/{id}/replyAll', [MessageController::class, 'replyAll'])->name('messages.replyAll');
     Route::post('/messages/{id}/replyAll', [MessageController::class, 'replyAllStore'])->name('messages.replyAll.store');
-    
+
     Route::get('/messages/{id}/replyAll', [MessageController::class, 'showReplyAllForm'])->name('messages.replyAllForm');
     Route::post('/messages/{id}/replyAll', [MessageController::class, 'replyAll'])->name('messages.replyAll');
 
@@ -129,7 +137,7 @@ Route::middleware(['auth', 'role:acct,superviseur,tresorier,admin',])->group(fun
     Route::get('/messages/sent', [MessageController::class, 'sent'])->name('messages.sent');
     Route::get('/messages/create', [MessageController::class, 'create'])->name('messages.create');
     Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
-    Route::get('messages/{id}', [MessageController::class, 'show'])->name('messages.show'); 
+    Route::get('messages/{id}', [MessageController::class, 'show'])->name('messages.show');
 
 });
 

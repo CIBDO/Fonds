@@ -99,8 +99,6 @@ class DemandeFondsController extends Controller
     return view('demandes.create', compact('postes', 'previousData'));
 }
 
-
-
     public function store(Request $request)
     {
         $this->authorizeRole(['tresorier', 'admin','']);
@@ -909,5 +907,57 @@ class DemandeFondsController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    public function Recettes(Request $request)
+    {
+        $this->authorizeRole(['acct', 'admin', 'superviseur', 'tresorier']);
+        // Commencer par obtenir toutes les demandes de fonds avec les statuts "approuvé" ou "rejeté"
+        $query = DemandeFonds::with('user', 'poste');
+        // Filtrer par poste si un poste est fourni dans la requête
+        if ($request->filled('poste')) {
+            $query->whereHas('poste', function ($q) use ($request) {
+                $q->where('nom', 'like', '%' . $request->poste . '%');
+            });
+        }
+
+        // Filtrer par mois si un mois est fourni dans la requête
+        if ($request->filled('mois')) {
+            $query->where('mois', 'like', '%' . $request->mois . '%');
+        }
+
+        // Exécuter la requête et paginer les résultats
+        $demandeFonds = $query->orderBy('created_at', 'desc')
+            ->paginate(12)
+            ->appends($request->except('page'));
+
+        // Retourner la vue avec les résultats filtrés
+        return view('demandes.recettes', compact('demandeFonds'));
+    }
+
+    public function Solde(Request $request)
+    {
+        $this->authorizeRole(['acct', 'admin', 'superviseur', 'tresorier']);
+        // Commencer par obtenir toutes les demandes de fonds avec les statuts "approuvé" ou "rejeté"
+        $query = DemandeFonds::with('user', 'poste');
+        // Filtrer par poste si un poste est fourni dans la requête
+        if ($request->filled('poste')) {
+            $query->whereHas('poste', function ($q) use ($request) {
+                $q->where('nom', 'like', '%' . $request->poste . '%');
+            });
+        }
+
+        // Filtrer par mois si un mois est fourni dans la requête
+        if ($request->filled('mois')) {
+            $query->where('mois', 'like', '%' . $request->mois . '%');
+        }
+
+        // Exécuter la requête et paginer les résultats
+        $demandeFonds = $query->orderBy('created_at', 'desc')
+            ->paginate(12)
+            ->appends($request->except('page'));
+
+        // Retourner la vue avec les résultats filtrés
+        return view('demandes.solde', compact('demandeFonds'));
     }
 }
