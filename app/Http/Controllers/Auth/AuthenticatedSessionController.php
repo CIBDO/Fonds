@@ -24,10 +24,10 @@ class AuthenticatedSessionController extends Controller
      * Handle an incoming authentication request.
      */
     public function store(Request $request)
-{
+    {
     $request->validate([
         'email' => 'required|email',
-        'password' => 'required',
+        'password' => 'required|string|min:4',
     ]);
 
     // Tente de se connecter
@@ -40,6 +40,7 @@ class AuthenticatedSessionController extends Controller
     // Redirection après une connexion réussie
     return redirect()->intended('/dashboard');
 }
+
 
     /**
      * Destroy an authenticated session.

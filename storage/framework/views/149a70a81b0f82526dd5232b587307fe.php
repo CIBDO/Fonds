@@ -42,7 +42,7 @@
 
                         <form method="POST" action="<?php echo e(route('login')); ?>">
                             <?php echo csrf_field(); ?>
-                            <div class="form-group">
+                             <div class="form-group">
                                 <label>Email <span class="login-danger">*</span></label>
                                 <input id="email" type="email" class="form-control <?php $__errorArgs = ['email'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
