@@ -20,17 +20,18 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Policies\UserPolicy;
 use Illuminate\Routing\Controller as BaseController; // Ajoutez cette ligne
 use App\Http\Middleware\Rolemiddleware;
+use Illuminate\Support\Facades\Validator;
 
 class DemandeFondsController extends Controller
 {
     use AuthorizesRequests;
 
     private function authorizeRole(array $roles)
-{
-    if (!in_array(Auth::user()->role, $roles)) {
-        abort(403, '🚫 Accès refusé ! Vous n\'avez pas les permissions nécessaires pour accéder à cette page. Si vous pensez qu\'il s\'agit d\'une erreur, veuillez contacter votre administrateur.');
+    {
+        if (!in_array(Auth::user()->role, $roles)) {
+            abort(403, '🚫 Accès refusé ! Vous n\'avez pas les permissions nécessaires pour accéder à cette page. Si vous pensez qu\'il s\'agit d\'une erreur, veuillez contacter votre administrateur.');
+        }
     }
-}
 
 
     public function index(Request $request)
@@ -62,47 +63,57 @@ class DemandeFondsController extends Controller
     }
 
     public function create()
-{
-    $this->authorizeRole(['tresorier', 'admin']);
-    $postes = \App\Models\Poste::all();
+    {
+        $this->authorizeRole(['tresorier', 'admin']);
+        $postes = \App\Models\Poste::all();
 
-    // Tableau des mois
-    $mois = [
-        'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-        'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
-    ];
+        // Tableau des mois
+        $mois = [
+            'Janvier',
+            'Février',
+            'Mars',
+            'Avril',
+            'Mai',
+            'Juin',
+            'Juillet',
+            'Août',
+            'Septembre',
+            'Octobre',
+            'Novembre',
+            'Décembre'
+        ];
 
-    // Obtenir le mois actuel avec la première lettre en majuscule
-    $currentMonthName = ucfirst(Carbon::now()->locale('fr')->translatedFormat('F'));
-    $currentMonthIndex = array_search($currentMonthName, $mois);
+        // Obtenir le mois actuel avec la première lettre en majuscule
+        $currentMonthName = ucfirst(Carbon::now()->locale('fr')->translatedFormat('F'));
+        $currentMonthIndex = array_search($currentMonthName, $mois);
 
-    // Si l'index n'est pas trouvé, renvoyer une erreur
-    if ($currentMonthIndex === false) {
-        return back()->withErrors(['message' => 'Le mois actuel est invalide : ' . $currentMonthName]);
-    }
+        // Si l'index n'est pas trouvé, renvoyer une erreur
+        if ($currentMonthIndex === false) {
+            return back()->withErrors(['message' => 'Le mois actuel est invalide : ' . $currentMonthName]);
+        }
 
-    // Calculer l'index du mois précédent
-    $previousMonthIndex = ($currentMonthIndex === 0) ? 11 : $currentMonthIndex - 1;
-    $previousMonth = $mois[$previousMonthIndex];
-    $previousYear = ($currentMonthIndex === 0) ? Carbon::now()->subYear()->format('Y') : Carbon::now()->format('Y');
+        // Calculer l'index du mois précédent
+        $previousMonthIndex = ($currentMonthIndex === 0) ? 11 : $currentMonthIndex - 1;
+        $previousMonth = $mois[$previousMonthIndex];
+        $previousYear = ($currentMonthIndex === 0) ? Carbon::now()->subYear()->format('Y') : Carbon::now()->format('Y');
 
-    // Récupérer les données du mois précédent
-    $previousData = DemandeFonds::where('mois', $previousMonth)
-        ->where('annee', $previousYear)
-        ->where('user_id', Auth::id())
-        ->first();
+        // Récupérer les données du mois précédent
+        $previousData = DemandeFonds::where('mois', $previousMonth)
+            ->where('annee', $previousYear)
+            ->where('user_id', Auth::id())
+            ->first();
         /*
         if (!$previousData) {
             return back()->withErrors(['message' => 'Aucune donnée trouvée pour le mois précédent (' . $previousMonth . ').']);
         }
  */
-    return view('demandes.create', compact('postes', 'previousData'));
-}
+        return view('demandes.create', compact('postes', 'previousData'));
+    }
 
     public function store(Request $request)
     {
-        $this->authorizeRole(['tresorier', 'admin','']);
-        // Validation des données
+        $this->authorizeRole(['tresorier', 'admin', '']);
+
         $request->validate([
             'date' => 'nullable|date',
             'date_reception' => 'nullable|date',
@@ -164,11 +175,11 @@ class DemandeFondsController extends Controller
             ->where('annee', $annee)
             ->exists();
 
-            if ($demandeExistante) {
-                // Utilisez flash pour une alerte personnalisée ou withErrors pour afficher avec la validation
-                session()->flash('message_erreur', 'Vous avez déjà fait une demande pour ce mois.');
-                return redirect()->back();
-            }
+        if ($demandeExistante) {
+            // Utilisez flash pour une alerte personnalisée ou withErrors pour afficher avec la validation
+            session()->flash('message_erreur', 'Vous avez déjà fait une demande pour ce mois.');
+            return redirect()->back();
+        }
         // Calcul des totaux
         $total_net =
             intval($request->fonctionnaires_bcs_net) +
@@ -227,7 +238,7 @@ class DemandeFondsController extends Controller
         $demandeFonds = DemandeFonds::create($request->all());
 
         $acctUsers = User::whereIn('role', ['acct'])->get();
-        foreach($acctUsers as $acctUser) {
+        foreach ($acctUsers as $acctUser) {
             $acctUser->notify(new DemandeFondsNotification($demandeFonds));
         }
         Alert::success('Success', 'Demande de fonds créée avec succès.');
@@ -250,14 +261,14 @@ class DemandeFondsController extends Controller
         $this->authorizeRole(['tresorier', 'admin']);
         $user = Auth::user();
 
-    // Vérifier si l'utilisateur est admin ou propriétaire de la demande
-    if (!$user->isadmin() && $demandeFonds->user_id !== $user->id) {
-        return redirect()->back()->withErrors(['error' => 'Vous n\'avez pas la permission de modifier cette demande.']);
-    }
-    // Empêcher la modification si la demande est déjà approuvée
-    if ($demandeFonds->status === 'approuve') {
-        return redirect()->back()->withErrors(['error' => 'Vous ne pouvez pas modifier une demande déjà approuvée.']);
-    }
+        // Vérifier si l'utilisateur est admin ou propriétaire de la demande
+        if (!$user->isadmin() && $demandeFonds->user_id !== $user->id) {
+            return redirect()->back()->withErrors(['error' => 'Vous n\'avez pas la permission de modifier cette demande.']);
+        }
+        // Empêcher la modification si la demande est déjà approuvée
+        if ($demandeFonds->status === 'approuve') {
+            return redirect()->back()->withErrors(['error' => 'Vous ne pouvez pas modifier une demande déjà approuvée.']);
+        }
 
         // Valider les champs de la requête
         $request->validate([
@@ -449,7 +460,7 @@ class DemandeFondsController extends Controller
         $demande->date_envois = $request->date_envois;
         $demande->save();
         $demande->user->notify(new DemandeFondsStatusNotification($demande));
-       /*  $tresoriers = User::where('role', 'tresorier')->get();
+        /*  $tresoriers = User::where('role', 'tresorier')->get();
         foreach($tresoriers as $tresorier) {
         if($tresorier->id !== auth::id()) {
         $tresorier->notify(new DemandeFondsStatusNotification($demande));
@@ -800,13 +811,13 @@ class DemandeFondsController extends Controller
         }
 
         // Calcul du total global
-            $totaux = [
-                'net' => $demandeFonds->sum('total_net'),
-                'revers' => $demandeFonds->sum('total_revers'),
-                'total_courant' => $demandeFonds->sum('total_courant'),
-                'total_ancien' => $demandeFonds->sum('total_ancien'),
-                'total_ecart' => $demandeFonds->sum('total_ecart'),
-            ];
+        $totaux = [
+            'net' => $demandeFonds->sum('total_net'),
+            'revers' => $demandeFonds->sum('total_revers'),
+            'total_courant' => $demandeFonds->sum('total_courant'),
+            'total_ancien' => $demandeFonds->sum('total_ancien'),
+            'total_ecart' => $demandeFonds->sum('total_ecart'),
+        ];
 
         return view('demandes.detail', compact('typesFonctionnaires', 'totaux', 'demandeFonds'));
     }
@@ -888,7 +899,7 @@ class DemandeFondsController extends Controller
 
         $columns = ['Désignation', 'Salaire Net', 'Revers/Salaire', 'Total mois courant', 'Salaire mois antérieur', 'Écart'];
 
-        $callback = function() use($typesFonctionnaires, $columns) {
+        $callback = function () use ($typesFonctionnaires, $columns) {
             $file = fopen('php://output', 'w');
             fputcsv($file, $columns);
 

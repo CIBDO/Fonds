@@ -174,5 +174,4 @@
     </tbody>
 
 </table>
-
 <?php /**PATH C:\Users\BDO\Desktop\Fonds\resources\views/demandes/_form.blade.php ENDPATH**/ ?>
