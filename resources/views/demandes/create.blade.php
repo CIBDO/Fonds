@@ -105,13 +105,13 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="montant_disponible">Recettes en Douanes :</label>
-                    <input type="number" id="montant_disponible" name="montant_disponible" class="form-control" value="0" required>
+                    <input type="text" id="montant_disponible" name="montant_disponible" class="form-control" value="0" required>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="solde">Montant de la Demande:</label>
-                    <input type="number" id="solde" name="solde" class="form-control" value="0" readonly>
+                    <input type="text" id="solde" name="solde" class="form-control" value="0" readonly>
                 </div>
             </div>
 
@@ -126,7 +126,7 @@
     </form>
 </div>
 
-<script>
+{{-- <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Sélectionner tous les champs d'entrée pertinents pour le calcul
         const netFields = document.querySelectorAll('.net');
@@ -209,6 +209,112 @@
         calculateTotals();
     });
 
-</script>
+</script> --}}
 
+ <script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Fonction pour formater les nombres
+    function formatNumber(value) {
+        // Supprimer tout ce qui n'est pas un chiffre
+        let number = value.toString().replace(/[^\d]/g, '');
+        // Formatter avec les espaces comme séparateurs de milliers
+        return number.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    }
+
+    // Fonction pour enlever le formatage
+    function unformatNumber(value) {
+        return value.toString().replace(/\s/g, '');
+    }
+
+    // Appliquer le formatage à tous les champs numériques
+    function applyFormatting(element) {
+        if (element.value) {
+            let unformatted = unformatNumber(element.value);
+            let formatted = formatNumber(unformatted);
+            element.value = formatted;
+        }
+    }
+
+    // Sélectionner tous les champs d'entrée numériques
+    const numericInputs = document.querySelectorAll('input[type="number"]');
+
+    numericInputs.forEach(input => {
+        // Changer le type en "text" pour permettre le formatage
+        input.type = 'text';
+
+        // Formatage initial
+        applyFormatting(input);
+
+        // Gérer la saisie
+        input.addEventListener('input', function(e) {
+            let cursorPosition = e.target.selectionStart;
+            let oldLength = e.target.value.length;
+
+            applyFormatting(e.target);
+
+            // Ajuster la position du curseur
+            let newLength = e.target.value.length;
+            let newPosition = cursorPosition + (newLength - oldLength);
+            e.target.setSelectionRange(newPosition, newPosition);
+        });
+
+        // Nettoyer avant la soumission du formulaire
+        input.form.addEventListener('submit', function(e) {
+            numericInputs.forEach(input => {
+                input.value = unformatNumber(input.value);
+            });
+        });
+    });
+
+    // Recalculer les totaux avec le formatage
+    function calculateTotals() {
+        let totalNet = 0;
+        let totalRevers = 0;
+        let totalCourant = 0;
+        let totalSalaireAncien = 0;
+        let totalDemande = 0;
+
+        document.querySelectorAll('.net').forEach((field, index) => {
+            const net = parseFloat(unformatNumber(field.value)) || 0;
+            const revers = parseFloat(unformatNumber(document.querySelectorAll('.revers')[index].value)) || 0;
+            const ancien = parseFloat(unformatNumber(document.querySelectorAll('.ancien_salaire')[index].value)) || 0;
+
+            const courant = net + revers;
+            const demande = courant - ancien;
+
+            document.querySelectorAll('.total_courant')[index].value = formatNumber(courant.toString());
+            document.querySelectorAll('.total_demande')[index].value = formatNumber(demande.toString());
+
+            totalNet += net;
+            totalRevers += revers;
+            totalCourant += courant;
+            totalSalaireAncien += ancien;
+            totalDemande += demande;
+        });
+
+        // Mettre à jour les totaux avec formatage
+        document.getElementById('total_net').value = formatNumber(totalNet.toString());
+        document.getElementById('total_revers').value = formatNumber(totalRevers.toString());
+        document.getElementById('total_courant').value = formatNumber(totalCourant.toString());
+        document.getElementById('total_salaire_ancien').value = formatNumber(totalSalaireAncien.toString());
+        document.getElementById('total_demande').value = formatNumber(totalDemande.toString());
+
+        // Calculer le solde
+        const montantDisponible = parseFloat(unformatNumber(document.getElementById('montant_disponible').value)) || 0;
+        const solde = totalCourant - montantDisponible;
+        document.getElementById('solde').value = formatNumber(solde.toString());
+    }
+
+    // Ajouter les écouteurs d'événements pour les calculs
+    document.querySelectorAll('.net, .revers, .ancien_salaire').forEach(input => {
+        input.addEventListener('input', calculateTotals);
+    });
+
+    document.getElementById('montant_disponible').addEventListener('input', calculateTotals);
+
+    // Calculer les totaux initiaux
+    calculateTotals();
+});
+
+</script> 
 @endsection

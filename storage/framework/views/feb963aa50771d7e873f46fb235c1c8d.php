@@ -107,13 +107,13 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="montant_disponible">Recettes en Douanes :</label>
-                    <input type="number" id="montant_disponible" name="montant_disponible" class="form-control" value="0" required>
+                    <input type="text" id="montant_disponible" name="montant_disponible" class="form-control" value="0" required>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="solde">Montant de la Demande:</label>
-                    <input type="number" id="solde" name="solde" class="form-control" value="0" readonly>
+                    <input type="text" id="solde" name="solde" class="form-control" value="0" readonly>
                 </div>
             </div>
 
@@ -128,91 +128,114 @@
     </form>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Sélectionner tous les champs d'entrée pertinents pour le calcul
-        const netFields = document.querySelectorAll('.net');
-        const reversFields = document.querySelectorAll('.revers');
-        const totalCourantFields = document.querySelectorAll('.total_courant');
-        const salaireAncienFields = document.querySelectorAll('.ancien_salaire');
-        const totalDemandeFields = document.querySelectorAll('.total_demande');
-        const totalAncienFields = document.querySelectorAll('.total_ancien');
 
-        // Les champs totaux en bas
-        const totalNetField = document.getElementById('total_net');
-        const totalReversField = document.getElementById('total_revers');
-        const totalCourantField = document.getElementById('total_courant');
-        const totalSalaireAncienField = document.getElementById('total_salaire_ancien');
-        const totalDemandeField = document.getElementById('total_demande');
-        const totalAncienField = document.getElementById('total_ancien');
 
-        // Champs pour Montant Disponible et Solde
-        const montantDisponibleField = document.getElementById('montant_disponible');
-        const soldeField = document.getElementById('solde');
+ <script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Fonction pour formater les nombres
+    function formatNumber(value) {
+        // Supprimer tout ce qui n'est pas un chiffre
+        let number = value.toString().replace(/[^\d]/g, '');
+        // Formatter avec les espaces comme séparateurs de milliers
+        return number.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    }
 
-        // Fonction pour recalculer les totaux
-        function calculateTotals() {
-            let totalNet = 0;
-            let totalRevers = 0;
-            let totalCourant = 0;
-            let totalSalaireAncien = 0;
-            let totalDemande = 0;
-            let totalAncien = 0;
+    // Fonction pour enlever le formatage
+    function unformatNumber(value) {
+        return value.toString().replace(/\s/g, '');
+    }
 
-            netFields.forEach((field, index) => {
-                const net = parseFloat(field.value) || 0;
-                const revers = parseFloat(reversFields[index].value) || 0;
+    // Appliquer le formatage à tous les champs numériques
+    function applyFormatting(element) {
+        if (element.value) {
+            let unformatted = unformatNumber(element.value);
+            let formatted = formatNumber(unformatted);
+            element.value = formatted;
+        }
+    }
 
-                // Calculer le Total mois courant
-                const courant = net + revers;
+    // Sélectionner tous les champs d'entrée numériques
+    const numericInputs = document.querySelectorAll('input[type="number"]');
 
-                // Récupérer le salaire mois antérieur
-                const ancien = parseFloat(salaireAncienFields[index].value) || 0;
-                const demande = courant - ancien;
+    numericInputs.forEach(input => {
+        // Changer le type en "text" pour permettre le formatage
+        input.type = 'text';
 
-                // Assigner les valeurs calculées
-                totalCourantFields[index].value = courant.toFixed(0);
-                totalDemandeFields[index].value = demande.toFixed(0);
+        // Formatage initial
+        applyFormatting(input);
 
-                // Mettre à jour les totaux
-                totalNet += net;
-                totalRevers += revers;
-                totalCourant += courant;
-                totalSalaireAncien += ancien;
-                totalDemande += demande;
-                totalAncien += ancien;
+        // Gérer la saisie
+        input.addEventListener('input', function(e) {
+            let cursorPosition = e.target.selectionStart;
+            let oldLength = e.target.value.length;
+
+            applyFormatting(e.target);
+
+            // Ajuster la position du curseur
+            let newLength = e.target.value.length;
+            let newPosition = cursorPosition + (newLength - oldLength);
+            e.target.setSelectionRange(newPosition, newPosition);
+        });
+
+        // Nettoyer avant la soumission du formulaire
+        input.form.addEventListener('submit', function(e) {
+            numericInputs.forEach(input => {
+                input.value = unformatNumber(input.value);
             });
-
-            // Mettre à jour les champs de total
-            totalNetField.value = totalNet.toFixed(0);
-            totalReversField.value = totalRevers.toFixed(0);
-            totalCourantField.value = totalCourant.toFixed(0);
-            totalSalaireAncienField.value = totalSalaireAncien.toFixed(0);
-            totalDemandeField.value = totalDemande.toFixed(0);
-            totalAncienField.value = totalAncien.toFixed(0);
-        }
-
-        // Fonction pour calculer le solde
-        function calculateSolde() {
-            const totalCourant = parseFloat(totalCourantField.value) || 0;
-            const montantDisponible = parseFloat(montantDisponibleField.value) || 0;
-            const solde = totalCourant - montantDisponible;
-
-            soldeField.value = solde.toFixed(0);
-        }
-
-        // Ajouter des écouteurs pour recalculer lorsque les valeurs changent
-        netFields.forEach(field => field.addEventListener('input', calculateTotals));
-        reversFields.forEach(field => field.addEventListener('input', calculateTotals));
-        salaireAncienFields.forEach(field => field.addEventListener('input', calculateTotals));
-        montantDisponibleField.addEventListener('input', calculateSolde);
-
-        // Calculer les totaux au chargement de la page
-        calculateTotals();
+        });
     });
 
-</script>
+    // Recalculer les totaux avec le formatage
+    function calculateTotals() {
+        let totalNet = 0;
+        let totalRevers = 0;
+        let totalCourant = 0;
+        let totalSalaireAncien = 0;
+        let totalDemande = 0;
 
+        document.querySelectorAll('.net').forEach((field, index) => {
+            const net = parseFloat(unformatNumber(field.value)) || 0;
+            const revers = parseFloat(unformatNumber(document.querySelectorAll('.revers')[index].value)) || 0;
+            const ancien = parseFloat(unformatNumber(document.querySelectorAll('.ancien_salaire')[index].value)) || 0;
+
+            const courant = net + revers;
+            const demande = courant - ancien;
+
+            document.querySelectorAll('.total_courant')[index].value = formatNumber(courant.toString());
+            document.querySelectorAll('.total_demande')[index].value = formatNumber(demande.toString());
+
+            totalNet += net;
+            totalRevers += revers;
+            totalCourant += courant;
+            totalSalaireAncien += ancien;
+            totalDemande += demande;
+        });
+
+        // Mettre à jour les totaux avec formatage
+        document.getElementById('total_net').value = formatNumber(totalNet.toString());
+        document.getElementById('total_revers').value = formatNumber(totalRevers.toString());
+        document.getElementById('total_courant').value = formatNumber(totalCourant.toString());
+        document.getElementById('total_salaire_ancien').value = formatNumber(totalSalaireAncien.toString());
+        document.getElementById('total_demande').value = formatNumber(totalDemande.toString());
+
+        // Calculer le solde
+        const montantDisponible = parseFloat(unformatNumber(document.getElementById('montant_disponible').value)) || 0;
+        const solde = totalCourant - montantDisponible;
+        document.getElementById('solde').value = formatNumber(solde.toString());
+    }
+
+    // Ajouter les écouteurs d'événements pour les calculs
+    document.querySelectorAll('.net, .revers, .ancien_salaire').forEach(input => {
+        input.addEventListener('input', calculateTotals);
+    });
+
+    document.getElementById('montant_disponible').addEventListener('input', calculateTotals);
+
+    // Calculer les totaux initiaux
+    calculateTotals();
+});
+
+</script> 
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\BDO\Desktop\Fonds\resources\views/demandes/create.blade.php ENDPATH**/ ?>

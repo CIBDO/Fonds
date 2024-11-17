@@ -88,88 +88,88 @@
         <!-- Fonctionnaires BCS -->
         <tr>
             <td>Fonctionnaires BCS</td>
-            <td><input type="number" name="fonctionnaires_bcs_net" class="form-control net"></td>
-            <td><input type="number" name="fonctionnaires_bcs_revers" class="form-control revers"></td>
-            <td><input type="number" name="fonctionnaires_bcs_total_courant" class="form-control total_courant"></td>
-            <td><input type="number" name="fonctionnaires_bcs_salaire_ancien" class="form-control ancien_salaire" value="{{ $previousData->fonctionnaires_bcs_total_courant ?? 0 }}"></td>
-            <td><input type="number" name="fonctionnaires_bcs_total_demande" class="form-control total_demande" readonly></td>
+            <td><input type="text" name="fonctionnaires_bcs_net" class="form-control net"></td>
+            <td><input type="text" name="fonctionnaires_bcs_revers" class="form-control revers"></td>
+            <td><input type="text" name="fonctionnaires_bcs_total_courant" class="form-control total_courant"></td>
+            <td><input type="text" name="fonctionnaires_bcs_salaire_ancien" class="form-control ancien_salaire" value="{{ $previousData->fonctionnaires_bcs_total_courant ?? 0 }}"></td>
+            <td><input type="text" name="fonctionnaires_bcs_total_demande" class="form-control total_demande" readonly></td>
         </tr>
 
         <!-- Personnel Collectivité Santé -->
         <tr>
             <td>Personnel Collectivité Santé</td>
-            <td><input type="number" name="collectivite_sante_net" class="form-control net"></td>
-            <td><input type="number" name="collectivite_sante_revers" class="form-control revers"></td>
-            <td><input type="number" name="collectivite_sante_total_courant" class="form-control total_courant"></td>
-            <td><input type="number" name="collectivite_sante_salaire_ancien" class="form-control ancien_salaire" value="{{ $previousData->collectivite_sante_total_courant ?? 0 }}"></td>
-            <td><input type="number" name="collectivite_sante_total_demande" class="form-control total_demande" readonly></td>
+            <td><input type="text" name="collectivite_sante_net" class="form-control net"></td>
+            <td><input type="text" name="collectivite_sante_revers" class="form-control revers"></td>
+            <td><input type="text" name="collectivite_sante_total_courant" class="form-control total_courant"></td>
+            <td><input type="text" name="collectivite_sante_salaire_ancien" class="form-control ancien_salaire" value="{{ $previousData->collectivite_sante_total_courant ?? 0 }}"></td>
+            <td><input type="text" name="collectivite_sante_total_demande" class="form-control total_demande" readonly></td>
         </tr>
 
         <!-- Personnel Collectivité Éducation -->
         <tr>
             <td>Personnel Collectivité Éducation</td>
-            <td><input type="number" name="collectivite_education_net" class="form-control net"></td>
-            <td><input type="number" name="collectivite_education_revers" class="form-control revers"></td>
-            <td><input type="number" name="collectivite_education_total_courant" class="form-control total_courant"></td>
-            <td><input type="number" name="collectivite_education_salaire_ancien" class="form-control ancien_salaire" value="{{ $previousData->collectivite_education_total_courant ?? 0 }}"></td>
-            <td><input type="number" name="collectivite_education_total_demande" class="form-control total_demande" readonly></td>
+            <td><input type="text" name="collectivite_education_net" class="form-control net"></td>
+            <td><input type="text" name="collectivite_education_revers" class="form-control revers"></td>
+            <td><input type="text" name="collectivite_education_total_courant" class="form-control total_courant"></td>
+            <td><input type="text" name="collectivite_education_salaire_ancien" class="form-control ancien_salaire" value="{{ $previousData->collectivite_education_total_courant ?? 0 }}"></td>
+            <td><input type="text" name="collectivite_education_total_demande" class="form-control total_demande" readonly></td>
         </tr>
 
         <!-- Personnels Saisonniers -->
         <tr>
             <td>Personnels Saisonniers</td>
-            <td><input type="number" name="personnels_saisonniers_net" class="form-control net"></td>
-            <td><input type="number" name="personnels_saisonniers_revers" class="form-control revers"></td>
-            <td><input type="number" name="personnels_saisonniers_total_courant" class="form-control total_courant"></td>
-            <td><input type="number" name="personnels_saisonniers_salaire_ancien" class="form-control ancien_salaire" value="{{ $previousData->personnels_saisonniers_total_courant ?? 0 }}"></td>
-            <td><input type="number" name="personnels_saisonniers_total_demande" class="form-control total_demande" readonly></td>
+            <td><input type="text" name="personnels_saisonniers_net" class="form-control net"></td>
+            <td><input type="text" name="personnels_saisonniers_revers" class="form-control revers"></td>
+            <td><input type="text" name="personnels_saisonniers_total_courant" class="form-control total_courant"></td>
+            <td><input type="text" name="personnels_saisonniers_salaire_ancien" class="form-control ancien_salaire" value="{{ $previousData->personnels_saisonniers_total_courant ?? 0 }}"></td>
+            <td><input type="text" name="personnels_saisonniers_total_demande" class="form-control total_demande" readonly></td>
         </tr>
 
         <!-- EPN -->
         <tr>
             <td>EPN</td>
-            <td><input type="number" name="epn_net" class="form-control net"></td>
-            <td><input type="number" name="epn_revers" class="form-control revers"></td>
-            <td><input type="number" name="epn_total_courant" class="form-control total_courant"></td>
-            <td><input type="number" name="epn_salaire_ancien" class="form-control ancien_salaire" value="{{ $previousData->epn_total_courant ?? 0 }}"></td>
-            <td><input type="number" name="epn_total_demande" class="form-control total_demande" readonly></td>
+            <td><input type="text" name="epn_net" class="form-control net"></td>
+            <td><input type="text" name="epn_revers" class="form-control revers"></td>
+            <td><input type="text" name="epn_total_courant" class="form-control total_courant"></td>
+            <td><input type="text" name="epn_salaire_ancien" class="form-control ancien_salaire" value="{{ $previousData->epn_total_courant ?? 0 }}"></td>
+            <td><input type="text" name="epn_total_demande" class="form-control total_demande" readonly></td>
         </tr>
 
         <tr>
             <td>CED</td>
-            <td><input type="number" name="ced_net" class="form-control net"></td>
-            <td><input type="number" name="ced_revers" class="form-control revers"></td>
-            <td><input type="number" name="ced_total_courant" class="form-control total_courant"></td>
-            <td><input type="number" name="ced_salaire_ancien" class="form-control ancien_salaire" value="{{ $previousData->ced_total_courant ?? 0 }}"></td>
-            <td><input type="number" name="ced_total_demande" class="form-control total_demande" readonly></td>
+            <td><input type="text" name="ced_net" class="form-control net"></td>
+            <td><input type="text" name="ced_revers" class="form-control revers"></td>
+            <td><input type="text" name="ced_total_courant" class="form-control total_courant"></td>
+            <td><input type="text" name="ced_salaire_ancien" class="form-control ancien_salaire" value="{{ $previousData->ced_total_courant ?? 0 }}"></td>
+            <td><input type="text" name="ced_total_demande" class="form-control total_demande" readonly></td>
         </tr>
 
         <tr>
             <td>ECOM</td>
-            <td><input type="number" name="ecom_net" class="form-control net"></td>
-            <td><input type="number" name="ecom_revers" class="form-control revers"></td>
-            <td><input type="number" name="ecom_total_courant" class="form-control total_courant"></td>
-            <td><input type="number" name="ecom_salaire_ancien" class="form-control ancien_salaire" value="{{ $previousData->ecom_total_courant ?? 0 }}"></td>
-            <td><input type="number" name="ecom_total_demande" class="form-control total_demande" readonly></td>
+            <td><input type="text" name="ecom_net" class="form-control net"></td>
+            <td><input type="text" name="ecom_revers" class="form-control revers"></td>
+            <td><input type="text" name="ecom_total_courant" class="form-control total_courant"></td>
+            <td><input type="text" name="ecom_salaire_ancien" class="form-control ancien_salaire" value="{{ $previousData->ecom_total_courant ?? 0 }}"></td>
+            <td><input type="text" name="ecom_total_demande" class="form-control total_demande" readonly></td>
         </tr>
 
         <tr>
             <td>CFP-CPAM</td>
-            <td><input type="number" name="cfp_cpam_net" class="form-control net"></td>
-            <td><input type="number" name="cfp_cpam_revers" class="form-control revers"></td>
-            <td><input type="number" name="cfp_cpam_total_courant" class="form-control total_courant"></td>
-            <td><input type="number" name="cfp_cpam_salaire_ancien" class="form-control ancien_salaire" value="{{ $previousData->cfp_cpam_total_courant ?? 0 }}"></td>
-            <td><input type="number" name="cfp_cpam_total_demande" class="form-control total_demande" readonly></td>
+            <td><input type="text" name="cfp_cpam_net" class="form-control net"></td>
+            <td><input type="text" name="cfp_cpam_revers" class="form-control revers"></td>
+            <td><input type="text" name="cfp_cpam_total_courant" class="form-control total_courant"></td>
+            <td><input type="text" name="cfp_cpam_salaire_ancien" class="form-control ancien_salaire" value="{{ $previousData->cfp_cpam_total_courant ?? 0 }}"></td>
+            <td><input type="text" name="cfp_cpam_total_demande" class="form-control total_demande" readonly></td>
         </tr>
 
         <!-- Ligne de total automatique -->
         <tr class="total-row">
             <td>Total</td>
-            <td><input type="number" name="total_net" class="form-control" id="total_net" readonly></td>
-            <td><input type="number" name="total_revers" class="form-control" id="total_revers" readonly></td>
-            <td><input type="number" name="total_courant" class="form-control" id="total_courant" readonly></td>
-            <td><input type="number" name="total_salaire_ancien" class="form-control" id="total_salaire_ancien" readonly></td>
-            <td><input type="number" name="total_demande" class="form-control" id="total_demande" readonly></td>
+            <td><input type="text" name="total_net" class="form-control" id="total_net" readonly></td>
+            <td><input type="text" name="total_revers" class="form-control" id="total_revers" readonly></td>
+            <td><input type="text" name="total_courant" class="form-control" id="total_courant" readonly></td>
+            <td><input type="text" name="total_salaire_ancien" class="form-control" id="total_salaire_ancien" readonly></td>
+            <td><input type="text" name="total_demande" class="form-control" id="total_demande" readonly></td>
         </tr>
     </tbody>
 
