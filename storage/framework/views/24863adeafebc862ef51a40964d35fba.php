@@ -1,5 +1,10 @@
-
 <?php $__env->startSection('content'); ?>
+<?php if(session('error')): ?>
+    <div class="alert alert-danger">
+        <?php echo e(session('error')); ?>
+
+    </div>
+<?php endif; ?>
 
 <div class="page-header">
     <div class="row align-items-center">
@@ -89,10 +94,10 @@
                                             <i class="feather-check"></i>Valider
                                         </button>
                                         <button type="button" class="btn btn-sm bg-danger-light " data-bs-toggle="modal" data-bs-target="#rejectModal-<?php echo e($demande->id); ?>">
-                                            <i class="feather-X"></i>Rejeter 
+                                            <i class="feather-X"></i>Rejeter
                                         </button>
                                         <a href="<?php echo e(route('demande-fonds.generate.pdf', $demande->id)); ?>" class="btn btn-sm bg-info-light">
-                                            <i class="feather-printer"></i> 
+                                            <i class="feather-printer"></i>
                                         </a>
                                     </div>
                                 </td>

@@ -1,5 +1,10 @@
 @extends('layouts.master')
 @section('content')
+@if(session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
 
 <div class="page-header">
     <div class="row align-items-center">
@@ -89,10 +94,10 @@
                                             <i class="feather-check"></i>Valider
                                         </button>
                                         <button type="button" class="btn btn-sm bg-danger-light " data-bs-toggle="modal" data-bs-target="#rejectModal-{{ $demande->id }}">
-                                            <i class="feather-X"></i>Rejeter 
+                                            <i class="feather-X"></i>Rejeter
                                         </button>
                                         <a href="{{ route('demande-fonds.generate.pdf', $demande->id) }}" class="btn btn-sm bg-info-light">
-                                            <i class="feather-printer"></i> 
+                                            <i class="feather-printer"></i>
                                         </a>
                                     </div>
                                 </td>

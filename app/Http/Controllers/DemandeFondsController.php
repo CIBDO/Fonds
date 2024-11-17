@@ -597,7 +597,7 @@ class DemandeFondsController extends Controller
         return $pdf->download('demande_fonds_' . $demandeFonds->id . '.pdf');
     }
 
-    public function updateStatus(Request $request, $id)
+    /* public function updateStatus(Request $request, $id)
     {
         $this->authorizeRole(['admin', 'acct']);
         $demande = DemandeFonds::findOrFail($id);
@@ -616,15 +616,41 @@ class DemandeFondsController extends Controller
         $demande->date_envois = $request->date_envois;
         $demande->save();
         $demande->user->notify(new DemandeFondsStatusNotification($demande));
-        /*  $tresoriers = User::where('role', 'tresorier')->get();
-        foreach($tresoriers as $tresorier) {
-        if($tresorier->id !== auth::id()) {
-        $tresorier->notify(new DemandeFondsStatusNotification($demande));
+
+        Alert::success('Success', 'Fonds envoyés avec succès');
+        return redirect()->route('demandes-fonds.envois')->with('success', 'Fonds envoyés avec succès');
+    } */
+    public function updateStatus(Request $request, $id)
+    {
+        $this->authorizeRole(['admin', 'acct']);
+        $demande = DemandeFonds::findOrFail($id);
+
+        // Vérifier si la demande est déjà approuvée
+        if ($demande->status === 'approuve') {
+            return redirect()->route('demandes-fonds.envois')->with('error', 'Cette demande est déjà approuvée et ne peut plus être modifiée.');
         }
-        } */
+
+        // Vérifier le statut et mettre à jour en conséquence
+        if ($request->status == 'approuve') {
+            $demande->status = 'approuve';
+            $demande->montant = $request->montant;
+            $demande->observation = $request->observation;
+        } elseif ($request->status == 'rejete') {
+            $demande->status = 'rejete';
+            $demande->observation = $request->observation;
+        }
+
+        // Enregistrer les modifications
+        $demande->date_envois = $request->date_envois;
+        $demande->save();
+
+        // Envoyer une notification à l'utilisateur
+        $demande->user->notify(new DemandeFondsStatusNotification($demande));
+
         Alert::success('Success', 'Fonds envoyés avec succès');
         return redirect()->route('demandes-fonds.envois')->with('success', 'Fonds envoyés avec succès');
     }
+
 
     public function EnvoisFonds(Request $request)
     {
