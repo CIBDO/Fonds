@@ -108,7 +108,7 @@
                                     <td>{{ number_format($demande->total_revers, 0, '', ' ') }}</td>
                                     <td>{{ number_format($demande->total_courant, 0, '', ' ') }}</td>
                                     <td>{{ number_format($demande->total_ancien, 0, '', ' ') }}</td>
-                                    <td>{{ $demande->created_at->format('d/m/Y') }}</td>
+                                    <td>{{ $demande->postes->nom }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
