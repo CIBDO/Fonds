@@ -23,7 +23,7 @@ class UserController extends Controller
         $this->authorizeRole(['admin']);
         $postes = Poste::all();
         // On récupère tous les utilisateurs
-        $users = User::all();
+        $users = User::paginate(10);
         return view('users.index', compact('users', 'postes'));
     }
 

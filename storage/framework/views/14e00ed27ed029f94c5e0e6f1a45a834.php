@@ -1,1 +1,0 @@
-<?php /**PATH C:\Users\BDO\Desktop\Fonds\resources\views/dashboard.blade.php ENDPATH**/ ?>

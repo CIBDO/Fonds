@@ -37,7 +37,7 @@
                 </div>
             </form>
         </div>
-    
+
         <div class="row">
             <div class="col-sm-12">
                 <div class="card card-table comman-shadow">
@@ -72,7 +72,7 @@
                                         <td>{{ $user->name }}</td>
                                         <td>{{ $user->email }}</td>
                                         <td>{{ $user->role }}</td>
-                                        <td>{{ $user->isActive() ? 'Actif' : 'Inactif' }}</td>                                                              
+                                        <td>{{ $user->isActive() ? 'Actif' : 'Inactif' }}</td>
                                         <td class="text-end">
                                             <a href="{{ route('users.edit', $user->id) }}" class="btn btn-sm btn-warning">
                                                 <i class="feather-edit"></i> Éditer
@@ -104,7 +104,11 @@
                                 </tbody>
                             </table>
                         </div>
-                       {{--  {{ $users->links() }} --}}
+                        {{-- Ajoutez cette ligne pour la pagination --}}
+                        <div class="d-flex justify-content-center">
+                            {{ $users->links('pagination::bootstrap-4') }}
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -187,4 +191,5 @@
 
 </script>
 @endsection
+
 @endsection

@@ -1,1 +1,0 @@
-<?php /**PATH C:\Users\BDO\Desktop\Fonds\resources\views\demandes\recap.blade.php ENDPATH**/ ?>
