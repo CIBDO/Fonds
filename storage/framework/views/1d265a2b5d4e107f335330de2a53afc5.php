@@ -20,7 +20,7 @@
                             <div class="card-body">
                                 <div class="db-widgets d-flex justify-content-between align-items-center">
                                     <div class="db-info">
-                                        <h6 style="font-size: 18px; color: hsl(210, 79%, 45%); font-weight: bold;">Montant Demandé</h6>
+                                        <h6 style="font-size: 18px; color: hsl(210, 79%, 45%); font-weight: bold;">Fonds Demandés</h6>
                                         <h3><?php echo e(number_format($fondsDemandes, 0, '', ' ')); ?></h3>
                                     </div>
                                     <div class="db-icon">
@@ -96,7 +96,7 @@
                                 <th>Total Revers</th>
                                 <th>Total Courant</th>
                                 <th>Total Ancien</th>
-                                <th>Date</th>
+                                <th>Postes</th>
                             </tr>
                         </thead>
                         <tbody>
