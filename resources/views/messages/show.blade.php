@@ -46,7 +46,7 @@
             <p class="mb-4">{{ $message->body }}</p>
 
             <!-- Gestion des pièces jointes -->
-            @if($message->attachments->isNotEmpty())
+           {{--  @if($message->attachments->isNotEmpty())
                 <h5><i class="fas fa-paperclip"></i> Pièces jointes</h5>
                 <ul class="list-group list-group-flush mb-3">
                     @foreach($message->attachments as $attachment)
@@ -65,19 +65,29 @@
                 </ul>
             @else
                 <p class="text-muted"><i class="fas fa-paperclip"></i> Aucune pièce jointe</p>
-            @endif
-        </div>
+            @endif --}}
+                    @if($message->attachments->isNotEmpty())
+            <h5><i class="fas fa-paperclip"></i> Pièces jointes</h5>
+            <ul class="list-group list-group-flush mb-3">
+                @foreach($message->attachments as $attachment)
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>{{ $attachment->filename }}</span>
+                        <div>
+                            <a href="{{ route('attachments.download', $attachment->id) }}" class="btn btn-outline-secondary btn-sm me-2">
+                                <i class="fas fa-download"></i> Télécharger
+                            </a>
+                            <button class="btn btn-outline-info btn-sm" onclick="previewAttachment('{{ asset('storage/' . $attachment->filepath) }}')">
+                                <i class="fas fa-eye"></i> Aperçu
+                            </button>
+                        </div>
+                    </li>
+                @endforeach
+            </ul>
+        @else
+            <p class="text-muted"><i class="fas fa-paperclip"></i> Aucune pièce jointe</p>
+        @endif
 
-        <!-- Pied de page avec les boutons d'action -->
-        {{-- <div class="card-footer text-end">
-            <a href="{{ route('messages.reply', $message->id) }}" class="btn btn-primary">
-                <i class="fas fa-reply"></i> Répondre
-            </a>
-            <a href="{{ route('messages.sent') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Retour à la Boîte d'Envoi
-            </a>
-        </div> --}}
-        <!-- Pied de page avec les boutons d'action -->
+        </div>
         <div class="card-footer text-end">
             <a href="{{ route('messages.reply', $message->id) }}" class="btn btn-primary">
                 <i class="fas fa-reply"></i> Répondre

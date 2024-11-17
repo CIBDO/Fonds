@@ -81,7 +81,7 @@ class MessageController extends Controller
                     'message_id' => $message->id,
                 ]);
             }
-        } 
+        }
         Alert::success('Message envoyé avec succès.');
         return redirect()->route('messages.sent')->with('success', 'Message envoyé avec succès.');
     }
@@ -190,7 +190,7 @@ class MessageController extends Controller
     }
 
     // Téléchargement d'un fichier joint
-    public function downloadAttachment($id)
+   /*  public function downloadAttachment($id)
     {
         $attachment = Attachment::findOrFail($id);
         $filePath = storage_path('app/public/' . $attachment->filepath);
@@ -201,6 +201,26 @@ class MessageController extends Controller
 
         return redirect()->back()->with('error', 'Fichier non trouvé.');
     }
+ */
+public function downloadAttachment($id)
+{
+    $attachment = Attachment::findOrFail($id);
+
+    // Vérifiez si le champ filepath est vide ou invalide
+    if (empty($attachment->filepath) || $attachment->filepath == '0') {
+        return redirect()->back()->with('error', 'Le chemin du fichier est invalide.');
+    }
+
+    // Définir le chemin complet du fichier
+    $filePath = storage_path('app/public/' . $attachment->filepath);
+
+    // Vérifiez si le fichier existe
+    if (file_exists($filePath)) {
+        return response()->download($filePath, $attachment->filename);
+    }
+
+    return redirect()->back()->with('error', 'Fichier non trouvé.');
+}
 
     // Afficher le formulaire de transfert de message
     public function forward($id)
