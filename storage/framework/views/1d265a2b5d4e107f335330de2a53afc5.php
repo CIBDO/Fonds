@@ -107,7 +107,7 @@
                                     <td><?php echo e(number_format($demande->total_revers, 0, '', ' ')); ?></td>
                                     <td><?php echo e(number_format($demande->total_courant, 0, '', ' ')); ?></td>
                                     <td><?php echo e(number_format($demande->total_ancien, 0, '', ' ')); ?></td>
-                                    <td><?php echo e($demande->created_at->format('d/m/Y')); ?></td>
+                                    <td><?php echo e($demande->poste->nom); ?></td>
                                 </tr>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </tbody>
