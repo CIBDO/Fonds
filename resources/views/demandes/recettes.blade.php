@@ -44,6 +44,7 @@
                             <tr>
                                 <th>Recettes Douanières</th>
                                 <th>Mois</th>
+                                <th>Poste</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -51,6 +52,7 @@
                             <tr>
                                 <td>{{ number_format($demande->montant_disponible, 0, ',', ' ') }}</td>
                                 <td>{{ $demande->mois . ' ' . $demande->annee }}</td>
+                                <td>{{ $demande->poste->nom }}</td>
                             </tr>
                             @endforeach
                         </tbody>

@@ -16,11 +16,12 @@
                 </div>
                 <div class="row">
                     <div class="col-xl-3 col-sm-6 col-12 d-flex">
+                        <a href="{{ route('demandes-fonds.index') }}" style="text-decoration: none;">
                         <div class="card bg-comman w-100">
                             <div class="card-body">
                                 <div class="db-widgets d-flex justify-content-between align-items-center">
                                     <div class="db-info">
-                                        <h6 style="font-size: 18px; color: hsl(210, 79%, 45%); font-weight: bold;">Montant Demandé</h6>
+                                        <h6 style="font-size: 18px; color: hsl(210, 79%, 45%); font-weight: bold;">Montants Demandés</h6>
                                         <h3>{{ number_format($fondsDemandes, 0, '', ' ') }}</h3>
                                     </div>
                                     <div class="db-icon">
@@ -28,9 +29,11 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                            </div>
+                        </a>
                     </div>
                     <div class="col-xl-3 col-sm-6 col-12 d-flex">
+                        <a href="{{ route('demandes-fonds.recettes') }}" style="text-decoration: none;">
                         <div class="card bg-comman w-100">
                             <div class="card-body">
                                 <div class="db-widgets d-flex justify-content-between align-items-center">
@@ -44,8 +47,10 @@
                                 </div>
                             </div>
                         </div>
+                        </a>
                     </div>
                     <div class="col-xl-3 col-sm-6 col-12 d-flex">
+                        <a href="{{ route('demandes-fonds.solde') }}" style="text-decoration: none;">
                         <div class="card bg-comman w-100">
                             <div class="card-body">
                                 <div class="db-widgets d-flex justify-content-between align-items-center">
@@ -59,8 +64,10 @@
                                 </div>
                             </div>
                         </div>
+                        </a>
                     </div>
                     <div class="col-xl-3 col-sm-6 col-12 d-flex">
+                        <a href="{{ route('demandes-fonds.situation') }}" style="text-decoration: none;">
                         <div class="card bg-comman w-100">
                             <div class="card-body">
                                 <div class="db-widgets d-flex justify-content-between align-items-center">
@@ -74,11 +81,15 @@
                                 </div>
                             </div>
                         </div>
+                        </a>
                     </div>
                 </div>
                 <div class="mb-4">
                     <h3 style="font-size: 20px; color: hsl(240, 26%, 92%); font-weight: bold; text-align: center;background-color: #574ae6; padding: 10px; border-radius: 20px;">Situation Financière</h3>
-                    <table class="table table-bordered">
+                    <div class="mb-3">
+                        <input type="text" id="filterInput" class="form-control" placeholder="Filtrer le tableau...">
+                    </div>
+                    <table class="table table-bordered" id="financialTable">
                         <thead>
                             <tr>
                                 <th>Poste</th>
@@ -103,7 +114,24 @@
                         </tbody>
                     </table>
                 </div>
-            
+
              </div>
-            
+             <script>
+                document.getElementById('filterInput').addEventListener('keyup', function() {
+                    var filter = this.value.toUpperCase();
+                    var rows = document.querySelector("#financialTable tbody").rows;
+
+                    for (var i = 0; i < rows.length; i++) {
+                        var cells = rows[i].cells;
+                        var match = false;
+                        for (var j = 0; j < cells.length; j++) {
+                            if (cells[j].textContent.toUpperCase().indexOf(filter) > -1) {
+                                match = true;
+                                break;
+                            }
+                        }
+                        rows[i].style.display = match ? "" : "none";
+                    }
+                });
+            </script>
             @endsection

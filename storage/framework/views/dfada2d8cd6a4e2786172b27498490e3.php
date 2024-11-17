@@ -43,6 +43,7 @@
                             <tr>
                                 <th>Solde</th>
                                 <th>Mois</th>
+                                <th>Poste</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -50,6 +51,7 @@
                             <tr>
                                 <td><?php echo e(number_format($demande->solde, 0, ',', ' ')); ?></td>
                                 <td><?php echo e($demande->mois . ' ' . $demande->annee); ?></td>
+                                <td><?php echo e($demande->poste->nom); ?></td>
                             </tr>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </tbody>

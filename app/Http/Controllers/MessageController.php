@@ -20,7 +20,7 @@ class MessageController extends Controller
         $messages = Message::whereHas('recipients', function ($query) {
             $query->where('user_id', Auth::id());
         })->orderBy('created_at', 'desc')->paginate(8);
-        
+
         return view('messages.inbox', compact('messages'));
     }
 
@@ -48,7 +48,7 @@ class MessageController extends Controller
             'receiver_ids.*' => 'exists:users,id',
             'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,xlsx,xls,docx,zip|max:51200'
         ]);
-         
+
         $message = Message::create([
             'subject' => $request->subject,
             'body' => $request->body,
@@ -56,7 +56,7 @@ class MessageController extends Controller
             'status' => 'unread',
             'sent_at' => now(), // Enregistre l'heure d'envoi
         ]);
-      
+
         /* foreach ($request->receiver_ids as $receiverId) {
             $recipient = User::find($receiverId);
             if ($recipient) {
@@ -71,8 +71,8 @@ class MessageController extends Controller
                 $recipient->notify(new MessageSent($message));
             }
         }
-        
-        if ($request->hasFile('attachments')) {
+
+         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
                 $path = $file->storeAs('attachments', $file->getClientOriginalName(), 'public');
                 Attachment::create([
@@ -81,7 +81,7 @@ class MessageController extends Controller
                     'message_id' => $message->id,
                 ]);
             }
-        }
+        } 
         Alert::success('Message envoyé avec succès.');
         return redirect()->route('messages.sent')->with('success', 'Message envoyé avec succès.');
     }
@@ -162,9 +162,9 @@ class MessageController extends Controller
             }
         }
 
-        Alert::success('Réponse envoyée avec succès.'); 
+        Alert::success('Réponse envoyée avec succès.');
         return redirect()->route('messages.index')->with('success', 'Réponse envoyée avec succès.');
-    } 
+    }
 
     // Afficher le formulaire de réponse
     public function showReplyForm($id)
@@ -255,12 +255,12 @@ class MessageController extends Controller
     public function replyAll($id, Request $request)
     {
        /*  dd('Méthode replyAll atteinte'); */
-      
+
         $request->validate([
             'body' => 'required|string',
             'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,xlsx,xls,docx,zip|max:2048'
         ]);
-        
+
         $originalMessage = Message::with('recipients')->findOrFail($id);
 
         // Créer le message de réponse
@@ -272,7 +272,7 @@ class MessageController extends Controller
             'sent_at' => now(),
             'parent_id' => $originalMessage->id,
         ]);
-        
+
             // Récupérer les destinataires et l'expéditeur du message original
         $recipientIds = $originalMessage->recipients->pluck('id')->toArray();
         $recipientIds[] = $originalMessage->sender_id; // Inclure l'expéditeur original
