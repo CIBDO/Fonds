@@ -174,3 +174,92 @@
     </tbody>
 
 </table>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        function formatNumber(number) {
+            return new Intl.NumberFormat('fr-FR').format(number);
+        }
+
+        function unformatNumber(formattedNumber) {
+            if (typeof formattedNumber === 'string') {
+                return parseFloat(formattedNumber.replace(/\s/g, '').replace(',', '.')) || 0;
+            }
+            return formattedNumber || 0;
+        }
+
+        const netFields = document.querySelectorAll('.net');
+        const reversFields = document.querySelectorAll('.revers');
+        const totalCourantFields = document.querySelectorAll('.total_courant');
+        const salaireAncienFields = document.querySelectorAll('.ancien_salaire');
+        const totalDemandeFields = document.querySelectorAll('.total_demande');
+        const totalNetField = document.getElementById('total_net');
+        const totalReversField = document.getElementById('total_revers');
+        const totalCourantField = document.getElementById('total_courant');
+        const totalSalaireAncienField = document.getElementById('total_salaire_ancien');
+        const totalDemandeField = document.getElementById('total_demande');
+        const montantDisponibleField = document.getElementById('montant_disponible');
+        const soldeField = document.getElementById('solde');
+
+        function calculateTotals() {
+            let totalNet = 0;
+            let totalRevers = 0;
+            let totalCourant = 0;
+            let totalSalaireAncien = 0;
+            let totalDemande = 0;
+
+            netFields.forEach((field, index) => {
+                const net = unformatNumber(field.value);
+                const revers = unformatNumber(reversFields[index].value);
+                const courant = net + revers;
+                const ancien = unformatNumber(salaireAncienFields[index].value);
+                const demande = courant - ancien;
+
+                totalCourantFields[index].value = formatNumber(courant);
+                totalDemandeFields[index].value = formatNumber(demande);
+
+                totalNet += net;
+                totalRevers += revers;
+                totalCourant += courant;
+                totalSalaireAncien += ancien;
+                totalDemande += demande;
+            });
+
+            totalNetField.value = formatNumber(totalNet);
+            totalReversField.value = formatNumber(totalRevers);
+            totalCourantField.value = formatNumber(totalCourant);
+            totalSalaireAncienField.value = formatNumber(totalSalaireAncien);
+            totalDemandeField.value = formatNumber(totalDemande);
+
+            calculateSolde();
+        }
+
+        function calculateSolde() {
+            const montantDisponible = unformatNumber(montantDisponibleField.value);
+            const totalCourant = unformatNumber(totalCourantField.value);
+            const solde = montantDisponible - totalCourant;
+            soldeField.value = formatNumber(solde);
+        }
+
+        function handleInput(e) {
+            const value = unformatNumber(e.target.value);
+            e.target.value = formatNumber(value);
+            calculateTotals();
+        }
+
+        netFields.forEach(field => field.addEventListener('input', handleInput));
+        reversFields.forEach(field => field.addEventListener('input', handleInput));
+        salaireAncienFields.forEach(field => field.addEventListener('input', handleInput));
+        montantDisponibleField.addEventListener('input', handleInput);
+
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const numericFields = document.querySelectorAll('.net, .revers, .total_courant, .ancien_salaire, .total_demande, #total_net, #total_revers, #total_courant, #total_salaire_ancien, #total_demande, #montant_disponible, #solde');
+
+            numericFields.forEach(field => {
+                field.value = unformatNumber(field.value);
+            });
+        });
+
+        calculateTotals();
+    });
+    </script>
+ 

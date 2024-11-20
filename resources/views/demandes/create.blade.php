@@ -123,6 +123,17 @@
         <div class="button-container" style="text-align: center; margin-top: 20px;">
             <button type="submit" class="submit-button">Soumettre la demande</button>
         </div>
+        {{-- <script>
+            document.querySelector('form').addEventListener('submit', function(e) {
+                // Sélectionner tous les champs numériques
+                const numericFields = document.querySelectorAll('input[type="text"], .net, .revers, .total_courant, .ancien_salaire, .total_demande');
+
+                numericFields.forEach(field => {
+                    // Enlever le formatage avant l'envoi
+                    field.value = field.value.replace(/\s/g, '').replace(',', '.');
+                });
+            });
+            </script> --}}
     </form>
 </div>
 
@@ -211,7 +222,7 @@
 
 </script> --}}
 
- <script>
+ {{-- <script>
 document.addEventListener('DOMContentLoaded', function () {
     // Fonction pour formater les nombres
     function formatNumber(value) {
@@ -316,5 +327,5 @@ document.addEventListener('DOMContentLoaded', function () {
     calculateTotals();
 });
 
-</script> 
+</script>  --}}
 @endsection
