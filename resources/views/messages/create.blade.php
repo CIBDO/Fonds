@@ -33,12 +33,12 @@
 
         <div class="mb-3">
             <label for="destinataires" class="form-label"><i class="fas fa-users"></i> Destinataires</label>
-            
+
             <!-- Champ select qui agit comme un déclencheur -->
             <select class="form-select" id="destinataireTrigger" onclick="toggleCheckboxList()">
                 <option value="" >Cliquez pour sélectionner des destinataires</option>
             </select>
-            
+
             @if($users->isEmpty())
                 <p class="text-muted">Aucun destinataire disponible.</p>
             @else
@@ -47,13 +47,13 @@
                     @foreach($users as $user)
                         <div>
                             <input type="checkbox" name="receiver_ids[]" value="{{ $user->id }}" class="form-check-input" id="user-{{ $user->id }}">
-                            <label class="form-check-label" for="user-{{ $user->id }}">{{ $user->name }}</label>
+                            <label class="form-check-label" for="user-{{ $user->id }}">{{ $user->name }} ({{ $user->poste->nom }})</label>
                         </div>
                     @endforeach
                 </div>
             @endif
         </div>
-        
+
 
         <div class="mb-3">
             <label for="attachments" class="form-label"><i class="fas fa-paperclip"></i> Pièces jointes</label>
@@ -71,7 +71,7 @@
     function toggleCheckboxList() {
         // Récupère l'élément de la liste des cases à cocher
         const checkboxList = document.getElementById('checkboxList');
-        
+
         // Bascule la visibilité de la liste
         if (checkboxList.style.display === 'none' || checkboxList.style.display === '') {
             checkboxList.style.display = 'block';

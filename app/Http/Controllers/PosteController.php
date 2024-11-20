@@ -19,8 +19,9 @@ class PosteController extends Controller
     public function index()
     {
         $this->authorizeRole(['admin']);
-        $postes = Poste::paginate(10); 
-        return view('postes.index', compact('postes'));
+        $postes = Poste::paginate(10);
+        $nom = request('nom');
+        return view('postes.index', compact('postes', 'nom'));
     }
 
     // Afficher le formulaire pour créer un nouveau poste
@@ -57,7 +58,7 @@ class PosteController extends Controller
     // Afficher le formulaire pour éditer un poste
     public function edit(Poste $poste)
     {
-        $this->authorizeRole(['admin']);    
+        $this->authorizeRole(['admin']);
         return view('postes.edit', compact('poste'));
     }
 

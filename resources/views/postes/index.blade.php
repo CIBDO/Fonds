@@ -17,7 +17,7 @@
     <div class="row">
         <div class="col-lg-3 col-md-6">
             <div class="form-group">
-                <input type="text" class="form-control" placeholder="Rechercher par poste ...">
+                <input type="text" class="form-control" name="nom" placeholder="Rechercher par nom ...">
             </div>
         </div>
         <div class="col-lg-2">

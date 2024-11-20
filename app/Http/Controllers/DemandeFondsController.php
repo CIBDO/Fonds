@@ -317,16 +317,17 @@ class DemandeFondsController extends Controller
             'cfp_cpam_salaire_ancien' => 'nullable|numeric',
             'cfp_cpam_total_demande' => 'nullable|numeric',
             'user_id' => 'required|integer',
-            'montant_disponible' => 'nullable|numeric',
+            'montant_disponible' => 'required|numeric',
             'solde' => 'nullable|numeric',
         ]);
 
-        $userId = $request->user_id;
+        /* $userId = $request->user_id; */
         $mois = $request->mois;
         $annee = $request->annee;
+        $posteId = $request->poste_id;
 
         // Vérifier si une demande existe déjà
-        $demandeExistante = DemandeFonds::where('user_id', $userId)
+        $demandeExistante = DemandeFonds::where('poste_id', $posteId)
             ->where('mois', $mois)
             ->where('annee', $annee)
             ->exists();
@@ -595,7 +596,7 @@ class DemandeFondsController extends Controller
             'total_courant' => 'nullable|numeric',
             'total_salaire_ancien' => 'nullable|numeric',
             'total_demande' => 'nullable|numeric',
-            'montant_disponible' => 'nullable|numeric',
+            'montant_disponible' => 'required|numeric',
             'solde' => 'nullable|numeric',
             'user_id' => 'nullable|exists:users,id',
             'poste_id' => 'nullable|exists:postes,id',

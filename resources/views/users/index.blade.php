@@ -19,12 +19,17 @@
         <div class="search-user-form">
             <form method="GET" action="{{ route('users.index') }}">
                 <div class="row">
-                    <div class="col-lg-4 col-md-6">
+                    <div class="col-lg-2 col-md-6">
                         <div class="form-group">
                             <input type="text" class="form-control" name="name" placeholder="Prénoms & Nom" value="{{ request('name') }}">
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-6">
+                    <div class="col-lg-2 col-md-6">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="poste_id" placeholder="Poste" value="{{ request('poste_id') }}">
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
                         <div class="form-group">
                             <input type="text" class="form-control" name="email" placeholder=" Email" value="{{ request('email') }}">
                         </div>

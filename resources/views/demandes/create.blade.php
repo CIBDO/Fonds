@@ -21,7 +21,7 @@
     <h2 class="my-4" style="text-align: center; color: #ebf0f4; background-color:
      #3d5ee1; padding: 20px; border-radius: 10px; font-weight: bold; font-size: 22px; font-family:Georgia, 'Times New Roman', Times, serif">Demande de fonds</h2>
     <!-- Formulaire pour envoyer la demande de fonds -->
-    <form method="POST" action="{{ route('demandes-fonds.store') }}" >
+    <form method="POST" action="{{ route('demandes-fonds.store') }}" id="demandeForm">
         @csrf
         <!-- En-tête avec la date, le mois et l'année -->
         <div class="row mb-4">
@@ -328,4 +328,17 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 </script>  --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('demandeForm');
+
+        form.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+            }
+        });
+
+        // ... autres scripts existants ...
+    });
+</script>
 @endsection

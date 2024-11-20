@@ -22,10 +22,27 @@ class UserController extends Controller
     {
         $this->authorizeRole(['admin','tresorier']);
         $postes = Poste::all();
+        $name = request('name');
+        $email = request('email');
+        $poste_id = request('poste_id');
+
+
         // On récupère tous les utilisateurs
-        $users = User::paginate(10);
-        return view('users.index', compact('users', 'postes'));
+        $users = User::where(function ($query) use ($name, $email, $poste_id) {
+            if ($name) {
+                $query->where('name', 'like', '%' . $name . '%');
+            }
+            if ($email) {
+                $query->where('email', 'like', '%' . $email . '%');
+            }
+            if ($poste_id) {
+                $query->where('poste_id', $poste_id);
+            }
+
+        })->paginate(10);
+        return view('users.index', compact('users', 'postes', 'name', 'email', 'poste_id'));
     }
+
 
     public function create()
     {
