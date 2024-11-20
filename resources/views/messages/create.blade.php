@@ -47,7 +47,7 @@
                     @foreach($users as $user)
                         <div>
                             <input type="checkbox" name="receiver_ids[]" value="{{ $user->id }}" class="form-check-input" id="user-{{ $user->id }}">
-                            <label class="form-check-label" for="user-{{ $user->id }}">{{ $user->name }} ({{ $user->poste->nom }})</label>
+                            <label class="form-check-label" for="user-{{ $user->id }}">{{ $user->name }} {{-- {{ $user->poste->nom }} --}}</label>
                         </div>
                     @endforeach
                 </div>
