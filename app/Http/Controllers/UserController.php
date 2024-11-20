@@ -20,7 +20,7 @@ class UserController extends Controller
 
     public function index()
     {
-        $this->authorizeRole(['admin']);
+        $this->authorizeRole(['admin','tresorier']);
         $postes = Poste::all();
         // On récupère tous les utilisateurs
         $users = User::paginate(10);
@@ -36,7 +36,7 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $this->authorizeRole(['admin']);
+        $this->authorizeRole(['admin','tresorier']);
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -58,14 +58,26 @@ class UserController extends Controller
         return redirect()->route('users.index');
     }
 
-    public function edit(User $user)
+    /* public function edit(User $user)
     {
         $this->authorizeRole(['admin']);
         $postes = Poste::all();
         return view('users.edit', compact('user', 'postes'));
     }
+ */
 
-    public function update(Request $request, User $user)
+    public function edit(User $user)
+    {
+        $this->authorizeRole(['tresorier', 'admin']);
+        if (Auth::user()->id !== $user->id && Auth::user()->role !== 'admin') {
+            return redirect()->route('users.index')->with('error', 'Vous n\'êtes pas autorisé à modifier ces informations.');
+        }
+
+        $postes = Poste::all();
+        return view('users.edit', compact('user', 'postes'));
+    }
+
+    /* public function update(Request $request, User $user)
     {
         $this->authorizeRole(['admin']);
         $request->validate([
@@ -86,7 +98,70 @@ class UserController extends Controller
         }
         alert()->success('Success', 'Utilisateur mis à jour avec succès.');
         return redirect()->route('users.index');
+    } */
+    /* public function update(Request $request, User $user)
+    {
+        $this->authorizeRole(['tresorier', 'admin']);
+        // Vérification d'autorisation
+        if (Auth::user()->id !== $user->id && Auth::user()->role !== 'admin') {
+            return redirect()->route('users.index')->with('error', 'Vous n\'êtes pas autorisé à modifier ces informations.');
+        }
+
+        // Validation des données
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'password' => 'nullable|min:4|confirmed',
+        ]);
+
+        // Mise à jour des informations de l'utilisateur
+        $user->name = $request->input('name');
+        $user->email = $request->input('email');
+
+        // Mise à jour du mot de passe s'il est fourni
+        if ($request->filled('password')) {
+            $user->password = bcrypt($request->input('password'));
+        }
+
+        $user->save();
+
+        return redirect()->route('users.index')->with('success', 'Informations mises à jour avec succès.');
     }
+ */
+public function update(Request $request, User $user)
+{
+    $validatedData = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+        'password' => 'nullable|string|min:8|confirmed',
+    ]);
+
+    // Si l'utilisateur connecté est un trésorier
+    if (Auth::user()->role === 'tresorier') {
+        // Forcer les valeurs existantes pour les champs qu'il ne peut pas modifier
+        $validatedData['role'] = $user->role;
+        $validatedData['active'] = $user->active;
+        $validatedData['poste_id'] = $user->poste_id;
+    } else {
+        // Valider les champs supplémentaires uniquement pour l'admin
+        $request->validate([
+            'role' => 'required|in:admin,tresorier,acct,superviseur',
+            'active' => 'required|boolean',
+            'poste_id' => 'required|exists:postes,id',
+        ]);
+    }
+
+    // Mise à jour de l'utilisateur
+    $user->update($validatedData);
+
+    // Mettre à jour le mot de passe si fourni
+    if ($request->filled('password')) {
+        $user->update(['password' => Hash::make($request->password)]);
+    }
+
+    return redirect()->route('users.index')->with('success', 'Utilisateur mis à jour avec succès.');
+}
+
 
     public function destroy(User $user)
     {

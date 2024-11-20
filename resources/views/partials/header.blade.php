@@ -32,7 +32,7 @@
                             </div>
                         </div>
                     </div>
-                </li>   
+                </li>
                 <li class="nav-item dropdown noti-dropdown me-2">
                     <a href="#" class="dropdown-toggle nav-link header-nav-list" data-bs-toggle="dropdown">
                         <img src="{{ asset('assets/img/icons/header-icon-05.svg') }}" alt="">
@@ -85,7 +85,7 @@
                         </div>
                     </div>
                 </li>
-                       
+
                 <li class="nav-item zoom-screen me-2">
                     <a href="#" class="nav-link header-nav-list win-maximize">
                         <img src="{{asset('assets/img/icons/header-icon-04.svg')}}" alt="">
@@ -111,21 +111,21 @@
                                 <p class="text-muted mb-0">{{ Auth::check() ? Auth::user()->role : 'N/A' }}</p>
                             </div>
                         </div>
-                        <a class="dropdown-item" href="{{ Auth::check() ? route('profile.edit') : '#' }}">Mon Profil</a>
-                        {{-- <a class="dropdown-item" href="{{ Auth::check() ? route('messages.inbox') : '#' }}">Inbox</a> --}}
+                        <a class="dropdown-item" href="{{ Auth::check() ? route('users.index') : '#' }}">Mon Profil</a>
+                         <a class="dropdown-item" href="{{ Auth::check() ? route('messages.index') : '#' }}">Boite de Réception</a>
                         @if(Auth::check())
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                 @csrf
                             </form>
-                            <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+                            <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Déconnexion</a>
                         @else
                             <a class="dropdown-item" href="{{ route('login') }}">Login</a>
                             <a class="dropdown-item" href="{{ route('register') }}">Register</a>
                         @endif
                     </div>
                 </li>
-                
-                
+
+
 
             </ul>
 

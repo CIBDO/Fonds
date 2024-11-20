@@ -400,34 +400,52 @@ class DemandeFondsController extends Controller
             ->with('success', 'Demande de fonds créée avec succès.');
     }
 
-
-
     public function edit($id)
     {
         $this->authorizeRole(['tresorier', 'admin']);
-        // Récupérer les postes pour le formulaire de modification
         $demande = DemandeFonds::findOrFail($id);
+
+        // Vérifier si l'utilisateur est admin ou propriétaire de la demande
+        $user = Auth::user();
+        if (!$user->isAdmin() && $demande->user_id !== $user->id) {
+            return redirect()->back()->withErrors(['error' => 'Vous n\'avez pas la permission de modifier cette demande.']);
+        }
+
         $postes = \App\Models\Poste::all();
         $users = User::all();
         return view('demandes.edit', compact('demande', 'postes', 'users'));
     }
 
-    public function update(Request $request, DemandeFonds $demandeFonds)
+   /*  public function update(Request $request, $id)
     {
         $this->authorizeRole(['tresorier', 'admin']);
         $user = Auth::user();
+        $demandeFonds = DemandeFonds::findOrFail($id);
 
         // Vérifier si l'utilisateur est admin ou propriétaire de la demande
-        if (!$user->isadmin() && $demandeFonds->user_id !== $user->id) {
+        if (!$user->isAdmin() && $demandeFonds->user_id !== $user->id) {
             return redirect()->back()->withErrors(['error' => 'Vous n\'avez pas la permission de modifier cette demande.']);
         }
+
         // Empêcher la modification si la demande est déjà approuvée
         if ($demandeFonds->status === 'approuve') {
             return redirect()->back()->withErrors(['error' => 'Vous ne pouvez pas modifier une demande déjà approuvée.']);
         }
 
+         // Nettoyer les données avant la validation
+         $cleanData = collect($request->all())->map(function ($value, $key) {
+            // Si c'est une valeur numérique, enlever les espaces et convertir en nombre
+            if (is_string($value) && preg_match('/^[\d\s]+$/', $value)) {
+                return (float) str_replace(' ', '', $value);
+            }
+            return $value;
+        })->toArray();
+
+        // Remplacer les données de la requête par les données nettoyées
+        $request->replace($cleanData);
+        dd($request->all());
         // Valider les champs de la requête
-        $request->validate([
+        $validatedData = $request->validate([
             'mois' => 'required|string',
             'annee' => 'nullable|numeric',
             'total_demande' => 'nullable|numeric',
@@ -457,8 +475,6 @@ class DemandeFondsController extends Controller
             'epn_total_courant' => 'nullable|numeric',
             'epn_salaire_ancien' => 'nullable|numeric',
             'epn_total_demande' => 'nullable|numeric',
-            'poste_id' => 'nullable|exists:postes,id',
-            'date_reception' => 'nullable|date',
             'ced_net' => 'nullable|numeric',
             'ced_revers' => 'nullable|numeric',
             'ced_total_courant' => 'nullable|numeric',
@@ -477,20 +493,117 @@ class DemandeFondsController extends Controller
             'total_net' => 'nullable|numeric',
             'total_revers' => 'nullable|numeric',
             'total_courant' => 'nullable|numeric',
-            'total_ancien' => 'nullable|numeric',
-            'total_disponibilite' => 'nullable|numeric',
+            'total_salaire_ancien' => 'nullable|numeric',
+            'total_demande' => 'nullable|numeric',
+            'montant_disponible' => 'nullable|numeric',
             'solde' => 'nullable|numeric',
             'user_id' => 'nullable|exists:users,id',
             'poste_id' => 'nullable|exists:postes,id',
-            'date_reception' => 'nullable|date'
+            'date_reception' => 'nullable|date',
+            'date' => 'required|date'
         ]);
 
-
-        $demandeFonds->update($request->all());
-        // Rediriger avec un message de succès
+        $demandeFonds->update($validatedData);
         Alert::success('Success', 'Demande de fonds mise à jour avec succès.');
-        return redirect()->route('demandes-fonds.index')->with('success', 'Demande de fonds mise à jour avec succès.');
+        return redirect()->route('demandes-fonds.index');
+    } */
+
+    public function update(Request $request, $id)
+{
+    $this->authorizeRole(['tresorier', 'admin']);
+    $user = Auth::user();
+    $demandeFonds = DemandeFonds::findOrFail($id);
+
+    // Vérifier si l'utilisateur est admin ou propriétaire de la demande
+    if (!$user->isAdmin() && $demandeFonds->user_id !== $user->id) {
+        return redirect()->back()->withErrors(['error' => 'Vous n\'avez pas la permission de modifier cette demande.']);
     }
+
+    // Empêcher la modification si la demande est déjà approuvée
+    if ($demandeFonds->status === 'approuve') {
+        return redirect()->back()->withErrors(['error' => 'Vous ne pouvez pas modifier une demande déjà approuvée.']);
+    }
+
+    // Nettoyage des champs numériques pour retirer les espaces insécables et les convertir en nombres
+    $cleanData = collect($request->all())->map(function ($value, $key) {
+        // Si le champ est une chaîne, retirer les espaces insécables et convertir en nombre si possible
+        if (is_string($value)) {
+            $value = str_replace("\u{202F}", '', $value); // Retirer les espaces insécables
+            $value = str_replace(' ', '', $value); // Retirer les espaces classiques
+            if (is_numeric($value)) {
+                return (float) $value;
+            }
+        }
+        return $value;
+    })->toArray();
+
+    // Remplacer les données nettoyées dans la requête
+    $request->replace($cleanData);
+    /* dd($cleanData); */
+    // Valider les champs de la requête
+    $validatedData = $request->validate([
+        'mois' => 'required|string',
+        'annee' => 'nullable|numeric',
+        'total_demande' => 'nullable|numeric',
+        'status' => 'nullable|string',
+        'fonctionnaires_bcs_net' => 'nullable|numeric',
+        'fonctionnaires_bcs_revers' => 'nullable|numeric',
+        'fonctionnaires_bcs_total_courant' => 'nullable|numeric',
+        'fonctionnaires_bcs_salaire_ancien' => 'nullable|numeric',
+        'fonctionnaires_bcs_total_demande' => 'nullable|numeric',
+        'collectivite_sante_net' => 'nullable|numeric',
+        'collectivite_sante_revers' => 'nullable|numeric',
+        'collectivite_sante_total_courant' => 'nullable|numeric',
+        'collectivite_sante_salaire_ancien' => 'nullable|numeric',
+        'collectivite_sante_total_demande' => 'nullable|numeric',
+        'collectivite_education_net' => 'nullable|numeric',
+        'collectivite_education_revers' => 'nullable|numeric',
+        'collectivite_education_total_courant' => 'nullable|numeric',
+        'collectivite_education_salaire_ancien' => 'nullable|numeric',
+        'collectivite_education_total_demande' => 'nullable|numeric',
+        'personnels_saisonniers_net' => 'nullable|numeric',
+        'personnels_saisonniers_revers' => 'nullable|numeric',
+        'personnels_saisonniers_total_courant' => 'nullable|numeric',
+        'personnels_saisonniers_salaire_ancien' => 'nullable|numeric',
+        'personnels_saisonniers_total_demande' => 'nullable|numeric',
+        'epn_net' => 'nullable|numeric',
+        'epn_revers' => 'nullable|numeric',
+        'epn_total_courant' => 'nullable|numeric',
+        'epn_salaire_ancien' => 'nullable|numeric',
+        'epn_total_demande' => 'nullable|numeric',
+        'ced_net' => 'nullable|numeric',
+        'ced_revers' => 'nullable|numeric',
+        'ced_total_courant' => 'nullable|numeric',
+        'ced_salaire_ancien' => 'nullable|numeric',
+        'ced_total_demande' => 'nullable|numeric',
+        'ecom_net' => 'nullable|numeric',
+        'ecom_revers' => 'nullable|numeric',
+        'ecom_total_courant' => 'nullable|numeric',
+        'ecom_salaire_ancien' => 'nullable|numeric',
+        'ecom_total_demande' => 'nullable|numeric',
+        'cfp_cpam_net' => 'nullable|numeric',
+        'cfp_cpam_revers' => 'nullable|numeric',
+        'cfp_cpam_total_courant' => 'nullable|numeric',
+        'cfp_cpam_salaire_ancien' => 'nullable|numeric',
+        'cfp_cpam_total_demande' => 'nullable|numeric',
+        'total_net' => 'nullable|numeric',
+        'total_revers' => 'nullable|numeric',
+        'total_courant' => 'nullable|numeric',
+        'total_salaire_ancien' => 'nullable|numeric',
+        'total_demande' => 'nullable|numeric',
+        'montant_disponible' => 'nullable|numeric',
+        'solde' => 'nullable|numeric',
+        'user_id' => 'nullable|exists:users,id',
+        'poste_id' => 'nullable|exists:postes,id',
+        'date_reception' => 'nullable|date',
+        'date' => 'required|date'
+    ]);
+
+    $demandeFonds->update($validatedData);
+    Alert::success('Success', 'Demande de fonds mise à jour avec succès.');
+    return redirect()->route('demandes-fonds.index');
+}
+
 
 
     public function destroy(DemandeFonds $demandeFonds)

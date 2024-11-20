@@ -1,4 +1,4 @@
-@extends('layouts.master') 
+@extends('layouts.master')
 
 @section('content')
 <div class="main-wrapper login-body">
@@ -6,7 +6,7 @@
         <div class="container">
             <div class="loginbox">
                 <div class="login-left">
-                    <img class="img-fluid" src="{{ asset('assets/img/login.jpg') }}" alt="Logo">
+                    {{-- <img class="img-fluid" src="{{ asset('assets/img/login.jpg') }}" alt="Logo"> --}}
                 </div>
                 <div class="login-right">
                     <div class="login-right-wrap">
@@ -17,17 +17,6 @@
                         <form action="{{ route('users.update', $user->id) }}" method="POST">
                             @csrf
                             @method('PUT')
-
-                            <!-- Affichage des erreurs -->
-                            @if ($errors->any())
-                                <div class="alert alert-danger">
-                                    <ul>
-                                        @foreach ($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            @endif
 
                             <!-- Champ Username -->
                             <div class="form-group">
@@ -60,7 +49,8 @@
                             <!-- Champ Rôle -->
                             <div class="form-group custom-select">
                                 <label>Rôle <span class="login-danger">*</span></label>
-                                <select class="form-control" name="role">
+                                <select class="form-control" name="role"
+                                        {{ auth()->user()->role === 'tresorier' ? 'disabled' : '' }}>
                                     <option value="">Choisir un rôle</option>
                                     <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
                                     <option value="tresorier" {{ old('role', $user->role) == 'tresorier' ? 'selected' : '' }}>Trésorier</option>
@@ -68,29 +58,35 @@
                                     <option value="superviseur" {{ old('role', $user->role) == 'superviseur' ? 'selected' : '' }}>Superviseur</option>
                                 </select>
                             </div>
+
+                            <!-- Champ Statut -->
                             <div class="form-group custom-select">
                                 <label>Statut <span class="login-danger">*</span></label>
-                                <select class="form-control" name="active">
+                                <select class="form-control" name="active"
+                                        {{ auth()->user()->role === 'tresorier' ? 'disabled' : '' }}>
                                     <option value="1" {{ old('active', $user->active) == '1' ? 'selected' : '' }}>Actif</option>
                                     <option value="0" {{ old('active', $user->active) == '0' ? 'selected' : '' }}>Inactif</option>
                                 </select>
-                            </div>    
+                            </div>
+
+                            <!-- Champ Poste -->
                             <div class="form-group custom-select">
                                 <label>Poste <span class="login-danger">*</span></label>
-                                <select class="form-select" name="poste_id">
+                                <select class="form-select" name="poste_id"
+                                        {{ auth()->user()->role === 'tresorier' ? 'disabled' : '' }}>
                                     <option value="">Choisir un poste</option>
                                     @foreach ($postes as $poste)
                                         <option value="{{ $poste->id }}" {{ old('poste_id', $user->poste_id) == $poste->id ? 'selected' : '' }}>{{ $poste->nom }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="dont-have">Avez-vous déjà un compte ? <a href="{{ route('login') }}">Se Connecter</a></div>
 
                             <!-- Bouton Update -->
                             <div class="form-group mb-0">
                                 <button class="btn btn-primary btn-block" type="submit">Mettre à jour</button>
                             </div>
                         </form>
+
 
                         <div class="login-or">
                             <span class="or-line"></span>

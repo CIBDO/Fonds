@@ -62,6 +62,11 @@ class User extends Authenticatable
         return $this->belongsTo(Poste::class);
     }
 
+    public function isTresorier()
+    {
+        return $this->hasRole('tresorier');
+    }
+
     /* public function notifications()
     {
         return $this->hasMany(Notification::class);

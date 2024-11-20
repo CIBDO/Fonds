@@ -68,35 +68,34 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($users as $user)
-                                    <tr data-user-id="{{ $user->id }}">
-                                        <td>{{ $user->name }}</td>
-                                        <td>{{ $user->email }}</td>
-                                        <td>{{ $user->role }}</td>
-                                        <td>{{ $user->isActive() ? 'Actif' : 'Inactif' }}</td>
-                                        <td class="text-end">
-                                            <a href="{{ route('users.edit', $user->id) }}" class="btn btn-sm btn-warning">
-                                                <i class="feather-edit"></i> Éditer
-                                            </a>
-                                            @if($user->isActive())
-                                            <form action="{{ route('users.deactivate', $user->id) }} " method="POST" style="display:inline-block;">
-                                                @csrf
-                                                <button type="submit">Désactiver</button>
-                                            </form>
-                                                 @else
-                                            <form action="{{ route('users.activate', $user->id) }}" method="POST" style="display:inline-block;">
-                                                @csrf
-                                                <button type="submit">Activer</button>
-                                            </form>
-                                                 @endif
-                                            {{-- <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline-block;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
-                                                    <i class="feather-trash"></i> Supprimer
-                                                </button>
-                                            </form> --}}
-                                        </td>
-                                    </tr>
+                                        @if (auth()->user()->role === 'admin' || auth()->user()->id === $user->id)
+                                        <tr data-user-id="{{ $user->id }}">
+                                            <td>{{ $user->name }}</td>
+                                            <td>{{ $user->email }}</td>
+                                            <td>{{ $user->role }}</td>
+                                            <td>{{ $user->isActive() ? 'Actif' : 'Inactif' }}</td>
+                                            <td class="text-end">
+                                                @if (auth()->user()->id === $user->id || auth()->user()->role === 'admin')
+                                                    <a href="{{ route('users.edit', $user->id) }}" class="btn btn-sm btn-warning">
+                                                        <i class="feather-edit"></i> Éditer
+                                                    </a>
+                                                @endif
+                                                @if(auth()->user()->role === 'admin')
+                                                    @if($user->isActive())
+                                                        <form action="{{ route('users.deactivate', $user->id) }}" method="POST" style="display:inline-block;">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-sm btn-danger">Désactiver</button>
+                                                        </form>
+                                                    @else
+                                                        <form action="{{ route('users.activate', $user->id) }}" method="POST" style="display:inline-block;">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-sm btn-success">Activer</button>
+                                                        </form>
+                                                    @endif
+                                                @endif
+                                            </td>
+                                        </tr>
+                                        @endif
                                     @endforeach
                                     <tr id="no-results" style="display: none;">
                                         <td colspan="5" class="text-center">Aucun utilisateur trouvé</td>
