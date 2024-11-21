@@ -26,7 +26,7 @@
                     </div>
                     <div class="col-lg-2 col-md-6">
                         <div class="form-group">
-                            <input type="text" class="form-control" name="poste_id" placeholder="Poste" value="{{ request('poste_id') }}">
+                            <input type="text" class="form-control" name="nom" placeholder="Poste" value="{{ request('nom') }}">
                         </div>
                     </div>
                     <div class="col-lg-2 col-md-6">
@@ -51,7 +51,7 @@
                         <div class="page-header">
                         <div class="row align-items-center">
                         <div class="col">
-                        <h3 class="page-title">USERS</h3>
+                        {{-- <h3 class="page-title">Liste des Utilisateurs</h3> --}}
                         </div>
                         <div class="col-auto text-end float-end ms-auto download-grp">
                         <a href="#" class="btn btn-outline-gray me-2 active"><i class="feather-list"></i></a>
@@ -67,6 +67,7 @@
                                         <th>Nom</th>
                                         <th>Email</th>
                                         <th>Rôle</th>
+                                        <th>Poste</th>
                                         <th>Statut</th>
                                         <th class="text-end">Actions</th>
                                     </tr>
@@ -78,6 +79,7 @@
                                             <td>{{ $user->name }}</td>
                                             <td>{{ $user->email }}</td>
                                             <td>{{ $user->role }}</td>
+                                            <td>{{ $user->poste->nom ?? 'N/A' }}</td>
                                             <td>{{ $user->isActive() ? 'Actif' : 'Inactif' }}</td>
                                             <td class="text-end">
                                                 @if (auth()->user()->id === $user->id || auth()->user()->role === 'admin')

@@ -24,23 +24,24 @@ class UserController extends Controller
         $postes = Poste::all();
         $name = request('name');
         $email = request('email');
-        $poste_id = request('poste_id');
-
+        $nom = request('nom');
 
         // On récupère tous les utilisateurs
-        $users = User::where(function ($query) use ($name, $email, $poste_id) {
+        $users = User::where(function ($query) use ($name, $email, $nom) {
             if ($name) {
                 $query->where('name', 'like', '%' . $name . '%');
             }
             if ($email) {
                 $query->where('email', 'like', '%' . $email . '%');
             }
-            if ($poste_id) {
-                $query->where('poste_id', $poste_id);
+            if ($nom) {
+                $query->whereHas('poste', function ($query) use ($nom) {
+                    $query->where('nom', 'like', '%' . $nom . '%');
+                });
             }
 
         })->paginate(10);
-        return view('users.index', compact('users', 'postes', 'name', 'email', 'poste_id'));
+        return view('users.index', compact('users', 'postes', 'name', 'email', 'nom'));
     }
 
 

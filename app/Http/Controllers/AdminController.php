@@ -27,7 +27,7 @@ class AdminController extends Controller
 
         return view('dashboard.admin', compact('demandesFonds', 'fondsDemandes', 'fondsRecettes', 'fondsEnCours', 'paiementsEffectues'));
     }
-    
+
 
     /**
      * Show the form for creating a new resource.

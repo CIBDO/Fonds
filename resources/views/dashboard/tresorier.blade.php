@@ -116,9 +116,7 @@
                         </tbody>
                     </table>
                 </div>
-
              </div>
-
             <script>
                 document.getElementById('filterInput').addEventListener('keyup', function() {
                     var filter = this.value.toUpperCase();
