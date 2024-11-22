@@ -21,11 +21,9 @@ class UserController extends Controller
     public function index()
     {
         $this->authorizeRole(['admin','tresorier']);
-        $postes = Poste::all();
         $name = request('name');
         $email = request('email');
         $nom = request('nom');
-
         // On récupère tous les utilisateurs
         $users = User::where(function ($query) use ($name, $email, $nom) {
             if ($name) {
@@ -41,6 +39,7 @@ class UserController extends Controller
             }
 
         })->paginate(10);
+        $postes = Poste::all();
         return view('users.index', compact('users', 'postes', 'name', 'email', 'nom'));
     }
 
@@ -60,7 +59,7 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|in:tresorier,acct,direction,superviseur,admin',
-            'active' => 'required|boolean', // Ajouter un champ pour le statut actif/inactif
+            'active' => 'required|boolean',
             'poste_id' => 'required|exists:postes,id',
         ]);
 
@@ -146,39 +145,39 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', 'Informations mises à jour avec succès.');
     }
  */
-public function update(Request $request, User $user)
-{
-    $validatedData = $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-        'password' => 'nullable|string|min:8|confirmed',
-    ]);
-
-    // Si l'utilisateur connecté est un trésorier
-    if (Auth::user()->role === 'tresorier') {
-        // Forcer les valeurs existantes pour les champs qu'il ne peut pas modifier
-        $validatedData['role'] = $user->role;
-        $validatedData['active'] = $user->active;
-        $validatedData['poste_id'] = $user->poste_id;
-    } else {
-        // Valider les champs supplémentaires uniquement pour l'admin
-        $request->validate([
-            'role' => 'required|in:admin,tresorier,acct,superviseur',
-            'active' => 'required|boolean',
-            'poste_id' => 'required|exists:postes,id',
+    public function update(Request $request, User $user)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'password' => 'nullable|string|min:8|confirmed',
         ]);
+
+        // Si l'utilisateur connecté est un trésorier
+        if (Auth::user()->role === 'tresorier') {
+            // Forcer les valeurs existantes pour les champs qu'il ne peut pas modifier
+            $validatedData['role'] = $user->role;
+            $validatedData['active'] = $user->active;
+            $validatedData['poste_id'] = $user->poste_id;
+        } else {
+            // Valider les champs supplémentaires uniquement pour l'admin
+            $request->validate([
+                'role' => 'required|in:admin,tresorier,acct,superviseur',
+                'active' => 'required|boolean',
+                'poste_id' => 'required|exists:postes,id',
+            ]);
+        }
+
+        // Mise à jour de l'utilisateur
+        $user->update($validatedData);
+
+        // Mettre à jour le mot de passe si fourni
+        if ($request->filled('password')) {
+            $user->update(['password' => Hash::make($request->password)]);
+        }
+
+        return redirect()->route('users.index')->with('success', 'Utilisateur mis à jour avec succès.');
     }
-
-    // Mise à jour de l'utilisateur
-    $user->update($validatedData);
-
-    // Mettre à jour le mot de passe si fourni
-    if ($request->filled('password')) {
-        $user->update(['password' => Hash::make($request->password)]);
-    }
-
-    return redirect()->route('users.index')->with('success', 'Utilisateur mis à jour avec succès.');
-}
 
 
     public function destroy(User $user)

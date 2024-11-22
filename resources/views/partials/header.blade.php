@@ -111,7 +111,7 @@
                                 <p class="text-muted mb-0">{{ Auth::check() ? Auth::user()->role : 'N/A' }}</p>
                             </div>
                         </div>
-                        <a class="dropdown-item" href="{{ Auth::check() ? route('users.index') : '#' }}">Mon Profil</a>
+                        <a class="dropdown-item" href="{{ Auth::check() ? route('users.edit', auth()->user()->id) : '#' }}">Mon Profil</a>
                          <a class="dropdown-item" href="{{ Auth::check() ? route('messages.index') : '#' }}">Boite de Réception</a>
                         @if(Auth::check())
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">

@@ -54,10 +54,13 @@
                         {{-- <h3 class="page-title">Liste des Utilisateurs</h3> --}}
                         </div>
                         <div class="col-auto text-end float-end ms-auto download-grp">
-                        <a href="#" class="btn btn-outline-gray me-2 active"><i class="feather-list"></i></a>
-                        <a href="#" class="btn btn-outline-gray me-2"><i class="feather-grid"></i></a>
-                        <a href="#" class="btn btn-outline-primary me-2"><i class="fas fa-download"></i> Download</a>
-                        <a href="{{route('users.create')}}" class="btn btn-primary"><i class="fas fa-plus"></i></a>
+                            <a href="{{ route('users.edit', auth()->user()->id) }}" class="btn btn-outline-primary me-2">
+                                <i class="fas fa-user"></i> Mon Profil
+                            </a>
+                            <a href="#" class="btn btn-outline-gray me-2 active"><i class="feather-list"></i></a>
+                            <a href="#" class="btn btn-outline-gray me-2"><i class="feather-grid"></i></a>
+                            <a href="#" class="btn btn-outline-primary me-2"><i class="fas fa-download"></i> Download</a>
+                            <a href="{{route('users.create')}}" class="btn btn-primary"><i class="fas fa-plus"></i></a>
                         </div>
                         </div>
                         <div class="table-responsive">

@@ -127,26 +127,29 @@
                                                 </div>
 
                                                 <div class="form-group">
+                                                    <label for="montant_disponible">Recette Douanière :</label>
+                                                    <input type="number" name="montant_disponible" class="form-control" value="{{ $demande->montant_disponible }}" readonly>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="total_courant">Total de la demande :</label>
+                                                    <input type="number" name="total_courant" class="form-control" value="{{ $demande->total_courant }}" readonly>
+                                                </div>
+
+                                                <div class="form-group">
                                                     <label for="observation">Observation :</label>
-                                                    <textarea name="observation" class="form-control" rows="3"></textarea>
+                                                    <textarea name="observation" class="form-control" rows="1"></textarea>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                                                <button type="submit" class="btn btn-primary">Soumettre</button>
+                                                <button type="submit" class="btn btn-primary">Envoyer</button>
                                             </div>
                                         </form>
                                     </div>
                                 </div>
                             </div>
-                            {{-- <div class="pagination-wrapper">
-                                <nav aria-label="Page navigation">
-                                    <ul class="pagination justify-content-center">
-                                        <!-- Ajout de la classe Bootstrap pour la pagination -->
-                                        {{ $demandeFonds->links('pagination::bootstrap-4') }}
-                                    </ul>
-                                </nav>
-                            </div> --}}
+
                             <!-- Modal pour rejeter la demande -->
                             <div class="modal fade" id="rejectModal-{{ $demande->id }}" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
@@ -181,6 +184,14 @@
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+                <div class="pagination-wrapper">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <!-- Ajout de la classe Bootstrap pour la pagination -->
+                            {{ $demandeFonds->links('pagination::bootstrap-4') }}
+                        </ul>
+                    </nav>
                 </div>
             </div>
         </div>
