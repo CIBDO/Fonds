@@ -56,7 +56,20 @@
                             </tr>
                             @endforeach
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Total: </th>
+                                <th colspan="2"></th>
+                            </tr>
+                        </tfoot>
                     </table>
+                </div>
+                <div class="pagination-wrapper">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            {{ $demandeFonds->links('pagination::bootstrap-4') }}
+                        </ul>
+                    </nav>
                 </div>
             </div>
         </div>
@@ -79,21 +92,48 @@
 
     <script>
         $(document).ready(function() {
-            $('#demandes-table').DataTable({
+            var table = $('#demandes-table').DataTable({
                 order: [[1, 'desc']],  // Classe par date en ordre décroissant
                 dom: 'Bfrtip',
                 buttons: [
                     'copy', 'csv', 'excel', 'pdf', 'print'
                 ],
                 language: {
-                    url: "//cdn.datatables.net/plug-ins/1.11.5/i18n/fr-FR.json"  // Traduction en français
+                    url: "/js/i18n/fr-FR.json",  // Chemin local vers le fichier de traduction
+                    info: "",  // Désactiver le texte "showing x to y of z entries"
+                    infoEmpty: "",  // Désactiver le texte quand il n'y a pas d'entrées
+                    infoFiltered: ""  // Désactiver le texte de filtrage
                 },
-                paging: true,
+                paging: false,
                 searching: true,
                 ordering: true,
                 responsive: true,
-                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Tous"]],
-                pageLength: 10
+                lengthChange: false,
+                pageLength: 8,
+                footerCallback: function ( row, data, start, end, display ) {
+                    var api = this.api();
+
+                    // Convertir en nombre pour le calcul
+                    var intVal = function (i) {
+                        return typeof i === 'string' ?
+                            parseFloat(i.replace(/[\s,]/g, '').replace(',', '.')) :
+                            typeof i === 'number' ?
+                            i : 0;
+                    };
+
+                    // Calculer le total de toutes les pages
+                    var total = api
+                        .column(0)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+
+                    // Mettre à jour le pied de page
+                    $(api.column(0).footer()).html(
+                        'Total: ' + total.toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+                    );
+                }
             });
         });
     </script>

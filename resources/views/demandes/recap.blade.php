@@ -78,18 +78,18 @@
                         </tbody>
                     </table>
                 </div>
-            </div>  
+            </div>
         </div>
     </div>
 </div>
 @endsection
-                
+
                 @section('add-js')
                     <!-- Inclure les fichiers DataTables CSS et JS -->
                     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
                     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
                     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
-                
+
                     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
                     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
                     <script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
@@ -97,25 +97,30 @@
                     <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
                     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
                     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-                
+
                     <script>
                         $(document).ready(function() {
-                            $('#demandes-table').DataTable({
-                                order: [[1, 'desc']],
-                                dom: 'Bfrtip',
-                                buttons: [
-                                    'copy', 'csv', 'excel', 'pdf', 'print'
-                                ],
-                                language: {
-                                    url: "//cdn.datatables.net/plug-ins/1.11.5/i18n/fr-FR.json"
-                                },
-                                paging: true,
-                                searching: true,
-                                ordering: true,
-                                responsive: true,
-                                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Tous"]],
-                                pageLength: 10
-                            });
-                        });
+            var table = $('#demandes-table').DataTable({
+                order: [[1, 'desc']],  // Classe par date en ordre décroissant
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ],
+                language: {
+                    url: "/js/i18n/fr-FR.json",  // Chemin local vers le fichier de traduction
+                    info: "",  // Désactiver le texte "showing x to y of z entries"
+                    infoEmpty: "",  // Désactiver le texte quand il n'y a pas d'entrées
+                    infoFiltered: ""  // Désactiver le texte de filtrage
+                },
+                paging: false,
+                searching: true,
+                ordering: true,
+                responsive: true,
+                lengthChange: false,
+                pageLength: 8,
+                footerCallback: function ( row, data, start, end, display ) {
+                    // Custom footer logic here
+                }
+            });
                     </script>
                 @stop

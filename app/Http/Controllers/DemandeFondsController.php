@@ -767,7 +767,6 @@ class DemandeFondsController extends Controller
         return redirect()->route('demandes-fonds.envois')->with('success', 'Fonds envoyés avec succès');
     }
 
-
     public function EnvoisFonds(Request $request)
     {
         $this->authorizeRole(['admin', 'acct']);
@@ -1288,6 +1287,29 @@ class DemandeFondsController extends Controller
     return $inputs;
 }
 
+public function Fonctionnaires(Request $request)
+{
+    $this->authorizeRole(['acct', 'admin', 'superviseur', 'tresorier']);
+    // Commencer par obtenir toutes les demandes de fonds avec les statuts "approuvé" ou "rejeté"
+    $query = DemandeFonds::with('user', 'poste');
+    // Filtrer par poste si un poste est fourni dans la requête
+    if ($request->filled('poste')) {
+        $query->whereHas('poste', function ($q) use ($request) {
+            $q->where('nom', 'like', '%' . $request->poste . '%');
+        });
+    }
 
+    // Filtrer par mois si un mois est fourni dans la requête
+    if ($request->filled('mois')) {
+        $query->where('mois', 'like', '%' . $request->mois . '%');
+    }
+
+    // Exécuter la requête et paginer les résultats
+     $demandeFonds = $query->orderBy('created_at', 'desc')
+        ->paginate(8)
+        ->appends($request->except('page'));
+    // Retourner la vue avec les résultats filtrés
+    return view('demandes.fonctionnaires', compact('demandeFonds'));
+}
 
 }

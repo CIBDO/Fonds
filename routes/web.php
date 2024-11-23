@@ -45,6 +45,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/demandes-fonds/solde', [DemandeFondsController::class, 'Solde'])
         ->middleware('role:acct,admin,superviseur,tresorier') // Tous les rôles sauf trésorier
         ->name('demandes-fonds.solde');
+    Route::get('/demandes-fonds/fonctionnaires', [DemandeFondsController::class, 'Fonctionnaires'])
+        ->middleware('role:acct,admin,superviseur,tresorier') // Tous les rôles sauf trésorier
+        ->name('demandes-fonds.fonctionnaires');
     Route::get('/notifications', [MessageController::class, 'notifications'])->name('messages.notifications');
     Route::get('/demandes/export', [DemandeFondsController::class, 'export'])->name('demandes-fonds.export');
     Route::get('/demandes-fonds/detail', [DemandeFondsController::class, 'Detail'])->name('demandes-fonds.detail');

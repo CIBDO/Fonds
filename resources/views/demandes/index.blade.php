@@ -97,26 +97,25 @@
                                             <i class="feather-edit"></i>
                                         </a>
                                         <a href="{{ route('demande-fonds.generate.pdf', $demande->id) }}" class="btn btn-sm bg-info-light">
-                                            <i class="feather-printer"></i> 
+                                            <i class="feather-printer"></i>
                                         </a>
                                     </div>
                                 </td>
                             </tr>
-                            @endforeach   
+                            @endforeach
                         </tbody>
-                    </table>   
+                    </table>
+                </div>
+                <div class="pagination-wrapper">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <!-- Ajout de la classe Bootstrap pour la pagination -->
+                            {{ $demandeFonds->links('pagination::bootstrap-4') }}
+                        </ul>
+                    </nav>
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="pagination-wrapper">
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center">
-                <!-- Ajout de la classe Bootstrap pour la pagination -->
-                {{ $demandeFonds->links('pagination::bootstrap-4') }}
-            </ul>
-        </nav>
     </div>
 </div>
 @section('add-js')
@@ -134,24 +133,29 @@
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
 
     <script>
-        $(document).ready(function() {
-            $('#demandes-table').DataTable({
+       $(document).ready(function() {
+            var table = $('#demandes-table').DataTable({
                 order: [[1, 'desc']],  // Classe par date en ordre décroissant
                 dom: 'Bfrtip',
                 buttons: [
                     'copy', 'csv', 'excel', 'pdf', 'print'
                 ],
                 language: {
-                    url: "//cdn.datatables.net/plug-ins/1.11.5/i18n/fr-FR.json"  // Traduction en français
+                    url: "/js/i18n/fr-FR.json",  // Chemin local vers le fichier de traduction
+                    info: "",  // Désactiver le texte "showing x to y of z entries"
+                    infoEmpty: "",  // Désactiver le texte quand il n'y a pas d'entrées
+                    infoFiltered: ""  // Désactiver le texte de filtrage
                 },
-                paging: true,
+                paging: false,
                 searching: true,
                 ordering: true,
                 responsive: true,
-                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Tous"]],
-                pageLength: 10
+                lengthChange: false,
+                pageLength: 8,
+                footerCallback: function ( row, data, start, end, display ) {
+                    // Custom footer logic here
+                }
             });
-        });
     </script>
 @stop
 @endsection
