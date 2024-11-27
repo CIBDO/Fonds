@@ -736,8 +736,9 @@ class DemandeFondsController extends Controller
         Alert::success('Success', 'Fonds envoyés avec succès');
         return redirect()->route('demandes-fonds.envois')->with('success', 'Fonds envoyés avec succès');
     } */
-    public function updateStatus(Request $request, $id)
+   /*  public function updateStatus(Request $request, $id)
     {
+
         $this->authorizeRole(['admin', 'acct']);
         $demande = DemandeFonds::findOrFail($id);
 
@@ -765,7 +766,48 @@ class DemandeFondsController extends Controller
 
         Alert::success('Success', 'Fonds envoyés avec succès');
         return redirect()->route('demandes-fonds.envois')->with('success', 'Fonds envoyés avec succès');
+    } */
+    public function updateStatus(Request $request, $id)
+    {
+        $this->authorizeRole(['admin', 'acct']); // Vérification des rôles autorisés
+
+        $demande = DemandeFonds::findOrFail($id);
+
+        // Vérifier si la demande est déjà approuvée
+        if ($demande->status === 'approuve') {
+            return redirect()->route('demandes-fonds.envois')->with('error', 'Cette demande est déjà approuvée et ne peut plus être modifiée.');
+        }
+
+        // Retirer les espaces et s'assurer que le montant est numérique
+        $montant = str_replace(' ', '', $request->input('montant'));
+        if (!is_numeric($montant)) {
+            return redirect()->back()->with('error', 'Le montant est invalide. Veuillez entrer un montant numérique.');
+        }
+
+        // Vérifier le statut et mettre à jour en conséquence
+        if ($request->status == 'approuve') {
+            $demande->status = 'approuve';
+            $demande->montant = $montant;
+            $demande->observation = $request->observation;
+        } elseif ($request->status == 'rejete') {
+            $demande->status = 'rejete';
+            $demande->observation = $request->observation;
+        }
+
+        // Enregistrer la date d'envoi
+        $demande->date_envois = $request->date_envois;
+
+        // Enregistrer les modifications dans la base de données
+        $demande->save();
+
+        // Envoyer une notification à l'utilisateur
+        $demande->user->notify(new DemandeFondsStatusNotification($demande));
+
+        // Retourner avec un message de succès
+        Alert::success('Succès', 'Fonds envoyés avec succès');
+        return redirect()->route('demandes-fonds.envois')->with('success', 'Fonds envoyés avec succès');
     }
+
 
     public function EnvoisFonds(Request $request)
     {

@@ -108,7 +108,7 @@
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title">Approuver la demande</h5>
+                                            <h5 class="modal-title">Approuver la demande pour {{ $demande->poste->nom }}</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <form action="{{ route('demandes-fonds.update-status', $demande->id) }}" method="POST">
@@ -118,22 +118,20 @@
                                                 <input type="hidden" name="status" value="approuve">
                                                 <div class="form-group">
                                                     <label for="date_envois">Date d'envoi :</label>
-                                                    <input type="date" name="date_envois" class="form-control" value="{{ now()->format('Y-m-d') }}" required>
+                                                    <input type="text" name="date_envois" class="form-control" value="{{ now()->format('Y-m-d') }}" required>
                                                 </div>
-
                                                 <div class="form-group">
                                                     <label for="montant">Montant :</label>
-                                                    <input type="number" name="montant" class="form-control" required>
+                                                    <input type="text" name="montant" class="form-control" oninput="formatNumberInput(this)" required>
                                                 </div>
-
                                                 <div class="form-group">
                                                     <label for="montant_disponible">Recette Douanière :</label>
-                                                    <input type="number" name="montant_disponible" class="form-control" value="{{ $demande->montant_disponible }}" readonly>
+                                                    <input type="text" name="montant_disponible" class="form-control" value="{{ number_format($demande->montant_disponible, 0, ',', ' ') }}" readonly>
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label for="total_courant">Total de la demande :</label>
-                                                    <input type="number" name="total_courant" class="form-control" value="{{ $demande->total_courant  }}" readonly>
+                                                    <input type="text" name="total_courant" class="form-control" value="{{ number_format($demande->total_courant, 0, ',', ' ') }}" readonly>
                                                 </div>
 
                                                 <div class="form-group">
@@ -155,7 +153,7 @@
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title">Rejeter la demande</h5>
+                                            <h5 class="modal-title">Rejeter la demande pour {{ $demande->poste->nom }}</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <form action="{{ route('demandes-fonds.update-status', $demande->id) }}" method="POST">
@@ -197,6 +195,33 @@
         </div>
     </div>
 </div>
+<script>
+    // Fonction pour formater les nombres avec un séparateur de milliers (espace)
+    function formatNumberInput(input) {
+        // Supprime tout caractère non numérique, puis applique le formatage
+        input.value = input.value.replace(/\D/g, '') // Supprimer tout caractère non numérique
+                                .replace(/\B(?=(\d{3})+(?!\d))/g, ' '); // Ajouter des espaces comme séparateurs
+    }
+
+    // Fonction pour nettoyer les champs avant soumission du formulaire
+    document.addEventListener('DOMContentLoaded', function () {
+        const forms = document.querySelectorAll('form');
+
+        forms.forEach(form => {
+            form.addEventListener('submit', function () {
+                // Sélectionner les champs de montant
+                const inputs = form.querySelectorAll('input[name="montant"], input[name="total_courant"], input[name="montant_disponible"]');
+
+                inputs.forEach(input => {
+                    if (input.value) {
+                        input.value = input.value.replace(/\s+/g, ''); // Supprimer tous les espaces pour la soumission
+                    }
+                });
+            });
+        });
+    });
+</script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Fonction pour gérer l'affichage des champs

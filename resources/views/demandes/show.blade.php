@@ -83,6 +83,9 @@
         }
     </style>
 </head>
+<a href="{{ route('demandes-fonds.index') }}" class="back-to-index">
+        <i class ="fas fa-arrow-left"></i> Retour
+    </a>
 <body>
     <div class="container">
         <div style="display: flex; justify-content: space-between;">
@@ -228,5 +231,5 @@
     </table>
     </div>
 </body>
-<Label style="text-align: center; font-weight: bold; font-size: 22px;">Veuillez mettre à notre disposition la somme de : {{ number_format($demandeFonds->solde, 0, ',', ' ') }}</Label>
+<Label style="text-align: center; font-weight: bold; font-size: 22px;">Veuillez mettre à notre disposition la somme de : {{ number_format($demandeFonds->total_courant, 0, ',', ' ') }}</Label>
 </html>
