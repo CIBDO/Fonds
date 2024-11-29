@@ -130,8 +130,8 @@
                                                 </div>
 
                                                 <div class="form-group">
-                                                    <label for="total_courant">Total de la demande :</label>
-                                                    <input type="text" name="total_courant" class="form-control" value="{{ number_format($demande->solde, 0, ',', ' ') }}" readonly>
+                                                    <label for="solde">Solde du mois :</label>
+                                                    <input type="text" name="solde" class="form-control" value="{{ number_format($demande->solde, 0, ',', ' ') }}" readonly>
                                                 </div>
 
                                                 <div class="form-group">
@@ -210,7 +210,7 @@
         forms.forEach(form => {
             form.addEventListener('submit', function () {
                 // Sélectionner les champs de montant
-                const inputs = form.querySelectorAll('input[name="montant"], input[name="total_courant"], input[name="montant_disponible"]');
+                const inputs = form.querySelectorAll('input[name="montant"], input[name="solde"], input[name="montant_disponible"]');
 
                 inputs.forEach(input => {
                     if (input.value) {
