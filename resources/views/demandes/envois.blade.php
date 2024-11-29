@@ -131,7 +131,7 @@
 
                                                 <div class="form-group">
                                                     <label for="total_courant">Total de la demande :</label>
-                                                    <input type="text" name="total_courant" class="form-control" value="{{ number_format($demande->total_courant, 0, ',', ' ') }}" readonly>
+                                                    <input type="text" name="total_courant" class="form-control" value="{{ number_format($demande->solde, 0, ',', ' ') }}" readonly>
                                                 </div>
 
                                                 <div class="form-group">
