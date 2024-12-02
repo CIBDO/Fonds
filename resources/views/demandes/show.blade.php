@@ -231,5 +231,5 @@
     </table>
     </div>
 </body>
-<Label style="text-align: center; font-weight: bold; font-size: 22px;">Veuillez mettre à notre disposition la somme de : {{ number_format($demandeFonds->total_courant, 0, ',', ' ') }}</Label>
+<Label style="text-align: center; font-weight: bold; font-size: 22px;">Veuillez mettre à notre disposition la somme de : {{ number_format($demandeFonds->solde, 0, ',', ' ') }}</Label>
 </html>
