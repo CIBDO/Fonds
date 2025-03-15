@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Auth;
 
 // Route pour la page d'accueil (connexion)
 Route::get('/', fn() => view('auth.login'))->name('custom.login');
-
+Route::get('/demandes-fonds/totaux-par-mois', [DemandeFondsController::class, 'totauxParMois'])->name('demandes-fonds.totaux-par-mois');
 // Route pour le tableau de bord
 Route::get('/dashboard', function () {
     $user = Auth::user();
@@ -141,7 +141,7 @@ Route::middleware(['auth', 'role:acct,superviseur,tresorier,admin',])->group(fun
     Route::get('/messages/create', [MessageController::class, 'create'])->name('messages.create');
     Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
     Route::get('messages/{id}', [MessageController::class, 'show'])->name('messages.show');
-
+    
 });
 
 // Routes pour les superviseurs

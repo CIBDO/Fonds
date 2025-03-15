@@ -15,7 +15,7 @@ class AdminController extends Controller
      */
         public function index()
     {
-        $demandesFonds = DemandeFonds::with('poste')->paginate(8);
+        $demandesFonds = DemandeFonds::with('poste')->paginate(19);
         $fondsDemandes = DemandeFonds::sum('total_courant'); // Total des fonds envoyés
         $fondsRecettes = DemandeFonds::sum('montant_disponible'); // Total des fonds envoyés
         $fondsEnCours = DemandeFonds::sum('solde'); // Total des fonds demandés en cours
