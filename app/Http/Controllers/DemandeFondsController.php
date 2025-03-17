@@ -827,64 +827,264 @@ class DemandeFondsController extends Controller
     }
 
     private function cleanNumericInputs($inputs)
-{
-    foreach ($inputs as $key => $value) {
-        if (is_string($value) && (
-            strpos($key, '_net') !== false ||
-            strpos($key, '_revers') !== false ||
-            strpos($key, '_total_courant') !== false ||
-            strpos($key, '_salaire_ancien') !== false ||
-            strpos($key, '_total_demande') !== false ||
-            $key === 'montant_disponible' ||
-            $key === 'solde'
-        )) {
-            $inputs[$key] = str_replace(' ', '', $value);
+    {
+        foreach ($inputs as $key => $value) {
+            if (is_string($value) && (
+                strpos($key, '_net') !== false ||
+                strpos($key, '_revers') !== false ||
+                strpos($key, '_total_courant') !== false ||
+                strpos($key, '_salaire_ancien') !== false ||
+                strpos($key, '_total_demande') !== false ||
+                $key === 'montant_disponible' ||
+                $key === 'solde'
+            )) {
+                $inputs[$key] = str_replace(' ', '', $value);
+            }
         }
-    }
-    return $inputs;
-}
-
-public function Fonctionnaires(Request $request)
-{
-    $this->authorizeRole(['acct', 'admin', 'superviseur', 'tresorier']);
-    // Commencer par obtenir toutes les demandes de fonds avec les statuts "approuvé" ou "rejeté"
-    $query = DemandeFonds::with('user', 'poste');
-    // Filtrer par poste si un poste est fourni dans la requête
-    if ($request->filled('poste')) {
-        $query->whereHas('poste', function ($q) use ($request) {
-            $q->where('nom', 'like', '%' . $request->poste . '%');
-        });
+        return $inputs;
     }
 
-    // Filtrer par mois si un mois est fourni dans la requête
-    if ($request->filled('mois')) {
-        $query->where('mois', 'like', '%' . $request->mois . '%');
+    public function Fonctionnaires(Request $request)
+    {
+        $this->authorizeRole(['acct', 'admin', 'superviseur', 'tresorier']);
+        // Commencer par obtenir toutes les demandes de fonds avec les statuts "approuvé" ou "rejeté"
+        $query = DemandeFonds::with('user', 'poste');
+        // Filtrer par poste si un poste est fourni dans la requête
+        if ($request->filled('poste')) {
+            $query->whereHas('poste', function ($q) use ($request) {
+                $q->where('nom', 'like', '%' . $request->poste . '%');
+            });
+        }
+
+        // Filtrer par mois si un mois est fourni dans la requête
+        if ($request->filled('mois')) {
+            $query->where('mois', 'like', '%' . $request->mois . '%');
+        }
+
+        // Exécuter la requête et paginer les résultats
+        $demandeFonds = $query->orderBy('created_at', 'desc')
+            ->paginate(19)
+            ->appends($request->except('page'));
+        // Retourner la vue avec les résultats filtrés
+        return view('demandes.fonctionnaires', compact('demandeFonds'));
     }
 
-    // Exécuter la requête et paginer les résultats
-     $demandeFonds = $query->orderBy('created_at', 'desc')
-        ->paginate(19)
-        ->appends($request->except('page'));
-    // Retourner la vue avec les résultats filtrés
-    return view('demandes.fonctionnaires', compact('demandeFonds'));
-}
+    public function totauxParMois(Request $request)
+    {
+        $this->authorizeRole(['tresorier', 'admin', 'acct', 'superviseur']);
 
-public function totauxParMois(Request $request)
-{
-    $this->authorizeRole(['tresorier', 'admin', 'acct', 'superviseur']);
+        // Récupérer l'année sélectionnée ou utiliser l'année actuelle par défaut
+        $annee = $request->input('annee', Carbon::now()->year);
 
-    // Récupérer l'année sélectionnée ou utiliser l'année actuelle par défaut
-    $annee = $request->input('annee', Carbon::now()->year);
+        // Calculer les totaux par mois pour l'année sélectionnée
+        $montantsParMois = DemandeFonds::select('mois')
+            ->selectRaw('SUM(total_courant) as total_mois')
+            ->where('annee', $annee) // Filtrer par année
+            ->groupBy('mois')
+            ->orderBy('mois')
+            ->paginate(12);
 
-    // Calculer les totaux par mois pour l'année sélectionnée
-    $montantsParMois = DemandeFonds::select('mois')
-        ->selectRaw('SUM(total_courant) as total_mois')
-        ->where('annee', $annee) // Filtrer par année
-        ->groupBy('mois')
-        ->orderBy('mois')
-        ->paginate(12);
+        return view('demandes.totaux-par-mois', compact('montantsParMois', 'annee'));
+    }
 
-    return view('demandes.totaux-par-mois', compact('montantsParMois', 'annee'));
-}
+    public function update(Request $request, $id)
+    {
+        $this->authorizeRole(['tresorier', 'admin']);
+        $user = Auth::user();
+        $demandeFonds = DemandeFonds::findOrFail($id);
+
+        // Vérifier si l'utilisateur est admin ou propriétaire de la demande
+        if (!$user->isAdmin() && $demandeFonds->user_id !== $user->id) {
+            return redirect()->back()->withErrors(['error' => 'Vous n\'avez pas la permission de modifier cette demande.']);
+        }
+
+        // Empêcher la modification si la demande est déjà approuvée
+        if ($demandeFonds->status === 'approuve') {
+            return redirect()->back()->withErrors(['error' => 'Vous ne pouvez pas modifier une demande déjà approuvée.']);
+        }
+
+        // Nettoyage des champs numériques pour retirer les espaces insécables et les convertir en nombres
+        $cleanData = collect($request->all())->map(function ($value, $key) {
+            // Si le champ est une chaîne, retirer les espaces insécables et convertir en nombre si possible
+            if (is_string($value)) {
+                $value = str_replace("\u{202F}", '', $value); // Retirer les espaces insécables
+                $value = str_replace(' ', '', $value); // Retirer les espaces classiques
+                if (is_numeric($value)) {
+                    return (float) $value;
+                }
+            }
+            return $value;
+        })->toArray();
+
+        // Remplacer les données nettoyées dans la requête
+        $request->replace($cleanData);
+        /* dd($cleanData); */
+        // Valider les champs de la requête
+        $validatedData = $request->validate([
+            'mois' => 'required|string',
+            'annee' => 'nullable|numeric',
+            'total_demande' => 'nullable|numeric',
+            'status' => 'nullable|string',
+            'fonctionnaires_bcs_net' => 'nullable|numeric',
+            'fonctionnaires_bcs_revers' => 'nullable|numeric',
+            'fonctionnaires_bcs_total_courant' => 'nullable|numeric',
+            'fonctionnaires_bcs_salaire_ancien' => 'nullable|numeric',
+            'fonctionnaires_bcs_total_demande' => 'nullable|numeric',
+            'collectivite_sante_net' => 'nullable|numeric',
+            'collectivite_sante_revers' => 'nullable|numeric',
+            'collectivite_sante_total_courant' => 'nullable|numeric',
+            'collectivite_sante_salaire_ancien' => 'nullable|numeric',
+            'collectivite_sante_total_demande' => 'nullable|numeric',
+            'collectivite_education_net' => 'nullable|numeric',
+            'collectivite_education_revers' => 'nullable|numeric',
+            'collectivite_education_total_courant' => 'nullable|numeric',
+            'collectivite_education_salaire_ancien' => 'nullable|numeric',
+            'collectivite_education_total_demande' => 'nullable|numeric',
+            'personnels_saisonniers_net' => 'nullable|numeric',
+            'personnels_saisonniers_revers' => 'nullable|numeric',
+            'personnels_saisonniers_total_courant' => 'nullable|numeric',
+            'personnels_saisonniers_salaire_ancien' => 'nullable|numeric',
+            'personnels_saisonniers_total_demande' => 'nullable|numeric',
+            'epn_net' => 'nullable|numeric',
+            'epn_revers' => 'nullable|numeric',
+            'epn_total_courant' => 'nullable|numeric',
+            'epn_salaire_ancien' => 'nullable|numeric',
+            'epn_total_demande' => 'nullable|numeric',
+            'ced_net' => 'nullable|numeric',
+            'ced_revers' => 'nullable|numeric',
+            'ced_total_courant' => 'nullable|numeric',
+            'ced_salaire_ancien' => 'nullable|numeric',
+            'ced_total_demande' => 'nullable|numeric',
+            'ecom_net' => 'nullable|numeric',
+            'ecom_revers' => 'nullable|numeric',
+            'ecom_total_courant' => 'nullable|numeric',
+            'ecom_salaire_ancien' => 'nullable|numeric',
+            'ecom_total_demande' => 'nullable|numeric',
+            'cfp_cpam_net' => 'nullable|numeric',
+            'cfp_cpam_revers' => 'nullable|numeric',
+            'cfp_cpam_total_courant' => 'nullable|numeric',
+            'cfp_cpam_salaire_ancien' => 'nullable|numeric',
+            'cfp_cpam_total_demande' => 'nullable|numeric',
+            'total_net' => 'nullable|numeric',
+            'total_revers' => 'nullable|numeric',
+            'total_courant' => 'nullable|numeric',
+            'total_salaire_ancien' => 'nullable|numeric',
+            'total_demande' => 'nullable|numeric',
+            'montant_disponible' => 'required|numeric',
+            'solde' => 'nullable|numeric',
+            'user_id' => 'nullable|exists:users,id',
+            'poste_id' => 'nullable|exists:postes,id',
+            'date_reception' => 'nullable|date',
+            'date' => 'required|date'
+        ]);
+
+        $demandeFonds->update($validatedData);
+        Alert::success('Success', 'Demande de fonds mise à jour avec succès.');
+        return redirect()->route('demandes-fonds.index');
+    }
+
+    public function destroy(DemandeFonds $demandeFonds)
+    {
+        $this->authorizeRole(['admin']);
+        // Supprimer la demande de fonds
+        $demandeFonds->delete();
+        Alert::success('Success', 'Demande de fonds supprimée avec succès.');
+        return redirect()->route('demandes-fonds.index')->with('success', 'Demande de fonds supprimée avec succès.');
+    }
+
+    public function show($id)
+    {
+        $this->authorizeRole(['tresorier', 'admin', 'acct', 'superviseur']);
+        // Récupération de la demande de fonds par ID
+        $demandeFonds = DemandeFonds::with('poste')->findOrFail($id);
+
+        // Calcul des totaux et des écarts
+        $demandeFonds->total_net = $demandeFonds->fonctionnaires_bcs_net +
+            $demandeFonds->collectivite_sante_net +
+            $demandeFonds->collectivite_education_net +
+            $demandeFonds->personnels_saisonniers_net +
+            $demandeFonds->epn_net +
+            $demandeFonds->ced_net +
+            $demandeFonds->ecom_net +
+            $demandeFonds->cfp_cpam_net;
+
+        $demandeFonds->total_revers = $demandeFonds->fonctionnaires_bcs_revers +
+            $demandeFonds->collectivite_sante_revers +
+            $demandeFonds->collectivite_education_revers +
+            $demandeFonds->personnels_saisonniers_revers +
+            $demandeFonds->epn_revers +
+            $demandeFonds->ced_revers +
+            $demandeFonds->ecom_revers +
+            $demandeFonds->cfp_cpam_revers;
+
+        $demandeFonds->total_courant = $demandeFonds->fonctionnaires_bcs_total_courant +
+            $demandeFonds->collectivite_sante_total_courant +
+            $demandeFonds->collectivite_education_total_courant +
+            $demandeFonds->personnels_saisonniers_total_courant +
+            $demandeFonds->epn_total_courant +
+            $demandeFonds->ced_total_courant +
+            $demandeFonds->ecom_total_courant +
+            $demandeFonds->cfp_cpam_total_courant;
+
+        $demandeFonds->total_ancien = $demandeFonds->fonctionnaires_bcs_salaire_ancien +
+            $demandeFonds->collectivite_sante_salaire_ancien +
+            $demandeFonds->collectivite_education_salaire_ancien +
+            $demandeFonds->personnels_saisonniers_salaire_ancien +
+            $demandeFonds->epn_salaire_ancien +
+            $demandeFonds->ced_salaire_ancien +
+            $demandeFonds->ecom_salaire_ancien +
+            $demandeFonds->cfp_cpam_salaire_ancien;
+
+        $demandeFonds->solde = $demandeFonds->total_courant - $demandeFonds->montant_disponible;
+        return view('demandes.show', compact('demandeFonds'));
+    }
+
+    public function generatePDF($id)
+    {
+        $this->authorizeRole(['tresorier', 'admin', 'acct', 'superviseur']);
+        // Récupérer la demande de fonds par son ID
+        $demandeFonds = DemandeFonds::findOrFail($id);
+
+        // Générer le PDF avec la vue et passer la variable
+        $pdf = FacadePdf::loadView('pdf.demande_fonds', compact('demandeFonds'))->setPaper('a4', 'landscape');
+        $demandeFonds->total_net = $demandeFonds->fonctionnaires_bcs_net +
+            $demandeFonds->collectivite_sante_net +
+            $demandeFonds->collectivite_education_net +
+            $demandeFonds->personnels_saisonniers_net +
+            $demandeFonds->epn_net +
+            $demandeFonds->ced_net +
+            $demandeFonds->ecom_net +
+            $demandeFonds->cfp_cpam_net;
+
+        $demandeFonds->total_revers = $demandeFonds->fonctionnaires_bcs_revers +
+            $demandeFonds->collectivite_sante_revers +
+            $demandeFonds->collectivite_education_revers +
+            $demandeFonds->personnels_saisonniers_revers +
+            $demandeFonds->epn_revers +
+            $demandeFonds->ced_revers +
+            $demandeFonds->ecom_revers +
+            $demandeFonds->cfp_cpam_revers;
+
+        $demandeFonds->total_courant = $demandeFonds->fonctionnaires_bcs_total_courant +
+            $demandeFonds->collectivite_sante_total_courant +
+            $demandeFonds->collectivite_education_total_courant +
+            $demandeFonds->personnels_saisonniers_total_courant +
+            $demandeFonds->epn_total_courant +
+            $demandeFonds->ced_total_courant +
+            $demandeFonds->ecom_total_courant +
+            $demandeFonds->cfp_cpam_total_courant;
+
+        $demandeFonds->total_ancien = $demandeFonds->fonctionnaires_bcs_salaire_ancien +
+            $demandeFonds->collectivite_sante_salaire_ancien +
+            $demandeFonds->collectivite_education_salaire_ancien +
+            $demandeFonds->personnels_saisonniers_salaire_ancien +
+            $demandeFonds->epn_salaire_ancien +
+            $demandeFonds->ced_salaire_ancien +
+            $demandeFonds->ecom_salaire_ancien +
+            $demandeFonds->cfp_cpam_salaire_ancien;
+        // Retourner le PDF pour le téléchargement
+        $demandeFonds->solde = $demandeFonds->total_courant - $demandeFonds->montant_disponible;
+        return $pdf->download('demande_fonds_' . $demandeFonds->id . '.pdf');
+    }
 
 }
