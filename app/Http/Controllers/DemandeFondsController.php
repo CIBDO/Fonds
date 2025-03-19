@@ -52,10 +52,13 @@ class DemandeFondsController extends Controller
             $query->where('mois', 'like', '%' . $request->input('mois') . '%');
         }
 
+
         // Filtrer par montant total courant
         if ($request->filled('total_courant')) {
             $query->where('total_courant', 'like', '%' . $request->input('total_courant') . '%');
         }
+
+        
         // Afficher toutes les demandes de fonds
         $demandeFonds = $query->with('user', 'poste')->orderBy('created_at', 'desc')->paginate(19);
 
@@ -777,8 +780,10 @@ class DemandeFondsController extends Controller
     public function Recettes(Request $request)
     {
         $this->authorizeRole(['acct', 'admin', 'superviseur', 'tresorier']);
-        // Commencer par obtenir toutes les demandes de fonds avec les statuts "approuvé" ou "rejeté"
+
+        // Initialiser la requête pour récupérer les demandes de fonds approuvées ou rejetées
         $query = DemandeFonds::with('user', 'poste');
+
         // Filtrer par poste si un poste est fourni dans la requête
         if ($request->filled('poste')) {
             $query->whereHas('poste', function ($q) use ($request) {
@@ -791,13 +796,24 @@ class DemandeFondsController extends Controller
             $query->where('mois', 'like', '%' . $request->mois . '%');
         }
 
+        // Filtrer par année si une année est fournie dans la requête
+        if ($request->filled('annee')) {
+            $query->where('annee', $request->annee);
+        }
+
         // Exécuter la requête et paginer les résultats
         $demandeFonds = $query->orderBy('created_at', 'desc')
             ->paginate(12)
             ->appends($request->except('page'));
 
-        // Retourner la vue avec les résultats filtrés
-        return view('demandes.recettes', compact('demandeFonds'));
+        // Calcul des totaux globaux pour les recettes douanières
+        $totalRecettesDouanieres = $query->sum('montant_disponible');
+
+        // Retourner la vue avec les résultats filtrés et les totaux globaux
+        return view('demandes.recettes', compact(
+            'demandeFonds',
+            'totalRecettesDouanieres'
+        ));
     }
 
     public function Solde(Request $request)
