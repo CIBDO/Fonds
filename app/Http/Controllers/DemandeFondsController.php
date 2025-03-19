@@ -844,7 +844,7 @@ class DemandeFondsController extends Controller
         return $inputs;
     }
 
-    public function Fonctionnaires(Request $request)
+    /* public function Fonctionnaires(Request $request)
     {
         $this->authorizeRole(['acct', 'admin', 'superviseur', 'tresorier']);
         // Commencer par obtenir toutes les demandes de fonds avec les statuts "approuvé" ou "rejeté"
@@ -867,6 +867,55 @@ class DemandeFondsController extends Controller
             ->appends($request->except('page'));
         // Retourner la vue avec les résultats filtrés
         return view('demandes.fonctionnaires', compact('demandeFonds'));
+    } */
+
+    public function Fonctionnaires(Request $request)
+    {
+        $this->authorizeRole(['acct', 'admin', 'superviseur', 'tresorier']);
+
+        // Initialiser la requête pour récupérer les demandes de fonds approuvées ou rejetées
+        $query = DemandeFonds::with('user', 'poste')
+            ->whereIn('status', ['approuve', 'rejete']);
+
+        // Filtrer par poste si un poste est fourni dans la requête
+        if ($request->filled('poste')) {
+            $query->whereHas('poste', function ($q) use ($request) {
+                $q->where('nom', 'like', '%' . $request->poste . '%');
+            });
+        }
+
+        // Filtrer par mois si un mois est fourni dans la requête
+        if ($request->filled('mois')) {
+            $query->where('mois', 'like', '%' . $request->mois . '%');
+        }
+
+        // Exécuter la requête et paginer les résultats
+        $demandeFonds = $query->orderBy('created_at', 'desc')
+            ->paginate(19)
+            ->appends($request->except('page'));
+
+        // Calcul des totaux globaux pour chaque rubrique
+        $totalBCS = $query->sum('fonctionnaires_bcs_total_courant');
+        $totalSante = $query->sum('collectivite_sante_total_courant');
+        $totalEducation = $query->sum('collectivite_education_total_courant');
+        $totalSaisonnier = $query->sum('personnels_saisonniers_total_courant');
+        $totalEPN = $query->sum('epn_total_courant');
+        $totalCED = $query->sum('ced_total_courant');
+        $totalECOM = $query->sum('ecom_total_courant');
+        $totalCFPCPAM = $query->sum('cfp_cpam_total_courant');
+
+        // Retourner la vue avec les résultats filtrés et les totaux globaux
+        return view('demandes.fonctionnaires', compact(
+            'demandeFonds',
+            'totalBCS',
+            'totalSante',
+            'totalEducation',
+            'totalSaisonnier',
+            'totalEPN',
+            'totalCED',
+            'totalECOM',
+            'totalCFPCPAM'
+        ));
     }
 
     public function totauxParMois(Request $request)
