@@ -27,9 +27,9 @@ class AcctController extends Controller
         $dataACCT = DemandeFonds::where('type', 'ACCT')->get();
  */
 
-        return view('dashboard.admin', compact('demandesFonds', 'fondsDemandes', 'fondsRecettes', 'fondsEnCours', 'paiementsEffectues'));
+        return view('dashboard.acct', compact('demandesFonds', 'fondsDemandes', 'fondsRecettes', 'fondsEnCours', 'paiementsEffectues'));
     }
-    
+
 
     /**
      * Show the form for creating a new resource.

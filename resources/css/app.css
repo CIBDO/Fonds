@@ -1,3 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Charte graphique Trésor Public - DGCTP */
+
+.header, .footer {
+    @apply bg-main-green text-main-yellow font-bold;
+}
+
+.button-primary {
+    @apply bg-main-green text-main-white border-2 border-main-yellow font-bold rounded-lg px-4 py-2 transition;
+}
+.button-primary:hover {
+    @apply bg-main-yellow text-main-green border-main-red;
+}
+
+.button-secondary {
+    @apply bg-main-white text-main-green border-2 border-main-green font-bold rounded-lg px-4 py-2;
+}
+
+.bg-principal {
+    @apply bg-main-white text-main-black;
+}

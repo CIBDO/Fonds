@@ -1,132 +1,357 @@
-<div class="header">
-            <div class="header-left">
-                <a href="{{route('login')}}" class="logo">
-                    <img src="{{asset('assets/img/logo.png')}}" alt="Logo">
-                </a>
-                <a href="{{route('login')}}" class="logo logo-small">
-                    <img src="{{asset('assets/img/logo-small.png')}}" alt="Logo" width="30" height="30">
-                </a>
+<div class="dgtcp-header-main">
+    <div class="dgtcp-header-left">
+        <a href="{{ route('login') }}" class="dgtcp-logo-container">
+            <img src="{{ asset('assets/img/logo.png') }}" alt="Logo DGTCP" class="dgtcp-logo-img">
+            <div class="dgtcp-logo-text">
+                <span class="dgtcp-ministry">DGTCP</span>
+                <span class="dgtcp-subtitle">Trésor Public</span>
             </div>
-            <div class="menu-toggle">
-                <a href="javascript:void(0);" id="toggle_btn">
-                    <i class="fas fa-bars"></i>
-                </a>
-            </div>
+        </a>
+        <a href="{{ route('login') }}" class="dgtcp-logo-small">
+            <img src="{{ asset('assets/img/logo.png') }}" alt="Logo DGTCP" class="dgtcp-logo-img-small">
+        </a>
+    </div>
 
-            <div class="top-nav-search">
-                <form>
-                    <input type="text" class="form-control" placeholder="Search here">
-                    <button class="btn" type="submit"><i class="fas fa-search"></i></button>
-                </form>
+    {{-- <div class="dgtcp-menu-toggle">
+        <a href="javascript:void(0);" id="toggle_btn" class="dgtcp-toggle-btn">
+            <i class="fas fa-bars"></i>
+        </a>
+    </div> --}}
+
+    <div class="dgtcp-search-container">
+        <form class="dgtcp-search-form">
+            <div class="dgtcp-search-wrapper">
+                <input type="text" class="dgtcp-search-input" placeholder="Rechercher dans le système DGTCP...">
+                <button class="dgtcp-search-btn" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
             </div>
-            <a class="mobile_btn" id="mobile_btn">
-                <i class="fas fa-bars"></i>
+        </form>
+    </div>
+
+    <a class="dgtcp-mobile-btn" id="mobile_btn">
+        <i class="fas fa-bars"></i>
+    </a>
+
+    <ul class="dgtcp-nav-menu">
+        <!-- Sélecteur de langue -->
+        {{-- <li class="dgtcp-nav-item dgtcp-language-selector">
+            <div class="dgtcp-language-content">
+                <a class="dgtcp-language-link" href="javascript:;">
+                    <img src="{{ asset('assets/img/icons/benin-flag.png') }}" alt="Français" class="dgtcp-flag">
+                    <span>Français</span>
+                </a>
+            </div>
+        </li> --}}
+
+        <!-- Notifications DGTCP -->
+        <li class="dgtcp-nav-item dgtcp-notifications">
+            <a href="#" class="dgtcp-nav-link dgtcp-notification-toggle" data-bs-toggle="dropdown">
+                <div class="dgtcp-notification-icon">
+                    <i class="fas fa-bell"></i>
+                    @if(auth()->user()->unreadNotifications->count() > 0)
+                        <span class="dgtcp-notification-badge">{{ auth()->user()->unreadNotifications->count() }}</span>
+                    @endif
+                </div>
             </a>
-
-            <ul class="nav user-menu">
-                <li class="nav-item dropdown noti-dropdown language-drop me-2">
-                    <div class="dropdown-menu ">
-                        <div class="noti-content">
-                            <div>
-                                <a class="dropdown-item" href="javascript:;"><i class="flag flag-bl me-2"></i>Francais</a>
-                            </div>
-                        </div>
+            <div class="dgtcp-dropdown-menu dgtcp-notifications-dropdown">
+                <div class="dgtcp-dropdown-header">
+                    <div class="dgtcp-notification-title">
+                        <i class="fas fa-bell me-2"></i>
+                        Notifications DGTCP
                     </div>
-                </li>
-                <li class="nav-item dropdown noti-dropdown me-2">
-                    <a href="#" class="dropdown-toggle nav-link header-nav-list" data-bs-toggle="dropdown">
-                        <img src="{{ asset('assets/img/icons/header-icon-05.svg') }}" alt="">
-                        <span class="badge rounded-pill bg-danger notification-count">{{ auth()->user()->unreadNotifications->count() }}</span>
+                    <a href="javascript:void(0)" class="dgtcp-mark-all-read" id="markAllAsRead">
+                        <i class="fas fa-check-double me-1"></i>Marquer tout comme lu
                     </a>
-                    <div class="dropdown-menu notifications">
-                        <div class="topnav-dropdown-header">
-                            <span class="notification-title">Notifications</span>
-                            <a href="javascript:void(0)" class="clear-noti" id="markAllAsRead"> Tout marquer comme lu </a>
-                        </div>
-                        <div class="noti-content">
-                            <ul class="notification-list">
-                                @forelse(auth()->user()->unreadNotifications as $notification)
-                                    <li class="notification-message" data-notification-id="{{ $notification->id }}">
-                                        <a href="#" class="notification-link" data-url="{{ $notification->data['url'] ?? '#' }}">
-                                            <div class="media d-flex">
-                                                <div class="media-body">
-                                                    <p class="noti-details fw-bold text-primary">
-                                                        @if($notification->type === 'App\Notifications\DemandeFondsNotification')
-                                                            <span class="text-danger">Demande de fonds:</span>
-                                                            <p>{{ $notification->data['message'] }}</p>
-                                                            <p>Montant: {{ $notification->data['montant'] }} FCFA</p>
-                                                        @elseif($notification->type === 'App\Notifications\DemandeFondsStatusNotification')
-                                                            <span class="text-warning">Mise à jour du statut:</span>
-                                                            <p>{{ $notification->data['message'] }}</p>
-                                                        @elseif($notification->type === 'App\Notifications\MessageSent')
-                                                            <span class="text-success">Nouveau message:</span>
-                                                            <p> {{ $notification->data['sender_name'] }}</p>
-                                                            <p>Objet: {{ $notification->data['subject'] }}</p>
-                                                        @endif
-                                                    </p>
-                                                    <p class="noti-time">
-                                                        <span class="notification-time text-muted">
-                                                            {{ $notification->created_at->diffForHumans() }}
-                                                        </span>
-                                                    </p>
-                                                </div>
+                </div>
+                <div class="dgtcp-notification-content">
+                    <ul class="dgtcp-notification-list">
+                        @forelse(auth()->user()->unreadNotifications as $notification)
+                            <li class="dgtcp-notification-item" data-notification-id="{{ $notification->id }}">
+                                <a href="#" class="dgtcp-notification-link" data-url="{{ $notification->data['url'] ?? '#' }}">
+                                    <div class="dgtcp-notification-body">
+                                        <div class="dgtcp-notification-icon-wrapper">
+                                            @if($notification->type === 'App\Notifications\DemandeFondsNotification')
+                                                <i class="fas fa-coins text-warning"></i>
+                                            @elseif($notification->type === 'App\Notifications\DemandeFondsStatusNotification')
+                                                <i class="fas fa-clipboard-check text-success"></i>
+                                            @elseif($notification->type === 'App\Notifications\MessageSent')
+                                                <i class="fas fa-envelope text-info"></i>
+                                            @endif
+                                        </div>
+                                        <div class="dgtcp-notification-text">
+                                            @if($notification->type === 'App\Notifications\DemandeFondsNotification')
+                                                <div class="dgtcp-notification-title">Demande de fonds</div>
+                                                <div class="dgtcp-notification-message">{{ $notification->data['message'] }}</div>
+                                                <div class="dgtcp-notification-amount">{{ $notification->data['montant'] }} FCFA</div>
+                                            @elseif($notification->type === 'App\Notifications\DemandeFondsStatusNotification')
+                                                <div class="dgtcp-notification-title">Mise à jour du statut</div>
+                                                <div class="dgtcp-notification-message">{{ $notification->data['message'] }}</div>
+                                            @elseif($notification->type === 'App\Notifications\MessageSent')
+                                                <div class="dgtcp-notification-title">Nouveau message</div>
+                                                <div class="dgtcp-notification-message">De: {{ $notification->data['sender_name'] }}</div>
+                                                <div class="dgtcp-notification-subject">{{ $notification->data['subject'] }}</div>
+                                            @endif
+                                            <div class="dgtcp-notification-time">
+                                                <i class="fas fa-clock me-1"></i>
+                                                {{ $notification->created_at->diffForHumans() }}
                                             </div>
-                                        </a>
-                                    </li>
-                                @empty
-                                    <li class="notification-message">
-                                        <p class="text-center text-muted py-3">Aucune notification non lue</p>
-                                    </li>
-                                @endforelse
-                            </ul>
-                        </div>
-                        <div class="topnav-dropdown-footer">
-                            <a href="{{ route('demandes-fonds.situation') }}">Voir toutes les Notifications</a>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                        @empty
+                            <li class="dgtcp-notification-empty">
+                                <div class="dgtcp-empty-state">
+                                    <i class="fas fa-bell-slash"></i>
+                                    <p>Aucune notification non lue</p>
+                                </div>
+                            </li>
+                        @endforelse
+                    </ul>
+                </div>
+                <div class="dgtcp-dropdown-footer">
+                    <a href="{{ route('demandes-fonds.situation') }}" class="dgtcp-view-all-btn">
+                        <i class="fas fa-list me-2"></i>Voir toutes les notifications
+                    </a>
+                </div>
+            </div>
+        </li>
+
+        <!-- Plein écran -->
+        <li class="dgtcp-nav-item dgtcp-fullscreen">
+            <a href="#" class="dgtcp-nav-link dgtcp-fullscreen-toggle" onclick="toggleFullscreen()">
+                <i class="fas fa-expand"></i>
+            </a>
+        </li>
+
+        <!-- Profile utilisateur DGTCP -->
+        <li class="dgtcp-nav-item dgtcp-user-menu">
+            <a href="#" class="dgtcp-nav-link dgtcp-user-toggle" data-bs-toggle="dropdown">
+                <div class="dgtcp-user-info">
+                    <div class="dgtcp-user-avatar">
+                        <img src="{{ asset('assets/img/profiles/Avatar-01.png') }}" alt="{{ Auth::check() ? Auth::user()->name : 'Guest' }}">
+                        <div class="dgtcp-user-status"></div>
+                    </div>
+                    <div class="dgtcp-user-details">
+                        <div class="dgtcp-user-name">{{ Auth::check() ? Auth::user()->name : 'Guest' }}</div>
+                        <div class="dgtcp-user-role">
+                            @if(Auth::check())
+                                @switch(Auth::user()->role)
+                                    @case('admin')
+                                        Administrateur DGTCP
+                                        @break
+                                    @case('tresorier')
+                                        Trésorerie Régionale
+                                        @break
+                                    @case('acct')
+                                        ACCT - Agent Comptable
+                                        @break
+                                    @case('superviseur')
+                                        Superviseur DGTCP
+                                        @break
+                                    @default
+                                        {{ Auth::user()->role }}
+                                @endswitch
+                            @else
+                                Invité
+                            @endif
                         </div>
                     </div>
-                </li>
-
-                <li class="nav-item zoom-screen me-2">
-                    <a href="#" class="nav-link header-nav-list win-maximize">
-                        <img src="{{asset('assets/img/icons/header-icon-04.svg')}}" alt="">
-                    </a>
-                </li>
-                <li class="nav-item dropdown has-arrow new-user-menus">
-                    <a href="#" class="dropdown-toggle nav-link" data-bs-toggle="dropdown">
-                        <span class="user-img">
-                            <img class="rounded-circle" src="{{ asset('assets/img/profiles/Avatar-01.png') }}" width="31" alt="{{ Auth::check() ? Auth::user()->name : 'Guest' }}">
-                            <div class="user-text">
-                                <h6>{{ Auth::check() ? Auth::user()->name : 'Guest' }}</h6>
-                                <p class="text-muted mb-0">{{ Auth::check() ? Auth::user()->role : 'N/A' }}</p>
-                            </div>
-                        </span>
-                    </a>
-                    <div class="dropdown-menu">
-                        <div class="user-header">
-                            <div class="avatar avatar-sm">
-                                <img src="{{ asset('assets/img/profiles/Avatar-01.png') }}" alt="User Image" class="avatar-img rounded-circle">
-                            </div>
-                            <div class="user-text">
-                                <h6>{{ Auth::check() ? Auth::user()->name : 'Guest' }}</h6>
-                                <p class="text-muted mb-0">{{ Auth::check() ? Auth::user()->role : 'N/A' }}</p>
-                            </div>
-                        </div>
-                        <a class="dropdown-item" href="{{ Auth::check() ? route('users.edit', auth()->user()->id) : '#' }}">Mon Profil</a>
-                         <a class="dropdown-item" href="{{ Auth::check() ? route('messages.index') : '#' }}">Boite de Réception</a>
-                        @if(Auth::check())
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                @csrf
-                            </form>
-                            <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Déconnexion</a>
-                        @else
-                            <a class="dropdown-item" href="{{ route('login') }}">Login</a>
-                            <a class="dropdown-item" href="{{ route('register') }}">Register</a>
-                        @endif
+                    <i class="fas fa-chevron-down dgtcp-dropdown-arrow"></i>
+                </div>
+            </a>
+            <div class="dgtcp-dropdown-menu dgtcp-user-dropdown">
+                <div class="dgtcp-user-header">
+                    <div class="dgtcp-user-avatar-large">
+                        <img src="{{ asset('assets/img/profiles/Avatar-01.png') }}" alt="User Image">
                     </div>
-                </li>
+                    <div class="dgtcp-user-info-large">
+                        <div class="dgtcp-user-name-large">{{ Auth::check() ? Auth::user()->name : 'Guest' }}</div>
+                        <div class="dgtcp-user-role-large">
+                            @if(Auth::check())
+                                {{ Auth::user()->email }}
+                            @endif
+                        </div>
+                        <div class="dgtcp-user-poste">
+                            @if(Auth::check() && Auth::user()->poste)
+                                <i class="fas fa-map-marker-alt me-1"></i>{{ Auth::user()->poste->nom }}
+                            @endif
+                        </div>
+                    </div>
+                </div>
 
+                <div class="dgtcp-dropdown-section">
+                    <a class="dgtcp-dropdown-item" href="{{ Auth::check() ? route('users.edit', auth()->user()->id) : '#' }}">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Mon Profil</span>
+                    </a>
+                    <a class="dgtcp-dropdown-item" href="{{ Auth::check() ? route('messages.index') : '#' }}">
+                        <i class="fas fa-inbox"></i>
+                        <span>Boîte de Réception</span>
+                    </a>
+                    <a class="dgtcp-dropdown-item" href="#">
+                        <i class="fas fa-cog"></i>
+                        <span>Paramètres</span>
+                    </a>
+                </div>
 
+                <div class="dgtcp-dropdown-divider"></div>
 
-            </ul>
+                <div class="dgtcp-dropdown-section">
+                    @if(Auth::check())
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            @csrf
+                        </form>
+                        <a class="dgtcp-dropdown-item dgtcp-logout" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Déconnexion</span>
+                        </a>
+                    @else
+                        <a class="dgtcp-dropdown-item" href="{{ route('login') }}">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Connexion</span>
+                        </a>
+                    @endif
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
 
-        </div>
+<script>
+// Scripts pour le header DGTCP
+document.addEventListener('DOMContentLoaded', function() {
+    // Animation du logo au survol
+    const logoContainer = document.querySelector('.dgtcp-logo-container');
+    if (logoContainer) {
+        logoContainer.addEventListener('mouseenter', function() {
+            this.style.animation = 'pulse 0.6s ease-in-out';
+        });
+
+        logoContainer.addEventListener('animationend', function() {
+            this.style.animation = '';
+        });
+    }
+
+    // Gestion de la recherche
+    const searchForm = document.querySelector('.dgtcp-search-form');
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const searchInput = this.querySelector('.dgtcp-search-input');
+            if (searchInput.value.trim()) {
+                // Ici vous pouvez ajouter la logique de recherche
+                console.log('Recherche DGTCP:', searchInput.value);
+                // Redirection vers la page de recherche ou affichage des résultats
+            }
+        });
+    }
+
+    // Marquer toutes les notifications comme lues
+    const markAllAsReadBtn = document.getElementById('markAllAsRead');
+    if (markAllAsReadBtn) {
+        markAllAsReadBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Ici vous pouvez ajouter l'appel AJAX pour marquer toutes les notifications comme lues
+            fetch('/notifications/mark-all-as-read', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload(); // Recharger pour mettre à jour l'affichage
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+            });
+        });
+    }
+
+    // Gestion des clics sur les notifications
+    const notificationLinks = document.querySelectorAll('.dgtcp-notification-link');
+    notificationLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const notificationId = this.closest('.dgtcp-notification-item').dataset.notificationId;
+            const url = this.dataset.url;
+
+            // Marquer la notification comme lue
+            if (notificationId) {
+                fetch(`/notifications/${notificationId}/mark-as-read`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(() => {
+                    if (url && url !== '#') {
+                        window.location.href = url;
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                });
+            }
+        });
+    });
+
+    // Animation du badge de notification
+    const notificationBadge = document.querySelector('.dgtcp-notification-badge');
+    if (notificationBadge && parseInt(notificationBadge.textContent) > 0) {
+        setInterval(() => {
+            notificationBadge.style.animation = 'pulse-notification 2s infinite';
+        }, 5000);
+    }
+});
+
+// Fonction pour le plein écran
+function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+            console.log(`Erreur d'activation du plein écran: ${err.message}`);
+        });
+
+        // Changer l'icône
+        const icon = document.querySelector('.dgtcp-fullscreen-toggle i');
+        if (icon) {
+            icon.className = 'fas fa-compress';
+        }
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+
+        // Remettre l'icône d'origine
+        const icon = document.querySelector('.dgtcp-fullscreen-toggle i');
+        if (icon) {
+            icon.className = 'fas fa-expand';
+        }
+    }
+}
+
+// Écouter les changements de plein écran
+document.addEventListener('fullscreenchange', function() {
+    const icon = document.querySelector('.dgtcp-fullscreen-toggle i');
+    if (icon) {
+        if (document.fullscreenElement) {
+            icon.className = 'fas fa-compress';
+        } else {
+            icon.className = 'fas fa-expand';
+        }
+    }
+});
+</script>
+
+<style>
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+</style>

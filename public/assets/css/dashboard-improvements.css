@@ -1,0 +1,2203 @@
+/* ========================================
+   DASHBOARD IMPROVEMENTS - STYLES MODERNES
+   ======================================== */
+
+/* Variables CSS pour une cohérence visuelle */
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    --info-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    --danger-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+
+    --shadow-light: 0 5px 15px rgba(0,0,0,0.08);
+    --shadow-medium: 0 10px 30px rgba(0,0,0,0.12);
+    --shadow-heavy: 0 20px 40px rgba(0,0,0,0.15);
+
+    --border-radius: 15px;
+    --border-radius-large: 20px;
+    --transition: all 0.3s ease;
+}
+
+/* Animations globales */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -468px 0;
+    }
+    100% {
+        background-position: 468px 0;
+    }
+}
+
+/* Classes utilitaires pour les cartes modernes */
+.modern-card {
+    background: white;
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--shadow-medium);
+    transition: var(--transition);
+    overflow: hidden;
+    position: relative;
+}
+
+.modern-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-heavy);
+}
+
+.modern-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--primary-gradient);
+}
+
+/* Cartes de statistiques améliorer */
+.stat-card-modern {
+    padding: 25px;
+    border-radius: var(--border-radius-large);
+    color: white;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
+    text-decoration: none;
+    display: block;
+}
+
+.stat-card-modern:hover {
+    transform: translateY(-10px);
+    text-decoration: none;
+    color: white;
+}
+
+.stat-card-modern.primary {
+    background: var(--primary-gradient);
+}
+
+.stat-card-modern.success {
+    background: var(--success-gradient);
+}
+
+.stat-card-modern.warning {
+    background: var(--warning-gradient);
+}
+
+.stat-card-modern.info {
+    background: var(--info-gradient);
+}
+
+.stat-card-modern.danger {
+    background: var(--danger-gradient);
+}
+
+.stat-card-modern::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+    pointer-events: none;
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin-bottom: 1rem;
+}
+
+.stat-trend {
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+.stat-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 3rem;
+    opacity: 0.3;
+}
+
+/* Tableaux modernes */
+.table-modern {
+    background: white;
+    border-radius: var(--border-radius-large);
+    overflow: hidden;
+    box-shadow: var(--shadow-medium);
+}
+
+.table-modern thead th {
+    background: var(--primary-gradient);
+    color: white;
+    font-weight: 600;
+    padding: 1rem;
+    border: none;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table-modern tbody tr {
+    transition: var(--transition);
+    border-bottom: 1px solid #eef2f7;
+}
+
+.table-modern tbody tr:hover {
+    background-color: #f8f9ff;
+    transform: scale(1.01);
+}
+
+.table-modern tbody td {
+    padding: 1rem;
+    font-weight: 500;
+    color: #2d3748;
+    vertical-align: middle;
+}
+
+.table-modern tbody tr:last-child {
+    border-bottom: none;
+}
+
+/* Badges modernes */
+.badge-modern {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 50px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.badge-modern.primary {
+    background: var(--primary-gradient);
+    color: white;
+}
+
+.badge-modern.success {
+    background: var(--success-gradient);
+    color: white;
+}
+
+.badge-modern.warning {
+    background: var(--warning-gradient);
+    color: white;
+}
+
+.badge-modern.info {
+    background: var(--info-gradient);
+    color: white;
+}
+
+/* Boutons modernes */
+.btn-modern {
+    background: var(--primary-gradient);
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.btn-modern:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-medium);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-modern.large {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+}
+
+/* Sections avec arrière-plan */
+.section-bg {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: var(--border-radius-large);
+    padding: 2rem;
+    margin: 1.5rem 0;
+    box-shadow: var(--shadow-light);
+}
+
+/* En-têtes de section */
+.section-header {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-medium);
+}
+
+.section-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+/* Formulaires modernes */
+.form-modern .form-control {
+    border: 2px solid #e2e8f0;
+    border-radius: var(--border-radius);
+    padding: 0.75rem 1rem;
+    transition: var(--transition);
+    font-size: 1rem;
+}
+
+.form-modern .form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.form-modern .form-label {
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 0.5rem;
+}
+
+/* Alertes modernes */
+.alert-modern {
+    border-radius: var(--border-radius);
+    border: none;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-light);
+}
+
+.alert-modern.warning {
+    background: linear-gradient(135deg, #fed7d7 0%, #fbb6ce 100%);
+    border-left: 4px solid #f56565;
+}
+
+.alert-modern.success {
+    background: linear-gradient(135deg, #c6f6d5 0%, #9ae6b4 100%);
+    border-left: 4px solid #48bb78;
+}
+
+.alert-modern.info {
+    background: linear-gradient(135deg, #bee3f8 0%, #90cdf4 100%);
+    border-left: 4px solid #4299e1;
+}
+
+/* Indicateurs de tendance */
+.trend-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.trend-up {
+    color: #48bb78;
+}
+
+.trend-down {
+    color: #f56565;
+}
+
+.trend-neutral {
+    color: #a0aec0;
+}
+
+/* Loading states */
+.loading-shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .stat-card-modern {
+        margin-bottom: 1rem;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+    }
+
+    .section-bg {
+        padding: 1rem;
+    }
+
+    .section-header {
+        padding: 1rem;
+    }
+
+    .table-modern {
+        font-size: 0.9rem;
+    }
+
+    .table-modern thead th,
+    .table-modern tbody td {
+        padding: 0.75rem 0.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .stat-value {
+        font-size: 1.8rem;
+    }
+
+    .stat-icon {
+        font-size: 2rem;
+    }
+
+    .btn-modern {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .modern-card {
+        background: #2d3748;
+        color: white;
+    }
+
+    .table-modern {
+        background: #2d3748;
+        color: white;
+    }
+
+    .table-modern tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .form-modern .form-control {
+        background: #4a5568;
+        border-color: #718096;
+        color: white;
+    }
+
+    .form-modern .form-control:focus {
+        border-color: #667eea;
+        background: #4a5568;
+    }
+}
+
+/* Animations pour les éléments dynamiques */
+.fade-in {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.slide-in {
+    animation: slideInRight 0.6s ease-out;
+}
+
+.pulse-effect {
+    animation: pulse 2s infinite;
+}
+
+/* Classes utilitaires pour l'espacement */
+.spacing-sm { margin: 0.5rem; }
+.spacing-md { margin: 1rem; }
+.spacing-lg { margin: 1.5rem; }
+.spacing-xl { margin: 2rem; }
+
+/* Classes pour les ombres */
+.shadow-sm { box-shadow: var(--shadow-light); }
+.shadow-md { box-shadow: var(--shadow-medium); }
+.shadow-lg { box-shadow: var(--shadow-heavy); }
+
+/* Classes pour les coins arrondis */
+.rounded-sm { border-radius: 8px; }
+.rounded-md { border-radius: var(--border-radius); }
+.rounded-lg { border-radius: var(--border-radius-large); }
+
+/* ========================================
+   CHARTE GRAPHIQUE DGTCP - TRÉSOR PUBLIC
+   Couleurs officielles basées sur le logo
+   ======================================== */
+
+/* Variables CSS - Charte officielle DGTCP */
+:root {
+    /* Couleurs principales du logo DGTCP */
+    --dgtcp-green: #22C55E;
+    --dgtcp-gold: #F59E0B;
+    --dgtcp-red: #DC2626;
+    --dgtcp-white: #FFFFFF;
+    --dgtcp-black: #1F2937;
+
+    /* Gradients officiels */
+    --primary-gradient: linear-gradient(135deg, var(--dgtcp-green) 0%, #16A34A 100%);
+    --secondary-gradient: linear-gradient(135deg, var(--dgtcp-gold) 0%, #D97706 100%);
+    --accent-gradient: linear-gradient(135deg, var(--dgtcp-red) 0%, #B91C1C 100%);
+    --success-gradient: linear-gradient(135deg, var(--dgtcp-green) 0%, #15803D 100%);
+    --warning-gradient: linear-gradient(135deg, var(--dgtcp-gold) 0%, #EA580C 100%);
+
+    /* Variations de couleurs */
+    --green-light: #86EFAC;
+    --green-dark: #15803D;
+    --gold-light: #FDE68A;
+    --gold-dark: #A16207;
+    --red-light: #FCA5A5;
+    --red-dark: #991B1B;
+
+    /* Ombres */
+    --shadow-light: 0 4px 6px -1px rgba(34, 197, 94, 0.1), 0 2px 4px -1px rgba(34, 197, 94, 0.06);
+    --shadow-medium: 0 10px 15px -3px rgba(34, 197, 94, 0.1), 0 4px 6px -2px rgba(34, 197, 94, 0.05);
+    --shadow-heavy: 0 20px 25px -5px rgba(34, 197, 94, 0.1), 0 10px 10px -5px rgba(34, 197, 94, 0.04);
+
+    /* Bordures et espacements */
+    --border-radius: 12px;
+    --border-radius-large: 20px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset et base */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #F0FDF4 0%, #ECFDF5 100%);
+    color: var(--dgtcp-black);
+    line-height: 1.6;
+}
+
+/* ========================================
+   COMPOSANTS PRINCIPAUX DGTCP
+   ======================================== */
+
+/* En-tête avec logo */
+.dgtcp-header {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 2rem;
+    border-radius: var(--border-radius-large);
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-heavy);
+    position: relative;
+    overflow: hidden;
+}
+
+.dgtcp-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: rotate 20s linear infinite;
+}
+
+.dgtcp-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.dgtcp-header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin: 0.5rem 0 0 0;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Cartes statistiques DGTCP - Version Compacte */
+.dgtcp-stat-card {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    box-shadow: var(--shadow-light);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    display: block;
+    border-top: 3px solid var(--dgtcp-green);
+    min-height: 120px;
+}
+
+.dgtcp-stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-medium);
+    text-decoration: none;
+}
+
+.dgtcp-stat-card.funds-requested {
+    border-top-color: var(--dgtcp-green);
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.02) 0%, white 100%);
+}
+
+.dgtcp-stat-card.customs-receipts {
+    border-top-color: var(--dgtcp-gold);
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.02) 0%, white 100%);
+}
+
+.dgtcp-stat-card.funds-to-send {
+    border-top-color: var(--dgtcp-red);
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.02) 0%, white 100%);
+}
+
+.dgtcp-stat-card.funds-sent {
+    border-top-color: var(--dgtcp-green);
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.02) 0%, white 100%);
+}
+
+.dgtcp-stat-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--dgtcp-black);
+    margin-bottom: 0.25rem;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.2;
+}
+
+.dgtcp-stat-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--dgtcp-green);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 0.25rem;
+    line-height: 1.1;
+}
+
+.dgtcp-stat-subtitle {
+    font-size: 0.65rem;
+    color: #6B7280;
+    font-weight: 400;
+    line-height: 1.1;
+}
+
+.dgtcp-stat-icon {
+    display: none;
+}
+
+/* Badges modernes DGTCP */
+.dgtcp-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.dgtcp-badge.primary {
+    background: var(--primary-gradient);
+    color: white;
+}
+
+.dgtcp-badge.secondary {
+    background: var(--secondary-gradient);
+    color: white;
+}
+
+.dgtcp-badge.accent {
+    background: var(--accent-gradient);
+    color: white;
+}
+
+.dgtcp-badge.success {
+    background: var(--success-gradient);
+    color: white;
+}
+
+.dgtcp-badge.warning {
+    background: var(--warning-gradient);
+    color: white;
+}
+
+/* Tableaux officiels DGTCP */
+.dgtcp-table-container {
+    background: white;
+    border-radius: var(--border-radius-large);
+    overflow: hidden;
+    box-shadow: var(--shadow-medium);
+    border: 1px solid #E5E7EB;
+}
+
+.dgtcp-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.dgtcp-table thead th {
+    background: var(--primary-gradient);
+    color: white;
+    font-weight: 700;
+    padding: 1rem;
+    text-align: left;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: none;
+}
+
+.dgtcp-table tbody tr {
+    transition: var(--transition);
+    border-bottom: 1px solid #F3F4F6;
+}
+
+.dgtcp-table tbody tr:hover {
+    background: linear-gradient(90deg, rgba(34, 197, 94, 0.02) 0%, white 100%);
+    transform: scale(1.001);
+}
+
+.dgtcp-table tbody td {
+    padding: 1rem;
+    font-weight: 500;
+    color: var(--dgtcp-black);
+    vertical-align: middle;
+}
+
+.dgtcp-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+/* Boutons officiels DGTCP */
+.dgtcp-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: var(--border-radius);
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.dgtcp-btn.primary {
+    background: var(--primary-gradient);
+    color: white;
+}
+
+.dgtcp-btn.secondary {
+    background: var(--secondary-gradient);
+    color: white;
+}
+
+.dgtcp-btn.accent {
+    background: var(--accent-gradient);
+    color: white;
+}
+
+.dgtcp-btn.outline {
+    background: transparent;
+    color: var(--dgtcp-green);
+    border: 2px solid var(--dgtcp-green);
+}
+
+.dgtcp-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+    text-decoration: none;
+}
+
+.dgtcp-btn.primary:hover {
+    color: white;
+}
+
+.dgtcp-btn.outline:hover {
+    background: var(--dgtcp-green);
+    color: white;
+}
+
+/* Sections spécialisées */
+.dgtcp-section {
+    background: white;
+    border-radius: var(--border-radius-large);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-light);
+    border-left: 4px solid var(--dgtcp-green);
+}
+
+.dgtcp-section-header {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Formulaires DGTCP */
+.dgtcp-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.dgtcp-form-label {
+    display: block;
+    font-weight: 600;
+    color: var(--dgtcp-black);
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.dgtcp-form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #E5E7EB;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    transition: var(--transition);
+    background: white;
+}
+
+.dgtcp-form-control:focus {
+    outline: none;
+    border-color: var(--dgtcp-green);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+/* Alertes officielles */
+.dgtcp-alert {
+    padding: 1rem 1.5rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 500;
+}
+
+.dgtcp-alert.success {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    color: var(--green-dark);
+}
+
+.dgtcp-alert.warning {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    color: var(--gold-dark);
+}
+
+.dgtcp-alert.error {
+    background: rgba(220, 38, 38, 0.1);
+    border: 1px solid rgba(220, 38, 38, 0.2);
+    color: var(--red-dark);
+}
+
+/* Animations officielles */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes pulse-dgtcp {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+    }
+    50% {
+        transform: scale(1.02);
+        box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+    }
+}
+
+/* Classes utilitaires */
+.fade-in {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.slide-in {
+    animation: slideInRight 0.6s ease-out;
+}
+
+.pulse-dgtcp {
+    animation: pulse-dgtcp 2s infinite;
+}
+
+/* Badges et status */
+.dgtcp-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: var(--border-radius);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.dgtcp-badge.primary {
+    background: var(--primary-gradient);
+    color: white;
+}
+
+.dgtcp-badge.secondary {
+    background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%);
+    color: white;
+}
+
+.dgtcp-badge.success {
+    background: linear-gradient(135deg, var(--dgtcp-green) 0%, #16A34A 100%);
+    color: white;
+}
+
+.dgtcp-badge.warning {
+    background: linear-gradient(135deg, var(--dgtcp-gold) 0%, #D97706 100%);
+    color: white;
+}
+
+.dgtcp-badge.danger {
+    background: linear-gradient(135deg, var(--dgtcp-red) 0%, #B91C1C 100%);
+    color: white;
+}
+
+.dgtcp-badge.outline {
+    background: transparent;
+    border: 1px solid var(--dgtcp-green);
+    color: var(--dgtcp-green);
+}
+
+/* Boutons améliorés */
+.dgtcp-btn.sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+.dgtcp-btn.success {
+    background: linear-gradient(135deg, var(--dgtcp-green) 0%, #16A34A 100%);
+    color: white;
+    border: none;
+}
+
+.dgtcp-btn.success:hover {
+    background: linear-gradient(135deg, #16A34A 0%, #15803D 100%);
+    transform: translateY(-2px);
+}
+
+.dgtcp-btn.danger {
+    background: linear-gradient(135deg, var(--dgtcp-red) 0%, #B91C1C 100%);
+    color: white;
+    border: none;
+}
+
+.dgtcp-btn.danger:hover {
+    background: linear-gradient(135deg, #B91C1C 0%, #991B1B 100%);
+    transform: translateY(-2px);
+}
+
+/* Cartes étendues */
+.dgtcp-card {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
+    transition: var(--transition);
+    overflow: hidden;
+}
+
+.dgtcp-card:hover {
+    box-shadow: var(--shadow-medium);
+}
+
+.dgtcp-card-header {
+    background: linear-gradient(135deg, var(--dgtcp-green) 0%, #16A34A 100%);
+    color: white;
+    padding: 1rem;
+    font-weight: 600;
+    border-bottom: none;
+}
+
+.dgtcp-card-body {
+    padding: 1rem;
+}
+
+/* Alertes spécialisées */
+.dgtcp-alert.info {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 197, 253, 0.1) 100%);
+    border-left: 4px solid #3B82F6;
+    color: #1E40AF;
+}
+
+.dgtcp-alert.info i {
+    color: #3B82F6;
+}
+
+/* Animations personnalisées */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Formulaires améliorés */
+.dgtcp-form-group {
+    margin-bottom: 1rem;
+}
+
+.dgtcp-form-label {
+    display: block;
+    font-weight: 600;
+    color: var(--dgtcp-black);
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.dgtcp-form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #E5E7EB;
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
+    transition: var(--transition);
+    background: white;
+}
+
+.dgtcp-form-control:focus {
+    outline: none;
+    border-color: var(--dgtcp-green);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+/* Pagination DGTCP */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pagination .page-item {
+    margin: 0;
+}
+
+.pagination .page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0.5rem 0.75rem;
+    background: white;
+    border: 2px solid #E5E7EB;
+    border-radius: var(--border-radius);
+    color: var(--dgtcp-black);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: var(--transition);
+}
+
+.pagination .page-link:hover {
+    background: var(--dgtcp-green);
+    border-color: var(--dgtcp-green);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-light);
+}
+
+.pagination .page-item.active .page-link {
+    background: var(--primary-gradient);
+    border-color: var(--dgtcp-green);
+    color: white;
+    box-shadow: var(--shadow-medium);
+}
+
+.pagination .page-item.disabled .page-link {
+    background: #F9FAFB;
+    border-color: #E5E7EB;
+    color: #9CA3AF;
+    cursor: not-allowed;
+}
+
+.pagination .page-item.disabled .page-link:hover {
+    background: #F9FAFB;
+    border-color: #E5E7EB;
+    color: #9CA3AF;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Style pour les liens Previous/Next */
+.pagination .page-link[rel="prev"],
+.pagination .page-link[rel="next"] {
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    min-width: auto;
+}
+
+/* Navigation flèches */
+.pagination .page-item .page-link i {
+    font-size: 0.75rem;
+}
+
+/* Styles pour les éléments actifs et désactivés */
+.pagination .page-item.active .page-link {
+    background: var(--primary-gradient) !important;
+    border-color: var(--dgtcp-green) !important;
+    color: white !important;
+    box-shadow: var(--shadow-medium);
+    font-weight: 700;
+}
+
+.pagination .page-item.disabled .page-link {
+    background: #F9FAFB !important;
+    border-color: #E5E7EB !important;
+    color: #9CA3AF !important;
+    cursor: not-allowed;
+}
+
+.pagination .page-item.disabled .page-link:hover {
+    background: #F9FAFB !important;
+    border-color: #E5E7EB !important;
+    color: #9CA3AF !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Informations de pagination */
+.pagination-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+    color: var(--dgtcp-black);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.pagination-info .badge {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    margin: 0 0.25rem;
+}
+
+/* Container de pagination DGTCP */
+.dgtcp-pagination-container {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-light);
+    margin-top: 1rem;
+}
+
+/* Header DGTCP Principal */
+.dgtcp-header-main {
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    padding: 0.75rem 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 70px;
+}
+
+/* ===== SIDEBAR DGTCP MODERNE ===== */
+.sidebar {
+    top: 70px !important;
+    z-index: 1000 !important;
+    background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%) !important;
+    border-right: 1px solid #e2e8f0 !important;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05) !important;
+    width: 280px !important;
+}
+
+.sidebar-inner {
+    background: transparent !important;
+    padding: 1rem 0 !important;
+}
+
+.sidebar-menu {
+    padding: 0 !important;
+}
+
+/* Titre de section moderne */
+.sidebar-menu .menu-title {
+    color: var(--dgtcp-green) !important;
+    font-weight: 700 !important;
+    font-size: 0.75rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    padding: 1.5rem 1.5rem 0.75rem !important;
+    margin: 0 !important;
+    position: relative !important;
+    opacity: 1 !important;
+}
+
+.sidebar-menu .menu-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 1.5rem;
+    right: 1.5rem;
+    height: 2px;
+    background: linear-gradient(90deg, var(--dgtcp-green) 0%, transparent 100%);
+    border-radius: 1px;
+}
+
+/* Items de menu principaux */
+.sidebar-menu > ul > li {
+    margin-bottom: 0.25rem !important;
+    position: relative !important;
+}
+
+.sidebar-menu > ul > li > a {
+    display: flex !important;
+    align-items: center !important;
+    padding: 0.875rem 1.5rem !important;
+    color: #4a5568 !important;
+    text-decoration: none !important;
+    font-weight: 500 !important;
+    font-size: 0.9rem !important;
+    transition: all 0.3s ease !important;
+    border-radius: 0 25px 25px 0 !important;
+    margin-right: 1rem !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.sidebar-menu > ul > li > a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: linear-gradient(135deg, var(--dgtcp-green) 0%, #16A34A 100%);
+    transition: width 0.3s ease;
+    z-index: -1;
+}
+
+.sidebar-menu > ul > li > a:hover::before,
+.sidebar-menu > ul > li.active > a::before {
+    width: 100%;
+}
+
+.sidebar-menu > ul > li > a:hover,
+.sidebar-menu > ul > li.active > a {
+    color: white !important;
+    transform: translateX(5px) !important;
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3) !important;
+}
+
+/* Icônes des menus */
+.sidebar-menu ul li a i {
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 1.1rem !important;
+    margin-right: 0.875rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.3s ease !important;
+}
+
+.sidebar-menu > ul > li > a:hover i,
+.sidebar-menu > ul > li.active > a i {
+    transform: scale(1.1) !important;
+}
+
+/* Flèches des sous-menus */
+.sidebar-menu .menu-arrow {
+    margin-left: auto !important;
+    font-size: 0.8rem !important;
+    transition: transform 0.3s ease !important;
+    color: #a0aec0 !important;
+}
+
+.sidebar-menu li a.subdrop .menu-arrow {
+    transform: rotate(90deg) !important;
+    color: white !important;
+}
+
+/* Sous-menus */
+.sidebar-menu ul ul {
+    background: rgba(34, 197, 94, 0.05) !important;
+    border-radius: 0 15px 15px 0 !important;
+    margin: 0.25rem 0 0.5rem 1rem !important;
+    padding: 0.5rem 0 !important;
+    border-left: 3px solid var(--dgtcp-green) !important;
+    display: none !important;
+}
+
+.sidebar-menu ul ul.show {
+    display: block !important;
+    animation: slideDown 0.3s ease !important;
+}
+
+.sidebar-menu ul ul a {
+    padding: 0.625rem 1rem 0.625rem 2rem !important;
+    color: #4a5568 !important;
+    font-size: 0.85rem !important;
+    font-weight: 400 !important;
+    border-radius: 0 20px 20px 0 !important;
+    margin-right: 1rem !important;
+    transition: all 0.3s ease !important;
+    position: relative !important;
+}
+
+/* Icônes des sous-menus */
+.sidebar-menu ul ul a i {
+    width: 16px !important;
+    height: 16px !important;
+    font-size: 0.8rem !important;
+    margin-right: 0.5rem !important;
+    color: var(--dgtcp-green) !important;
+    opacity: 0.7 !important;
+    transition: all 0.3s ease !important;
+}
+
+.sidebar-menu ul ul a:hover i,
+.sidebar-menu ul ul a.active i {
+    opacity: 1 !important;
+    transform: scale(1.1) !important;
+}
+
+.sidebar-menu ul ul a:hover,
+.sidebar-menu ul ul a.active {
+    background: rgba(34, 197, 94, 0.1) !important;
+    color: var(--dgtcp-green) !important;
+    transform: translateX(5px) !important;
+    font-weight: 500 !important;
+}
+
+/* Ajustement du contenu principal pour le nouveau sidebar */
+.page-wrapper {
+    margin-left: 280px !important;
+}
+
+/* Animations */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Animation d'entrée pour les items */
+.sidebar-menu > ul > li {
+    animation: fadeInLeft 0.5s ease forwards;
+}
+
+.sidebar-menu > ul > li:nth-child(1) { animation-delay: 0.1s; }
+.sidebar-menu > ul > li:nth-child(2) { animation-delay: 0.2s; }
+.sidebar-menu > ul > li:nth-child(3) { animation-delay: 0.3s; }
+.sidebar-menu > ul > li:nth-child(4) { animation-delay: 0.4s; }
+.sidebar-menu > ul > li:nth-child(5) { animation-delay: 0.5s; }
+.sidebar-menu > ul > li:nth-child(6) { animation-delay: 0.6s; }
+.sidebar-menu > ul > li:nth-child(7) { animation-delay: 0.7s; }
+.sidebar-menu > ul > li:nth-child(8) { animation-delay: 0.8s; }
+
+/* Effet de survol pour les titres */
+.sidebar-menu .menu-title:hover {
+    color: var(--dgtcp-gold) !important;
+    transform: translateX(3px) !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Scrollbar personnalisée */
+.sidebar-inner.slimscroll::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar-inner.slimscroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-inner.slimscroll::-webkit-scrollbar-thumb {
+    background: var(--dgtcp-green);
+    border-radius: 2px;
+    opacity: 0.3;
+}
+
+.sidebar-inner.slimscroll::-webkit-scrollbar-thumb:hover {
+    opacity: 0.6;
+}
+
+/* Badge pour les notifications (si nécessaire) */
+.sidebar-menu .badge {
+    background: var(--dgtcp-red) !important;
+    color: white !important;
+    font-size: 0.7rem !important;
+    padding: 0.2rem 0.5rem !important;
+    border-radius: 10px !important;
+    margin-left: auto !important;
+    animation: pulse 2s infinite !important;
+}
+
+/* Responsive pour mobile */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 260px !important;
+        transform: translateX(-100%) !important;
+        transition: transform 0.3s ease !important;
+    }
+
+    .sidebar.opened {
+        transform: translateX(0) !important;
+    }
+
+    .sidebar-menu > ul > li > a {
+        padding: 0.75rem 1rem !important;
+        margin-right: 0.5rem !important;
+    }
+
+    .sidebar-menu .menu-title {
+        padding: 1rem 1rem 0.5rem !important;
+    }
+
+    .sidebar-menu .menu-title::after {
+        left: 1rem;
+        right: 1rem;
+    }
+}
+
+/* Ajustement du contenu principal */
+.page-wrapper {
+    margin-top: 70px !important;
+}
+
+/* Logo Section */
+.dgtcp-header-left {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.dgtcp-logo-container {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    padding: 0.5rem;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+}
+
+.dgtcp-logo-container:hover {
+    background: rgba(0, 0, 0, 0.05);
+    transform: scale(1.02);
+}
+
+/* Styles pour l'image du logo */
+.dgtcp-logo-img {
+    height: 50px;
+    width: auto;
+    object-fit: contain;
+}
+
+.dgtcp-logo-img-small {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+}
+
+.dgtcp-logo-text {
+    margin-left: 1rem;
+    color: #2d3748;
+}
+
+.dgtcp-ministry {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #2d3748;
+}
+
+.dgtcp-subtitle {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    opacity: 0.7;
+    letter-spacing: 0.3px;
+    color: #4a5568;
+}
+
+.dgtcp-logo-small {
+    display: none;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: var(--transition);
+}
+
+.dgtcp-logo-small:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* Menu Toggle */
+.dgtcp-menu-toggle {
+    margin-left: 1rem;
+}
+
+.dgtcp-toggle-btn {
+    color: #4a5568;
+    font-size: 1.2rem;
+    padding: 0.75rem;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+.dgtcp-toggle-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #2d3748;
+}
+
+/* Barre de recherche */
+.dgtcp-search-container {
+    flex: 1;
+    max-width: 500px;
+    margin: 0 2rem;
+}
+
+.dgtcp-search-form {
+    width: 100%;
+}
+
+.dgtcp-search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: var(--border-radius-large);
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.dgtcp-search-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: none;
+    color: #2d3748;
+    font-size: 0.9rem;
+    outline: none;
+}
+
+.dgtcp-search-input::placeholder {
+    color: #a0aec0;
+}
+
+.dgtcp-search-btn {
+    background: #f7fafc;
+    border: none;
+    color: #4a5568;
+    padding: 0.75rem 1rem;
+    border-radius: 0 var(--border-radius-large) var(--border-radius-large) 0;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.dgtcp-search-btn:hover {
+    background: #edf2f7;
+    color: #2d3748;
+}
+
+/* Mobile Button */
+.dgtcp-mobile-btn {
+    display: none;
+    color: #4a5568;
+    font-size: 1.2rem;
+    padding: 0.75rem;
+    text-decoration: none;
+}
+
+/* Navigation Menu */
+.dgtcp-nav-menu {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 0.5rem;
+}
+
+.dgtcp-nav-item {
+    position: relative;
+}
+
+.dgtcp-nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    color: #4a5568;
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+}
+
+.dgtcp-nav-link:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #2d3748;
+}
+
+/* Language Selector */
+.dgtcp-language-content {
+    padding: 0.5rem;
+}
+
+.dgtcp-language-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #4a5568;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.dgtcp-flag {
+    width: 20px;
+    height: 15px;
+    border-radius: 2px;
+}
+
+/* Notifications */
+.dgtcp-notification-icon {
+    position: relative;
+    font-size: 1.1rem;
+}
+
+.dgtcp-notification-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--dgtcp-red);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.2rem 0.4rem;
+    border-radius: 50%;
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse-notification 2s infinite;
+}
+
+@keyframes pulse-notification {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* Dropdown Menus */
+.dgtcp-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--shadow-heavy);
+    min-width: 300px;
+    z-index: 1001;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+}
+
+.dgtcp-nav-item:hover .dgtcp-dropdown-menu,
+.dgtcp-dropdown-menu:hover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dgtcp-dropdown-header {
+    padding: 1rem;
+    border-bottom: 1px solid #E5E7EB;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dgtcp-notification-title {
+    font-weight: 700;
+    color: var(--dgtcp-black);
+    font-size: 1rem;
+}
+
+.dgtcp-mark-all-read {
+    color: var(--dgtcp-green);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.dgtcp-mark-all-read:hover {
+    color: var(--dgtcp-gold);
+}
+
+/* Notification Content */
+.dgtcp-notification-content {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.dgtcp-notification-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.dgtcp-notification-item {
+    border-bottom: 1px solid #F3F4F6;
+}
+
+.dgtcp-notification-link {
+    display: block;
+    padding: 1rem;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.dgtcp-notification-link:hover {
+    background: #F9FAFB;
+}
+
+.dgtcp-notification-body {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.dgtcp-notification-icon-wrapper {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #F3F4F6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.dgtcp-notification-text {
+    flex: 1;
+}
+
+.dgtcp-notification-title {
+    font-weight: 600;
+    color: var(--dgtcp-black);
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.dgtcp-notification-message {
+    color: #6B7280;
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
+}
+
+.dgtcp-notification-amount,
+.dgtcp-notification-subject {
+    color: var(--dgtcp-green);
+    font-weight: 600;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+}
+
+.dgtcp-notification-time {
+    color: #9CA3AF;
+    font-size: 0.75rem;
+}
+
+.dgtcp-notification-empty {
+    padding: 2rem;
+}
+
+.dgtcp-empty-state {
+    text-align: center;
+    color: #6B7280;
+}
+
+.dgtcp-empty-state i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.5;
+}
+
+/* User Menu */
+.dgtcp-user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: var(--border-radius-large);
+    transition: var(--transition);
+}
+
+.dgtcp-user-info:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.dgtcp-user-avatar {
+    position: relative;
+    width: 40px;
+    height: 40px;
+}
+
+.dgtcp-user-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px solid #e2e8f0;
+}
+
+.dgtcp-user-status {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 12px;
+    height: 12px;
+    background: #10B981;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.dgtcp-user-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.dgtcp-user-name {
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dgtcp-user-role {
+    font-size: 0.75rem;
+    color: #4a5568;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dgtcp-dropdown-arrow {
+    color: #4a5568;
+    font-size: 0.7rem;
+    transition: var(--transition);
+}
+
+.dgtcp-user-menu:hover .dgtcp-dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+/* User Dropdown */
+.dgtcp-user-dropdown {
+    min-width: 280px;
+}
+
+.dgtcp-user-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #E5E7EB;
+    text-align: center;
+}
+
+.dgtcp-user-avatar-large {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 1rem;
+}
+
+.dgtcp-user-avatar-large img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 3px solid var(--dgtcp-green);
+}
+
+.dgtcp-user-name-large {
+    font-weight: 700;
+    color: var(--dgtcp-black);
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+}
+
+.dgtcp-user-role-large {
+    color: #6B7280;
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
+}
+
+.dgtcp-user-poste {
+    color: var(--dgtcp-green);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.dgtcp-dropdown-section {
+    padding: 0.5rem 0;
+}
+
+.dgtcp-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    color: var(--dgtcp-black);
+    text-decoration: none;
+    transition: var(--transition);
+    font-size: 0.9rem;
+}
+
+.dgtcp-dropdown-item:hover {
+    background: #F9FAFB;
+    color: var(--dgtcp-green);
+}
+
+.dgtcp-dropdown-item i {
+    width: 18px;
+    font-size: 1rem;
+}
+
+.dgtcp-dropdown-divider {
+    height: 1px;
+    background: #E5E7EB;
+    margin: 0.5rem 0;
+}
+
+.dgtcp-logout {
+    color: var(--dgtcp-red) !important;
+}
+
+.dgtcp-logout:hover {
+    background: rgba(220, 38, 38, 0.1) !important;
+    color: var(--dgtcp-red) !important;
+}
+
+.dgtcp-dropdown-footer {
+    padding: 1rem;
+    border-top: 1px solid #E5E7EB;
+}
+
+.dgtcp-view-all-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--primary-gradient);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+
+.dgtcp-view-all-btn:hover {
+    background: linear-gradient(135deg, #16A34A 0%, #15803D 100%);
+    transform: translateY(-2px);
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dgtcp-header h1 {
+        font-size: 2rem;
+    }
+
+    .dgtcp-stat-card {
+        min-height: 100px;
+        padding: 0.75rem;
+    }
+
+    /* Pagination mobile */
+    .pagination {
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+
+    .pagination .page-link {
+        min-width: 36px;
+        height: 36px;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .pagination .page-link[rel="prev"],
+    .pagination .page-link[rel="next"] {
+        padding: 0.25rem 0.75rem;
+    }
+
+    .pagination-info {
+        font-size: 0.8rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .dgtcp-pagination-container {
+        padding: 1rem;
+    }
+
+    /* Header responsive */
+    .dgtcp-header-main {
+        padding: 0.5rem 1rem;
+        min-height: 60px;
+    }
+
+    .dgtcp-logo-text {
+        display: none;
+    }
+
+    .dgtcp-logo-container {
+        display: none;
+    }
+
+    .dgtcp-logo-small {
+        display: flex;
+    }
+
+    .dgtcp-search-container {
+        display: none;
+    }
+
+    .dgtcp-mobile-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .dgtcp-nav-menu {
+        gap: 0.25rem;
+    }
+
+    .dgtcp-user-details {
+        display: none;
+    }
+
+    .dgtcp-dropdown-arrow {
+        display: none;
+    }
+
+    .dgtcp-language-selector {
+        display: none;
+    }
+
+    /* Dropdown mobile */
+    .dgtcp-dropdown-menu {
+        position: fixed;
+        top: 60px;
+        left: 1rem;
+        right: 1rem;
+        width: auto;
+        min-width: auto;
+    }
+
+    .dgtcp-user-dropdown {
+        min-width: auto;
+    }
+
+    .dgtcp-stat-value {
+        font-size: 1.4rem;
+    }
+
+    .dgtcp-stat-label {
+        font-size: 0.7rem;
+    }
+
+    .dgtcp-stat-subtitle {
+        font-size: 0.6rem;
+    }
+
+
+
+    .dgtcp-section {
+        padding: 1rem;
+    }
+
+    .dgtcp-table thead th,
+    .dgtcp-table tbody td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.875rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .dgtcp-header {
+        padding: 1.5rem;
+    }
+
+    .dgtcp-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .dgtcp-stat-card {
+        min-height: 90px;
+        padding: 0.6rem;
+    }
+
+    .dgtcp-stat-value {
+        font-size: 1.2rem;
+    }
+
+    .dgtcp-stat-label {
+        font-size: 0.65rem;
+    }
+
+    .dgtcp-stat-subtitle {
+        font-size: 0.55rem;
+    }
+
+
+
+    .dgtcp-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* Mode sombre (optionnel) */
+@media (prefers-color-scheme: dark) {
+    body {
+        background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+        color: white;
+    }
+
+    .dgtcp-stat-card {
+        background: #1E293B;
+        border-top-color: var(--dgtcp-green);
+    }
+
+    .dgtcp-section {
+        background: #1E293B;
+        border-left-color: var(--dgtcp-green);
+    }
+
+    .dgtcp-table-container {
+        background: #1E293B;
+        border-color: #374151;
+    }
+
+    .dgtcp-form-control {
+        background: #374151;
+        border-color: #4B5563;
+        color: white;
+    }
+}

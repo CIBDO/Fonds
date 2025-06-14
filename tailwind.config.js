@@ -11,8 +11,15 @@ export default {
 
     theme: {
         extend: {
+            colors: {
+                'main-green': '#009739',
+                'main-yellow': '#FFD600',
+                'main-red': '#E30613',
+                'main-black': '#000000',
+                'main-white': '#FFFFFF',
+            },
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Montserrat', 'Figtree', ...defaultTheme.fontFamily.sans],
             },
         },
     },
