@@ -94,6 +94,130 @@
         animation: pulse 4s ease-in-out infinite alternate;
     }
 
+    /* Bulles flottantes dans la partie verte */
+    .floating-bubbles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .bubble {
+        position: absolute;
+        border-radius: 50%;
+        opacity: 0.6;
+        animation: bubbleFloat 8s infinite linear;
+    }
+
+    .bubble.white {
+        background: rgba(255, 255, 255, 0.3);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    }
+
+    .bubble.yellow {
+        background: rgba(253, 197, 0, 0.4);
+        box-shadow: 0 0 10px rgba(253, 197, 0, 0.3);
+    }
+
+    .bubble.red {
+        background: rgba(215, 38, 49, 0.4);
+        box-shadow: 0 0 10px rgba(215, 38, 49, 0.3);
+    }
+
+    .bubble:nth-child(1) {
+        width: 20px;
+        height: 20px;
+        left: 10%;
+        animation-delay: 0s;
+        animation-duration: 6s;
+    }
+
+    .bubble:nth-child(2) {
+        width: 15px;
+        height: 15px;
+        left: 20%;
+        animation-delay: 1s;
+        animation-duration: 8s;
+    }
+
+    .bubble:nth-child(3) {
+        width: 25px;
+        height: 25px;
+        left: 30%;
+        animation-delay: 2s;
+        animation-duration: 7s;
+    }
+
+    .bubble:nth-child(4) {
+        width: 18px;
+        height: 18px;
+        left: 40%;
+        animation-delay: 3s;
+        animation-duration: 9s;
+    }
+
+    .bubble:nth-child(5) {
+        width: 22px;
+        height: 22px;
+        left: 50%;
+        animation-delay: 4s;
+        animation-duration: 6.5s;
+    }
+
+    .bubble:nth-child(6) {
+        width: 16px;
+        height: 16px;
+        left: 60%;
+        animation-delay: 5s;
+        animation-duration: 8.5s;
+    }
+
+    .bubble:nth-child(7) {
+        width: 24px;
+        height: 24px;
+        left: 70%;
+        animation-delay: 6s;
+        animation-duration: 7.5s;
+    }
+
+    .bubble:nth-child(8) {
+        width: 19px;
+        height: 19px;
+        left: 80%;
+        animation-delay: 7s;
+        animation-duration: 9.5s;
+    }
+
+    .bubble:nth-child(9) {
+        width: 21px;
+        height: 21px;
+        left: 90%;
+        animation-delay: 8s;
+        animation-duration: 6.8s;
+    }
+
+    @keyframes bubbleFloat {
+        0% {
+            bottom: -50px;
+            transform: translateX(0) rotate(0deg);
+            opacity: 0;
+        }
+        10% {
+            opacity: 0.6;
+        }
+        90% {
+            opacity: 0.6;
+        }
+        100% {
+            bottom: 110%;
+            transform: translateX(-20px) rotate(360deg);
+            opacity: 0;
+        }
+    }
+
     @keyframes float {
         0% { transform: translateY(0px) rotate(0deg); }
         100% { transform: translateY(-100px) rotate(360deg); }
@@ -612,12 +736,25 @@
 
     <div class="loginbox">
         <div class="login-left">
+            <!-- Bulles flottantes -->
+            <div class="floating-bubbles">
+                <div class="bubble white"></div>
+                <div class="bubble yellow"></div>
+                <div class="bubble red"></div>
+                <div class="bubble white"></div>
+                <div class="bubble yellow"></div>
+                <div class="bubble red"></div>
+                <div class="bubble white"></div>
+                <div class="bubble yellow"></div>
+                <div class="bubble red"></div>
+            </div>
+
             <div class="logo-section">
                 <div class="logo-circle">
                     <i class="fas fa-university"></i>
                 </div>
-                <h3>Trésor Public</h3>
-                <p>Direction Générale du Trésor &amp; de la Comptabilité Publique</p>
+                <h3>Trésor Public du Mali</h3>
+                <p>Direction Générale du Trésor &amp; de la Comptabilité Publique (DGTCP)</p>
             </div>
         </div>
 
@@ -650,7 +787,7 @@
                         <span class="toggle-password" title="Afficher le mot de passe"><i class="fas fa-eye"></i></span>
                     </div>
 
-                    <div class="forgotpass">
+                    {{-- <div class="forgotpass">
                         <div class="remember-me">
                             <label class="custom_check">
                                 <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
@@ -658,7 +795,7 @@
                             </label>
                         </div>
                         <a href="{{ route('password.request') }}">Mot de passe oublié?</a>
-                    </div>
+                    </div> --}}
 
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary btn-block">
