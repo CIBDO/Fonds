@@ -275,7 +275,7 @@
                                                         </a>
                                                     @endif
 
-                                                    @if(auth()->user()->role === 'admin' && auth()->user()->id !== $user->id)
+                                                    {{-- @if(auth()->user()->role === 'admin' && auth()->user()->id !== $user->id)
                                                         @if($user->isActive())
                                                             <button type="button"
                                                                     class="btn btn-outline-danger deactivate-user"
@@ -301,7 +301,7 @@
                                                             data-bs-toggle="tooltip"
                                                             title="Voir détails">
                                                         <i class="fas fa-eye"></i>
-                                                    </button>
+                                                    </button> --}}
                                                 </div>
                                             </td>
                                         </tr>
@@ -610,40 +610,54 @@
                 });
             }
 
-            function toggleUserStatus(userId, action) {
+                        function toggleUserStatus(userId, action) {
+                // Construire l'URL correcte selon les routes définies
+                var url = action === 'activate' ?
+                    `/users/${userId}/activate` :
+                    `/users/${userId}/deactivate`;
+
                 $.ajax({
-                    url: `/users/${userId}/${action}`,
+                    url: url,
                     method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
                     data: {
-                        _token: '{{ csrf_token() }}'
+                        _token: $('meta[name="csrf-token"]').attr('content')
                     },
                     beforeSend: function() {
                         showLoadingSpinner();
                     },
-                    success: function(response) {
+                                        success: function(response) {
                         hideLoadingSpinner();
-                        showNotification(response.message || 'Action effectuée avec succès', 'success');
 
-                        // Mettre à jour l'affichage sans recharger la page
-                        var row = $(`tr[data-user-id="${userId}"]`);
-                        if (action === 'deactivate') {
-                            row.find('.badge').removeClass('bg-success').addClass('bg-danger').html('<i class="fas fa-times-circle me-1"></i>Inactif');
-                            row.find('.deactivate-user').removeClass('deactivate-user').addClass('activate-user')
-                               .removeClass('btn-outline-danger').addClass('btn-outline-success')
-                               .html('<i class="fas fa-user-check"></i>')
-                               .attr('title', 'Activer');
-                        } else {
-                            row.find('.badge').removeClass('bg-danger').addClass('bg-success').html('<i class="fas fa-check-circle me-1"></i>Actif');
-                            row.find('.activate-user').removeClass('activate-user').addClass('deactivate-user')
-                               .removeClass('btn-outline-success').addClass('btn-outline-danger')
-                               .html('<i class="fas fa-user-slash"></i>')
-                               .attr('title', 'Désactiver');
-                        }
+                        // Utiliser le message de la réponse ou un message par défaut
+                        var message = response.message || 'Action effectuée avec succès';
+                        showNotification(message, 'success');
+
+                        // Recharger la page après un court délai pour voir la notification
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1500);
                     },
                     error: function(xhr) {
                         hideLoadingSpinner();
-                        var message = xhr.responseJSON?.message || 'Une erreur est survenue';
+                        var message = 'Une erreur est survenue';
+
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            message = xhr.responseJSON.message;
+                        } else if (xhr.status === 404) {
+                            message = 'Route non trouvée. Vérifiez les routes dans web.php';
+                        } else if (xhr.status === 403) {
+                            message = 'Vous n\'avez pas l\'autorisation pour cette action';
+                        } else if (xhr.status === 500) {
+                            message = 'Erreur serveur interne';
+                        }
+
                         showNotification(message, 'error');
+                        console.error('Erreur AJAX:', xhr);
                     }
                 });
             }

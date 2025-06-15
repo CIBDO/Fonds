@@ -195,21 +195,65 @@ class UserController extends Controller
         return redirect()->route('users.index');
     }
 
-    // Méthode pour désactiver un utilisateur
+        // Méthode pour désactiver un utilisateur
     public function deactivate(User $user)
     {
-        $this->authorizeRole(['admin']);
-        $user->update(['active' => false]);
-        alert()->success('Success', 'Utilisateur désactivé avec succès.');
-        return redirect()->route('users.index');
+        try {
+            $this->authorizeRole(['admin']);
+            $user->update(['active' => false]);
+
+            // Vérifier si c'est une requête AJAX
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Utilisateur désactivé avec succès.'
+                ]);
+            }
+
+            alert()->success('Success', 'Utilisateur désactivé avec succès.');
+            return redirect()->route('users.index');
+
+        } catch (\Exception $e) {
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erreur lors de la désactivation de l\'utilisateur.'
+                ], 500);
+            }
+
+            alert()->error('Erreur', 'Erreur lors de la désactivation de l\'utilisateur.');
+            return redirect()->route('users.index');
+        }
     }
 
     // Méthode pour activer un utilisateur
     public function activate(User $user)
     {
-        $this->authorizeRole(['admin']);
-        $user->update(['active' => true]);
-        alert()->success('Success', 'Utilisateur activé avec succès.');
-        return redirect()->route('users.index');
+        try {
+            $this->authorizeRole(['admin']);
+            $user->update(['active' => true]);
+
+            // Vérifier si c'est une requête AJAX
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Utilisateur activé avec succès.'
+                ]);
+            }
+
+            alert()->success('Success', 'Utilisateur activé avec succès.');
+            return redirect()->route('users.index');
+
+        } catch (\Exception $e) {
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erreur lors de l\'activation de l\'utilisateur.'
+                ], 500);
+            }
+
+            alert()->error('Erreur', 'Erreur lors de l\'activation de l\'utilisateur.');
+            return redirect()->route('users.index');
+        }
     }
 }
