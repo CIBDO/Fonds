@@ -21,14 +21,39 @@ class MessageController extends Controller
             $query->where('user_id', Auth::id());
         })->orderBy('created_at', 'desc')->paginate(8);
 
-        return view('messages.inbox', compact('messages'));
+        // Compteurs pour la sidebar
+        $inboxCount = Message::whereHas('recipients', function ($query) {
+            $query->where('user_id', Auth::id());
+        })->count();
+
+        $sentCount = Message::where('sender_id', Auth::id())->count();
+        $draftCount = 0; // À adapter selon votre logique de brouillons
+        $spamCount = 0;  // À adapter selon votre logique de spam
+
+        // Récupérer les utilisateurs pour la modale de composition
+        $users = User::where('id', '!=', Auth::id())->get();
+
+        return view('messages.inbox', compact('messages', 'inboxCount', 'sentCount', 'draftCount', 'spamCount', 'users'));
     }
 
     // Afficher la boîte d'envoi
     public function sent()
     {
         $messages = Message::where('sender_id', Auth::id())->orderBy('created_at', 'desc')->paginate(8);
-        return view('messages.sent', compact('messages'));
+
+        // Compteurs pour la sidebar
+        $inboxCount = Message::whereHas('recipients', function ($query) {
+            $query->where('user_id', Auth::id());
+        })->count();
+
+        $sentCount = Message::where('sender_id', Auth::id())->count();
+        $draftCount = 0; // À adapter selon votre logique de brouillons
+        $spamCount = 0;  // À adapter selon votre logique de spam
+
+        // Récupérer les utilisateurs pour la modale de composition
+        $users = User::where('id', '!=', Auth::id())->get();
+
+        return view('messages.sent', compact('messages', 'inboxCount', 'sentCount', 'draftCount', 'spamCount', 'users'));
     }
 
     // Afficher le formulaire de nouveau message

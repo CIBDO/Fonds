@@ -1,109 +1,101 @@
 @extends('layouts.master')
 
 @section('content')
-@if ($errors->any())
-<div class="alert alert-danger">
-    <ul>
-        @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-        @endforeach
-    </ul>
-</div>
-@endif
-<div class="container mt-5">
-    <div class="card shadow">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h4 class="mb-0"><i class="fas fa-envelope"></i> {{ $message->subject }}</h4>
-            <span class="badge bg-{{ $message->status == 'unread' ? 'warning' : 'success' }}">
-                {{ $message->status == 'unread' ? 'Non lu' : 'Lu' }}
-            </span>
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-3 mb-4">
+            @include('partials.mail_sidebar')
         </div>
-
-        <div class="card-body">
-            <!-- Informations sur l'expéditeur et les destinataires -->
-            <div class="d-flex align-items-center mb-3">
-                <img src="{{ asset('assets/img/profiles/' . ($message->sender->avatar ?: 'Avatar-01.png')) }}" alt="Avatar"
-                     class="rounded-circle" style="width: 50px; height: 50px;">
-                <div class="ms-3">
-                    <strong>De:</strong> {{ $message->sender->name ?? 'Expéditeur inconnu' }}<br>
-                    <strong>À:</strong>
-                    @foreach($message->recipients as $recipient)
-                        <span class="badge bg-secondary">{{ $recipient->name }}</span>{{ !$loop->last ? ', ' : '' }}
-                    @endforeach
+        <div class="col-12 col-md-9">
+            <div class="card shadow rounded-4">
+                <div class="card-header d-flex flex-wrap justify-content-between align-items-center bg-white border-0 rounded-top-4 pb-0">
+                    <div class="d-flex align-items-center">
+                        <!-- Avatar expéditeur -->
+                        @php
+                            $avatar = $message->sender->avatar ?? null;
+                            $initial = strtoupper(substr($message->sender->name ?? 'U', 0, 1));
+                            $color = ['bg-primary','bg-success','bg-info','bg-warning','bg-danger'][($message->sender->id ?? 0) % 5];
+                        @endphp
+                        @if($avatar)
+                            <img src="{{ asset('assets/img/profiles/' . $avatar) }}" class="rounded-circle me-3" style="width:54px;height:54px;object-fit:cover;">
+                        @else
+                            <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-3 {{ $color }}" style="width:54px;height:54px;color:white;font-weight:bold;font-size:1.5rem;">
+                                {{ $initial }}
+                            </span>
+                        @endif
+                        <div>
+                            <div class="fw-bold fs-5 mb-1">{{ $message->sender->name ?? 'Expéditeur inconnu' }}</div>
+                            <div class="text-muted small">{{ $message->sender->email ?? '' }}</div>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge {{ $message->status == 'unread' ? 'bg-warning text-dark' : 'bg-success' }} mb-1">
+                            {{ $message->status == 'unread' ? 'Non lu' : 'Lu' }}
+                        </span>
+                        <div class="text-muted small">
+                            {{ $message->sent_at ? \Carbon\Carbon::parse($message->sent_at)->format('d/m/Y H:i') : '' }}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body pt-2">
+                    <div class="mb-2">
+                        <span class="fw-bold fs-4">{{ $message->subject }}</span>
+                    </div>
+                    <div class="mb-2">
+                        <span class="text-muted">À :</span>
+                        @foreach($message->recipients as $recipient)
+                            <span class="badge bg-secondary me-1">{{ $recipient->name }}</span>
+                        @endforeach
+                    </div>
+                    <div class="mb-3">
+                        <span class="text-muted">Date de réception :</span>
+                        {{ $recipient && $recipient->pivot->received_at ? \Carbon\Carbon::parse($recipient->pivot->received_at)->format('d/m/Y H:i') : 'Non défini' }}
+                    </div>
+                    <div class="mb-4">
+                        <div class="border rounded-3 p-3 bg-light">
+                            {!! nl2br(e($message->body)) !!}
+                        </div>
+                    </div>
+                    <!-- Pièces jointes -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-2"><i class="fas fa-paperclip"></i> Pièces jointes</h6>
+                        @if($message->attachments->isNotEmpty())
+                            <ul class="list-group list-group-flush mb-3">
+                                @foreach($message->attachments as $attachment)
+                                    <li class="list-group-item d-flex justify-content-between align-items-center border-0 ps-0">
+                                        <span><i class="fas fa-file me-2"></i>{{ $attachment->filename }}</span>
+                                        <div>
+                                            <a href="{{ route('attachments.download', $attachment->id) }}" class="btn btn-outline-secondary btn-sm me-2">
+                                                <i class="fas fa-download"></i> Télécharger
+                                            </a>
+                                            <button class="btn btn-outline-info btn-sm" onclick="previewAttachment('{{ asset('storage/' . $attachment->filepath) }}')">
+                                                <i class="fas fa-eye"></i> Aperçu
+                                            </button>
+                                        </div>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <span class="text-muted"><i class="fas fa-paperclip"></i> Aucune pièce jointe</span>
+                        @endif
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0 rounded-bottom-4 d-flex flex-wrap justify-content-end gap-2">
+                    <a href="{{ route('messages.reply', $message->id) }}" class="btn btn-primary">
+                        <i class="fas fa-reply"></i> Répondre
+                    </a>
+                    <a href="{{ route('messages.replyAllForm', $message->id) }}" class="btn btn-warning">
+                        <i class="fas fa-reply-all"></i> Répondre à tous
+                    </a>
+                    <a href="{{ route('messages.forward', $message->id) }}" class="btn btn-success">
+                        <i class="fas fa-share"></i> Transférer
+                    </a>
+                    <a href="{{ url()->previous() }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Retour
+                    </a>
                 </div>
             </div>
-
-            <p><strong>Date et Heure d'envoi :</strong>
-                {{ $message->created_at ? $message->created_at->format('d/m/Y H:i:s') : 'Non défini' }}
-            </p>
-
-            <p><strong>Date et Heure de réception :</strong>
-                {{ $recipient && $recipient->pivot->received_at ?
-                    \Carbon\Carbon::parse($recipient->pivot->received_at)->format('d/m/Y H:i:s') : 'Non défini' }}
-            </p>
-
-            <!-- Corps du message -->
-            <p class="mb-4">{{ $message->body }}</p>
-
-            <!-- Gestion des pièces jointes -->
-           {{--  @if($message->attachments->isNotEmpty())
-                <h5><i class="fas fa-paperclip"></i> Pièces jointes</h5>
-                <ul class="list-group list-group-flush mb-3">
-                    @foreach($message->attachments as $attachment)
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span>{{ $attachment->file_name }}</span>
-                            <div>
-                                <a href="{{ route('attachments.download', $attachment->id) }}" class="btn btn-outline-secondary btn-sm me-2">
-                                    <i class="fas fa-download"></i> Télécharger
-                                </a>
-                                <button class="btn btn-outline-info btn-sm" data-url="" onclick="previewAttachment('{{ Storage::url($attachment->filepath) }}')">
-                                    <i class="fas fa-eye"></i> Aperçu
-                                </button>
-                            </div>
-                        </li>
-                    @endforeach
-                </ul>
-            @else
-                <p class="text-muted"><i class="fas fa-paperclip"></i> Aucune pièce jointe</p>
-            @endif --}}
-                    @if($message->attachments->isNotEmpty())
-            <h5><i class="fas fa-paperclip"></i> Pièces jointes</h5>
-            <ul class="list-group list-group-flush mb-3">
-                @foreach($message->attachments as $attachment)
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span>{{ $attachment->filename }}</span>
-                        <div>
-                            <a href="{{ route('attachments.download', $attachment->id) }}" class="btn btn-outline-secondary btn-sm me-2">
-                                <i class="fas fa-download"></i> Télécharger
-                            </a>
-                            <button class="btn btn-outline-info btn-sm" onclick="previewAttachment('{{ asset('storage/' . $attachment->filepath) }}')">
-                                <i class="fas fa-eye"></i> Aperçu
-                            </button>
-                        </div>
-                    </li>
-                @endforeach
-            </ul>
-        @else
-            <p class="text-muted"><i class="fas fa-paperclip"></i> Aucune pièce jointe</p>
-        @endif
-
         </div>
-        <div class="card-footer text-end">
-            <a href="{{ route('messages.reply', $message->id) }}" class="btn btn-primary">
-                <i class="fas fa-reply"></i> Répondre
-            </a>
-            <a href="{{ route('messages.replyAllForm', $message->id) }}" class="btn btn-warning">
-                <i class="fas fa-reply-all"></i> Répondre à tous
-            </a>
-
-            <a href="{{ route('messages.forward', $message->id) }}" class="btn btn-success">
-                <i class="fas fa-share"></i> Transférer
-            </a>
-            <a href="{{ route('messages.sent') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Retour à la Boîte d'Envoi
-            </a>
-        </div>
-
     </div>
 </div>
 
@@ -113,9 +105,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="previewModalLabel"><i class="fas fa-eye"></i> Aperçu de la pièce jointe</h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <iframe id="attachmentPreview" src="" style="width: 100%; height: 500px;" frameborder="0"></iframe>
@@ -127,7 +117,8 @@
 <script>
 function previewAttachment(url) {
     document.getElementById('attachmentPreview').src = url;
-    new bootstrap.Modal(document.getElementById('previewModal')).show();
+    var modal = new bootstrap.Modal(document.getElementById('previewModal'));
+    modal.show();
 }
 </script>
 @endsection

@@ -109,25 +109,12 @@
                 @endif
 
                 <!-- Messagerie -->
-                @if (Auth::user()->hasAnyRole(['tresorier', 'admin', 'acct','superviseur','direction']))
-                    <li class="submenu {{ request()->routeIs('messages.*') ? 'active' : '' }}">
-                        <a href="#" class="submenu-toggle">
-                            <i class="fas fa-envelope"></i>
-                            <span>Messagerie</span>
-                            <span class="menu-arrow fas fa-chevron-right"></span>
-                        </a>
-                        <ul class="submenu-list">
-                            <li><a href="{{ route('messages.index') }}" class="{{ request()->routeIs('messages.index') ? 'active' : '' }}">
-                                <i class="fas fa-inbox"></i>Boîte de Réception</a></li>
-                            <li><a href="{{ route('messages.sent') }}" class="{{ request()->routeIs('messages.sent') ? 'active' : '' }}">
-                                <i class="fas fa-paper-plane"></i>Boîte d'Envoi</a></li>
-                            <li><a href="{{ route('messages.create') }}" class="{{ request()->routeIs('messages.create') ? 'active' : '' }}">
-                                <i class="fas fa-edit"></i>Nouveau Message</a></li>
-                            <li><a href="#">
-                                <i class="fas fa-save"></i>Brouillons</a></li>
-                        </ul>
-                    </li>
-                @endif
+                <li class="{{ request()->routeIs('messages.*') ? 'active' : '' }}">
+                    <a href="{{ route('messages.index') }}">
+                        <i class="fas fa-envelope"></i>
+                        <span>Messagerie</span>
+                    </a>
+                </li>
 
                 <li class="menu-title">
                     <span>Management</span>
@@ -307,3 +294,53 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 </script>
+
+{{-- <div class="d-flex flex-column h-100 bg-white shadow rounded-3 p-3">
+    <!-- Bouton Composer -->
+    <button class="btn btn-primary w-100 mb-4 fw-bold" data-bs-toggle="modal" data-bs-target="#composeModal">
+        <i class="fas fa-pen"></i> Composer
+    </button>
+
+    <!-- Navigation principale -->
+    <nav class="nav flex-column mb-4">
+        <a href="{{ route('messages.index') }}" class="nav-link {{ request()->routeIs('messages.index') ? 'active fw-bold text-primary' : 'text-dark' }}">
+            <i class="fas fa-inbox me-2"></i> Inbox
+            <span class="badge bg-light text-dark float-end">21</span>
+        </a>
+        <a href="{{ route('messages.sent') }}" class="nav-link {{ request()->routeIs('messages.sent') ? 'active fw-bold text-primary' : 'text-dark' }}">
+            <i class="fas fa-paper-plane me-2"></i> Sent
+        </a>
+        <a href="#" class="nav-link text-dark">
+            <i class="fas fa-file-alt me-2"></i> Draft
+            <span class="badge bg-warning text-dark float-end">2</span>
+        </a>
+        <a href="#" class="nav-link text-dark">
+            <i class="fas fa-star me-2"></i> Starred
+        </a>
+        <a href="#" class="nav-link text-dark">
+            <i class="fas fa-exclamation-circle me-2"></i> Spam
+            <span class="badge bg-danger float-end">4</span>
+        </a>
+        <a href="#" class="nav-link text-dark">
+            <i class="fas fa-trash me-2"></i> Trash
+        </a>
+    </nav>
+
+    <!-- Labels -->
+    <div class="mt-auto">
+        <div class="fw-bold text-muted small mb-2">LABELS</div>
+        <div class="d-flex flex-column gap-2">
+            <span class="d-flex align-items-center"><span class="badge bg-success me-2" style="width:12px;height:12px;"></span> Personnel</span>
+            <span class="d-flex align-items-center"><span class="badge bg-primary me-2" style="width:12px;height:12px;"></span> Société</span>
+            <span class="d-flex align-items-center"><span class="badge bg-warning me-2" style="width:12px;height:12px;"></span> Important</span>
+            <span class="d-flex align-items-center"><span class="badge bg-info me-2" style="width:12px;height:12px;"></span> Privé</span>
+        </div>
+    </div>
+</div> --}}
+
+<!-- Modale de composition (à placer dans create.blade.php ou layouts/master) -->
+{{--
+<div class="modal fade" id="composeModal" tabindex="-1" aria-labelledby="composeModalLabel" aria-hidden="true">
+  ...
+</div>
+--}}
