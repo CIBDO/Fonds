@@ -751,7 +751,7 @@
 
             <div class="logo-section">
                 <div class="logo-circle">
-                    <i class="fas fa-university"></i>
+                    <img src="{{ asset('assets/img/dgtcp-logo.png') }}" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
                 <h3>Trésor Public du Mali</h3>
                 <p>Direction Générale du Trésor &amp; de la Comptabilité Publique (DGTCP)</p>
