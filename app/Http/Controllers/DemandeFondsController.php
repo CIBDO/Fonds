@@ -1152,4 +1152,51 @@ class DemandeFondsController extends Controller
         return $pdf->download('demande_fonds_' . $demandeFonds->id . '.pdf');
     }
 
+    public function situationMensuelle(Request $request)
+    {
+        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+
+        // Obtenir le mois et l'année sélectionnés ou utiliser les valeurs actuelles par défaut
+        $mois = $request->input('mois', ucfirst(Carbon::now()->locale('fr')->translatedFormat('F')));
+        $annee = $request->input('annee', Carbon::now()->year);
+
+        // Récupérer les demandes de fonds groupées par poste pour le mois et l'année sélectionnés
+        $demandesParPoste = DemandeFonds::with('poste')
+            ->where('mois', $mois)
+            ->where('annee', $annee)
+            ->whereIn('status', ['approuve', 'rejete'])
+            ->get()
+            ->groupBy('poste.nom')
+            ->map(function ($demandes) {
+                return [
+                    'poste' => $demandes->first()->poste->nom ?? 'Non défini',
+                    'salaire_brut' => $demandes->sum('total_courant'),
+                    'salaire_demande' => $demandes->sum('solde'), // Utilise le champ solde
+                    'salaire_envoye' => $demandes->where('status', 'approuve')->sum('montant'),
+                    'excedent_deficite' => $demandes->where('status', 'approuve')->sum('montant') - $demandes->sum('total_courant'),
+                ];
+            });
+
+        // Calculer les totaux généraux
+        $totalGeneral = [
+            'salaire_brut' => $demandesParPoste->sum(function($item) { return $item['salaire_brut']; }),
+            'salaire_demande' => $demandesParPoste->sum(function($item) { return $item['salaire_demande']; }),
+            'salaire_envoye' => $demandesParPoste->sum(function($item) { return $item['salaire_envoye']; }),
+            'excedent_deficite' => $demandesParPoste->sum(function($item) { return $item['excedent_deficite']; }),
+        ];
+
+        // Si c'est une requête d'impression ou PDF
+        if ($request->has('print') || $request->has('pdf')) {
+            if ($request->has('pdf')) {
+                $pdf = FacadePdf::loadView('demandes.situation_mensuelle_pdf', compact('demandesParPoste', 'totalGeneral', 'mois', 'annee'))
+                    ->setPaper('a4', 'portrait');
+                return $pdf->download('situation_mensuelle_' . $mois . '_' . $annee . '.pdf');
+            }
+
+            return view('demandes.situation_mensuelle_impression', compact('demandesParPoste', 'totalGeneral', 'mois', 'annee'));
+        }
+
+        return view('demandes.situation_mensuelle', compact('demandesParPoste', 'totalGeneral', 'mois', 'annee'));
+    }
+
 }

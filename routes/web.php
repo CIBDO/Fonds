@@ -48,6 +48,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/demandes-fonds/fonctionnaires', [DemandeFondsController::class, 'Fonctionnaires'])
         ->middleware('role:acct,admin,superviseur,tresorier') // Tous les rôles sauf trésorier
         ->name('demandes-fonds.fonctionnaires');
+    Route::get('/demandes-fonds/situation-mensuelle', [DemandeFondsController::class, 'situationMensuelle'])
+        ->middleware('role:acct,admin,superviseur') // Accès pour admin, acct et superviseur
+        ->name('demandes-fonds.situation-mensuelle');
     Route::get('/notifications', [MessageController::class, 'notifications'])->name('messages.notifications');
     Route::get('/demandes/export', [DemandeFondsController::class, 'export'])->name('demandes-fonds.export');
     Route::get('/demandes-fonds/detail', [DemandeFondsController::class, 'Detail'])->name('demandes-fonds.detail');
@@ -133,6 +136,7 @@ Route::middleware(['auth', 'role:acct,superviseur,tresorier,admin',])->group(fun
     Route::get('/demandes-fonds/situationFE', [DemandeFondsController::class, 'SituationFE'])->name('demandes-fonds.situationFE');
     Route::get('/demandes-fonds/recap', [DemandeFondsController::class, 'Recap'])->name('demandes-fonds.recap');
     Route::get('/demandes-fonds/paiement', [DemandeFondsController::class, 'Paiement'])->name('demandes-fonds.paiement');
+    Route::get('/demandes-fonds/situation-mensuelle', [DemandeFondsController::class, 'situationMensuelle'])->name('demandes-fonds.situation-mensuelle');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -141,7 +145,7 @@ Route::middleware(['auth', 'role:acct,superviseur,tresorier,admin',])->group(fun
     Route::get('/messages/create', [MessageController::class, 'create'])->name('messages.create');
     Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
     Route::get('messages/{id}', [MessageController::class, 'show'])->name('messages.show');
-    
+
 });
 
 // Routes pour les superviseurs

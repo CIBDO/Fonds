@@ -68,19 +68,19 @@
                     </li>
                 @endif
 
-                <!-- Réception Paiement -->
-                @if (Auth::user()->hasAnyRole(['tresorier', 'admin', 'acct']))
-                    {{-- <li class="submenu">
+                <!-- Impression et Situation Mensuelle -->
+                @if (Auth::user()->hasAnyRole(['admin', 'acct', 'superviseur']))
+                    <li class="submenu {{ request()->routeIs('demandes-fonds.situation-mensuelle') ? 'active' : '' }}">
                         <a href="#" class="submenu-toggle">
-                            <i class="fas fa-hand-holding-usd"></i>
-                            <span>Réception Paiement</span>
+                            <i class="fas fa-print"></i>
+                            <span>Impression</span>
                             <span class="menu-arrow fas fa-chevron-right"></span>
                         </a>
                         <ul class="submenu-list">
-                            <li><a href="#">
-                                <i class="fas fa-receipt"></i>Réception & Paiement</a></li>
+                            <li><a href="{{ route('demandes-fonds.situation-mensuelle') }}" class="{{ request()->routeIs('demandes-fonds.situation_mensuelle') ? 'active' : '' }}">
+                                <i class="fas fa-file-alt"></i>Situation Mensuelle</a></li>
                         </ul>
-                    </li> --}}
+                    </li>
                 @endif
 
                 <!-- Rapports Statistiques -->
