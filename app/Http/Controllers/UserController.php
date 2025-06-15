@@ -153,6 +153,9 @@ class UserController extends Controller
             'password' => 'nullable|string|min:8|confirmed',
         ]);
 
+        // Exclure le password des données de mise à jour principales
+        unset($validatedData['password']);
+
         // Si l'utilisateur connecté est un trésorier
         if (Auth::user()->role === 'tresorier') {
             // Forcer les valeurs existantes pour les champs qu'il ne peut pas modifier
@@ -161,22 +164,26 @@ class UserController extends Controller
             $validatedData['poste_id'] = $user->poste_id;
         } else {
             // Valider les champs supplémentaires uniquement pour l'admin
-            $request->validate([
+            $additionalValidation = $request->validate([
                 'role' => 'required|in:admin,tresorier,acct,superviseur',
                 'active' => 'required|boolean',
                 'poste_id' => 'required|exists:postes,id',
             ]);
+
+            // Ajouter les champs validés aux données de mise à jour
+            $validatedData = array_merge($validatedData, $additionalValidation);
         }
 
-        // Mise à jour de l'utilisateur
+        // Mise à jour de l'utilisateur (sans le password)
         $user->update($validatedData);
 
-        // Mettre à jour le mot de passe si fourni
+        // Mettre à jour le mot de passe seulement s'il est fourni et non vide
         if ($request->filled('password')) {
             $user->update(['password' => Hash::make($request->password)]);
         }
 
-        return redirect()->route('users.index')->with('success', 'Utilisateur mis à jour avec succès.');
+        alert()->success('Success', 'Utilisateur mis à jour avec succès.');
+        return redirect()->route('users.index');
     }
 
 
