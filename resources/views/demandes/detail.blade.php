@@ -56,12 +56,12 @@
     .text-end {
         text-align: right !important;
     }
-    
+
     </style>
     <div class="container">
         <h3 style="text-align: center; font-weight: bold; font-family: 'Times New Roman', Times, serif;">Situation des demandes de fonds</h3>
         <div class="export-form">
-           
+
             <form action="{{ route('demandes-fonds.detail') }}" method="GET">
                 @csrf
                 <div class="demande-group-form">
@@ -97,7 +97,7 @@
         </div>
         <table id="demandes-table" class="table table-bordered table-responsive">
             <thead>
-                <tr> 
+                <tr>
                     <th>Poste</th>
                     <th>Recette </th>
                     <th>Mois</th>
@@ -106,7 +106,7 @@
                     <th>Revers</th>
                     <th>mois courant</th>
                     <th>mois antérieur</th>
-                    <th>Écart</th> 
+                    <th>Écart</th>
                 </tr>
             </thead>
             <tbody>
@@ -277,7 +277,7 @@
                     </tr> --}}
                     <!-- Répétez ce bloc pour chaque catégorie (Collectivité Santé, Collectivité Éducation, etc.) si nécessaire -->
                 @endforeach
-                
+
             </tbody>
         </table>
     </div>
@@ -394,6 +394,6 @@
 
 
 
-@stop 
+@stop
 
 @endsection

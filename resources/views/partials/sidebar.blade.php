@@ -40,11 +40,11 @@
                         </a>
                         <ul class="submenu-list">
                             <li><a href="{{ route('demandes-fonds.create') }}" class="{{ request()->routeIs('demandes-fonds.create') ? 'active' : '' }}">
-                                <i class="fas fa-plus-circle"></i>Faire une DF</a></li>
+                                <i class="fas fa-plus-circle"></i>Faire une Demande de Fonds</a></li>
                             <li><a href="{{ route('demandes-fonds.index') }}" class="{{ request()->routeIs('demandes-fonds.index') ? 'active' : '' }}">
-                                <i class="fas fa-list"></i>Liste des DF</a></li>
+                                <i class="fas fa-list"></i>Liste des Demandes de Fonds</a></li>
                             <li><a href="{{ route('demandes-fonds.situation') }}" class="{{ request()->routeIs('demandes-fonds.situation') ? 'active' : '' }}">
-                                <i class="fas fa-chart-bar"></i>Suivi des DF</a></li>
+                                <i class="fas fa-chart-bar"></i>Situation des Demandes</a></li>
                         </ul>
                     </li>
                 @endif
@@ -59,18 +59,18 @@
                         </a>
                         <ul class="submenu-list">
                             <li><a href="{{ route('demandes-fonds.index') }}" class="{{ request()->routeIs('demandes-fonds.index') ? 'active' : '' }}">
-                                <i class="fas fa-list"></i>Liste des DF</a></li>
+                                <i class="fas fa-list"></i>Liste des Demandes de Fonds</a></li>
                             <li><a href="{{ route('demandes-fonds.envois') }}" class="{{ request()->routeIs('demandes-fonds.envois') ? 'active' : '' }}">
                                 <i class="fas fa-send"></i>Envoyer des Fonds</a></li>
                             <li><a href="{{ route('demandes-fonds.situation') }}" class="{{ request()->routeIs('demandes-fonds.situation') ? 'active' : '' }}">
-                                <i class="fas fa-chart-pie"></i>Situation des DF</a></li>
+                                <i class="fas fa-chart-pie"></i>Situation des Demandes</a></li>
                         </ul>
                     </li>
                 @endif
 
                 <!-- Réception Paiement -->
                 @if (Auth::user()->hasAnyRole(['tresorier', 'admin', 'acct']))
-                    <li class="submenu">
+                    {{-- <li class="submenu">
                         <a href="#" class="submenu-toggle">
                             <i class="fas fa-hand-holding-usd"></i>
                             <span>Réception Paiement</span>
@@ -80,7 +80,7 @@
                             <li><a href="#">
                                 <i class="fas fa-receipt"></i>Réception & Paiement</a></li>
                         </ul>
-                    </li>
+                    </li> --}}
                 @endif
 
                 <!-- Rapports Statistiques -->

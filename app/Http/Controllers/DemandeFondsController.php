@@ -58,7 +58,7 @@ class DemandeFondsController extends Controller
             $query->where('total_courant', 'like', '%' . $request->input('total_courant') . '%');
         }
 
-        
+
         // Afficher toutes les demandes de fonds
         $demandeFonds = $query->with('user', 'poste')->orderBy('created_at', 'desc')->paginate(19);
 
@@ -438,7 +438,7 @@ class DemandeFondsController extends Controller
         }
 
         // Récupération des données
-        $demandeFonds = $query->orderBy('created_at', 'desc')->paginate(8);
+        $demandeFonds = $query->orderBy('created_at', 'desc')->paginate(19);
 
         // Calcul des totaux globaux
         $totalDemande = $query->sum('total_courant');
@@ -450,7 +450,7 @@ class DemandeFondsController extends Controller
     public function SituationFE(Request $request)
     {
         $this->authorizeRole(['acct', 'admin', 'superviseur']);
-        
+
         // Commencer par obtenir toutes les demandes de fonds avec les statuts "approuvé" ou "rejeté"
         $query = DemandeFonds::with('user', 'poste')
             ->whereIn('status', ['approuve', 'rejete']);
@@ -512,7 +512,7 @@ class DemandeFondsController extends Controller
 
         // Exécuter la requête et récupérer les résultats
         $demandeFonds = $query->orderBy('created_at', 'desc')
-            ->paginate(8)
+            ->paginate(19)
             ->appends($request->except('page'));
 
         // Calcul des totaux globaux
@@ -564,7 +564,7 @@ class DemandeFondsController extends Controller
 
         // Exécuter la requête et paginer les résultats
         $demandeFonds = $query->orderBy('created_at', 'desc')
-            ->paginate(8)
+            ->paginate(19)
             ->appends($request->except('page'));
 
         // Retourner la vue avec les résultats filtrés
@@ -803,7 +803,7 @@ class DemandeFondsController extends Controller
 
         // Exécuter la requête et paginer les résultats
         $demandeFonds = $query->orderBy('created_at', 'desc')
-            ->paginate(12)
+            ->paginate(19)
             ->appends($request->except('page'));
 
         // Calcul des totaux globaux pour les recettes douanières
@@ -835,7 +835,7 @@ class DemandeFondsController extends Controller
 
         // Exécuter la requête et paginer les résultats
         $demandeFonds = $query->orderBy('created_at', 'desc')
-            ->paginate(12)
+            ->paginate(19)
             ->appends($request->except('page'));
 
         // Retourner la vue avec les résultats filtrés
