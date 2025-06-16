@@ -70,15 +70,19 @@
 
                 <!-- Impression et Situation Mensuelle -->
                 @if (Auth::user()->hasAnyRole(['admin', 'acct', 'superviseur']))
-                    <li class="submenu {{ request()->routeIs('demandes-fonds.situation-mensuelle') ? 'active' : '' }}">
+                    <li class="submenu {{ request()->routeIs('demandes-fonds.situation-mensuelle') || request()->routeIs('demandes-fonds.etat-avant-envoi') || request()->routeIs('demandes-fonds.etat-detaille-avant-envoi') ? 'active' : '' }}">
                         <a href="#" class="submenu-toggle">
                             <i class="fas fa-print"></i>
                             <span>Impression</span>
                             <span class="menu-arrow fas fa-chevron-right"></span>
                         </a>
                         <ul class="submenu-list">
-                            <li><a href="{{ route('demandes-fonds.situation-mensuelle') }}" class="{{ request()->routeIs('demandes-fonds.situation_mensuelle') ? 'active' : '' }}">
+                            <li><a href="{{ route('demandes-fonds.situation-mensuelle') }}" class="{{ request()->routeIs('demandes-fonds.situation-mensuelle') ? 'active' : '' }}">
                                 <i class="fas fa-file-alt"></i>Situation Mensuelle</a></li>
+                            <li><a href="{{ route('demandes-fonds.etat-avant-envoi') }}" class="{{ request()->routeIs('demandes-fonds.etat-avant-envoi') ? 'active' : '' }}">
+                                <i class="fas fa-file-invoice"></i>Situation Avant Envoi</a></li>
+                            <li><a href="{{ route('demandes-fonds.etat-detaille-avant-envoi') }}" class="{{ request()->routeIs('demandes-fonds.etat-detaille-avant-envoi') ? 'active' : '' }}">
+                                <i class="fas fa-file-excel"></i>État Détaillé Avant Envoi</a></li>
                         </ul>
                     </li>
                 @endif

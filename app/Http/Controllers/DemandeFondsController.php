@@ -277,7 +277,7 @@ class DemandeFondsController extends Controller
 
         // Vérifier si l'utilisateur est admin ou propriétaire de la demande
         $user = Auth::user();
-        if (!$user->isAdmin() && $demande->user_id !== $user->id) {
+        if ($user->role !== 'admin' && $demande->user_id !== $user->id) {
             return redirect()->back()->withErrors(['error' => 'Vous n\'avez pas la permission de modifier cette demande.']);
         }
 
@@ -959,7 +959,7 @@ class DemandeFondsController extends Controller
         $demandeFonds = DemandeFonds::findOrFail($id);
 
         // Vérifier si l'utilisateur est admin ou propriétaire de la demande
-        if (!$user->isAdmin() && $demandeFonds->user_id !== $user->id) {
+        if ($user->role !== 'admin' && $demandeFonds->user_id !== $user->id) {
             return redirect()->back()->withErrors(['error' => 'Vous n\'avez pas la permission de modifier cette demande.']);
         }
 
@@ -1197,6 +1197,108 @@ class DemandeFondsController extends Controller
         }
 
         return view('demandes.situation_mensuelle', compact('demandesParPoste', 'totalGeneral', 'mois', 'annee'));
+    }
+
+    public function etatAvantEnvoi(Request $request)
+    {
+        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+
+        // Obtenir le mois et l'année sélectionnés ou utiliser les valeurs actuelles par défaut
+        $mois = $request->input('mois', ucfirst(Carbon::now()->locale('fr')->translatedFormat('F')));
+        $annee = $request->input('annee', Carbon::now()->year);
+
+        // Récupérer les demandes de fonds groupées par poste pour le mois et l'année sélectionnés
+        // Inclure toutes les demandes (en attente, approuvées, rejetées) pour l'état avant envoi
+        $demandesParPoste = DemandeFonds::with('poste')
+            ->where('mois', $mois)
+            ->where('annee', $annee)
+            ->get()
+            ->groupBy('poste.nom')
+            ->map(function ($demandes) {
+                $totalRecettes = $demandes->sum('montant_disponible');
+                $totalDemande = $demandes->sum('total_courant');
+                return [
+                    'poste' => $demandes->first()->poste->nom ?? 'Non défini',
+                    'salaire_brut' => $totalDemande,
+                    'realisation_recettes_douanieres' => $totalRecettes,
+                    'salaire_demande' => $totalDemande,
+                    'observations' => '-',
+                ];
+            });
+
+        // Calculer les totaux généraux
+        $totalGeneral = [
+            'salaire_brut' => $demandesParPoste->sum(function($item) { return $item['salaire_brut']; }),
+            'realisation_recettes_douanieres' => $demandesParPoste->sum(function($item) { return $item['realisation_recettes_douanieres']; }),
+            'salaire_demande' => $demandesParPoste->sum(function($item) { return $item['salaire_demande']; }),
+        ];
+
+        // Si c'est une requête d'impression ou PDF
+        if ($request->has('print') || $request->has('pdf')) {
+            if ($request->has('pdf')) {
+                $pdf = FacadePdf::loadView('demandes.etat_avant_envoi_pdf', compact('demandesParPoste', 'totalGeneral', 'mois', 'annee'))
+                    ->setPaper('a4', 'portrait');
+                return $pdf->download('etat_avant_envoi_' . $mois . '_' . $annee . '.pdf');
+            }
+
+            return view('demandes.etat_avant_envoi_impression', compact('demandesParPoste', 'totalGeneral', 'mois', 'annee'));
+        }
+
+        return view('demandes.etat_avant_envoi', compact('demandesParPoste', 'totalGeneral', 'mois', 'annee'));
+    }
+
+    public function etatDetailleAvantEnvoi(Request $request)
+    {
+        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+
+        // Obtenir le mois et l'année sélectionnés ou utiliser les valeurs actuelles par défaut
+        $mois = $request->input('mois', ucfirst(Carbon::now()->locale('fr')->translatedFormat('F')));
+        $annee = $request->input('annee', Carbon::now()->year);
+
+        // Récupérer les demandes de fonds groupées par poste pour le mois et l'année sélectionnés
+        $demandesParPoste = DemandeFonds::with('poste')
+            ->where('mois', $mois)
+            ->where('annee', $annee)
+            ->get()
+            ->groupBy('poste.nom')
+            ->map(function ($demandes) {
+                $totalNet = $demandes->sum('total_net');
+                $totalRevers = $demandes->sum('total_revers');
+                $totalCourant = $demandes->sum('total_courant');
+                $recetteDouaniere = $demandes->sum('montant_disponible');
+                $solde = $totalCourant - $recetteDouaniere;
+
+                return [
+                    'poste' => $demandes->first()->poste->nom ?? 'Non défini',
+                    'salaire_net' => $totalNet,
+                    'reversement' => $totalRevers,
+                    'courant' => $totalCourant,
+                    'recette_douaniere' => $recetteDouaniere,
+                    'solde' => $solde,
+                ];
+            });
+
+        // Calculer les totaux généraux
+        $totalGeneral = [
+            'salaire_net' => $demandesParPoste->sum(function($item) { return $item['salaire_net']; }),
+            'reversement' => $demandesParPoste->sum(function($item) { return $item['reversement']; }),
+            'courant' => $demandesParPoste->sum(function($item) { return $item['courant']; }),
+            'recette_douaniere' => $demandesParPoste->sum(function($item) { return $item['recette_douaniere']; }),
+            'solde' => $demandesParPoste->sum(function($item) { return $item['solde']; }),
+        ];
+
+        // Si c'est une requête d'impression ou PDF
+        if ($request->has('print') || $request->has('pdf')) {
+            if ($request->has('pdf')) {
+                $pdf = FacadePdf::loadView('demandes.etat_detaille_avant_envoi_pdf', compact('demandesParPoste', 'totalGeneral', 'mois', 'annee'))
+                    ->setPaper('a4', 'landscape');
+                return $pdf->download('etat_detaille_avant_envoi_' . $mois . '_' . $annee . '.pdf');
+            }
+
+            return view('demandes.etat_detaille_avant_envoi_impression', compact('demandesParPoste', 'totalGeneral', 'mois', 'annee'));
+        }
+
+        return view('demandes.etat_detaille_avant_envoi', compact('demandesParPoste', 'totalGeneral', 'mois', 'annee'));
     }
 
 }

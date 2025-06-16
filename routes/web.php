@@ -51,6 +51,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/demandes-fonds/situation-mensuelle', [DemandeFondsController::class, 'situationMensuelle'])
         ->middleware('role:acct,admin,superviseur') // Accès pour admin, acct et superviseur
         ->name('demandes-fonds.situation-mensuelle');
+    Route::get('/demandes-fonds/etat-avant-envoi', [DemandeFondsController::class, 'etatAvantEnvoi'])
+        ->middleware('role:acct,admin,superviseur') // Accès pour admin, acct et superviseur
+        ->name('demandes-fonds.etat-avant-envoi');
+    Route::get('/demandes-fonds/etat-detaille-avant-envoi', [DemandeFondsController::class, 'etatDetailleAvantEnvoi'])
+        ->middleware('role:acct,admin,superviseur') // Accès pour admin, acct et superviseur
+        ->name('demandes-fonds.etat-detaille-avant-envoi');
     Route::get('/notifications', [MessageController::class, 'notifications'])->name('messages.notifications');
     Route::get('/demandes/export', [DemandeFondsController::class, 'export'])->name('demandes-fonds.export');
     Route::get('/demandes-fonds/detail', [DemandeFondsController::class, 'Detail'])->name('demandes-fonds.detail');

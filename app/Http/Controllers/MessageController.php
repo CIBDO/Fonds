@@ -178,11 +178,11 @@ class MessageController extends Controller
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
                 $fileName = time() . '-' . $file->getClientOriginalName();
-                $filePath = $file->storeAs('public/attachments', $fileName);
+                $path = $file->storeAs('attachments', $fileName, 'public');
                 Attachment::create([
                     'message_id' => $replyMessage->id,
                     'filename' => $fileName,
-                    'filepath' => 'attachments/' . $fileName,
+                    'filepath' => $path,
                 ]);
             }
         }
@@ -342,11 +342,11 @@ public function downloadAttachment($id)
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
                 $fileName = time() . '-' . $file->getClientOriginalName();
-                $filePath = $file->storeAs('public/attachments', $fileName);
+                $path = $file->storeAs('attachments', $fileName, 'public');
                 Attachment::create([
                     'message_id' => $replyMessage->id,
                     'filename' => $fileName,
-                    'filepath' => 'attachments/' . $fileName,
+                    'filepath' => $path,
                 ]);
             }
         }
