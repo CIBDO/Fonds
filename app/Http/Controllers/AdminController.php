@@ -17,7 +17,7 @@ class AdminController extends Controller
     {
         $demandesFonds = DemandeFonds::with('poste')
         ->orderBy('created_at', 'desc')
-        ->paginate(19);
+        ->paginate(21);
         $fondsDemandes = DemandeFonds::sum('total_courant'); // Total des fonds envoyés
         $fondsRecettes = DemandeFonds::sum('montant_disponible'); // Total des fonds envoyés
         $fondsEnCours = DemandeFonds::sum('solde'); // Total des fonds demandés en cours

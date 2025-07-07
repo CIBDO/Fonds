@@ -98,22 +98,22 @@
                                 <strong>{{ $demande->mois }}</strong>
                             </td>
                             <td>
-                                <span class="dgtcp-badge primary">
+                                <span class="dgtcp-badge">
                                     {{ number_format($demande->total_net, 0, '', ' ') }} FCFA
                                 </span>
                             </td>
                             <td>
-                                <span class="dgtcp-badge warning">
+                                <span class="dgtcp-badge">
                                     {{ number_format($demande->total_revers, 0, '', ' ') }} FCFA
                                 </span>
                             </td>
                             <td>
-                                <span class="dgtcp-badge success">
+                                <span class="dgtcp-badge">
                                     {{ number_format($demande->total_courant, 0, '', ' ') }} FCFA
                                 </span>
                             </td>
                             <td>
-                                <span class="dgtcp-badge secondary">
+                                <span class="dgtcp-badge">
                                     {{ number_format($demande->total_ancien, 0, '', ' ') }} FCFA
                                 </span>
                             </td>
