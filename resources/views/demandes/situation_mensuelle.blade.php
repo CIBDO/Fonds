@@ -71,10 +71,10 @@
                             <thead class="table-dark">
                                 <tr>
                                     <th>POSTES</th>
-                                    <th>SALAIRE BRUT</th>
-                                    <th>SALAIRE DEMANDÉ</th>
+                                    <th>SALAIRE BRUT (1)</th>
+                                    <th>REALISATION RECETTES DOUANIERES</th>
+                                    <th>SALAIRE DEMANDÉ (2)</th>
                                     <th>SALAIRE ENVOYÉ</th>
-                                    <th>EXCÉDENT/DÉFICIT</th>
                                     <th>OBSERVATIONS</th>
                                 </tr>
                             </thead>
@@ -83,9 +83,9 @@
                                 <tr>
                                     <td><strong>{{ $demande['poste'] }}</strong></td>
                                     <td class="text-end">{{ number_format($demande['salaire_brut'], 0, ',', ' ') }}</td>
+                                    <td class="text-end">{{ ($demande['montant_disponible'] > 0) ? number_format($demande['montant_disponible'], 0, ',', ' ') : '-' }}</td>
                                     <td class="text-end">{{ number_format($demande['salaire_demande'], 0, ',', ' ') }}</td>
-                                    <td class="text-end">{{ number_format($demande['salaire_envoye'], 0, ',', ' ') }}</td>
-                                    <td class="text-end">{{ number_format($demande['excedent_deficite'], 0, ',', ' ') }}</td>
+                                    <td class="text-end">{{ $demande['montant'] !== null ? number_format($demande['montant'], 0, ',', ' ') : '-' }}</td>
                                     <td>-</td>
                                 </tr>
                                 @empty
@@ -99,9 +99,9 @@
                                 <tr>
                                     <th><strong>TOTAL GÉNÉRAL</strong></th>
                                     <th class="text-end"><strong>{{ number_format($totalGeneral['salaire_brut'], 0, ',', ' ') }}</strong></th>
+                                    <th class="text-end"><strong>{{ number_format($totalGeneral['montant_disponible'] ?? 0, 0, ',', ' ') }}</strong></th>
                                     <th class="text-end"><strong>{{ number_format($totalGeneral['salaire_demande'], 0, ',', ' ') }}</strong></th>
-                                    <th class="text-end"><strong>{{ number_format($totalGeneral['salaire_envoye'], 0, ',', ' ') }}</strong></th>
-                                    <th class="text-end"><strong>{{ number_format($totalGeneral['excedent_deficite'], 0, ',', ' ') }}</strong></th>
+                                    <th class="text-end"><strong>{{ number_format($totalGeneral['montant'] ?? 0, 0, ',', ' ') }}</strong></th>
                                     <th>-</th>
                                 </tr>
                             </tfoot>

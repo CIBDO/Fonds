@@ -1164,25 +1164,43 @@ class DemandeFondsController extends Controller
         $demandesParPoste = DemandeFonds::with('poste')
             ->where('mois', $mois)
             ->where('annee', $annee)
-            ->whereIn('status', ['approuve', 'rejete'])
             ->get()
             ->groupBy('poste.nom')
             ->map(function ($demandes) {
+                $demande = $demandes->first();
+                $salaireBrut = $demande->total_courant;
+                $montantDisponible = $demande->montant_disponible;
+
+                // Si la recette douanière est supérieure au salaire brut
+                // on affiche le salaire brut dans la colonne salaire demandé
+                // sinon on fait le calcul Salaire Brut - Recette Douanière
+                $salaireDemande = $montantDisponible > $salaireBrut
+                    ? $salaireBrut
+                    : $salaireBrut - $montantDisponible;
+
+                // Si la recette douanière est supérieure au salaire brut, pas d'envoi de salaire
+                $montantAffiche = null;
+                if ($montantDisponible <= $salaireBrut && $demande->status === 'approuve') {
+                    $montantAffiche = $demande->montant;
+                }
+
                 return [
-                    'poste' => $demandes->first()->poste->nom ?? 'Non défini',
-                    'salaire_brut' => $demandes->sum('total_courant'),
-                    'salaire_demande' => $demandes->sum('solde'), // Utilise le champ solde
-                    'salaire_envoye' => $demandes->where('status', 'approuve')->sum('montant'),
-                    'excedent_deficite' => $demandes->where('status', 'approuve')->sum('montant') - $demandes->sum('total_courant'),
+                    'poste' => $demande->poste->nom ?? 'Non défini',
+                    'salaire_brut' => $salaireBrut,
+                    'montant_disponible' => $montantDisponible,
+                    'salaire_demande' => $salaireDemande,
+                    'montant' => $montantAffiche,
                 ];
             });
 
         // Calculer les totaux généraux
         $totalGeneral = [
-            'salaire_brut' => $demandesParPoste->sum(function($item) { return $item['salaire_brut']; }),
-            'salaire_demande' => $demandesParPoste->sum(function($item) { return $item['salaire_demande']; }),
-            'salaire_envoye' => $demandesParPoste->sum(function($item) { return $item['salaire_envoye']; }),
-            'excedent_deficite' => $demandesParPoste->sum(function($item) { return $item['excedent_deficite']; }),
+            'salaire_brut' => $demandesParPoste->sum('salaire_brut'),
+            'montant_disponible' => $demandesParPoste->sum('montant_disponible'),
+            'salaire_demande' => $demandesParPoste->sum('salaire_demande'),
+            'montant' => $demandesParPoste->sum(function($item) {
+                return $item['montant'] ?? 0;
+            }),
         ];
 
         // Si c'est une requête d'impression ou PDF
