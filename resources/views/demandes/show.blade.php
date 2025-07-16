@@ -5,231 +5,251 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Demande de Fonds - Impression</title>
     <style>
+        @page {
+            margin: 10mm;
+            size: A4 landscape;
+        }
+
         body {
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            font-size: 12px;
+            line-height: 1.3;
         }
 
         .container {
-            margin: 0 auto;
-            padding: 20px;
+            margin: 0;
+            padding: 10px;
             width: 100%;
+            box-sizing: border-box;
         }
 
         h2 {
-            font-size: 24px;
+            font-size: 16px;
             text-align: center;
+            margin: 10px 0;
+            text-transform: uppercase;
+            font-weight: bold;
         }
 
-        .header {
+        .header-text {
+            margin: 0 0 15px 0;
+            line-height: 1.3;
+            width: 100%;
             display: flex;
             justify-content: space-between;
-            margin-bottom: 20px;
+            box-sizing: border-box;
         }
 
-        .header div {
-            width: 30%;
+        .header-left {
+            width: 60%;
+            text-align: left;
+            padding-right: 20px;
+        }
+
+        .header-right {
+            width: 40%;
+            text-align: right;
+            padding-right: 5px;
+        }
+
+        .header-text strong {
+            font-size: 13px;
+            display: block;
+            margin-bottom: 3px;
+            white-space: nowrap;
+        }
+
+        .info-section {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin: 10px 0;
+            padding: 8px;
+            border: 1px solid #000;
+            background-color: #f9f9f9;
+        }
+
+        .info-item {
+            flex: 1;
+            margin: 3px 8px;
+            min-width: 180px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin: 15px 0;
+            table-layout: fixed;
         }
 
         table, th, td {
-            border: 1px solid #ddd;
+            border: 1px solid #000;
         }
 
         th, td {
-            padding: 10px;
+            padding: 6px 4px;
             text-align: center;
+            font-size: 11px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
+
+        th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        th:first-child { width: 20%; }
+        th:nth-child(2) { width: 15%; }
+        th:nth-child(3) { width: 15%; }
+        th:nth-child(4) { width: 15%; }
+        th:nth-child(5) { width: 15%; }
+        th:nth-child(6) { width: 20%; }
 
         .total-row td {
             font-weight: bold;
             background-color: #f2f2f2;
+            font-size: 12px;
+        }
+
+        .montant-final {
+            text-align: center;
+            font-weight: bold;
+            font-size: 13px;
+            margin: 15px 0;
+            padding: 8px;
+            border: 1px solid #000;
+            background-color: #f9f9f9;
+        }
+
+        .signature-section {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+
+        .agent-info {
+            text-align: left;
+        }
+
+        .comptable-info {
+            text-align: right;
+            padding-right: 5px;
         }
 
         @media print {
-            @page {
-                size: landscape;
+            .back-to-index {
+                display: none;
+            }
+
+            body {
+                padding: 0;
+                margin: 0;
             }
 
             .container {
-                width: 100%;
-                margin: 0 auto;
-            }
-
-            h2 {
-                font-size: 24px;
-                text-align: center;
+                padding: 5px;
             }
 
             table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-
-            th, td {
-                padding: 10px;
-                border: 1px solid #ddd;
-                text-align: center;
-            }
-
-            .total-row td {
-                font-weight: bold;
-                background-color: #e9ecef;
+                page-break-inside: avoid;
             }
         }
     </style>
 </head>
-<a href="{{ route('demandes-fonds.index') }}" class="back-to-index">
-        <i class ="fas fa-arrow-left"></i> Retour
-    </a>
 <body>
     <div class="container">
-        <div style="display: flex; justify-content: space-between;">
-            <div>
-                <strong>Ministère de l'Économie et des Finances</strong>
-                <span style="margin-left: 800px;"><strong>République du Mali</strong></span><br>
-                <strong>Direction Nationale du Trésor et de la </strong>
-                <span style="margin-left: 790px;"><strong>Un Peuple - Un But - Une Foi</strong></span><br>
-                <span style="margin-left: 45px;"><strong>Comptabilité Publique</strong></span> <br><br>
-                <span style="margin-left: 10px;"><strong>Agent Traitant : {{ $demandeFonds->user->name }}</strong></span>
+        <div class="header-text">
+            <div class="header-left">
+                <strong>MINISTÈRE DE L'ÉCONOMIE ET DES FINANCES</strong>
+                <strong>DIRECTION NATIONALE DU TRÉSOR</strong>
+                <strong>ET DE LA COMPTABILITÉ PUBLIQUE</strong>
+                <strong>AGENCE COMPTABLE CENTRALE DU TRÉSOR</strong>
+            </div>
+            <div class="header-right">
+                <strong style="letter-spacing: 0.5px;">RÉPUBLIQUE DU MALI</strong>
+                <strong style="letter-spacing: 0.5px;">UN PEUPLE - UN BUT - UNE FOI</strong>
+            </div>
+        </div>
+
+        <h2>Demande de Fonds</h2>
+
+        <div class="info-section">
+            <div class="info-item">
+                <strong>Date d'envoi :</strong> {{ $demandeFonds->created_at ? $demandeFonds->created_at->format('d/m/Y') : 'N/A' }}
+            </div>
+            <div class="info-item">
+                <strong>Poste :</strong> {{ $demandeFonds->poste->nom ?? 'N/A' }}
+            </div>
+            <div class="info-item">
+                <strong>Recette Douanière :</strong> {{ number_format($demandeFonds->montant_disponible, 0, ',', ' ') }}
+            </div>
+            <div class="info-item">
+                <strong>Salaire du mois de :</strong> {{ $demandeFonds->mois . ' ' . $demandeFonds->annee }}
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Désignation</th>
+                    <th>Salaire Net</th>
+                    <th>Revers/Salaire</th>
+                    <th>Total mois courant</th>
+                    <th>Salaire mois antérieur</th>
+                    <th>Écart</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(['fonctionnaires_bcs' => 'Fonctionnaires BCS',
+                         'collectivite_sante' => 'Personnel Collectivité Santé',
+                         'collectivite_education' => 'Personnel Collectivité Éducation',
+                         'personnels_saisonniers' => 'Personnels Saisonniers',
+                         'epn' => 'EPN',
+                         'ced' => 'CED',
+                         'ecom' => 'ECOM',
+                         'cfp_cpam' => 'CFP CPAM'] as $key => $label)
+                    @if($demandeFonds->{$key . '_net'} || $demandeFonds->{$key . '_revers'} || $demandeFonds->{$key . '_total_courant'} || $demandeFonds->{$key . '_salaire_ancien'})
+                        <tr>
+                            <td>{{ $label }}</td>
+                            <td>{{ $demandeFonds->{$key . '_net'} ? number_format($demandeFonds->{$key . '_net'}, 0, ',', ' ') : '-' }}</td>
+                            <td>{{ $demandeFonds->{$key . '_revers'} ? number_format($demandeFonds->{$key . '_revers'}, 0, ',', ' ') : '-' }}</td>
+                            <td>{{ $demandeFonds->{$key . '_total_courant'} ? number_format($demandeFonds->{$key . '_total_courant'}, 0, ',', ' ') : '-' }}</td>
+                            <td>{{ $demandeFonds->{$key . '_salaire_ancien'} ? number_format($demandeFonds->{$key . '_salaire_ancien'}, 0, ',', ' ') : '-' }}</td>
+                            <td>{{ ($demandeFonds->{$key . '_total_courant'} && $demandeFonds->{$key . '_salaire_ancien'}) ? number_format($demandeFonds->{$key . '_total_courant'} - $demandeFonds->{$key . '_salaire_ancien'}, 0, ',', ' ') : '-' }}</td>
+                        </tr>
+                    @endif
+                @endforeach
+                <tr class="total-row">
+                    <td>TOTAL</td>
+                    <td>{{ $demandeFonds->total_net ? number_format($demandeFonds->total_net, 0, ',', ' ') : '-' }}</td>
+                    <td>{{ $demandeFonds->total_revers ? number_format($demandeFonds->total_revers, 0, ',', ' ') : '-' }}</td>
+                    <td>{{ $demandeFonds->total_courant ? number_format($demandeFonds->total_courant, 0, ',', ' ') : '-' }}</td>
+                    <td>{{ $demandeFonds->total_ancien ? number_format($demandeFonds->total_ancien, 0, ',', ' ') : '-' }}</td>
+                    <td>{{ ($demandeFonds->total_courant && $demandeFonds->total_ancien) ? number_format($demandeFonds->total_courant - $demandeFonds->total_ancien, 0, ',', ' ') : '-' }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="montant-final">
+            Veuillez mettre à notre disposition la somme de : {{ number_format($demandeFonds->solde, 0, ',', ' ') }} FCFA
+        </div>
+
+        <div class="signature-section">
+            <div class="agent-info">
+                <p><strong>Agent Traitant :</strong></p>
+                <p>{{ $demandeFonds->user->name ?? 'N/A' }}</p>
+            </div>
+            <div class="comptable-info">
+                <p>Bamako, le {{ $demandeFonds->created_at ? $demandeFonds->created_at->format('d/m/Y') : date('d/m/Y') }}</p>
+                <p style="margin-top: 30px;"><strong>L'Agent Comptable Central</strong></p>
             </div>
         </div>
     </div>
-    <!-- Titre de la demande de fods -->
-    <h2>Demande de Fonds</h2>
-
-    <!-- En-tête avec la date d'envoi, le poste et le mois -->
-    <div class="header">
-        <div>
-            <label>Date d'envoi : <strong>{{ $demandeFonds->created_at ? $demandeFonds->created_at->format('d/m/Y') : 'N/A' }}</strong></label>
-        </div>
-        <div>
-            <label>Poste : <strong>{{ $demandeFonds->poste->nom ?? 'N/A' }}</strong></label>
-        </div>
-        <div>
-            <label>Recette Douanière: <strong>{{ number_format($demandeFonds->montant_disponible, 0, ',', ' ') }}</strong></label>
-        </div>
-        <div>
-            <label>Salaire du mois de : <strong>{{ $demandeFonds->mois . ' ' . $demandeFonds->annee }}</strong></label>
-        </div>
-        {{-- <div>
-            <label>Agent Traitant : <strong>{{ $demandeFonds->user->name }}</strong></label>
-        </div> --}}
-    </div>
-
-    <!-- Tableau des données -->
-    <table>
-        <thead>
-            <tr>
-                <th>Désignation</th>
-                <th>Salaire Net</th>
-                <th>Revers/Salaire</th>
-                <th>Total mois courant</th>
-                <th>Salaire mois antérieur</th>
-                <th>Écart</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if($demandeFonds->fonctionnaires_bcs_net || $demandeFonds->fonctionnaires_bcs_revers || $demandeFonds->fonctionnaires_bcs_total_courant || $demandeFonds->fonctionnaires_bcs_salaire_ancien)
-            <tr>
-                <td>Fonctionnaires BCS</td>
-                <td>{{ $demandeFonds->fonctionnaires_bcs_net ? number_format($demandeFonds->fonctionnaires_bcs_net, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->fonctionnaires_bcs_revers ? number_format($demandeFonds->fonctionnaires_bcs_revers, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->fonctionnaires_bcs_total_courant ? number_format($demandeFonds->fonctionnaires_bcs_total_courant, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->fonctionnaires_bcs_salaire_ancien ? number_format($demandeFonds->fonctionnaires_bcs_salaire_ancien, 0, ',', ' ') : '' }}</td>
-                <td>{{ ($demandeFonds->fonctionnaires_bcs_total_courant && $demandeFonds->fonctionnaires_bcs_salaire_ancien) ? number_format($demandeFonds->fonctionnaires_bcs_total_courant - $demandeFonds->fonctionnaires_bcs_salaire_ancien, 0, ',', ' ') : '' }}</td>
-            </tr>
-            @endif
-
-            @if($demandeFonds->collectivite_sante_net || $demandeFonds->collectivite_sante_revers || $demandeFonds->collectivite_sante_total_courant || $demandeFonds->collectivite_sante_salaire_ancien)
-            <tr>
-                <td>Personnel Collectivité Santé</td>
-                <td>{{ $demandeFonds->collectivite_sante_net ? number_format($demandeFonds->collectivite_sante_net, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->collectivite_sante_revers ? number_format($demandeFonds->collectivite_sante_revers, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->collectivite_sante_total_courant ? number_format($demandeFonds->collectivite_sante_total_courant, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->collectivite_sante_salaire_ancien ? number_format($demandeFonds->collectivite_sante_salaire_ancien, 0, ',', ' ') : '' }}</td>
-                <td>{{ ($demandeFonds->collectivite_sante_total_courant && $demandeFonds->collectivite_sante_salaire_ancien) ? number_format($demandeFonds->collectivite_sante_total_courant - $demandeFonds->collectivite_sante_salaire_ancien, 0, ',', ' ') : '' }}</td>
-            </tr>
-            @endif
-
-            @if($demandeFonds->collectivite_education_net || $demandeFonds->collectivite_education_revers || $demandeFonds->collectivite_education_total_courant || $demandeFonds->collectivite_education_salaire_ancien)
-            <tr>
-                <td>Personnel Collectivité Éducation</td>
-                <td>{{ $demandeFonds->collectivite_education_net ? number_format($demandeFonds->collectivite_education_net, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->collectivite_education_revers ? number_format($demandeFonds->collectivite_education_revers, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->collectivite_education_total_courant ? number_format($demandeFonds->collectivite_education_total_courant, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->collectivite_education_salaire_ancien ? number_format($demandeFonds->collectivite_education_salaire_ancien, 0, ',', ' ') : '' }}</td>
-                <td>{{ ($demandeFonds->collectivite_education_total_courant && $demandeFonds->collectivite_education_salaire_ancien) ? number_format($demandeFonds->collectivite_education_total_courant - $demandeFonds->collectivite_education_salaire_ancien, 0, ',', ' ') : '' }}</td>
-            </tr>
-            @endif
-
-            @if($demandeFonds->personnels_saisonniers_net || $demandeFonds->personnels_saisonniers_revers || $demandeFonds->personnels_saisonniers_total_courant || $demandeFonds->personnels_saisonniers_salaire_ancien)
-            <tr>
-                <td>Personnels Saisonniers</td>
-                <td>{{ $demandeFonds->personnels_saisonniers_net ? number_format($demandeFonds->personnels_saisonniers_net, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->personnels_saisonniers_revers ? number_format($demandeFonds->personnels_saisonniers_revers, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->personnels_saisonniers_total_courant ? number_format($demandeFonds->personnels_saisonniers_total_courant, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->personnels_saisonniers_salaire_ancien ? number_format($demandeFonds->personnels_saisonniers_salaire_ancien, 0, ',', ' ') : '' }}</td>
-                <td>{{ ($demandeFonds->personnels_saisonniers_total_courant && $demandeFonds->personnels_saisonniers_salaire_ancien) ? number_format($demandeFonds->personnels_saisonniers_total_courant - $demandeFonds->personnels_saisonniers_salaire_ancien, 0, ',', ' ') : '' }}</td>
-            </tr>
-            @endif
-
-            @if($demandeFonds->epn_net || $demandeFonds->epn_revers || $demandeFonds->epn_total_courant || $demandeFonds->epn_salaire_ancien)
-            <tr>
-                <td>EPN</td>
-                <td>{{ $demandeFonds->epn_net ? number_format($demandeFonds->epn_net, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->epn_revers ? number_format($demandeFonds->epn_revers, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->epn_total_courant ? number_format($demandeFonds->epn_total_courant, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->epn_salaire_ancien ? number_format($demandeFonds->epn_salaire_ancien, 0, ',', ' ') : '' }}</td>
-                <td>{{ ($demandeFonds->epn_total_courant && $demandeFonds->epn_salaire_ancien) ? number_format($demandeFonds->epn_total_courant - $demandeFonds->epn_salaire_ancien, 0, ',', ' ') : '' }}</td>
-            </tr>
-            @endif
-
-            @if($demandeFonds->ced_net || $demandeFonds->ced_revers || $demandeFonds->ced_total_courant || $demandeFonds->ced_salaire_ancien)
-            <tr>
-                <td>CED</td>
-                <td>{{ $demandeFonds->ced_net ? number_format($demandeFonds->ced_net, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->ced_revers ? number_format($demandeFonds->ced_revers, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->ced_total_courant ? number_format($demandeFonds->ced_total_courant, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->ced_salaire_ancien ? number_format($demandeFonds->ced_salaire_ancien, 0, ',', ' ') : '' }}</td>
-                <td>{{ ($demandeFonds->ced_total_courant && $demandeFonds->ced_salaire_ancien) ? number_format($demandeFonds->ced_total_courant - $demandeFonds->ced_salaire_ancien, 0, ',', ' ') : '' }}</td>
-            </tr>
-            @endif
-            @if($demandeFonds->ecom_net || $demandeFonds->ecom_revers || $demandeFonds->ecom_total_courant || $demandeFonds->ecom_salaire_ancien)
-            <tr>
-                <td>ECOM</td>
-                <td>{{ $demandeFonds->ecom_net ? number_format($demandeFonds->ecom_net, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->ecom_revers ? number_format($demandeFonds->ecom_revers, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->ecom_total_courant ? number_format($demandeFonds->ecom_total_courant, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->ecom_salaire_ancien ? number_format($demandeFonds->ecom_salaire_ancien, 0, ',', ' ') : '' }}</td>
-                <td>{{ ($demandeFonds->ecom_total_courant && $demandeFonds->ecom_salaire_ancien) ? number_format($demandeFonds->ecom_total_courant - $demandeFonds->ecom_salaire_ancien, 0, ',', ' ') : '' }}</td>
-            </tr>
-            @endif
-            @if($demandeFonds->cfp_cpam_net || $demandeFonds->cfp_cpam_revers || $demandeFonds->cfp_cpam_total_courant || $demandeFonds->cfp_cpam_salaire_ancien)
-            <tr>
-                <td>CFP CPAM</td>
-                <td>{{ $demandeFonds->cfp_cpam_net ? number_format($demandeFonds->cfp_cpam_net, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->cfp_cpam_revers ? number_format($demandeFonds->cfp_cpam_revers, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->cfp_cpam_total_courant ? number_format($demandeFonds->cfp_cpam_total_courant, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->cfp_cpam_salaire_ancien ? number_format($demandeFonds->cfp_cpam_salaire_ancien, 0, ',', ' ') : '' }}</td>
-                <td>{{ ($demandeFonds->cfp_cpam_total_courant && $demandeFonds->cfp_cpam_salaire_ancien) ? number_format($demandeFonds->cfp_cpam_total_courant - $demandeFonds->cfp_cpam_salaire_ancien, 0, ',', ' ') : '' }}</td>
-            </tr>
-            @endif
-                <tr class="total-row">
-                <td>Total</td>
-                <td>{{ $demandeFonds->total_net ? number_format($demandeFonds->total_net, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->total_revers ? number_format($demandeFonds->total_revers, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->total_courant ? number_format($demandeFonds->total_courant, 0, ',', ' ') : '' }}</td>
-                <td>{{ $demandeFonds->total_ancien ? number_format($demandeFonds->total_ancien, 0, ',', ' ') : '' }}</td>
-                <td>{{ ($demandeFonds->total_courant && $demandeFonds->total_ancien) ? number_format($demandeFonds->total_courant - $demandeFonds->total_ancien, 0, ',', ' ') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
-    </div>
 </body>
-<Label style="text-align: center; font-weight: bold; font-size: 22px;">Veuillez mettre à notre disposition la somme de : {{ number_format($demandeFonds->solde, 0, ',', ' ') }}</Label>
 </html>
