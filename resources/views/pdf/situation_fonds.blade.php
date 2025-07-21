@@ -128,7 +128,7 @@
                 <td>{{ ($demandeFonds->fonctionnaires_bcs_total_courant && $demandeFonds->fonctionnaires_bcs_salaire_ancien) ? number_format($demandeFonds->fonctionnaires_bcs_total_courant - $demandeFonds->fonctionnaires_bcs_salaire_ancien, 0, ',', ' ') : '' }}</td>
             </tr>
             @endif
-        
+
             @if($demandeFonds->collectivite_sante_net || $demandeFonds->collectivite_sante_revers || $demandeFonds->collectivite_sante_total_courant || $demandeFonds->collectivite_sante_salaire_ancien)
             <tr>
                 <td>Personnel Collectivité Santé</td>
@@ -139,7 +139,7 @@
                 <td>{{ ($demandeFonds->collectivite_sante_total_courant && $demandeFonds->collectivite_sante_salaire_ancien) ? number_format($demandeFonds->collectivite_sante_total_courant - $demandeFonds->collectivite_sante_salaire_ancien, 0, ',', ' ') : '' }}</td>
             </tr>
             @endif
-        
+
             @if($demandeFonds->collectivite_education_net || $demandeFonds->collectivite_education_revers || $demandeFonds->collectivite_education_total_courant || $demandeFonds->collectivite_education_salaire_ancien)
             <tr>
                 <td>Personnel Collectivité Éducation</td>
@@ -150,7 +150,7 @@
                 <td>{{ ($demandeFonds->collectivite_education_total_courant && $demandeFonds->collectivite_education_salaire_ancien) ? number_format($demandeFonds->collectivite_education_total_courant - $demandeFonds->collectivite_education_salaire_ancien, 0, ',', ' ') : '' }}</td>
             </tr>
             @endif
-        
+
             @if($demandeFonds->personnels_saisonniers_net || $demandeFonds->personnels_saisonniers_revers || $demandeFonds->personnels_saisonniers_total_courant || $demandeFonds->personnels_saisonniers_salaire_ancien)
             <tr>
                 <td>Personnels Saisonniers</td>
@@ -161,7 +161,7 @@
                 <td>{{ ($demandeFonds->personnels_saisonniers_total_courant && $demandeFonds->personnels_saisonniers_salaire_ancien) ? number_format($demandeFonds->personnels_saisonniers_total_courant - $demandeFonds->personnels_saisonniers_salaire_ancien, 0, ',', ' ') : '' }}</td>
             </tr>
             @endif
-        
+
             @if($demandeFonds->epn_net || $demandeFonds->epn_revers || $demandeFonds->epn_total_courant || $demandeFonds->epn_salaire_ancien)
             <tr>
                 <td>EPN</td>
@@ -172,7 +172,7 @@
                 <td>{{ ($demandeFonds->epn_total_courant && $demandeFonds->epn_salaire_ancien) ? number_format($demandeFonds->epn_total_courant - $demandeFonds->epn_salaire_ancien, 0, ',', ' ') : '' }}</td>
             </tr>
             @endif
-        
+
             @if($demandeFonds->ced_net || $demandeFonds->ced_revers || $demandeFonds->ced_total_courant || $demandeFonds->ced_salaire_ancien)
             <tr>
                 <td>CED</td>
@@ -183,7 +183,7 @@
                 <td>{{ ($demandeFonds->ced_total_courant && $demandeFonds->ced_salaire_ancien) ? number_format($demandeFonds->ced_total_courant - $demandeFonds->ced_salaire_ancien, 0, ',', ' ') : '' }}</td>
             </tr>
             @endif
-            @if($demandeFonds->ecom_net || $demandeFonds->ecom_revers || $demandeFonds->ecom_total_courant || $demandeFonds->ecom_salaire_ancien)   
+            @if($demandeFonds->ecom_net || $demandeFonds->ecom_revers || $demandeFonds->ecom_total_courant || $demandeFonds->ecom_salaire_ancien)
             <tr>
                 <td>ECOM</td>
                 <td>{{ $demandeFonds->ecom_net ? number_format($demandeFonds->ecom_net, 0, ',', ' ') : '' }}</td>
@@ -193,7 +193,7 @@
                 <td>{{ ($demandeFonds->ecom_total_courant && $demandeFonds->ecom_salaire_ancien) ? number_format($demandeFonds->ecom_total_courant - $demandeFonds->ecom_salaire_ancien, 0, ',', ' ') : '' }}</td>
             </tr>
             @endif
-            @if($demandeFonds->cfp_cpam_net || $demandeFonds->cfp_cpam_revers || $demandeFonds->cfp_cpam_total_courant || $demandeFonds->cfp_cpam_salaire_ancien)   
+            @if($demandeFonds->cfp_cpam_net || $demandeFonds->cfp_cpam_revers || $demandeFonds->cfp_cpam_total_courant || $demandeFonds->cfp_cpam_salaire_ancien)
             <tr>
                 <td>CFP CPAM</td>
                 <td>{{ $demandeFonds->cfp_cpam_net ? number_format($demandeFonds->cfp_cpam_net, 0, ',', ' ') : '' }}</td>

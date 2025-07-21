@@ -150,7 +150,7 @@
 @endif
 
 <!-- Ajouter ce formulaire juste après le formulaire de recherche existant -->
-<div class="card mb-4">
+{{-- <div class="card mb-4">
     <div class="card-header">
         <h5 class="mb-0">Générer un PDF consolidé</h5>
     </div>
@@ -180,7 +180,7 @@
         </form>
     </div>
 </div>
-
+ --}}
 @section('add-js')
 <!-- DataTables CSS moderne -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
@@ -729,7 +729,7 @@ $(document).ready(function() {
     });
 });
 </script>
-<script>
+{{-- <script>
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('monthly-pdf-form');
         const moisSelect = document.getElementById('mois-select');
@@ -749,6 +749,6 @@ $(document).ready(function() {
         moisSelect.addEventListener('change', updateFormAction);
         anneeSelect.addEventListener('change', updateFormAction);
     });
-</script>
+</script> --}}
 @stop
 @endsection
