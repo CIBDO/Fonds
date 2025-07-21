@@ -95,6 +95,11 @@ Route::middleware(['auth'])->group(function () {
     // Accès public pour générer PDF
     Route::get('/demande-fonds/{id}/generate-pdf', [DemandeFondsController::class, 'generatePdf'])->name('demande-fonds.generate.pdf');
 
+    // Route pour générer le PDF consolidé des demandes par mois
+    Route::get('/demandes-fonds/mois/{mois}/{annee}/pdf', [DemandeFondsController::class, 'generateMonthlyPdf'])
+        ->name('demandes-fonds.monthly.pdf')
+        ->middleware('role:acct,admin,superviseur,tresorier');
+
     // Autres routes protégées
     Route::resource('users', UserController::class);
     Route::resource('receptions-fonds', ReceptionFondsController::class);

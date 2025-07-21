@@ -1152,6 +1152,35 @@ class DemandeFondsController extends Controller
         return $pdf->download('demande_fonds_' . $demandeFonds->id . '.pdf');
     }
 
+    public function generateMonthlyPdf($mois, $annee)
+    {
+        // Récupérer toutes les demandes pour le mois et l'année spécifiés
+        $demandes = DemandeFonds::where('mois', $mois)
+            ->where('annee', $annee)
+            ->with(['poste', 'user'])
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        if ($demandes->isEmpty()) {
+            // Retourner une réponse d'erreur claire si aucune demande n'est trouvée
+            return response('Aucune demande trouvée pour ' . $mois . ' ' . $annee, 404)
+                ->header('Content-Type', 'text/plain');
+        }
+
+        // Calculer les totaux
+        $totalDemande = $demandes->sum('solde');
+        $totalDisponible = $demandes->sum('montant_disponible');
+
+        // Générer le PDF
+        $pdf = FacadePdf::loadView('demandes.monthly-pdf', compact('demandes', 'mois', 'annee', 'totalDemande', 'totalDisponible'));
+
+        // Configurer le PDF pour le paysage
+        $pdf->setPaper('a4', 'landscape');
+
+        // Retourner le PDF pour téléchargement
+        return $pdf->stream('demandes-fonds-' . $mois . '-' . $annee . '.pdf');
+    }
+
     public function situationMensuelle(Request $request)
     {
         $this->authorizeRole(['acct', 'admin', 'superviseur']);

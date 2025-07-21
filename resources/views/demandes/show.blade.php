@@ -39,13 +39,21 @@
             width: 100%;
             display: flex;
             justify-content: space-between;
+            align-items: flex-start; /* Aligner en haut */
             box-sizing: border-box;
         }
 
         .header-left {
             width: 60%;
             text-align: left;
-            padding-right: 20px;
+            display: flex; /* Pour aligner le logo et le texte */
+            align-items: center; /* Centrer verticalement logo et texte */
+        }
+
+        .logo {
+            width: 80px;
+            height: auto;
+            margin-right: 15px;
         }
 
         .header-right {
@@ -166,10 +174,15 @@
     <div class="container">
         <div class="header-text">
             <div class="header-left">
-                <strong>MINISTÈRE DE L'ÉCONOMIE ET DES FINANCES</strong>
-                <strong>DIRECTION NATIONALE DU TRÉSOR</strong>
-                <strong>ET DE LA COMPTABILITÉ PUBLIQUE</strong>
-                <strong>AGENCE COMPTABLE CENTRALE DU TRÉSOR</strong>
+                @if(file_exists(public_path('img/logo.png')))
+                    <img src="{{ public_path('img/logo.png') }}" alt="Logo" class="logo">
+                @endif
+                <div>
+                    <strong>MINISTÈRE DE L'ÉCONOMIE ET DES FINANCES</strong>
+                    <strong>DIRECTION NATIONALE DU TRÉSOR</strong>
+                    <strong>ET DE LA COMPTABILITÉ PUBLIQUE</strong>
+                    <strong>AGENCE COMPTABLE CENTRALE DU TRÉSOR</strong>
+                </div>
             </div>
             <div class="header-right">
                 <strong style="letter-spacing: 0.5px;">RÉPUBLIQUE DU MALI</strong>
@@ -237,7 +250,7 @@
         </table>
 
         <div class="montant-final">
-            Veuillez mettre à notre disposition la somme de : {{ number_format($demandeFonds->solde, 0, ',', ' ') }} FCFA
+            Veuillez mettre à notre disposition la somme de : {{ number_format(abs($demandeFonds->solde), 0, ',', ' ') }} FCFA
         </div>
 
         <div class="signature-section">
