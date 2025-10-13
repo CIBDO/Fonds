@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Police personnalisée JetBrains Mono */
+@font-face {
+    font-family: 'JetBrains Mono';
+    src: url('/assets/fonts/JetBrainsMono-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
 /* Charte graphique Trésor Public - DGCTP */
 
 .header, .footer {

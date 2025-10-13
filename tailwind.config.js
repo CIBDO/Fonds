@@ -19,7 +19,7 @@ export default {
                 'main-white': '#FFFFFF',
             },
             fontFamily: {
-                sans: ['Montserrat', 'Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['JetBrains Mono', 'Montserrat', 'Figtree', ...defaultTheme.fontFamily.sans],
             },
         },
     },
