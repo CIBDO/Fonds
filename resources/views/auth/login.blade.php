@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
-<title>DGTCP - Système de Gestion des Fonds</title>
+<title>Gestion des Fonds</title>
 
 <link rel="shortcut icon" href="assets/img/favicon.png">
 
@@ -657,7 +657,7 @@
                 <div class="info-content">
                     <div class="institution-header">
                         <div class="institution-logo">
-                            <img src="{{ asset('assets/img/dgtcp-logo.png') }}" alt="DGTCP Logo">
+                            <img src="{{ asset('assets/img/logo.png') }}" alt="DGTCP Logo">
                         </div>
                     </div>
 

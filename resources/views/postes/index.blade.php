@@ -13,7 +13,7 @@
     }
 
     .card-stats {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
         color: #fff;
         border-radius: 15px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.1);
@@ -41,14 +41,14 @@
     }
 
     .search-input:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        border-color: #22c55e;
+        box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
     }
 
     .btn-search {
         border-radius: 25px;
         padding: 12px 30px;
-        background: linear-gradient(45deg, #667eea, #764ba2);
+        background: linear-gradient(45deg, #22c55e, #16a34a);
         border: none;
         color: white;
         font-weight: 600;
@@ -57,7 +57,7 @@
 
     .btn-search:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
         color: white;
     }
 
@@ -74,7 +74,7 @@
     }
 
     .table-modern thead {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
         color: white;
     }
 
@@ -115,8 +115,8 @@
     }
 
     .btn-view {
-        background: linear-gradient(45deg, #28a745, #20c997);
-        border-color: #28a745;
+        background: linear-gradient(45deg, #22c55e, #16a34a);
+        border-color: #22c55e;
     }
 
     .btn-edit {
@@ -125,21 +125,21 @@
     }
 
     .btn-add {
-        background: linear-gradient(45deg, #007bff, #6f42c1);
+        background: linear-gradient(45deg, #22c55e, #16a34a);
         border-radius: 50px;
         padding: 15px 30px;
         font-weight: 600;
-        box-shadow: 0 8px 25px rgba(0,123,255,0.3);
+        box-shadow: 0 8px 25px rgba(34,197,94,0.3);
         transition: all 0.3s ease;
     }
 
     .btn-add:hover {
         transform: translateY(-3px);
-        box-shadow: 0 12px 35px rgba(0,123,255,0.4);
+        box-shadow: 0 12px 35px rgba(34,197,94,0.4);
     }
 
     .page-header-modern {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
         color: white;
         border-radius: 20px;
         padding: 30px;
@@ -215,24 +215,24 @@
     </div> --}}
 
     <!-- Barre de recherche améliorée -->
-    
+
     <!-- Table moderne -->
     <div class="row fade-in">
         <div class="col-12">
             <div class="card table-card">
-                <div class="card-header" style="background: linear-gradient(135deg, #f8f9ff 0%, #e3e6f0 100%); border-bottom: 2px solid #667eea;">
+                <div class="card-header" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-bottom: 2px solid #22c55e;">
                     <div class="row align-items-center">
                         <div class="col">
                             <h4 class="card-title mb-0">
-                                <i class="fas fa-list-ul me-2" style="color: #667eea;"></i>
+                                <i class="fas fa-list-ul me-2" style="color: #22c55e;"></i>
                                 Liste des Postes
                             </h4>
                         </div>
                         <div class="col-auto download-buttons">
-                            <a href="#" class="btn btn-outline-secondary btn-sm me-2" title="Vue Liste">
+                            <a href="#" class="btn btn-outline-success btn-sm me-2" title="Vue Liste">
                                 <i class="feather-list"></i>
                             </a>
-                            <a href="#" class="btn btn-outline-secondary btn-sm me-2" title="Vue Grille">
+                            <a href="#" class="btn btn-outline-success btn-sm me-2" title="Vue Grille">
                                 <i class="feather-grid"></i>
                             </a>
                             <a href="#" class="btn btn-outline-success btn-sm me-3" title="Télécharger">
@@ -265,12 +265,12 @@
                                 @foreach($postes as $poste)
                                 <tr>
                                     <td>
-                                        <span class="badge bg-primary rounded-pill">{{ $poste->id }}</span>
+                                        <span class="badge bg-success rounded-pill">{{ $poste->id }}</span>
                                     </td>
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <div class="avatar-sm bg-light rounded-circle d-flex align-items-center justify-content-center me-3">
-                                                <i class="fas fa-user-tie text-primary"></i>
+                                                <i class="fas fa-user-tie text-success"></i>
                                             </div>
                                             <div>
                                                 <h6 class="mb-0 fw-bold">{{ $poste->nom }}</h6>
@@ -280,12 +280,12 @@
                                     </td>
                                     <td class="text-center">
                                         <div class="btn-group" role="group">
-                                            <a href="{{route('postes.show', $poste->id)}}"
-                                               class="btn btn-sm btn-view action-btn"
+                                            {{--                                             <a href="{{route('postes.show', $poste->id)}}"
+                                               class="btn btn-sm btn-outline-success action-btn"
                                                title="Voir les détails">
                                                 <i class="feather-eye me-1"></i>Voir
-                                            </a>
-                                            <button class="btn btn-sm btn-edit action-btn"
+                                            </a> --}}
+                                            <button class="btn btn-sm btn-outline-warning action-btn"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#editPosteModal{{ $poste->id }}"
                                                     title="Modifier le poste">
@@ -346,7 +346,7 @@
                 buttons: [
                     {
                         extend: 'copy',
-                        className: 'btn btn-outline-primary btn-sm',
+                        className: 'btn btn-outline-success btn-sm',
                         text: '<i class="fas fa-copy"></i> Copier'
                     },
                     {
@@ -361,12 +361,12 @@
                     },
                     {
                         extend: 'pdf',
-                        className: 'btn btn-outline-danger btn-sm',
+                        className: 'btn btn-outline-success btn-sm',
                         text: '<i class="fas fa-file-pdf"></i> PDF'
                     },
                     {
                         extend: 'print',
-                        className: 'btn btn-outline-info btn-sm',
+                        className: 'btn btn-outline-success btn-sm',
                         text: '<i class="fas fa-print"></i> Imprimer'
                     }
                 ],
@@ -437,20 +437,20 @@
 
         .pagination .page-link {
             border: none;
-            color: #667eea;
+            color: #22c55e;
             padding: 12px 16px;
             transition: all 0.3s ease;
         }
 
         .pagination .page-link:hover {
-            background-color: #667eea;
+            background-color: #22c55e;
             color: white;
             transform: translateY(-2px);
         }
 
         .pagination .page-item.active .page-link {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            border-color: #667eea;
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+            border-color: #22c55e;
         }
     </style>
 @stop

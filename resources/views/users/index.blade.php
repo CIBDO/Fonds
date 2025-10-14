@@ -7,10 +7,10 @@
             <div class="row align-items-center">
                 <div class="col">
                     <div class="page-sub-header">
-                        <h3 class="page-title fw-bold text-primary">
+                        <h3 class="page-title fw-bold text-success">
                             <i class="fas fa-users me-2"></i>Gestion des Utilisateurs
                         </h3>
-                        <nav aria-label="breadcrumb">
+                        {{-- <nav aria-label="breadcrumb">
                             <ol class="breadcrumb bg-transparent p-0 mb-0">
                                 <li class="breadcrumb-item">
                                     <a href="#" class="text-decoration-none">
@@ -19,19 +19,19 @@
                                 </li>
                                 <li class="breadcrumb-item active">Utilisateurs</li>
                             </ol>
-                        </nav>
+                        </nav> --}}
                     </div>
                 </div>
                 <div class="col-auto">
                     <div class="btn-group" role="group">
                         <a href="{{ route('users.edit', auth()->user()->id) }}"
-                           class="btn btn-outline-info btn-sm me-2"
+                           class="btn btn-outline-success btn-sm me-2"
                            data-bs-toggle="tooltip"
                            title="Mon Profil">
                             <i class="fas fa-user-circle me-1"></i>Mon Profil
                         </a>
                         <a href="{{route('users.create')}}"
-                           class="btn btn-primary btn-sm"
+                           class="btn btn-success btn-sm"
                            data-bs-toggle="tooltip"
                            title="Ajouter un utilisateur">
                             <i class="fas fa-plus me-1"></i>Nouvel Utilisateur
@@ -44,7 +44,7 @@
         <!-- Statistiques rapides -->
         {{-- <div class="row mb-4">
             <div class="col-xl-3 col-md-6">
-                <div class="card bg-primary text-white">
+                <div class="card bg-success text-white">
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
@@ -113,18 +113,18 @@
                         <div class="row align-items-center">
                             <div class="col">
                                 <h5 class="card-title mb-0">
-                                    <i class="fas fa-table me-2 text-primary"></i>Liste des Utilisateurs
+                                    <i class="fas fa-table me-2 text-success"></i>Liste des Utilisateurs
                                 </h5>
                             </div>
                             <div class="col-auto">
                                 <div class="btn-group btn-group-sm" role="group">
-                                    <button type="button" class="btn btn-outline-primary active" id="tableView">
+                                    <button type="button" class="btn btn-outline-success active" id="tableView">
                                         <i class="fas fa-list"></i>
                                     </button>
-                                    <button type="button" class="btn btn-outline-primary" id="cardView">
+                                    <button type="button" class="btn btn-outline-success" id="cardView">
                                         <i class="fas fa-th"></i>
                                     </button>
-                                    <button type="button" class="btn btn-outline-success" id="exportBtn">
+                                    <button type="button" class="btn btn-success" id="exportBtn">
                                         <i class="fas fa-download"></i> Export
                                     </button>
                                 </div>
@@ -170,10 +170,10 @@
                                                 </div>
                                                 <div class="col-md-2 d-flex align-items-end">
                                                     <div class="btn-group w-100">
-                                                        <button type="submit" class="btn btn-primary btn-sm">
+                                                        <button type="submit" class="btn btn-success btn-sm">
                                                             <i class="fas fa-search"></i> Filtrer
                                                         </button>
-                                                        <a href="{{ route('users.index') }}" class="btn btn-outline-secondary btn-sm">
+                                                        <a href="{{ route('users.index') }}" class="btn btn-outline-success btn-sm">
                                                             <i class="fas fa-times"></i>
                                                         </a>
                                                     </div>
@@ -214,7 +214,7 @@
                                             </td>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <div class="avatar-sm bg-primary rounded-circle d-flex align-items-center justify-content-center me-3">
+                                                    <div class="avatar-sm bg-success rounded-circle d-flex align-items-center justify-content-center me-3">
                                                         <span class="text-white fw-bold">
                                                             {{ strtoupper(substr($user->name, 0, 2)) }}
                                                         </span>
@@ -239,11 +239,11 @@
                                             </td>
                                             <td>
                                                 @if($user->role === 'admin')
-                                                    <span class="badge bg-danger">
+                                                    <span class="badge bg-success">
                                                         <i class="fas fa-shield-alt me-1"></i>Administrateur
                                                     </span>
                                                 @else
-                                                    <span class="badge bg-info">
+                                                    <span class="badge bg-success">
                                                         <i class="fas fa-user me-1"></i>Employé
                                                     </span>
                                                 @endif
@@ -268,7 +268,7 @@
                                                 <div class="btn-group btn-group-sm" role="group">
                                                     @if (auth()->user()->id === $user->id || auth()->user()->role === 'admin')
                                                         <a href="{{ route('users.edit', $user->id) }}"
-                                                           class="btn btn-outline-warning"
+                                                           class="btn btn-outline-success"
                                                            data-bs-toggle="tooltip"
                                                            title="Modifier">
                                                             <i class="fas fa-edit"></i>
@@ -296,7 +296,7 @@
                                                     @endif
 
                                                     <button type="button"
-                                                            class="btn btn-outline-info view-user"
+                                                            class="btn btn-outline-success view-user"
                                                             data-user-id="{{ $user->id }}"
                                                             data-bs-toggle="tooltip"
                                                             title="Voir détails">
@@ -331,7 +331,7 @@
     <div class="modal fade" id="userDetailsModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
+                <div class="modal-header bg-success text-white">
                     <h5 class="modal-title">
                         <i class="fas fa-user-circle me-2"></i>Détails de l'utilisateur
                     </h5>
@@ -356,7 +356,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-primary" id="confirmAction">Confirmer</button>
+                    <button type="button" class="btn btn-success" id="confirmAction">Confirmer</button>
                 </div>
             </div>
         </div>
@@ -403,18 +403,18 @@
 
         .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
             color: white !important;
-            border: 1px solid #007bff;
-            background-color: #007bff;
+            border: 1px solid #22c55e;
+            background-color: #22c55e;
         }
 
         .dataTables_wrapper .dataTables_paginate .paginate_button.current {
             color: white !important;
-            border: 1px solid #007bff;
-            background-color: #007bff;
+            border: 1px solid #22c55e;
+            background-color: #22c55e;
         }
 
         .page-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
             border-radius: 15px;
             color: white;
             padding: 2.5rem;
@@ -535,7 +535,7 @@
                     {
                         extend: 'pdf',
                         text: '<i class="fas fa-file-pdf"></i> PDF',
-                        className: 'btn btn-danger btn-sm',
+                        className: 'btn btn-success btn-sm',
                         exportOptions: {
                             columns: [1, 2, 3, 4, 5]
                         }
@@ -543,7 +543,7 @@
                     {
                         extend: 'print',
                         text: '<i class="fas fa-print"></i> Imprimer',
-                        className: 'btn btn-info btn-sm',
+                        className: 'btn btn-success btn-sm',
                         exportOptions: {
                             columns: [1, 2, 3, 4, 5]
                         }

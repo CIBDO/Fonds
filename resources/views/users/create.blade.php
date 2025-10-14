@@ -13,7 +13,7 @@
     }
 
     .card-stats {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
         color: #fff;
         border-radius: 15px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.1);
@@ -41,14 +41,14 @@
     }
 
     .form-input:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        border-color: #22c55e;
+        box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
     }
 
     .btn-create {
         border-radius: 25px;
         padding: 12px 30px;
-        background: linear-gradient(45deg, #667eea, #764ba2);
+        background: linear-gradient(45deg, #22c55e, #16a34a);
         border: none;
         color: white;
         font-weight: 600;
@@ -57,7 +57,7 @@
 
     .btn-create:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
         color: white;
     }
 
@@ -69,7 +69,7 @@
     }
 
     .form-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
         color: white;
         border-radius: 20px;
         padding: 30px;
@@ -135,8 +135,8 @@
     }
 
     .alert-danger {
-        background: linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%);
-        color: #742a2a;
+        background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
+        color: #991b1b;
     }
 
     .login-link {
@@ -147,14 +147,14 @@
     }
 
     .login-link a {
-        color: #667eea;
+        color: #22c55e;
         text-decoration: none;
         font-weight: 600;
         transition: all 0.3s ease;
     }
 
     .login-link a:hover {
-        color: #764ba2;
+        color: #16a34a;
         text-decoration: underline;
     }
 
@@ -212,7 +212,7 @@
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card card-stats" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+            <div class="card card-stats" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);">
                 <div class="card-body position-relative">
                     <div class="row">
                         <div class="col-8">
@@ -247,11 +247,11 @@
     <div class="row fade-in">
         <div class="col-12">
             <div class="card form-card">
-                <div class="card-header" style="background: linear-gradient(135deg, #f8f9ff 0%, #e3e6f0 100%); border-bottom: 2px solid #667eea;">
+                <div class="card-header" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-bottom: 2px solid #22c55e;">
                     <div class="row align-items-center">
                         <div class="col">
                             <h4 class="card-title mb-0">
-                                <i class="fas fa-user-edit me-2" style="color: #667eea;"></i>
+                                <i class="fas fa-user-edit me-2" style="color: #22c55e;"></i>
                                 Informations de l'Utilisateur
                             </h4>
                         </div>
@@ -279,13 +279,13 @@
                             <div class="form-row">
                                 <!-- Champ Nom -->
                                 <div class="form-group-modern">
-                                    <label><i class="fas fa-user me-2" style="color: #667eea;"></i>Prénoms & Nom <span class="required-star">*</span></label>
+                                    <label><i class="fas fa-user me-2" style="color: #22c55e;"></i>Prénoms & Nom <span class="required-star">*</span></label>
                                     <input class="form-control form-input" type="text" name="name" value="{{ old('name') }}" placeholder="Entrez le nom complet">
                                 </div>
 
                                 <!-- Champ Email -->
                                 <div class="form-group-modern">
-                                    <label><i class="fas fa-envelope me-2" style="color: #667eea;"></i>Email <span class="required-star">*</span></label>
+                                    <label><i class="fas fa-envelope me-2" style="color: #22c55e;"></i>Email <span class="required-star">*</span></label>
                                     <input class="form-control form-input" type="email" name="email" value="{{ old('email') }}" placeholder="exemple@domain.com">
                                 </div>
                             </div>
@@ -293,13 +293,13 @@
                             <div class="form-row">
                                 <!-- Champ Password -->
                                 <div class="form-group-modern">
-                                    <label><i class="fas fa-lock me-2" style="color: #667eea;"></i>Mot de passe <span class="required-star">*</span></label>
+                                    <label><i class="fas fa-lock me-2" style="color: #22c55e;"></i>Mot de passe <span class="required-star">*</span></label>
                                     <input class="form-control form-input" type="password" name="password" placeholder="Mot de passe sécurisé">
                                 </div>
 
                                 <!-- Champ Confirm Password -->
                                 <div class="form-group-modern">
-                                    <label><i class="fas fa-lock me-2" style="color: #667eea;"></i>Confirmer le mot de passe <span class="required-star">*</span></label>
+                                    <label><i class="fas fa-lock me-2" style="color: #22c55e;"></i>Confirmer le mot de passe <span class="required-star">*</span></label>
                                     <input class="form-control form-input" type="password" name="password_confirmation" placeholder="Confirmez le mot de passe">
                                 </div>
                             </div>
@@ -307,7 +307,7 @@
                             <div class="form-row">
                                 <!-- Champ Rôle -->
                                 <div class="form-group-modern">
-                                    <label><i class="fas fa-user-tag me-2" style="color: #667eea;"></i>Rôle <span class="required-star">*</span></label>
+                                    <label><i class="fas fa-user-tag me-2" style="color: #22c55e;"></i>Rôle <span class="required-star">*</span></label>
                                     <select class="form-control form-input" name="role">
                                         <option value="">Choisir un rôle</option>
                                         <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
@@ -319,7 +319,7 @@
 
                                 <!-- Champ Statut -->
                                 <div class="form-group-modern">
-                                    <label><i class="fas fa-toggle-on me-2" style="color: #667eea;"></i>Statut <span class="required-star">*</span></label>
+                                    <label><i class="fas fa-toggle-on me-2" style="color: #22c55e;"></i>Statut <span class="required-star">*</span></label>
                                     <select class="form-control form-input" name="active">
                                         <option value="1" {{ old('active') == '1' ? 'selected' : '' }}>Actif</option>
                                         <option value="0" {{ old('active') == '0' ? 'selected' : '' }}>Inactif</option>
@@ -329,7 +329,7 @@
 
                             <!-- Champ Poste -->
                             <div class="form-group-modern">
-                                <label><i class="fas fa-briefcase me-2" style="color: #667eea;"></i>Poste <span class="required-star">*</span></label>
+                                    <label><i class="fas fa-briefcase me-2" style="color: #22c55e;"></i>Poste <span class="required-star">*</span></label>
                                 <select class="form-control form-input" name="poste_id">
                                     <option value="">Choisir un poste</option>
                                     @foreach ($postes as $poste)
