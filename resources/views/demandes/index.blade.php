@@ -40,8 +40,8 @@
     <div class="dgtcp-card">
         <div class="dgtcp-card-header">
             <div class="dgtcp-card-title">
-                <i class="fas fa-table"></i>
-                <span>Liste des Demandes de Fonds</span>
+                <i class="fas fa-clock"></i>
+                <span>Demandes en Attente & Rejetées</span>
             </div>
             <div class="dgtcp-card-actions">
                 <div class="dgtcp-stats-mini">
@@ -107,6 +107,11 @@
                                         <span class="dgtcp-status danger">
                                             <i class="fas fa-times-circle"></i>
                                             <span>Rejeté</span>
+                                        </span>
+                                    @elseif($demande->status === 'en_attente')
+                                        <span class="dgtcp-status warning">
+                                            <i class="fas fa-clock"></i>
+                                            <span>En Attente</span>
                                         </span>
                                     @else
                                         <span class="dgtcp-status warning">

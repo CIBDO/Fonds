@@ -38,6 +38,10 @@ class DemandeFondsController extends Controller
     {
         $user = Auth::user();
         $query = DemandeFonds::query();
+
+        // Filtrer les demandes en attente et rejetées
+        $query->whereIn('status', ['en_attente', 'rejete']);
+
         if ($user->role === 'tresorier') {
             $query->where('user_id', $user->id);
         }
@@ -59,7 +63,7 @@ class DemandeFondsController extends Controller
         }
 
 
-        // Afficher toutes les demandes de fonds
+        // Afficher les demandes de fonds en attente et rejetées
         $demandeFonds = $query->with('user', 'poste')->orderBy('created_at', 'desc')->paginate(21);
 
         return view('demandes.index', compact('demandeFonds'));
@@ -1255,7 +1259,7 @@ class DemandeFondsController extends Controller
         $annee = $request->input('annee', Carbon::now()->year);
 
         // Récupérer les demandes de fonds groupées par poste pour le mois et l'année sélectionnés
-        // Inclure toutes les demandes (en attente, approuvées, rejetées) pour l'état avant envoi
+        // Inclure toutes les demandes (en_attente, approuvées, rejetées) pour l'état avant envoi
         $demandesParPoste = DemandeFonds::with('poste')
             ->where('mois', $mois)
             ->where('annee', $annee)

@@ -32,7 +32,7 @@
 
                                 <!-- Demandes de Fonds -->
                 @if (Auth::user()->hasAnyRole(['tresorier', 'admin']))
-                    <li class="submenu {{ request()->routeIs('demandes-fonds.*') ? 'active' : '' }}">
+                    <li class="submenu {{ request()->routeIs('demandes-fonds.create') || request()->routeIs('demandes-fonds.situation') || request()->routeIs('demandes-fonds.index') ? 'active' : '' }}">
                         <a href="#" class="submenu-toggle">
                             <i class="fas fa-coins"></i>
                             <span>Demandes de Fonds</span>
@@ -58,8 +58,6 @@
                             <span class="menu-arrow fas fa-chevron-right"></span>
                         </a>
                         <ul class="submenu-list">
-                            <li><a href="{{ route('demandes-fonds.index') }}" class="{{ request()->routeIs('demandes-fonds.index') ? 'active' : '' }}">
-                                <i class="fas fa-list"></i>Liste des Demandes</a></li>
                             <li><a href="{{ route('demandes-fonds.envois') }}" class="{{ request()->routeIs('demandes-fonds.envois') ? 'active' : '' }}">
                                 <i class="fas fa-send"></i>Envoyer des Fonds</a></li>
                         </ul>

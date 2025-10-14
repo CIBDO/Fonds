@@ -65,7 +65,7 @@
                             <th><i class="fas fa-map-marker-alt"></i> Poste</th>
                             <th><i class="fas fa-money-bill-wave"></i> Montant Demandé</th>
                             <th><i class="fas fa-calendar-plus"></i> Montant Envoyé</th>
-                            <th><i class="fas fa-info-circle"></i> Statut</th> 
+                            <th><i class="fas fa-info-circle"></i> Statut</th>
                             <th class="text-center"><i class="fas fa-cogs"></i> Actions</th>
                         </tr>
                     </thead>
@@ -109,6 +109,11 @@
                                         <span class="dgtcp-status danger">
                                             <i class="fas fa-times-circle"></i>
                                             <span>Rejeté</span>
+                                        </span>
+                                    @elseif($demande->status === 'en_attente')
+                                        <span class="dgtcp-status warning">
+                                            <i class="fas fa-clock"></i>
+                                            <span>En Attente</span>
                                         </span>
                                     @else
                                         <span class="dgtcp-status warning">
