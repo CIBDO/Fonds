@@ -6,7 +6,7 @@
     </div>
 @endif
 
-<div class="page-header">
+{{-- <div class="page-header">
     <div class="row align-items-center">
         <div class="col">
             <h3 class="page-title">Demandes de fonds</h3>
@@ -16,7 +16,7 @@
             </ul>
         </div>
     </div>
-</div>
+</div> --}}
 <div class="card mb-4">
     <div class="card-header">
         <h5 class="mb-0">Générer un PDF consolidé</h5>
@@ -51,7 +51,7 @@
 <!-- Tableau des demandes DGTCP -->
 <div class="dgtcp-section">
     <div class="dgtcp-card">
-        <div class="dgtcp-card-header">
+        {{-- <div class="dgtcp-card-header">
             <div class="dgtcp-card-title">
                 <i class="fas fa-table"></i>
                 <span>Liste des Demandes de Fonds</span>
@@ -62,7 +62,7 @@
                     <span class="dgtcp-stats-label">Demandes</span>
                 </div>
             </div>
-        </div>
+        </div> --}}
         <div class="dgtcp-card-body">
             {{-- <form action="{{ route('demandes-fonds.envois') }}" method="GET" class="dgtcp-filter-form mb-4">
                 <div class="row">
