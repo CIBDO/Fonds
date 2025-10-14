@@ -111,7 +111,7 @@
                         @endphp
                         <tr class="{{ $statut === 'attention' ? 'table-warning' : '' }}">
                             <td>
-                                <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                <i class="fas fa-map-marker-alt text-success me-2"></i>
                                 <strong>{{ $demande->poste->nom }}</strong>
                             </td>
                             <td>
@@ -230,11 +230,11 @@
                 </div>
                 <div class="dgtcp-card-body">
                     <div class="alert-item">
-                        <i class="fas fa-calculator text-warning"></i>
+                        <i class="fas fa-calculator text-success"></i>
                         <span>{{ $demandesFonds->filter(function($d) { return abs($d->total_courant - $d->total_ancien) >= 1000; })->count() }} écarts significatifs détectés</span>
                     </div>
                     <div class="alert-item">
-                        <i class="fas fa-clock text-info"></i>
+                        <i class="fas fa-clock text-success"></i>
                         <span>{{ $demandesFonds->whereNull('status')->count() }} demandes nécessitent une validation</span>
                     </div>
                     <div class="alert-item">

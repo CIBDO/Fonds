@@ -171,20 +171,20 @@
             </div>
             <div class="col-md-3">
                 <div class="text-center p-3 bg-light rounded">
-                    <h6 class="text-primary">Montant Global</h6>
-                    <h4 class="text-primary">{{ number_format($demandesFonds->sum('total_net'), 0, '', ' ') }}</h4>
+                    <h6 class="text-success">Montant Global</h6>
+                    <h4 class="text-success">{{ number_format($demandesFonds->sum('total_net'), 0, '', ' ') }}</h4>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="text-center p-3 bg-light rounded">
-                    <h6 class="text-warning">Moyenne/Poste</h6>
-                    <h4 class="text-warning">{{ $demandesFonds->count() > 0 ? number_format($demandesFonds->sum('total_net') / $demandesFonds->count(), 0, '', ' ') : 0 }}</h4>
+                    <h6 class="text-success">Moyenne/Poste</h6>
+                    <h4 class="text-success">{{ $demandesFonds->count() > 0 ? number_format($demandesFonds->sum('total_net') / $demandesFonds->count(), 0, '', ' ') : 0 }}</h4>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="text-center p-3 bg-light rounded">
-                    <h6 class="text-info">Efficacité</h6>
-                    <h4 class="text-info">98.5%</h4>
+                    <h6 class="text-success">Efficacité</h6>
+                    <h4 class="text-success">98.5%</h4>
                 </div>
             </div>
         </div>

@@ -7,138 +7,167 @@
             @include('partials.mail_sidebar')
         </div>
         <div class="col-12 col-md-9">
-            <!-- Carte ultra-moderne pour répondre à tous -->
-            <div class="card border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
-                <div class="card-header border-0 text-white" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); padding: 1.5rem;">
-                    <h4 class="mb-0 fw-bold fs-3">
-                        <i class="fas fa-reply-all me-3"></i> 👥 Répondre à tous
-                    </h4>
-                    <p class="mb-0 mt-2 opacity-75">Envoyez votre réponse à tous les participants</p>
+            <!-- Header orange simple -->
+            <div class="reply-all-header mb-4" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); padding: 20px 24px; border-radius: 16px; color: white;">
+                <div class="d-flex align-items-center">
+                    <div class="header-icon me-3">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M7 14l5-5 5 5z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="mb-0 fw-bold" style="font-size: 20px;">Répondre à tous</h1>
+                        <p class="mb-0 opacity-75" style="font-size: 14px;">Envoyez votre réponse à tous les participants</p>
+                    </div>
                 </div>
+            </div>
 
-                <div class="card-body p-4" style="background: linear-gradient(to bottom, #fff8f0 0%, #ffffff 100%);">
-                    @if ($errors->any())
-                        <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4" style="border-radius: 15px;">
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-exclamation-triangle fa-2x text-danger me-3"></i>
-                                <div>
-                                    <strong>⚠️ Erreurs à corriger :</strong>
-                                    <ul class="mb-0 mt-2">
-                                        @foreach ($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            </div>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <!-- Contenu épuré -->
+            <div class="reply-all-content" style="background: #ffffff; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden;">
+
+                @if ($errors->any())
+                    <div class="alert alert-danger border-0 m-4" style="background: #FEF2F2; color: #DC2626; border-radius: 8px;">
+                        <div class="d-flex align-items-center">
+                            <svg class="me-2" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                            <strong>Erreur de validation</strong>
                         </div>
-                    @endif
+                        <ul class="mb-0 mt-2" style="list-style: none; padding-left: 0;">
+                            @foreach ($errors->all() as $error)
+                                <li style="display: flex; align-items: center; margin-bottom: 4px;">
+                                    <span style="color: #DC2626; margin-right: 8px;">•</span>
+                                    {{ $error }}
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
 
-                    <!-- Informations du message original -->
-                    <div class="mb-4 p-3 border-0 shadow-sm" style="background: linear-gradient(135deg, #fff3e0 0%, #fce4ec 100%); border-radius: 15px;">
-                        <h6 class="fw-bold text-warning mb-2">
-                            <i class="fas fa-envelope-open me-2"></i> Message original
+                <!-- Message original simple -->
+                <div class="original-message p-4" style="background: #FEF7ED; border-bottom: 1px solid #FED7AA;">
+                    <div class="message-info mb-3">
+                        <h6 class="fw-semibold mb-2" style="color: #92400E; font-size: 14px;">
+                            <svg class="me-2" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                            </svg>
+                            Message original
                         </h6>
                         <div class="d-flex align-items-center mb-2">
                             @php
                                 $avatar = $message->sender->avatar ?? null;
                                 $initial = strtoupper(substr($message->sender->name ?? 'U', 0, 1));
-                                $color = ['bg-primary','bg-success','bg-info','bg-warning','bg-danger'][($message->sender->id ?? 0) % 5];
+                                $colors = ['#3B82F6', '#1D4ED8', '#2563EB', '#1E40AF', '#1E3A8A', '#312E81'];
+                                $colorIndex = ($message->sender->id ?? 0) % count($colors);
+                                $avatarColor = $colors[$colorIndex];
                             @endphp
-                            @if($avatar)
-                                <img src="{{ asset('assets/img/profiles/' . $avatar) }}" class="rounded-circle me-2" style="width:32px;height:32px;object-fit:cover;">
-                            @else
-                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-2 {{ $color }}" style="width:32px;height:32px;color:white;font-weight:bold;font-size:0.9rem;">
+                            <div style="width: 32px; height: 32px; background: {{ $avatarColor }}; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 500; font-size: 14px; margin-right: 12px;">
+                                @if($avatar)
+                                    <img src="{{ asset('assets/img/profiles/' . $avatar) }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                @else
                                     {{ $initial }}
-                                </span>
-                            @endif
+                                @endif
+                            </div>
                             <div>
-                                <div class="fw-semibold">{{ $message->sender->name ?? 'Expéditeur inconnu' }}</div>
-                                <div class="small text-muted">{{ $message->sender->email ?? '' }}</div>
+                                <div class="fw-semibold" style="color: #111827;">{{ $message->sender->name ?? 'Expéditeur inconnu' }}</div>
+                                <div style="color: #6B7280; font-size: 12px;">{{ $message->sender->email ?? '' }}</div>
                             </div>
                         </div>
-                        <div class="small text-muted mb-1">
+                        <div style="color: #6B7280; font-size: 13px; margin-bottom: 4px;">
                             <strong>Sujet :</strong> {{ $message->subject }}
                         </div>
-                        <div class="small text-muted">
+                        <div style="color: #6B7280; font-size: 12px;">
                             <strong>Date :</strong> {{ $message->sent_at ? \Carbon\Carbon::parse($message->sent_at)->format('d/m/Y H:i') : '' }}
                         </div>
                     </div>
+                </div>
 
-                    <!-- Destinataires -->
-                    <div class="mb-4 p-3 border-0 shadow-sm" style="background: linear-gradient(135deg, #e8f5e8 0%, #f3e5f5 100%); border-radius: 15px;">
-                        <h6 class="fw-bold text-success mb-2">
-                            <i class="fas fa-users me-2"></i> Destinataires de la réponse
-                        </h6>
-                        <div class="d-flex flex-wrap gap-2">
-                            @foreach($message->recipients as $recipient)
-                                @php
-                                    $recipientAvatar = $recipient->avatar ?? null;
-                                    $recipientInitial = strtoupper(substr($recipient->name ?? 'U', 0, 1));
-                                    $recipientColor = ['bg-primary','bg-success','bg-info','bg-warning','bg-danger'][($recipient->id ?? 0) % 5];
-                                @endphp
-                                <div class="d-flex align-items-center bg-white rounded-pill px-3 py-2 shadow-sm">
-                                    @if($recipientAvatar)
-                                        <img src="{{ asset('assets/img/profiles/' . $recipientAvatar) }}" class="rounded-circle me-2" style="width:24px;height:24px;object-fit:cover;">
-                                    @else
-                                        <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-2 {{ $recipientColor }}" style="width:24px;height:24px;color:white;font-weight:bold;font-size:0.7rem;">
-                                            {{ $recipientInitial }}
-                                        </span>
-                                    @endif
-                                    <span class="fw-semibold">{{ $recipient->name }}</span>
-                                </div>
-                            @endforeach
-                            <!-- Ajouter l'expéditeur original -->
-                            <div class="d-flex align-items-center bg-white rounded-pill px-3 py-2 shadow-sm">
-                                @if($avatar)
-                                    <img src="{{ asset('assets/img/profiles/' . $avatar) }}" class="rounded-circle me-2" style="width:24px;height:24px;object-fit:cover;">
+                <!-- Destinataires de la réponse -->
+                <div class="reply-recipients p-4" style="background: #FFF7ED; border-bottom: 1px solid #FED7AA;">
+                    <h6 class="fw-semibold mb-3" style="color: #92400E; font-size: 14px;">
+                        <svg class="me-2" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                        Destinataires de la réponse
+                    </h6>
+                    <div class="recipients-list d-flex flex-wrap gap-2">
+                        @foreach($message->recipients as $recipient)
+                            @php
+                                $recipientAvatar = $recipient->avatar ?? null;
+                                $recipientInitial = strtoupper(substr($recipient->name ?? 'U', 0, 1));
+                                $recipientColorIndex = ($recipient->id ?? 0) % count($colors);
+                                $recipientColor = $colors[$recipientColorIndex];
+                            @endphp
+                            <div class="recipient-item d-flex align-items-center" style="background: white; padding: 6px 12px; border-radius: 20px; border: 1px solid #FED7AA; font-size: 13px;">
+                                @if($recipientAvatar)
+                                    <img src="{{ asset('assets/img/profiles/' . $recipientAvatar) }}" class="rounded-circle me-2" style="width: 20px; height: 20px; object-fit: cover;">
                                 @else
-                                    <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-2 {{ $color }}" style="width:24px;height:24px;color:white;font-weight:bold;font-size:0.7rem;">
-                                        {{ $initial }}
-                                    </span>
+                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 20px; height: 20px; background: {{ $recipientColor }}; color: white; font-weight: 500; font-size: 10px;">
+                                        {{ $recipientInitial }}
+                                    </div>
                                 @endif
-                                <span class="fw-semibold">{{ $message->sender->name ?? 'Expéditeur' }}</span>
+                                <span class="fw-medium">{{ $recipient->name }}</span>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <!-- Formulaire de réponse à tous -->
+                <form action="{{ route('messages.replyAll', $message->id) }}" method="POST" enctype="multipart/form-data" class="p-4">
+                    @csrf
+
+                    <div class="form-group mb-4">
+                        <label for="body" class="form-label fw-semibold" style="color: #374151; font-size: 14px; margin-bottom: 8px; display: block;">
+                            <svg class="me-2" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
+                            </svg>
+                            Votre réponse à tous
+                        </label>
+                        <textarea name="body" id="body" class="form-control" rows="6" required
+                                  placeholder="Écrivez votre réponse qui sera envoyée à tous les participants..."
+                                  style="border: 2px solid #E5E7EB; border-radius: 12px; padding: 16px; font-size: 14px; background: #F9FAFB; transition: all 0.2s ease;"></textarea>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label class="form-label fw-semibold" style="color: #374151; font-size: 14px; margin-bottom: 8px; display: block;">
+                            <svg class="me-2" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/>
+                            </svg>
+                            Pièces jointes
+                        </label>
+                        <div class="file-input-container">
+                            <input type="file" name="attachments[]" id="attachments" class="d-none" multiple>
+                            <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('attachments').click()"
+                                    style="border: 2px dashed #D1D5DB; background: #F9FAFB; border-radius: 12px; padding: 16px; width: 100%; text-align: center; transition: all 0.2s ease;">
+                                <svg class="me-2" width="20" height="20" viewBox="0 0 24 24" fill="#6B7280">
+                                    <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
+                                </svg>
+                                Sélectionner des fichiers
+                            </button>
+                            <div class="file-info mt-2" style="font-size: 12px; color: #6B7280; text-align: center;">
+                                Formats acceptés : JPG, PNG, PDF, DOC, XLS, ZIP... (max 2MB par fichier)
                             </div>
                         </div>
                     </div>
 
-                    <form action="{{ route('messages.replyAll', $message->id) }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-
-                        <div class="mb-4">
-                            <label for="body" class="form-label fw-bold text-dark mb-2">
-                                <i class="fas fa-pen-fancy text-primary me-2"></i> 💭 Votre réponse à tous
-                            </label>
-                            <textarea name="body" class="form-control border-0 shadow-sm" rows="6"
-                                      placeholder="Écrivez votre réponse qui sera envoyée à tous les participants..." required
-                                      style="border-radius: 15px; padding: 15px; background: #fff8f0;"></textarea>
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="attachments" class="form-label fw-bold text-dark mb-2">
-                                <i class="fas fa-paperclip text-success me-2"></i> 📎 Pièces jointes
-                            </label>
-                            <input type="file" name="attachments[]" class="form-control border-0 shadow-sm" multiple id="attachmentInput"
-                                   style="border-radius: 15px; padding: 12px; background: #fff8f0;">
-                            <small class="form-text text-muted mt-1">
-                                <i class="fas fa-info-circle me-1"></i>
-                                Formats acceptés : JPG, PNG, PDF, DOC, XLS, ZIP... (max 2MB par fichier)
-                            </small>
-                            <div id="fileList" class="mt-2 text-muted small"></div>
-                        </div>
-
-                        <div class="d-grid gap-3 d-md-flex justify-content-md-end">
-                            <button type="submit" class="btn btn-lg fw-bold text-white"
-                                    style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border: none; border-radius: 15px; padding: 15px 30px; box-shadow: 0 8px 25px rgba(250, 112, 154, 0.3);">
-                                <i class="fas fa-paper-plane me-2"></i> 🚀 Envoyer à tous
-                            </button>
-                            <a href="{{ url()->previous() }}" class="btn btn-lg btn-outline-secondary fw-bold"
-                               style="border-radius: 15px; padding: 15px 30px;">
-                                <i class="fas fa-arrow-left me-2"></i> Retour
-                            </a>
-                        </div>
-                    </form>
-                </div>
+                    <!-- Actions -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url()->previous() }}" class="btn btn-outline-secondary"
+                           style="border-radius: 12px; padding: 10px 20px; font-size: 14px; font-weight: 500;">
+                            <svg class="me-2" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                            </svg>
+                            Retour
+                        </a>
+                        <button type="submit" class="btn btn-primary"
+                                style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); border: none; border-radius: 12px; padding: 10px 24px; font-size: 14px; font-weight: 500;">
+                            <svg class="me-2" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                            </svg>
+                            Envoyer à tous
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

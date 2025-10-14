@@ -7,48 +7,63 @@
             @include('partials.mail_sidebar')
         </div>
         <div class="col-12 col-md-9">
-            <!-- Carte ultra-moderne pour le transfert -->
-            <div class="card border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
-                <div class="card-header border-0 text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.5rem;">
-                    <h4 class="mb-0 fw-bold fs-3">
-                        <i class="fas fa-share-square me-3"></i> 📤 Transférer le message
-                    </h4>
-                    <p class="mb-0 mt-2 opacity-75">Partagez ce message avec d'autres destinataires</p>
+            <!-- Header violet simple pour le transfert -->
+            <div class="forward-header mb-4" style="background: linear-gradient(135deg, #8B7CF8 0%, #7C3AED 100%); padding: 20px 24px; border-radius: 16px; color: white;">
+                <div class="d-flex align-items-center">
+                    <div class="header-icon me-3">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14 9l-5 5 5 5z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="mb-0 fw-bold" style="font-size: 20px;">Transférer le message</h1>
+                        <p class="mb-0 opacity-75" style="font-size: 14px;">Partagez ce message avec d'autres destinataires</p>
+                    </div>
                 </div>
+            </div>
 
-                <div class="card-body p-4" style="background: linear-gradient(to bottom, #f8f9ff 0%, #ffffff 100%);">
-                    @if ($errors->any())
-                        <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4" style="border-radius: 15px;">
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-exclamation-triangle fa-2x text-danger me-3"></i>
-                                <div>
-                                    <strong>⚠️ Erreurs à corriger :</strong>
-                                    <ul class="mb-0 mt-2">
-                                        @foreach ($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            </div>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <!-- Contenu épuré -->
+            <div class="forward-content" style="background: #ffffff; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden;">
+
+                @if ($errors->any())
+                    <div class="alert alert-danger border-0 m-4" style="background: #FEF2F2; color: #DC2626; border-radius: 8px;">
+                        <div class="d-flex align-items-center">
+                            <svg class="me-2" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                            <strong>Erreur de validation</strong>
                         </div>
-                    @endif
+                        <ul class="mb-0 mt-2" style="list-style: none; padding-left: 0;">
+                            @foreach ($errors->all() as $error)
+                                <li style="display: flex; align-items: center; margin-bottom: 4px;">
+                                    <span style="color: #DC2626; margin-right: 8px;">•</span>
+                                    {{ $error }}
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
 
-                    <!-- Message original en aperçu -->
-                    <div class="mb-4 p-3 border-0 shadow-sm" style="background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%); border-radius: 15px;">
-                        <h6 class="fw-bold text-primary mb-2">
-                            <i class="fas fa-envelope-open me-2"></i> Message original
+                <!-- Message original simple -->
+                <div class="original-message p-4" style="background: #F8FAFC; border-bottom: 1px solid #E2E8F0;">
+                    <div class="message-info mb-3">
+                        <h6 class="fw-semibold mb-2" style="color: #6B46C1; font-size: 14px;">
+                            <svg class="me-2" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                            </svg>
+                            Message original
                         </h6>
-                        <div class="small text-muted mb-1">
+                        <div style="color: #6B7280; font-size: 13px; margin-bottom: 4px;">
                             <strong>De :</strong> {{ $originalMessage->sender->name ?? 'Expéditeur inconnu' }}
                         </div>
-                        <div class="small text-muted mb-1">
+                        <div style="color: #6B7280; font-size: 13px; margin-bottom: 4px;">
                             <strong>Sujet :</strong> {{ $originalMessage->subject }}
                         </div>
-                        <div class="small text-muted">
+                        <div style="color: #6B7280; font-size: 12px;">
                             <strong>Date :</strong> {{ $originalMessage->sent_at ? \Carbon\Carbon::parse($originalMessage->sent_at)->format('d/m/Y H:i') : '' }}
                         </div>
                     </div>
+                </div>
 
                     <form action="{{ route('messages.forward.store', $originalMessage->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf

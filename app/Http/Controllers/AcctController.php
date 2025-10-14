@@ -15,13 +15,22 @@ class AcctController extends Controller
      */
         public function index()
     {
+        // Récupérer toutes les demandes pour le tableau détaillé
         $demandesFonds = DemandeFonds::with('poste')
         ->orderBy('created_at', 'desc')
         ->paginate(21);
-        $fondsDemandes = DemandeFonds::sum('total_courant'); // Total des fonds envoyés
-        $fondsRecettes = DemandeFonds::sum('montant_disponible'); // Total des fonds envoyés
-        $fondsEnCours = DemandeFonds::sum('solde'); // Total des fonds demandés en cours
-        $paiementsEffectues = DemandeFonds::sum('montant'); // Nombre de fonds envoyés
+
+        // Calculs pour les statistiques - tous postes confondus
+        $fondsDemandes = DemandeFonds::sum('total_courant'); // Total des fonds demandés
+        $fondsRecettes = DemandeFonds::sum('montant_disponible'); // Total des recettes disponibles
+
+        // Fonds en cours de traitement (en_attente) - cumul des soldes pour tous les postes
+        $fondsEnCours = DemandeFonds::where('status', 'en_attente')
+            ->sum('solde');
+
+        // Paiements effectués (approuvés) - cumul des montants pour tous les postes
+        $paiementsEffectues = DemandeFonds::where('status', 'approuve')
+            ->sum('montant');
 
        /*  $dataTPR = DemandeFonds::where('type', 'TPR')->get();
         $dataACCT = DemandeFonds::where('type', 'ACCT')->get();

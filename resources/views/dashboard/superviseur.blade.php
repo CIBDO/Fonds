@@ -267,7 +267,7 @@
         <div class="performance-grid">
             <div class="chart-container">
                 <div class="chart-title">
-                    <i class="fas fa-chart-line me-2 text-primary"></i>
+                    <i class="fas fa-chart-line me-2 text-success"></i>
                     Évolution des Demandes de Fonds
                 </div>
                 <canvas id="demandesChart" height="300"></canvas>

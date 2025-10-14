@@ -118,7 +118,7 @@
                                 </span>
                             </td>
                             <td>
-                                <i class="fas fa-calendar text-info me-2"></i>
+                                <i class="fas fa-calendar text-success me-2"></i>
                                 {{ $demande->created_at->format('d/m/Y') }}
                             </td>
                             <td>
@@ -183,11 +183,11 @@
                 </div>
                 <div class="dgtcp-card-body">
                     <div class="notification-item">
-                        <i class="fas fa-info-circle text-info"></i>
+                        <i class="fas fa-info-circle text-success"></i>
                         <span>Nouvelle procédure disponible</span>
                     </div>
                     <div class="notification-item">
-                        <i class="fas fa-exclamation-triangle text-warning"></i>
+                        <i class="fas fa-exclamation-triangle text-success"></i>
                         <span>Échéance rapport mensuel</span>
                     </div>
                 </div>

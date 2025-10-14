@@ -16,6 +16,7 @@ class TresorierController extends Controller
         $user = Auth::user();
 
         // Filtrer les demandes de fonds pour le poste de l'utilisateur connecté
+        // Inclure toutes les demandes pour le tableau détaillé
         $demandesFonds = DemandeFonds::where('poste_id', $user->poste_id)->with('poste')
         ->orderBy('created_at', 'desc')
         ->paginate(12);
@@ -23,8 +24,16 @@ class TresorierController extends Controller
         // Calculs spécifiques pour les totaux uniquement pour le poste de l'utilisateur
         $fondsDemandes = DemandeFonds::where('poste_id', $user->poste_id)->sum('total_courant');
         $fondsRecettes = DemandeFonds::where('poste_id', $user->poste_id)->sum('montant_disponible');
-        $fondsEnCours = DemandeFonds::where('poste_id', $user->poste_id)->sum('solde');
-        $paiementsEffectues = DemandeFonds::where('poste_id', $user->poste_id)->sum('montant');
+
+        // Fonds en cours de traitement (en_attente) - cumul des soldes
+        $fondsEnCours = DemandeFonds::where('poste_id', $user->poste_id)
+            ->where('status', 'en_attente')
+            ->sum('solde');
+
+        // Paiements effectués (approuvés) - cumul des montants
+        $paiementsEffectues = DemandeFonds::where('poste_id', $user->poste_id)
+            ->where('status', 'approuve')
+            ->sum('montant');
 
         return view('dashboard.tresorier', compact('demandesFonds', 'fondsDemandes', 'fondsRecettes', 'fondsEnCours', 'paiementsEffectues'));
     }

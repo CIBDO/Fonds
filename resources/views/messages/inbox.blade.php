@@ -8,175 +8,121 @@
             @include('partials.mail_sidebar')
         </div>
 
-        <!-- Contenu principal : Boîte de réception ultra-moderne -->
+        <!-- Contenu principal : Boîte de réception épurée -->
         <div class="col-12 col-md-9">
-            <!-- En-tête moderne avec dégradé -->
-            <div class="card border-0 shadow-lg mb-4" style="border-radius: 20px; overflow: hidden;">
-                <div class="card-header border-0 text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.5rem;">
-                    <div class="d-flex justify-content-between align-items-center flex-wrap">
-                        <div>
-                            <h2 class="mb-0 fw-bold fs-2">
-                                <i class="fas fa-inbox me-3"></i> 📥 Boîte de Réception
-                            </h2>
-                            <p class="mb-0 mt-2 opacity-75">Vos messages reçus</p>
+            <!-- En-tête bleu simple -->
+            <div class="inbox-header mb-4" style="background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%); padding: 20px 24px; border-radius: 16px; color: white;">
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div class="d-flex align-items-center">
+                        <div class="header-icon me-3">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zm0-13H5V5h14v1z"/>
+                            </svg>
                         </div>
-                        <!-- Barre de recherche moderne -->
-                        <form class="d-flex mb-2 mb-md-0" method="GET" action="" style="min-width: 300px;">
-                            <div class="input-group">
-                                <input class="form-control border-0 shadow-sm" type="search" name="q"
-                                       placeholder="🔍 Rechercher dans vos messages..." aria-label="Search"
-                                       style="border-radius: 25px 0 0 25px; background: rgba(255,255,255,0.9);">
-                                <button class="btn text-white" type="submit"
-                                        style="background: rgba(255,255,255,0.2); border-radius: 0 25px 25px 0; border: none;">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
-                        </form>
+                        <div>
+                            <h1 class="mb-0 fw-bold" style="font-size: 20px;">Boîte de Réception</h1>
+                            <p class="mb-0 opacity-75" style="font-size: 14px;">Vos messages reçus</p>
+                        </div>
                     </div>
+                    <!-- Barre de recherche simple -->
+                    <form class="d-flex" method="GET" action="" style="min-width: 280px;">
+                        <div class="search-container" style="position: relative; flex: 1;">
+                            <input class="form-control" type="search" name="q"
+                                   placeholder="Rechercher dans vos messages..."
+                                   style="border: none; border-radius: 24px; padding: 8px 16px 8px 40px; background: rgba(255,255,255,0.9); font-size: 14px; width: 100%;">
+                            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="#6B7280" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%);">
+                                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                            </svg>
+                        </div>
+                    </form>
                 </div>
             </div>
 
             @if($messages->isEmpty())
-                <!-- Message vide ultra-moderne -->
-                <div class="card border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
-                    <div class="card-body text-center p-5" style="background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);">
-                        <div class="mb-4">
-                            <i class="fas fa-inbox fa-5x text-muted opacity-50"></i>
-                        </div>
-                        <h4 class="fw-bold text-muted mb-3">Aucun message dans votre boîte de réception</h4>
-                        <p class="text-muted mb-4">Votre boîte de réception est vide. Les nouveaux messages apparaîtront ici.</p>
-                        <button type="button" class="btn btn-lg fw-bold text-white" data-bs-toggle="modal" data-bs-target="#composeModal"
-                                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 15px; padding: 15px 30px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);">
-                            <i class="fas fa-pen me-2"></i> Composer un message
-                        </button>
+                <!-- État vide simple -->
+                <div class="empty-state text-center py-5" style="background: #F8F9FA; border-radius: 16px; margin-top: 20px;">
+                    <div class="empty-icon mb-3">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="#9CA3AF">
+                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                        </svg>
                     </div>
+                    <h3 class="fw-semibold mb-2" style="color: #374151;">Votre boîte de réception est vide</h3>
+                    <p class="text-muted" style="color: #6B7280;">Les nouveaux messages apparaîtront ici.</p>
                 </div>
             @else
-                <!-- Liste des messages ultra-moderne -->
-                <div class="card border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
-                    <div class="card-body p-0">
-                        @foreach($messages as $index => $message)
-                            <div class="message-item border-0 {{ $index === 0 ? '' : 'border-top' }}"
-                                 style="animation: slideInUp {{ 0.1 * $index }}s ease-out; animation-fill-mode: both;">
-                                <a href="{{ route('messages.show', $message->id) }}"
-                                   class="d-flex align-items-center py-4 px-4 text-decoration-none position-relative message-link {{ $message->status == 'unread' ? 'unread-message' : '' }}"
-                                   style="transition: all 0.3s ease; border-left: 4px solid transparent;">
+                <!-- Liste des messages épurée -->
+                <div class="message-list" style="background: #ffffff; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; margin-top: 20px;">
+                    @foreach($messages as $message)
+                        <div class="message-item {{ $message->status == 'unread' ? 'unread' : '' }}" style="border-bottom: 1px solid #F3F4F6; position: relative;">
 
-                                    <!-- Avatar expéditeur ultra-moderne -->
-                                    <div class="me-3 flex-shrink-0">
-                                        @php
-                                            $avatar = $message->sender->avatar ?? null;
-                                            $initial = strtoupper(substr($message->sender->name ?? 'U', 0, 1));
-                                            $colors = [
-                                                'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                                'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                                                'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                                                'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-                                                'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-                                                'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-                                                'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
-                                                'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)'
-                                            ];
-                                            $colorIndex = ($message->sender->id ?? 0) % count($colors);
-                                            $avatarBg = $colors[$colorIndex];
-                                        @endphp
-                                        @if($avatar)
-                                            <img src="{{ asset('assets/img/profiles/' . $avatar) }}"
-                                                 class="rounded-circle shadow-sm"
-                                                 style="width:52px;height:52px;object-fit:cover;border:2px solid rgba(102, 126, 234, 0.3);">
-                                        @else
-                                            <div class="rounded-circle shadow-sm d-flex align-items-center justify-content-center"
-                                                 style="width:52px;height:52px;background:{{ $avatarBg }};border:2px solid rgba(102, 126, 234, 0.3);color:white;font-weight:bold;font-size:1.3rem;">
-                                                {{ $initial }}
-                                            </div>
-                                        @endif
-                                    </div>
+                            <!-- Indicateur bleu pour les messages non lus -->
+                            @if($message->status == 'unread')
+                                <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: #1D4ED8; border-radius: 0 2px 2px 0;"></div>
+                            @endif
 
-                                    <!-- Détails du message -->
-                                    <div class="flex-grow-1 overflow-hidden">
-                                        <div class="d-flex align-items-center mb-2">
-                                            <div class="d-flex align-items-center me-3">
-                                                @php
-                                                    $senderInitial = strtoupper(substr($message->sender->name ?? 'U', 0, 1));
-                                                    $senderColorIndex = ($message->sender->id ?? 0) % count($colors);
-                                                    $senderBg = $colors[$senderColorIndex];
-                                                @endphp
-                                                <div class="d-flex align-items-center bg-light rounded-pill px-2 py-1 shadow-sm me-2">
-                                                    <div class="rounded-circle me-1 d-flex align-items-center justify-content-center"
-                                                         style="width:20px;height:20px;background:{{ $senderBg }};color:white;font-weight:bold;font-size:0.7rem;">
-                                                        {{ $senderInitial }}
-                                                    </div>
-                                                    <span class="fw-semibold small">{{ Str::limit($message->sender->name ?? 'Expéditeur inconnu', 15) }}</span>
-                                                </div>
-                                                <i class="fas fa-arrow-right text-muted me-2"></i>
-                                            </div>
-                                            <div class="d-flex flex-wrap gap-1">
-                                                @foreach($message->recipients->take(2) as $recipient)
-                                                    @php
-                                                        $recipientInitial = strtoupper(substr($recipient->name ?? 'U', 0, 1));
-                                                        $recipientColorIndex = ($recipient->id ?? 0) % count($colors);
-                                                        $recipientBg = $colors[$recipientColorIndex];
-                                                    @endphp
-                                                    <div class="d-flex align-items-center bg-light rounded-pill px-2 py-1 shadow-sm">
-                                                        <div class="rounded-circle me-1 d-flex align-items-center justify-content-center"
-                                                             style="width:20px;height:20px;background:{{ $recipientBg }};color:white;font-weight:bold;font-size:0.7rem;">
-                                                            {{ $recipientInitial }}
-                                                        </div>
-                                                        <span class="fw-semibold small">{{ Str::limit($recipient->name, 10) }}</span>
-                                                    </div>
-                                                @endforeach
-                                                @if($message->recipients->count() > 2)
-                                                    <span class="badge bg-info rounded-pill">+{{ $message->recipients->count() - 2 }}</span>
-                                                @endif
-                                            </div>
+                            <a href="{{ route('messages.show', $message->id) }}"
+                               class="message-link d-flex align-items-center py-3 px-4 text-decoration-none"
+                               style="color: inherit; padding-left: {{ $message->status == 'unread' ? '20px' : '16px' }} !important;">
+
+                                <!-- Avatar simple -->
+                                <div class="message-avatar me-3 flex-shrink-0">
+                                    @php
+                                        $avatar = $message->sender->avatar ?? null;
+                                        $initial = strtoupper(substr($message->sender->name ?? 'U', 0, 1));
+                                        $colors = ['#3B82F6', '#1D4ED8', '#2563EB', '#1E40AF', '#1E3A8A', '#312E81'];
+                                        $colorIndex = ($message->sender->id ?? 0) % count($colors);
+                                        $avatarColor = $colors[$colorIndex];
+                                    @endphp
+                                    @if($avatar)
+                                        <img src="{{ asset('assets/img/profiles/' . $avatar) }}"
+                                             style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%; border: 1px solid #E5E7EB;">
+                                    @else
+                                        <div style="width: 40px; height: 40px; background: {{ $avatarColor }}; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 500; font-size: 16px;">
+                                            {{ $initial }}
                                         </div>
+                                    @endif
+                                </div>
 
-                                        <div class="d-flex align-items-center mb-1">
-                                            <span class="fw-bold text-dark text-truncate me-2" style="max-width:300px; font-size: 1.1rem;">
-                                                {{ $message->subject }}
-                                            </span>
-                                            @if($message->attachments->isNotEmpty())
-                                                <span class="badge bg-warning text-dark rounded-pill me-2">
-                                                    <i class="fas fa-paperclip me-1"></i>{{ $message->attachments->count() }}
-                                                </span>
-                                            @endif
+                                <!-- Contenu du message -->
+                                <div class="message-content flex-grow-1 min-w-0">
+                                    <div class="message-header d-flex align-items-center mb-1">
+                                        <div class="message-sender fw-semibold me-2" style="color: #111827; font-size: 14px;">
+                                            {{ Str::limit($message->sender->name ?? 'Expéditeur inconnu', 20) }}
                                         </div>
-
-                                        <div class="text-muted small text-truncate" style="max-width:400px; line-height: 1.4;">
-                                            {{ Str::limit(strip_tags($message->body), 80) }}
+                                        <div class="message-time text-muted ms-auto" style="font-size: 12px; color: #6B7280;">
+                                            {{ $message->sent_at ? \Carbon\Carbon::parse($message->sent_at)->format('d/m/Y H:i') : '' }}
                                         </div>
                                     </div>
 
-                                    <!-- Statut et date -->
-                                    <div class="text-end ms-3 flex-shrink-0" style="min-width:120px;">
-                                        <div class="mb-2">
-                                            <span class="badge {{ $message->status == 'unread' ? 'bg-warning text-dark' : 'bg-success' }} px-3 py-2"
-                                                  style="border-radius: 15px; font-size: 0.8rem;">
-                                                <i class="fas {{ $message->status == 'unread' ? 'fa-envelope' : 'fa-envelope-open' }} me-1"></i>
-                                                {{ $message->status == 'unread' ? 'Non lu' : 'Lu' }}
-                                            </span>
-                                        </div>
-                                        <div class="text-muted small d-flex align-items-center justify-content-end">
-                                            <i class="fas fa-clock me-1"></i>
-                                            {{ $message->sent_at ? \Carbon\Carbon::parse($message->sent_at)->format('d/m H:i') : '' }}
-                                        </div>
-                                        <div class="text-muted small mt-1">
-                                            {{ $message->sent_at ? \Carbon\Carbon::parse($message->sent_at)->diffForHumans() : '' }}
-                                        </div>
+                                    <div class="message-subject fw-semibold mb-1" style="color: #111827; font-size: 14px; line-height: 1.3;">
+                                        {{ Str::limit($message->subject, 60) }}
                                     </div>
-                                </a>
-                            </div>
-                        @endforeach
-                    </div>
+
+                                    <div class="message-preview text-muted" style="font-size: 13px; color: #6B7280; line-height: 1.4;">
+                                        {{ Str::limit(strip_tags($message->body), 100) }}
+                                    </div>
+                                </div>
+
+                                <!-- Indicateurs -->
+                                <div class="message-actions d-flex align-items-center ms-3">
+                                    @if($message->attachments->isNotEmpty())
+                                        <div style="color: #6B7280; font-size: 12px;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/>
+                                            </svg>
+                                        </div>
+                                    @endif
+                                </div>
+                            </a>
+                        </div>
+                    @endforeach
                 </div>
             @endif
 
-            <!-- Pagination moderne -->
+            <!-- Pagination simple -->
             @if(!$messages->isEmpty())
                 <div class="d-flex justify-content-center mt-4">
-                    <div class="pagination-wrapper">
-                        {{ $messages->links() }}
-                    </div>
+                    {{ $messages->links() }}
                 </div>
             @endif
         </div>
@@ -186,13 +132,13 @@
 <!-- Inclure la modale de composition -->
 @include('messages.partials.compose_modal')
 
-<!-- Styles Ultra-Modernes -->
+<!-- Styles épurés -->
 <style>
-/* Animations d'entrée */
-@keyframes slideInUp {
+/* Animation d'entrée */
+@keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(10px);
     }
     to {
         opacity: 1;
@@ -200,128 +146,66 @@
     }
 }
 
-/* Effets hover sur les messages */
-.message-link:hover {
-    background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%) !important;
-    border-left: 4px solid #667eea !important;
-    transform: translateX(5px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2) !important;
+.message-list {
+    animation: fadeInUp 0.3s ease-out;
 }
 
-/* Messages non lus */
-.unread-message {
-    background: linear-gradient(135deg, #f0f8ff 0%, #ffffff 100%) !important;
-    border-left: 4px solid #667eea !important;
+/* Style des éléments de message */
+.message-item {
+    transition: background-color 0.2s ease;
 }
 
-/* Pagination moderne */
-.pagination-wrapper .pagination {
-    border-radius: 15px;
+.message-item:hover {
+    background: #F9FAFB;
+}
+
+.message-item.unread {
+    background: #EFF6FF;
+}
+
+.message-item.unread:hover {
+    background: #EBF4FF;
+}
+
+/* Style du contenu des messages */
+.message-content {
+    min-width: 0;
+}
+
+.message-preview {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.pagination-wrapper .page-link {
-    border: none;
-    padding: 12px 18px;
-    color: #667eea;
-    background: white;
-    transition: all 0.3s ease;
-}
-
-.pagination-wrapper .page-link:hover {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    transform: translateY(-2px);
-}
-
-.pagination-wrapper .page-item.active .page-link {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    color: white;
-}
-
-/* Animation des badges */
-.badge {
-    animation: fadeInScale 0.5s ease-out;
-}
-
-@keyframes fadeInScale {
-    from {
-        opacity: 0;
-        transform: scale(0.8);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-/* Effet de survol sur les avatars */
-.message-link:hover .rounded-circle {
-    transform: scale(1.1);
-    transition: transform 0.3s ease;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
+    .inbox-header {
+        padding: 16px 20px;
+    }
+
+    .inbox-header h1 {
+        font-size: 18px;
+    }
+
     .message-link {
+        padding: 12px 16px !important;
+    }
+
+    .message-avatar {
+        margin-right: 12px !important;
+    }
+
+    .message-header {
         flex-direction: column;
         align-items: flex-start !important;
+        gap: 4px;
     }
 
-    .message-link .text-end {
-        align-self: flex-end;
-        margin-top: 10px;
-    }
-}
-
-/* Animation du header */
-.card-header {
-    animation: slideInDown 0.6s ease-out;
-}
-
-@keyframes slideInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Effet de focus sur la recherche */
-.form-control:focus {
-    box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25) !important;
-    border-color: #667eea !important;
-}
-
-/* Indicateur de message non lu */
-.unread-message::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 8px;
-    height: 8px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 50%;
-    margin-left: -4px;
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
-    }
-    70% {
-        box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+    .message-time {
+        margin-left: 0 !important;
+        font-size: 11px;
     }
 }
 </style>
