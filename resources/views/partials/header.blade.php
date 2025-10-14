@@ -3,8 +3,8 @@
         <a href="{{ route('login') }}" class="dgtcp-logo-container">
             <img src="{{ asset('assets/img/logo.png') }}" alt="Logo DGTCP" class="dgtcp-logo-img">
             <div class="dgtcp-logo-text">
-                <span class="dgtcp-ministry">DGTCP</span>
-                <span class="dgtcp-subtitle">Trésor Public</span>
+               {{--  <span class="dgtcp-ministry">DGTCP</span>
+                <span class="dgtcp-subtitle">Trésor Public</span> --}}
             </div>
         </a>
         <a href="{{ route('login') }}" class="dgtcp-logo-small">

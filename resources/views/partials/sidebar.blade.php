@@ -40,9 +40,9 @@
                         </a>
                         <ul class="submenu-list">
                             <li><a href="{{ route('demandes-fonds.create') }}" class="{{ request()->routeIs('demandes-fonds.create') ? 'active' : '' }}">
-                                <i class="fas fa-plus-circle"></i>Faire une Demande de Fonds</a></li>
+                                <i class="fas fa-plus-circle"></i>Effectuer une Demande </a></li>
                             <li><a href="{{ route('demandes-fonds.index') }}" class="{{ request()->routeIs('demandes-fonds.index') ? 'active' : '' }}">
-                                <i class="fas fa-list"></i>Liste des Demandes de Fonds</a></li>
+                                <i class="fas fa-list"></i>Liste des Demandes</a></li>
                             <li><a href="{{ route('demandes-fonds.situation') }}" class="{{ request()->routeIs('demandes-fonds.situation') ? 'active' : '' }}">
                                 <i class="fas fa-chart-bar"></i>Situation des Demandes</a></li>
                         </ul>
@@ -59,11 +59,9 @@
                         </a>
                         <ul class="submenu-list">
                             <li><a href="{{ route('demandes-fonds.index') }}" class="{{ request()->routeIs('demandes-fonds.index') ? 'active' : '' }}">
-                                <i class="fas fa-list"></i>Liste des Demandes de Fonds</a></li>
+                                <i class="fas fa-list"></i>Liste des Demandes</a></li>
                             <li><a href="{{ route('demandes-fonds.envois') }}" class="{{ request()->routeIs('demandes-fonds.envois') ? 'active' : '' }}">
                                 <i class="fas fa-send"></i>Envoyer des Fonds</a></li>
-                            <li><a href="{{ route('demandes-fonds.situation') }}" class="{{ request()->routeIs('demandes-fonds.situation') ? 'active' : '' }}">
-                                <i class="fas fa-chart-pie"></i>Situation des Demandes</a></li>
                         </ul>
                     </li>
                 @endif
@@ -165,138 +163,194 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Gestion des sous-menus
-    const submenuToggles = document.querySelectorAll('.submenu-toggle');
+    'use strict';
 
-    submenuToggles.forEach(toggle => {
-        toggle.addEventListener('click', function(e) {
+    /**
+     * Gestionnaire de sidebar professionnel
+     * Gère les sous-menus de manière optimisée et accessible
+     */
+    class SidebarManager {
+        constructor() {
+            this.init();
+        }
+
+        init() {
+            this.cleanupSubmenuStates();
+            this.setupSubmenuToggles();
+            this.setupAutoOpenActiveSubmenus();
+            this.setupActiveSubmenuLinks();
+        }
+
+        /**
+         * Nettoie les états des sous-menus pour éviter les conflits
+         */
+        cleanupSubmenuStates() {
+            // Fermer tous les sous-menus au démarrage
+            const allSubmenus = document.querySelectorAll('.submenu');
+            allSubmenus.forEach(submenu => {
+                const submenuList = submenu.querySelector('.submenu-list');
+                const arrow = submenu.querySelector('.menu-arrow');
+
+                if (submenuList && !submenu.classList.contains('active')) {
+                    submenuList.classList.remove('show');
+                }
+                if (arrow && !submenu.classList.contains('active')) {
+                    arrow.style.transform = 'rotate(0deg)';
+                }
+            });
+        }
+
+        /**
+         * Configure les événements de basculement des sous-menus
+         */
+        setupSubmenuToggles() {
+            const submenuToggles = document.querySelectorAll('.submenu-toggle');
+
+            submenuToggles.forEach(toggle => {
+                toggle.addEventListener('click', this.handleSubmenuToggle.bind(this));
+            });
+        }
+
+        /**
+         * Gère le clic sur un bouton de sous-menu
+         * @param {Event} e - L'événement de clic
+         */
+        handleSubmenuToggle(e) {
             e.preventDefault();
 
-            const parentLi = this.closest('.submenu');
-            const submenuList = parentLi.querySelector('.submenu-list');
-            const arrow = this.querySelector('.menu-arrow');
+            const toggle = e.currentTarget;
+            const parentLi = toggle.closest('.submenu');
+            const submenuList = parentLi?.querySelector('.submenu-list');
+            const arrow = toggle.querySelector('.menu-arrow');
 
-            // Fermer tous les autres sous-menus
-            submenuToggles.forEach(otherToggle => {
-                if (otherToggle !== this) {
-                    const otherParent = otherToggle.closest('.submenu');
-                    const otherSubmenu = otherParent.querySelector('.submenu-list');
-                    const otherArrow = otherToggle.querySelector('.menu-arrow');
+            if (!parentLi || !submenuList) {
+                console.warn('Structure de sous-menu invalide détectée');
+                return;
+            }
 
-                    otherSubmenu.classList.remove('show');
-                    otherParent.classList.remove('active');
-                    otherArrow.style.transform = 'rotate(0deg)';
+            this.closeAllOtherSubmenus(toggle);
+            this.toggleCurrentSubmenu(parentLi, submenuList, arrow);
+        }
+
+        /**
+         * Ferme tous les autres sous-menus sauf celui spécifié
+         * @param {Element} currentToggle - Le bouton de basculement actuel
+         */
+        closeAllOtherSubmenus(currentToggle) {
+            const allToggles = document.querySelectorAll('.submenu-toggle');
+
+            allToggles.forEach(toggle => {
+                if (toggle !== currentToggle) {
+                    const parentLi = toggle.closest('.submenu');
+                    const submenuList = parentLi?.querySelector('.submenu-list');
+                    const arrow = toggle.querySelector('.menu-arrow');
+
+                    submenuList?.classList.remove('show');
+                    parentLi?.classList.remove('active');
+                    if (arrow) {
+                        arrow.style.transform = 'rotate(0deg)';
+                    }
+                }
+            });
+        }
+
+        /**
+         * Bascule l'état du sous-menu actuel
+         * @param {Element} parentLi - L'élément parent du sous-menu
+         * @param {Element} submenuList - La liste du sous-menu
+         * @param {Element|null} arrow - La flèche du sous-menu
+         */
+        toggleCurrentSubmenu(parentLi, submenuList, arrow) {
+            const isOpen = submenuList.classList.contains('show');
+
+            if (isOpen) {
+                this.closeSubmenu(parentLi, submenuList, arrow);
+            } else {
+                this.openSubmenu(parentLi, submenuList, arrow);
+            }
+        }
+
+        /**
+         * Ouvre un sous-menu
+         * @param {Element} parentLi - L'élément parent du sous-menu
+         * @param {Element} submenuList - La liste du sous-menu
+         * @param {Element|null} arrow - La flèche du sous-menu
+         */
+        openSubmenu(parentLi, submenuList, arrow) {
+            submenuList.classList.add('show');
+            parentLi.classList.add('active');
+            if (arrow) {
+                arrow.style.transform = 'rotate(90deg)';
+            }
+        }
+
+        /**
+         * Ferme un sous-menu
+         * @param {Element} parentLi - L'élément parent du sous-menu
+         * @param {Element} submenuList - La liste du sous-menu
+         * @param {Element|null} arrow - La flèche du sous-menu
+         */
+        closeSubmenu(parentLi, submenuList, arrow) {
+            submenuList.classList.remove('show');
+            parentLi.classList.remove('active');
+            if (arrow) {
+                arrow.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        /**
+         * Configure l'ouverture automatique des sous-menus actifs
+         * N'ouvre qu'un seul sous-menu à la fois pour éviter les conflits
+         */
+        setupAutoOpenActiveSubmenus() {
+            const activeSubmenus = document.querySelectorAll('.submenu.active');
+
+            // N'ouvrir qu'un seul sous-menu actif (le premier trouvé)
+            // pour éviter les conflits entre plusieurs sous-menus actifs
+            if (activeSubmenus.length > 0) {
+                const primarySubmenu = activeSubmenus[0];
+                const submenuList = primarySubmenu.querySelector('.submenu-list');
+                const arrow = primarySubmenu.querySelector('.menu-arrow');
+
+                if (submenuList) {
+                    this.openSubmenu(primarySubmenu, submenuList, arrow);
+                }
+            }
+        }
+
+        /**
+         * Configure la gestion des liens actifs dans les sous-menus
+         * Améliore la précision pour éviter les conflits
+         */
+        setupActiveSubmenuLinks() {
+            const submenuLinks = document.querySelectorAll('.submenu-list a');
+            const activeLinks = [];
+
+            // Collecter tous les liens actifs d'abord
+            submenuLinks.forEach(link => {
+                if (link.classList.contains('active')) {
+                    activeLinks.push(link);
                 }
             });
 
-            // Toggle le sous-menu actuel
-            if (submenuList.classList.contains('show')) {
-                submenuList.classList.remove('show');
-                parentLi.classList.remove('active');
-                arrow.style.transform = 'rotate(0deg)';
-            } else {
-                submenuList.classList.add('show');
-                parentLi.classList.add('active');
-                arrow.style.transform = 'rotate(90deg)';
+            // N'ouvrir qu'un seul sous-menu (le premier lien actif trouvé)
+            // pour éviter les conflits entre plusieurs sous-menus
+            if (activeLinks.length > 0) {
+                const primaryLink = activeLinks[0];
+                const parentSubmenu = primaryLink.closest('.submenu');
+                const submenuList = parentSubmenu?.querySelector('.submenu-list');
+                const arrow = parentSubmenu?.querySelector('.menu-arrow');
+
+                if (parentSubmenu && submenuList) {
+                    this.openSubmenu(parentSubmenu, submenuList, arrow);
+                }
             }
-        });
-    });
-
-    // Ouvrir automatiquement le sous-menu si un item est actif
-    const activeSubmenus = document.querySelectorAll('.submenu.active');
-    activeSubmenus.forEach(submenu => {
-        const submenuList = submenu.querySelector('.submenu-list');
-        const arrow = submenu.querySelector('.menu-arrow');
-
-        if (submenuList) {
-            submenuList.classList.add('show');
-            if (arrow) {
-                arrow.style.transform = 'rotate(90deg)';
-            }
-        }
-    });
-
-    // Gestion des liens actifs dans les sous-menus
-    const submenuLinks = document.querySelectorAll('.submenu-list a');
-    submenuLinks.forEach(link => {
-        if (link.classList.contains('active')) {
-            const parentSubmenu = link.closest('.submenu');
-            const submenuList = parentSubmenu.querySelector('.submenu-list');
-            const arrow = parentSubmenu.querySelector('.menu-arrow');
-
-            parentSubmenu.classList.add('active');
-            submenuList.classList.add('show');
-            if (arrow) {
-                arrow.style.transform = 'rotate(90deg)';
-            }
-        }
-    });
-
-    // Animation de survol pour les icônes
-    const menuItems = document.querySelectorAll('.sidebar-menu a');
-    menuItems.forEach(item => {
-        const icon = item.querySelector('i');
-
-        item.addEventListener('mouseenter', function() {
-            if (icon) {
-                icon.style.transform = 'scale(1.1) rotate(5deg)';
-            }
-        });
-
-        item.addEventListener('mouseleave', function() {
-            if (icon && !this.closest('li').classList.contains('active')) {
-                icon.style.transform = 'scale(1) rotate(0deg)';
-            }
-        });
-    });
-
-    // Effet de ripple sur les clics
-    const menuLinks = document.querySelectorAll('.sidebar-menu a');
-    menuLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            // Créer l'effet ripple
-            const ripple = document.createElement('span');
-            const rect = this.getBoundingClientRect();
-            const size = Math.max(rect.width, rect.height);
-            const x = e.clientX - rect.left - size / 2;
-            const y = e.clientY - rect.top - size / 2;
-
-            ripple.style.cssText = `
-                position: absolute;
-                width: ${size}px;
-                height: ${size}px;
-                left: ${x}px;
-                top: ${y}px;
-                background: rgba(255, 255, 255, 0.3);
-                border-radius: 50%;
-                transform: scale(0);
-                animation: ripple 0.6s linear;
-                pointer-events: none;
-                z-index: 1;
-            `;
-
-            this.style.position = 'relative';
-            this.style.overflow = 'hidden';
-            this.appendChild(ripple);
-
-            setTimeout(() => {
-                ripple.remove();
-            }, 600);
-        });
-    });
-});
-
-// CSS pour l'animation ripple
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes ripple {
-        to {
-            transform: scale(4);
-            opacity: 0;
         }
     }
-`;
-document.head.appendChild(style);
+
+    // Initialiser le gestionnaire de sidebar
+    new SidebarManager();
+});
 </script>
 
 {{-- <div class="d-flex flex-column h-100 bg-white shadow rounded-3 p-3">

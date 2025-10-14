@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
     <title>DGTCP-DSI</title>
     <link rel="shortcut icon" href="{{ asset('assets/img/favicon.png') }}">
-    
+
     <!-- Police personnalisée JetBrains Mono -->
     <link rel="stylesheet" href="{{ asset('assets/css/jetbrains-mono.css') }}">
-    
+
     <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/feather/feather.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/icons/flags/flags.css') }}">

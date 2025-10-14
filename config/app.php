@@ -43,6 +43,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Performance Optimization
+    |--------------------------------------------------------------------------
+    |
+    | Performance optimizations for faster loading
+    |
+    */
+
+    'cache_headers' => (bool) env('CACHE_HEADERS', true),
+    'minify_assets' => (bool) env('MINIFY_ASSETS', true),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application URL
     |--------------------------------------------------------------------------
     |
@@ -128,7 +140,7 @@ return [
         /*
          * Laravel Framework Service Providers...
          */
-       
+
         Illuminate\Auth\AuthServiceProvider::class,
         Illuminate\Broadcasting\BroadcastServiceProvider::class,
         Illuminate\Bus\BusServiceProvider::class,
@@ -156,7 +168,7 @@ return [
          * Package Service Providers...
          */
 
-        
+
         /*
          * Application Service Providers...
          */
@@ -225,7 +237,7 @@ return [
  */
          Yajra\DataTables\DataTablesServiceProvider::class,
 
-        'PDF' => Barryvdh\DomPDF\Facade\Pdf::class, 
+        'PDF' => Barryvdh\DomPDF\Facade\Pdf::class,
     ],
 
 ];
