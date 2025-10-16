@@ -16,6 +16,13 @@ use App\Http\Controllers\{
     NotificationController,
 };
 
+// Contrôleurs PCS
+use App\Http\Controllers\PCS\{
+    BureauDouaneController,
+    DeclarationPcsController,
+    AutreDemandeController,
+};
+
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -167,6 +174,59 @@ Route::middleware(['auth', 'role:superviseur'])->group(function () {
 // Routes pour les admins
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('dashboard.admin');
+});
+
+// ===============================================================
+// ROUTES PCS (Programme de Consolidation des Statistiques)
+// ===============================================================
+
+Route::middleware(['auth'])->prefix('pcs')->name('pcs.')->group(function () {
+
+    // ===== BUREAUX DE DOUANES (Gestion) =====
+    Route::middleware('role:admin')->group(function () {
+        Route::resource('bureaux', BureauDouaneController::class)->except(['show']);
+        Route::post('bureaux/{bureau}/toggle-actif', [BureauDouaneController::class, 'toggleActif'])
+            ->name('bureaux.toggle-actif');
+    });
+
+    // ===== DÉCLARATIONS PCS =====
+    Route::controller(DeclarationPcsController::class)->prefix('declarations')->name('declarations.')->group(function () {
+        // Liste et formulaire (tous les utilisateurs PCS)
+        Route::get('/', 'index')->name('index');
+        Route::get('create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+        Route::get('{declaration}', 'show')->name('show');
+
+        // Validation (ACCT uniquement)
+        Route::middleware('role:admin,acct')->group(function () {
+            Route::post('{declaration}/valider', 'valider')->name('valider');
+            Route::post('{declaration}/rejeter', 'rejeter')->name('rejeter');
+        });
+
+        // Génération états PDF/Excel
+        Route::get('pdf/recettes', 'generatePdfRecettes')->name('pdf.recettes');
+        Route::get('pdf/reversements', 'generatePdfReversements')->name('pdf.reversements');
+    });
+
+    // ===== AUTRES DEMANDES =====
+    Route::controller(AutreDemandeController::class)->prefix('autres-demandes')->name('autres-demandes.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+        Route::get('{demande}', 'show')->name('show');
+        Route::get('{demande}/edit', 'edit')->name('edit');
+        Route::put('{demande}', 'update')->name('update');
+        Route::delete('{demande}', 'destroy')->name('destroy');
+
+        // Validation
+        Route::middleware('role:admin,acct')->group(function () {
+            Route::post('{demande}/valider', 'valider')->name('valider');
+            Route::post('{demande}/rejeter', 'rejeter')->name('rejeter');
+        });
+
+        // Statistiques
+        Route::get('statistiques/index', 'statistiques')->name('statistiques');
+    });
 });
 
 // Ajoutez la route d'authentification

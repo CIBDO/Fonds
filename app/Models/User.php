@@ -17,6 +17,8 @@ class User extends Authenticatable
         'role',
         'active', // Ajout de la gestion du statut actif
         'poste_id',
+        'peut_saisir_pcs',
+        'peut_valider_pcs',
     ];
 
     protected $hidden = [
@@ -26,6 +28,8 @@ class User extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'peut_saisir_pcs' => 'boolean',
+        'peut_valider_pcs' => 'boolean',
     ];
 
     // Vérifier si l'utilisateur est admin

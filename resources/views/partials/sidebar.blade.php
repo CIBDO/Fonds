@@ -116,6 +116,104 @@
                     </a>
                 </li>
 
+                <!-- MODULE PCS - SECTION POSTES (Saisie uniquement) -->
+                @if ((Auth::user()->peut_saisir_pcs || Auth::user()->poste_id) && !Auth::user()->peut_valider_pcs && !Auth::user()->hasRole('acct'))
+                    <li class="menu-title">
+                        <span>PCS (UEMOA/AES)</span>
+                    </li>
+
+                    <!-- Déclarations PCS -->
+                    <li class="submenu {{ request()->routeIs('pcs.declarations.*') ? 'active' : '' }}">
+                        <a href="#" class="submenu-toggle">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            <span>Déclarations PCS</span>
+                            <span class="menu-arrow fas fa-chevron-right"></span>
+                        </a>
+                        <ul class="submenu-list">
+                            @if (Auth::user()->peut_saisir_pcs || Auth::user()->poste_id)
+                                <li><a href="{{ route('pcs.declarations.create') }}" class="{{ request()->routeIs('pcs.declarations.create') ? 'active' : '' }}">
+                                    <i class="fas fa-plus-circle"></i>Nouvelle Déclaration</a></li>
+                            @endif
+                            <li><a href="{{ route('pcs.declarations.index') }}" class="{{ request()->routeIs('pcs.declarations.index') ? 'active' : '' }}">
+                                <i class="fas fa-list"></i>Mes Déclarations</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Autres Demandes -->
+                    <li class="submenu {{ request()->routeIs('pcs.autres-demandes.*') ? 'active' : '' }}">
+                        <a href="#" class="submenu-toggle">
+                            <i class="fas fa-folder-open"></i>
+                            <span>Autres Demandes</span>
+                            <span class="menu-arrow fas fa-chevron-right"></span>
+                        </a>
+                        <ul class="submenu-list">
+                            @if (Auth::user()->peut_saisir_pcs || Auth::user()->poste_id)
+                                <li><a href="{{ route('pcs.autres-demandes.create') }}" class="{{ request()->routeIs('pcs.autres-demandes.create') ? 'active' : '' }}">
+                                    <i class="fas fa-plus-circle"></i>Nouvelle Demande</a></li>
+                            @endif
+                            <li><a href="{{ route('pcs.autres-demandes.index') }}" class="{{ request()->routeIs('pcs.autres-demandes.index') ? 'active' : '' }}">
+                                <i class="fas fa-list"></i>Mes Demandes</a></li>
+                        </ul>
+                    </li>
+                @endif
+
+                <!-- MODULE PCS - SECTION ACCT (Validation & États Consolidés) -->
+                @if (Auth::user()->peut_valider_pcs || Auth::user()->hasRole('acct'))
+                    <li class="menu-title">
+                        <span>PCS - ACCT</span>
+                    </li>
+
+                    <!-- Validation PCS -->
+                    <li class="submenu {{ request()->routeIs('pcs.declarations.*') || request()->routeIs('pcs.autres-demandes.index') || request()->routeIs('pcs.autres-demandes.show') || request()->routeIs('pcs.autres-demandes.statistiques') ? 'active' : '' }}">
+                        <a href="#" class="submenu-toggle">
+                            <i class="fas fa-check-double"></i>
+                            <span>Validation PCS</span>
+                            <span class="menu-arrow fas fa-chevron-right"></span>
+                        </a>
+                        <ul class="submenu-list">
+                            <li><a href="{{ route('pcs.declarations.index') }}" class="{{ request()->routeIs('pcs.declarations.index') || request()->routeIs('pcs.declarations.show') ? 'active' : '' }}">
+                                <i class="fas fa-file-invoice-dollar"></i>Déclarations PCS</a></li>
+                            <li><a href="{{ route('pcs.autres-demandes.index') }}" class="{{ request()->routeIs('pcs.autres-demandes.index') || request()->routeIs('pcs.autres-demandes.show') ? 'active' : '' }}">
+                                <i class="fas fa-folder-open"></i>Autres Demandes</a></li>
+                            <li><a href="{{ route('pcs.autres-demandes.statistiques') }}" class="{{ request()->routeIs('pcs.autres-demandes.statistiques') ? 'active' : '' }}">
+                                <i class="fas fa-chart-pie"></i>Statistiques</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- États Consolidés PCS -->
+                    <li class="submenu">
+                        <a href="#" class="submenu-toggle">
+                            <i class="fas fa-file-pdf"></i>
+                            <span>États Consolidés</span>
+                            <span class="menu-arrow fas fa-chevron-right"></span>
+                        </a>
+                        <ul class="submenu-list">
+                            <li><a href="{{ route('pcs.declarations.pdf.recettes') }}" target="_blank">
+                                <i class="fas fa-file-download"></i>État des Recettes</a></li>
+                            <li><a href="{{ route('pcs.declarations.pdf.reversements') }}" target="_blank">
+                                <i class="fas fa-file-upload"></i>État des Reversements</a></li>
+                        </ul>
+                    </li>
+                @endif
+
+                <!-- MODULE PCS - ADMIN (Gestion complète) -->
+                @if (Auth::user()->hasRole('admin'))
+                    <!-- Bureaux de Douanes -->
+                    <li class="submenu {{ request()->routeIs('pcs.bureaux.*') ? 'active' : '' }}">
+                        <a href="#" class="submenu-toggle">
+                            <i class="fas fa-building"></i>
+                            <span>Bureaux de Douanes</span>
+                            <span class="menu-arrow fas fa-chevron-right"></span>
+                        </a>
+                        <ul class="submenu-list">
+                            <li><a href="{{ route('pcs.bureaux.create') }}" class="{{ request()->routeIs('pcs.bureaux.create') ? 'active' : '' }}">
+                                <i class="fas fa-plus-circle"></i>Nouveau Bureau</a></li>
+                            <li><a href="{{ route('pcs.bureaux.index') }}" class="{{ request()->routeIs('pcs.bureaux.index') ? 'active' : '' }}">
+                                <i class="fas fa-list"></i>Liste des Bureaux</a></li>
+                        </ul>
+                    </li>
+                @endif
+
                 <li class="menu-title">
                     <span>Management</span>
                 </li>

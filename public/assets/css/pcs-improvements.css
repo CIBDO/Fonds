@@ -1,0 +1,201 @@
+/* Améliorations de visibilité pour le module PCS */
+
+/* Badges avec meilleur contraste */
+.badge.bg-warning {
+    background-color: #f59e0b !important; /* Orange plus foncé */
+    color: #ffffff !important; /* Texte blanc pour contraste */
+    font-weight: 600;
+    border: 1px solid #d97706;
+}
+
+.badge.bg-warning:hover {
+    background-color: #d97706 !important;
+    transform: scale(1.05);
+    transition: all 0.2s ease;
+}
+
+/* Badges pour les postes - amélioration de la visibilité */
+.badge.bg-primary {
+    background-color: #2563eb !important; /* Bleu plus foncé */
+    color: #ffffff !important;
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+}
+
+.badge.bg-primary:hover {
+    background-color: #1d4ed8 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+    transition: all 0.2s ease;
+}
+
+/* Badges pour les bureaux de douanes */
+.badge.bg-info {
+    background-color: #0891b2 !important; /* Cyan plus foncé */
+    color: #ffffff !important;
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(8, 145, 178, 0.2);
+}
+
+.badge.bg-info:hover {
+    background-color: #0e7490 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(8, 145, 178, 0.3);
+    transition: all 0.2s ease;
+}
+
+/* Badges de statut améliorés */
+.badge.bg-success {
+    background-color: #059669 !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);
+}
+
+.badge.bg-secondary {
+    background-color: #6b7280 !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(107, 114, 128, 0.2);
+}
+
+.badge.bg-danger {
+    background-color: #dc2626 !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+}
+
+/* Animation pour tous les badges */
+.badge {
+    transition: all 0.2s ease;
+    border: none;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Badges spécifiques pour les postes */
+.poste-badge {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+    color: #ffffff !important;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+    border-radius: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 3px 6px rgba(59, 130, 246, 0.3);
+    border: 2px solid #ffffff;
+}
+
+.poste-badge:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
+}
+
+/* Badges pour les bureaux de douanes */
+.bureau-badge {
+    background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%) !important;
+    color: #ffffff !important;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+    border-radius: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 3px 6px rgba(8, 145, 178, 0.3);
+    border: 2px solid #ffffff;
+}
+
+.bureau-badge:hover {
+    background: linear-gradient(135deg, #0e7490 0%, #155e75 100%) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(8, 145, 178, 0.4);
+}
+
+/* Badges pour les programmes */
+.programme-badge {
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.8rem;
+    border-radius: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 2px solid #ffffff;
+}
+
+/* Badges pour les montants */
+.montant-badge {
+    font-weight: 600;
+    font-size: 0.8rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Amélioration des listes de postes */
+.poste-item {
+    background-color: #ffffff;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.poste-item:hover {
+    border-color: #3b82f6;
+    background-color: #f8fafc;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.poste-item .poste-nom {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 1rem;
+}
+
+.poste-item .poste-type {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+}
+
+/* Amélioration des tableaux PCS */
+.table-salaires .badge {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.6rem;
+    }
+
+    .poste-item {
+        padding: 0.5rem 0.75rem;
+    }
+}
+
+/* Mode sombre (si nécessaire) */
+@media (prefers-color-scheme: dark) {
+    .badge.bg-warning {
+        background-color: #f59e0b !important;
+        color: #000000 !important;
+    }
+}

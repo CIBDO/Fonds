@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard-improvements.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/pcs-improvements.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <!-- Inclure DataTables CSS -->
@@ -58,5 +59,6 @@
     <script src="{{ asset('assets/js/notifications.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
     @yield('add-js')
+    @stack('scripts')
 </body>
 </html>
