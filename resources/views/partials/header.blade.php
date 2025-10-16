@@ -77,6 +77,20 @@
                                                 <i class="fas fa-clipboard-check text-success"></i>
                                             @elseif($notification->type === 'App\Notifications\MessageSent')
                                                 <i class="fas fa-envelope text-info"></i>
+                                            @elseif($notification->type === 'App\Notifications\PcsDeclarationSoumise')
+                                                <i class="fas fa-file-invoice-dollar text-warning"></i>
+                                            @elseif($notification->type === 'App\Notifications\PcsDeclarationValidee')
+                                                <i class="fas fa-check-circle text-success"></i>
+                                            @elseif($notification->type === 'App\Notifications\PcsDeclarationRejetee')
+                                                <i class="fas fa-times-circle text-danger"></i>
+                                            @elseif($notification->type === 'App\Notifications\PcsAutreDemandeSoumise')
+                                                <i class="fas fa-folder-open text-info"></i>
+                                            @elseif($notification->type === 'App\Notifications\PcsAutreDemandeValidee')
+                                                <i class="fas fa-check-circle text-success"></i>
+                                            @elseif($notification->type === 'App\Notifications\PcsAutreDemandeRejetee')
+                                                <i class="fas fa-times-circle text-danger"></i>
+                                            @else
+                                                <i class="fas fa-bell text-primary"></i>
                                             @endif
                                         </div>
                                         <div class="dgtcp-notification-text">
@@ -91,6 +105,27 @@
                                                 <div class="dgtcp-notification-title">Nouveau message</div>
                                                 <div class="dgtcp-notification-message">De: {{ $notification->data['sender_name'] }}</div>
                                                 <div class="dgtcp-notification-subject">{{ $notification->data['subject'] }}</div>
+                                            @elseif($notification->type === 'App\Notifications\PcsDeclarationSoumise')
+                                                <div class="dgtcp-notification-title">{{ $notification->data['title'] }}</div>
+                                                <div class="dgtcp-notification-message">{{ $notification->data['message'] }}</div>
+                                            @elseif($notification->type === 'App\Notifications\PcsDeclarationValidee')
+                                                <div class="dgtcp-notification-title">{{ $notification->data['title'] }}</div>
+                                                <div class="dgtcp-notification-message">{{ $notification->data['message'] }}</div>
+                                            @elseif($notification->type === 'App\Notifications\PcsDeclarationRejetee')
+                                                <div class="dgtcp-notification-title">{{ $notification->data['title'] }}</div>
+                                                <div class="dgtcp-notification-message">{{ $notification->data['message'] }}</div>
+                                            @elseif($notification->type === 'App\Notifications\PcsAutreDemandeSoumise')
+                                                <div class="dgtcp-notification-title">{{ $notification->data['title'] }}</div>
+                                                <div class="dgtcp-notification-message">{{ $notification->data['message'] }}</div>
+                                            @elseif($notification->type === 'App\Notifications\PcsAutreDemandeValidee')
+                                                <div class="dgtcp-notification-title">{{ $notification->data['title'] }}</div>
+                                                <div class="dgtcp-notification-message">{{ $notification->data['message'] }}</div>
+                                            @elseif($notification->type === 'App\Notifications\PcsAutreDemandeRejetee')
+                                                <div class="dgtcp-notification-title">{{ $notification->data['title'] }}</div>
+                                                <div class="dgtcp-notification-message">{{ $notification->data['message'] }}</div>
+                                            @else
+                                                <div class="dgtcp-notification-title">{{ $notification->data['title'] ?? 'Notification' }}</div>
+                                                <div class="dgtcp-notification-message">{{ $notification->data['message'] ?? 'Nouvelle notification' }}</div>
                                             @endif
                                             <div class="dgtcp-notification-time">
                                                 <i class="fas fa-clock me-1"></i>

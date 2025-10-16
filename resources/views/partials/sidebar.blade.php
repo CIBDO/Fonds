@@ -180,19 +180,12 @@
                         </ul>
                     </li>
 
-                    <!-- États Consolidés PCS -->
-                    <li class="submenu">
-                        <a href="#" class="submenu-toggle">
-                            <i class="fas fa-file-pdf"></i>
-                            <span>États Consolidés</span>
-                            <span class="menu-arrow fas fa-chevron-right"></span>
+                    <!-- États Consolidés - Interface Dynamique Unique -->
+                    <li class="{{ request()->routeIs('pcs.etats-consolides.*') ? 'active' : '' }}">
+                        <a href="{{ route('pcs.etats-consolides.index') }}">
+                            <i class="fas fa-chart-line"></i>
+                            <span>États Consolidés Dynamiques</span>
                         </a>
-                        <ul class="submenu-list">
-                            <li><a href="{{ route('pcs.declarations.pdf.recettes') }}" target="_blank">
-                                <i class="fas fa-file-download"></i>État des Recettes</a></li>
-                            <li><a href="{{ route('pcs.declarations.pdf.reversements') }}" target="_blank">
-                                <i class="fas fa-file-upload"></i>État des Reversements</a></li>
-                        </ul>
                     </li>
                 @endif
 

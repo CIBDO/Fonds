@@ -1,4 +1,194 @@
 /* public/assets/css/notifications.css */
+
+/* Notifications DGTCP */
+.dgtcp-notifications-dropdown {
+    width: 400px;
+    max-height: 500px;
+    overflow-y: auto;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border: none;
+    padding: 0;
+}
+
+.dgtcp-notification-title {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1rem;
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dgtcp-mark-all-read {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.85rem;
+    text-decoration: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.dgtcp-mark-all-read:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    text-decoration: none;
+}
+
+.dgtcp-notification-content {
+    padding: 0;
+}
+
+.dgtcp-notification-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dgtcp-notification-item {
+    border-bottom: 1px solid #f0f0f0;
+    transition: all 0.2s ease;
+}
+
+.dgtcp-notification-item:last-child {
+    border-bottom: none;
+}
+
+.dgtcp-notification-item:hover {
+    background-color: #f8f9fa;
+}
+
+.dgtcp-notification-link {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+}
+
+.dgtcp-notification-link:hover {
+    text-decoration: none;
+    color: inherit;
+}
+
+.dgtcp-notification-body {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.dgtcp-notification-icon-wrapper {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dgtcp-notification-icon-wrapper i {
+    font-size: 16px;
+    color: white;
+}
+
+.dgtcp-notification-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.dgtcp-notification-text .dgtcp-notification-title {
+    background: none;
+    color: #2c3e50;
+    padding: 0;
+    margin: 0 0 4px 0;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: 0;
+}
+
+.dgtcp-notification-message {
+    color: #6c757d;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin-bottom: 4px;
+    word-wrap: break-word;
+}
+
+.dgtcp-notification-amount {
+    color: #28a745;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+}
+
+.dgtcp-notification-subject {
+    color: #495057;
+    font-size: 0.85rem;
+    font-style: italic;
+    margin-bottom: 4px;
+}
+
+.dgtcp-notification-time {
+    color: #adb5bd;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+}
+
+.dgtcp-notification-time i {
+    margin-right: 4px;
+}
+
+.dgtcp-empty-state {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: #6c757d;
+}
+
+.dgtcp-empty-state i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.dgtcp-dropdown-footer {
+    padding: 1rem;
+    border-top: 1px solid #f0f0f0;
+    background-color: #f8f9fa;
+    border-radius: 0 0 12px 12px;
+}
+
+.dgtcp-view-all-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0.75rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.dgtcp-view-all-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    color: white;
+    text-decoration: none;
+}
+
+/* Ancien système de notifications */
 .notification-message {
     transition: all 0.3s ease;
 }

@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use RealRashid\SweetAlert\Facades\Alert;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use App\Notifications\PcsDeclarationSoumise;
 use App\Notifications\PcsDeclarationValidee;
 use App\Notifications\PcsDeclarationRejetee;
@@ -388,6 +388,290 @@ class DeclarationPcsController extends Controller
                 $validateur->notify(new PcsDeclarationSoumise($declaration));
             }
         }
+    }
+
+    /**
+     * Générer l'état consolidé des reversements et recouvrements PCS
+     */
+    public function etatConsolideReversements(Request $request)
+    {
+        $annee = $request->get('annee', date('Y'));
+        $programme = $request->get('programme', 'UEMOA');
+
+        // Récupérer les données des déclarations PCS
+        $declarations = DeclarationPcs::with(['poste', 'bureauDouane'])
+            ->where('annee', $annee)
+            ->where('programme', $programme)
+            ->get();
+
+        // Organiser les données par poste et mois
+        $recouvrementsParPoste = [];
+        $reversementsParPoste = [];
+        $totalRecouvrementsMensuel = array_fill(1, 12, 0);
+        $totalReversementsMensuel = array_fill(1, 12, 0);
+        $totalRecouvrements = 0;
+        $totalReversements = 0;
+
+        foreach ($declarations as $declaration) {
+            $nomPoste = $declaration->poste_id ? $declaration->poste->nom : $declaration->bureauDouane->libelle;
+            $comptable = $declaration->poste_id ? '' : 'ACCT';
+            $mois = $declaration->mois;
+
+            // Recouvrements
+            if (!isset($recouvrementsParPoste[$nomPoste])) {
+                $recouvrementsParPoste[$nomPoste] = [
+                    'comptable' => $comptable,
+                    'mois' => array_fill(1, 12, 0),
+                    'total' => 0
+                ];
+            }
+            $recouvrementsParPoste[$nomPoste]['mois'][$mois] += $declaration->montant_recouvrement;
+            $recouvrementsParPoste[$nomPoste]['total'] += $declaration->montant_recouvrement;
+            $totalRecouvrementsMensuel[$mois] += $declaration->montant_recouvrement;
+            $totalRecouvrements += $declaration->montant_recouvrement;
+
+            // Reversements
+            if (!isset($reversementsParPoste[$nomPoste])) {
+                $reversementsParPoste[$nomPoste] = [
+                    'comptable' => $comptable,
+                    'mois' => array_fill(1, 12, 0),
+                    'total' => 0
+                ];
+            }
+            $reversementsParPoste[$nomPoste]['mois'][$mois] += $declaration->montant_reversement;
+            $reversementsParPoste[$nomPoste]['total'] += $declaration->montant_reversement;
+            $totalReversementsMensuel[$mois] += $declaration->montant_reversement;
+            $totalReversements += $declaration->montant_reversement;
+        }
+
+        // Trier par ordre alphabétique
+        ksort($recouvrementsParPoste);
+        ksort($reversementsParPoste);
+
+        $pdf = PDF::loadView('pcs.pdf.etat-reversements-consolide', compact(
+            'recouvrementsParPoste',
+            'reversementsParPoste',
+            'totalRecouvrementsMensuel',
+            'totalReversementsMensuel',
+            'totalRecouvrements',
+            'totalReversements',
+            'annee',
+            'programme'
+        ));
+
+        return $pdf->download("Etat_Reversements_PCS_{$programme}_{$annee}.pdf");
+    }
+
+    /**
+     * Afficher la vue de filtrage pour les états consolidés
+     */
+    public function filtreEtat()
+    {
+        $postes = \App\Models\Poste::orderBy('nom')->get();
+        $bureaux = \App\Models\BureauDouane::orderBy('libelle')->get();
+        return view('pcs.declarations.filtre-etat', compact('postes', 'bureaux'));
+    }
+
+    /**
+     * Générer l'état consolidé avec filtres personnalisés
+     */
+    public function etatConsolideFiltre(Request $request)
+    {
+        // Validation des paramètres
+        $validated = $request->validate([
+            'programme' => 'required|in:UEMOA,AES',
+            'annee' => 'required|integer|min:2020|max:' . (date('Y') + 1),
+            'date_debut' => 'required|date',
+            'date_fin' => 'required|date|after_or_equal:date_debut',
+            'poste_id' => 'nullable|exists:postes,id',
+            'bureau_id' => 'nullable|exists:bureaux_douanes,id',
+            'mois' => 'nullable|integer|min:1|max:12',
+            'format' => 'nullable|in:pdf,excel'
+        ]);
+
+        $programme = $validated['programme'];
+        $annee = $validated['annee'];
+        $dateDebut = $validated['date_debut'];
+        $dateFin = $validated['date_fin'];
+        $posteId = $validated['poste_id'];
+        $bureauId = $validated['bureau_id'];
+        $mois = $validated['mois'];
+        $format = $validated['format'] ?? 'pdf';
+
+        // Construire la requête avec filtres
+        $query = DeclarationPcs::with(['poste', 'bureauDouane'])
+            ->where('programme', $programme)
+            ->where('annee', $annee)
+            ->whereBetween('created_at', [$dateDebut . ' 00:00:00', $dateFin . ' 23:59:59']);
+
+        if ($posteId) {
+            $query->where('poste_id', $posteId);
+        }
+
+        if ($bureauId) {
+            $query->where('bureau_douane_id', $bureauId);
+        }
+
+        if ($mois) {
+            $query->where('mois', $mois);
+        }
+
+        $declarations = $query->get();
+
+        // Organiser les données (même logique que etatConsolideReversements)
+        $recouvrementsParPoste = [];
+        $reversementsParPoste = [];
+        $totalRecouvrementsMensuel = array_fill(1, 12, 0);
+        $totalReversementsMensuel = array_fill(1, 12, 0);
+        $totalRecouvrements = 0;
+        $totalReversements = 0;
+
+        foreach ($declarations as $declaration) {
+            $nomPoste = $declaration->poste_id ? $declaration->poste->nom : $declaration->bureauDouane->libelle;
+            $moisDeclaration = $declaration->mois;
+
+            // Recouvrements
+            if (!isset($recouvrementsParPoste[$nomPoste])) {
+                $recouvrementsParPoste[$nomPoste] = [
+                    'mois' => array_fill(1, 12, 0),
+                    'total' => 0
+                ];
+            }
+            $recouvrementsParPoste[$nomPoste]['mois'][$moisDeclaration] += $declaration->montant_recouvrement;
+            $recouvrementsParPoste[$nomPoste]['total'] += $declaration->montant_recouvrement;
+            $totalRecouvrementsMensuel[$moisDeclaration] += $declaration->montant_recouvrement;
+            $totalRecouvrements += $declaration->montant_recouvrement;
+
+            // Reversements
+            if (!isset($reversementsParPoste[$nomPoste])) {
+                $reversementsParPoste[$nomPoste] = [
+                    'mois' => array_fill(1, 12, 0),
+                    'total' => 0
+                ];
+            }
+            $reversementsParPoste[$nomPoste]['mois'][$moisDeclaration] += $declaration->montant_reversement;
+            $reversementsParPoste[$nomPoste]['total'] += $declaration->montant_reversement;
+            $totalReversementsMensuel[$moisDeclaration] += $declaration->montant_reversement;
+            $totalReversements += $declaration->montant_reversement;
+        }
+
+        // Trier par ordre alphabétique
+        ksort($recouvrementsParPoste);
+        ksort($reversementsParPoste);
+
+        // Générer le nom du fichier avec les filtres
+        $nomFichier = "Etat_Reversements_PCS_{$programme}_{$annee}";
+        if ($posteId) {
+            $poste = \App\Models\Poste::find($posteId);
+            $nomFichier .= "_" . strtoupper($poste->nom);
+        }
+        if ($bureauId) {
+            $bureau = \App\Models\BureauDouane::find($bureauId);
+            $nomFichier .= "_" . strtoupper($bureau->libelle);
+        }
+        if ($mois) {
+            $nomFichier .= "_" . str_pad($mois, 2, '0', STR_PAD_LEFT);
+        }
+        $nomFichier .= "_" . str_replace('-', '', $dateDebut) . "_" . str_replace('-', '', $dateFin);
+
+        if ($format === 'pdf') {
+            $pdf = PDF::loadView('pcs.pdf.etat-reversements-consolide', compact(
+                'recouvrementsParPoste',
+                'reversementsParPoste',
+                'totalRecouvrementsMensuel',
+                'totalReversementsMensuel',
+                'totalRecouvrements',
+                'totalReversements',
+                'annee',
+                'programme'
+            ));
+
+            return $pdf->download("{$nomFichier}.pdf");
+        } else {
+            // TODO: Implémenter l'export Excel
+            return response()->json(['message' => 'Export Excel en cours de développement']);
+        }
+    }
+
+    /**
+     * API pour les statistiques rapides
+     */
+    public function statsRapides(Request $request)
+    {
+        $query = DeclarationPcs::query();
+
+        if ($request->filled('programme')) {
+            $query->where('programme', $request->programme);
+        }
+
+        if ($request->filled('annee')) {
+            $query->where('annee', $request->annee);
+        }
+
+        if ($request->filled('date_debut') && $request->filled('date_fin')) {
+            $query->whereBetween('created_at', [$request->date_debut . ' 00:00:00', $request->date_fin . ' 23:59:59']);
+        }
+
+        if ($request->filled('poste_id')) {
+            $query->where('poste_id', $request->poste_id);
+        }
+
+        if ($request->filled('bureau_id')) {
+            $query->where('bureau_douane_id', $request->bureau_id);
+        }
+
+        if ($request->filled('mois')) {
+            $query->where('mois', $request->mois);
+        }
+
+        $declarations = $query->get();
+
+        return response()->json([
+            'total_declarations' => $declarations->count(),
+            'montant_recouvrement' => number_format($declarations->sum('montant_recouvrement'), 0, ',', ' ') . ' FCFA',
+            'montant_reversement' => number_format($declarations->sum('montant_reversement'), 0, ',', ' ') . ' FCFA',
+            'postes_actifs' => $declarations->pluck('poste_id')->unique()->filter()->count() + $declarations->pluck('bureau_douane_id')->unique()->filter()->count(),
+        ]);
+    }
+
+    /**
+     * Aperçu des données filtrées
+     */
+    public function apercu(Request $request)
+    {
+        $query = DeclarationPcs::with(['poste', 'bureauDouane']);
+
+        if ($request->filled('programme')) {
+            $query->where('programme', $request->programme);
+        }
+
+        if ($request->filled('annee')) {
+            $query->where('annee', $request->annee);
+        }
+
+        if ($request->filled('date_debut') && $request->filled('date_fin')) {
+            $query->whereBetween('created_at', [$request->date_debut . ' 00:00:00', $request->date_fin . ' 23:59:59']);
+        }
+
+        if ($request->filled('poste_id')) {
+            $query->where('poste_id', $request->poste_id);
+        }
+
+        if ($request->filled('bureau_id')) {
+            $query->where('bureau_douane_id', $request->bureau_id);
+        }
+
+        if ($request->filled('mois')) {
+            $query->where('mois', $request->mois);
+        }
+
+        $declarations = $query->orderBy('created_at', 'desc')->limit(50)->get();
+
+        if ($request->filled('apercu')) {
+            return view('pcs.declarations.apercu', compact('declarations'))->render();
+        }
+
+        return view('pcs.declarations.apercu', compact('declarations'));
     }
 }
 

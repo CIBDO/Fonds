@@ -11,6 +11,7 @@ use RealRashid\SweetAlert\Facades\Alert;
 use App\Notifications\PcsAutreDemandeSoumise;
 use App\Notifications\PcsAutreDemandeValidee;
 use App\Notifications\PcsAutreDemandeRejetee;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class AutreDemandeController extends Controller
 {
@@ -370,6 +371,371 @@ class AutreDemandeController extends Controller
         foreach ($validateurs as $validateur) {
             $validateur->notify(new PcsAutreDemandeSoumise($demande));
         }
+    }
+
+    /**
+     * Générer l'état consolidé des autres demandes PCS
+     */
+    public function etatConsolideAutresDemandes(Request $request)
+    {
+        $annee = $request->get('annee', date('Y'));
+
+        // Récupérer les données des autres demandes
+        $autresDemandes = AutreDemande::with('poste')
+            ->where('annee', $annee)
+            ->get();
+
+        // Organiser les données par poste et mois
+        $demandesSoumisesParPoste = [];
+        $demandesValideesParPoste = [];
+        $recapitulatifParPoste = [];
+
+        $totalDemandesSoumisesMensuel = array_fill(1, 12, 0);
+        $totalDemandesValideesMensuel = array_fill(1, 12, 0);
+        $totalDemandesSoumises = 0;
+        $totalDemandesValidees = 0;
+        $totalGeneral = [
+            'montant_demande' => 0,
+            'montant_accord' => 0,
+            'pourcentage_accord' => 0
+        ];
+
+        foreach ($autresDemandes as $demande) {
+            $nomPoste = $demande->poste->nom;
+            $mois = \Carbon\Carbon::parse($demande->date_demande)->month;
+
+            // Initialiser les structures si nécessaire
+            if (!isset($demandesSoumisesParPoste[$nomPoste])) {
+                $demandesSoumisesParPoste[$nomPoste] = [
+                    'comptable' => '',
+                    'mois' => array_fill(1, 12, 0),
+                    'total' => 0
+                ];
+            }
+
+            if (!isset($demandesValideesParPoste[$nomPoste])) {
+                $demandesValideesParPoste[$nomPoste] = [
+                    'comptable' => '',
+                    'mois' => array_fill(1, 12, 0),
+                    'total' => 0
+                ];
+            }
+
+            if (!isset($recapitulatifParPoste[$nomPoste])) {
+                $recapitulatifParPoste[$nomPoste] = [
+                    'comptable' => '',
+                    'montant_demande' => 0,
+                    'montant_accord' => 0,
+                    'dernier_mois' => '',
+                    'statut' => 'BROUILLON'
+                ];
+            }
+
+            // Demandes soumises
+            if ($demande->statut === 'soumis') {
+                $demandesSoumisesParPoste[$nomPoste]['mois'][$mois] += $demande->montant;
+                $demandesSoumisesParPoste[$nomPoste]['total'] += $demande->montant;
+                $totalDemandesSoumisesMensuel[$mois] += $demande->montant;
+                $totalDemandesSoumises += $demande->montant;
+            }
+
+            // Demandes validées
+            if ($demande->statut === 'valide') {
+                $montantAccorde = $demande->montant_accord ?? $demande->montant;
+                $demandesValideesParPoste[$nomPoste]['mois'][$mois] += $montantAccorde;
+                $demandesValideesParPoste[$nomPoste]['total'] += $montantAccorde;
+                $totalDemandesValideesMensuel[$mois] += $montantAccorde;
+                $totalDemandesValidees += $montantAccorde;
+            }
+
+            // Récapitulatif par poste
+            $recapitulatifParPoste[$nomPoste]['montant_demande'] += $demande->montant;
+            $recapitulatifParPoste[$nomPoste]['montant_accord'] += $demande->montant_accord ?? 0;
+            $recapitulatifParPoste[$nomPoste]['dernier_mois'] = \Carbon\Carbon::parse($demande->date_demande)->format('m/Y');
+
+            // Déterminer le statut principal du poste
+            if ($demande->statut === 'valide') {
+                $recapitulatifParPoste[$nomPoste]['statut'] = 'VALIDÉ';
+            } elseif ($demande->statut === 'soumis') {
+                $recapitulatifParPoste[$nomPoste]['statut'] = 'SOUMIS';
+            } elseif ($demande->statut === 'rejete') {
+                $recapitulatifParPoste[$nomPoste]['statut'] = 'REJETÉ';
+            }
+        }
+
+        // Calculer les pourcentages
+        foreach ($recapitulatifParPoste as $nomPoste => $data) {
+            $pourcentage = $data['montant_demande'] > 0
+                ? round(($data['montant_accord'] / $data['montant_demande']) * 100, 1)
+                : 0;
+            $recapitulatifParPoste[$nomPoste]['pourcentage_accord'] = $pourcentage;
+        }
+
+        // Totaux généraux
+        $totalGeneral['montant_demande'] = $totalDemandesSoumises;
+        $totalGeneral['montant_accord'] = $totalDemandesValidees;
+        $totalGeneral['pourcentage_accord'] = $totalDemandesSoumises > 0
+            ? round(($totalDemandesValidees / $totalDemandesSoumises) * 100, 1)
+            : 0;
+
+        // Trier par ordre alphabétique
+        ksort($demandesSoumisesParPoste);
+        ksort($demandesValideesParPoste);
+        ksort($recapitulatifParPoste);
+
+        $pdf = PDF::loadView('pcs.pdf.etat-autres-demandes-consolide', compact(
+            'demandesSoumisesParPoste',
+            'demandesValideesParPoste',
+            'recapitulatifParPoste',
+            'totalDemandesSoumisesMensuel',
+            'totalDemandesValideesMensuel',
+            'totalDemandesSoumises',
+            'totalDemandesValidees',
+            'totalGeneral',
+            'annee'
+        ));
+
+        return $pdf->download("Etat_Autres_Demandes_PCS_{$annee}.pdf");
+    }
+
+    /**
+     * Afficher la vue de filtrage pour les états consolidés
+     */
+    public function filtreEtat()
+    {
+        $postes = \App\Models\Poste::orderBy('nom')->get();
+        return view('pcs.autres-demandes.filtre-etat', compact('postes'));
+    }
+
+    /**
+     * Générer l'état consolidé avec filtres personnalisés
+     */
+    public function etatConsolideFiltre(Request $request)
+    {
+        // Validation des paramètres
+        $validated = $request->validate([
+            'date_debut' => 'required|date',
+            'date_fin' => 'required|date|after_or_equal:date_debut',
+            'annee' => 'required|integer|min:2020|max:' . (date('Y') + 1),
+            'poste_id' => 'nullable|exists:postes,id',
+            'statut' => 'nullable|in:brouillon,soumis,valide,rejete',
+            'format' => 'nullable|in:pdf,excel'
+        ]);
+
+        $dateDebut = $validated['date_debut'];
+        $dateFin = $validated['date_fin'];
+        $annee = $validated['annee'];
+        $posteId = $validated['poste_id'];
+        $statut = $validated['statut'];
+        $format = $validated['format'] ?? 'pdf';
+
+        // Construire la requête avec filtres
+        $query = AutreDemande::with('poste')
+            ->whereBetween('date_demande', [$dateDebut, $dateFin])
+            ->where('annee', $annee);
+
+        if ($posteId) {
+            $query->where('poste_id', $posteId);
+        }
+
+        if ($statut) {
+            $query->where('statut', $statut);
+        }
+
+        $autresDemandes = $query->get();
+
+        // Organiser les données (même logique que etatConsolideAutresDemandes)
+        $demandesSoumisesParPoste = [];
+        $demandesValideesParPoste = [];
+        $recapitulatifParPoste = [];
+
+        $totalDemandesSoumisesMensuel = array_fill(1, 12, 0);
+        $totalDemandesValideesMensuel = array_fill(1, 12, 0);
+        $totalDemandesSoumises = 0;
+        $totalDemandesValidees = 0;
+        $totalGeneral = [
+            'montant_demande' => 0,
+            'montant_accord' => 0,
+            'pourcentage_accord' => 0
+        ];
+
+        foreach ($autresDemandes as $demande) {
+            $nomPoste = $demande->poste->nom;
+            $mois = \Carbon\Carbon::parse($demande->date_demande)->month;
+
+            // Initialiser les structures si nécessaire
+            if (!isset($demandesSoumisesParPoste[$nomPoste])) {
+                $demandesSoumisesParPoste[$nomPoste] = [
+                    'comptable' => '',
+                    'mois' => array_fill(1, 12, 0),
+                    'total' => 0
+                ];
+            }
+
+            if (!isset($demandesValideesParPoste[$nomPoste])) {
+                $demandesValideesParPoste[$nomPoste] = [
+                    'comptable' => '',
+                    'mois' => array_fill(1, 12, 0),
+                    'total' => 0
+                ];
+            }
+
+            if (!isset($recapitulatifParPoste[$nomPoste])) {
+                $recapitulatifParPoste[$nomPoste] = [
+                    'comptable' => '',
+                    'montant_demande' => 0,
+                    'montant_accord' => 0,
+                    'dernier_mois' => '',
+                    'statut' => 'BROUILLON'
+                ];
+            }
+
+            // Demandes soumises
+            if ($demande->statut === 'soumis') {
+                $demandesSoumisesParPoste[$nomPoste]['mois'][$mois] += $demande->montant;
+                $demandesSoumisesParPoste[$nomPoste]['total'] += $demande->montant;
+                $totalDemandesSoumisesMensuel[$mois] += $demande->montant;
+                $totalDemandesSoumises += $demande->montant;
+            }
+
+            // Demandes validées
+            if ($demande->statut === 'valide') {
+                $montantAccorde = $demande->montant_accord ?? $demande->montant;
+                $demandesValideesParPoste[$nomPoste]['mois'][$mois] += $montantAccorde;
+                $demandesValideesParPoste[$nomPoste]['total'] += $montantAccorde;
+                $totalDemandesValideesMensuel[$mois] += $montantAccorde;
+                $totalDemandesValidees += $montantAccorde;
+            }
+
+            // Récapitulatif par poste
+            $recapitulatifParPoste[$nomPoste]['montant_demande'] += $demande->montant;
+            $recapitulatifParPoste[$nomPoste]['montant_accord'] += $demande->montant_accord ?? 0;
+            $recapitulatifParPoste[$nomPoste]['dernier_mois'] = \Carbon\Carbon::parse($demande->date_demande)->format('m/Y');
+
+            // Déterminer le statut principal du poste
+            if ($demande->statut === 'valide') {
+                $recapitulatifParPoste[$nomPoste]['statut'] = 'VALIDÉ';
+            } elseif ($demande->statut === 'soumis') {
+                $recapitulatifParPoste[$nomPoste]['statut'] = 'SOUMIS';
+            } elseif ($demande->statut === 'rejete') {
+                $recapitulatifParPoste[$nomPoste]['statut'] = 'REJETÉ';
+            }
+        }
+
+        // Calculer les pourcentages
+        foreach ($recapitulatifParPoste as $nomPoste => $data) {
+            $pourcentage = $data['montant_demande'] > 0
+                ? round(($data['montant_accord'] / $data['montant_demande']) * 100, 1)
+                : 0;
+            $recapitulatifParPoste[$nomPoste]['pourcentage_accord'] = $pourcentage;
+        }
+
+        // Totaux généraux
+        $totalGeneral['montant_demande'] = $totalDemandesSoumises;
+        $totalGeneral['montant_accord'] = $totalDemandesValidees;
+        $totalGeneral['pourcentage_accord'] = $totalDemandesSoumises > 0
+            ? round(($totalDemandesValidees / $totalDemandesSoumises) * 100, 1)
+            : 0;
+
+        // Trier par ordre alphabétique
+        ksort($demandesSoumisesParPoste);
+        ksort($demandesValideesParPoste);
+        ksort($recapitulatifParPoste);
+
+        // Générer le nom du fichier avec les filtres
+        $nomFichier = "Etat_Autres_Demandes_PCS_{$annee}";
+        if ($posteId) {
+            $poste = \App\Models\Poste::find($posteId);
+            $nomFichier .= "_" . strtoupper($poste->nom);
+        }
+        if ($statut) {
+            $nomFichier .= "_" . strtoupper($statut);
+        }
+        $nomFichier .= "_" . str_replace('-', '', $dateDebut) . "_" . str_replace('-', '', $dateFin);
+
+        if ($format === 'pdf') {
+            $pdf = PDF::loadView('pcs.pdf.etat-autres-demandes-consolide', compact(
+                'demandesSoumisesParPoste',
+                'demandesValideesParPoste',
+                'recapitulatifParPoste',
+                'totalDemandesSoumisesMensuel',
+                'totalDemandesValideesMensuel',
+                'totalDemandesSoumises',
+                'totalDemandesValidees',
+                'totalGeneral',
+                'annee'
+            ));
+
+            return $pdf->download("{$nomFichier}.pdf");
+        } else {
+            // TODO: Implémenter l'export Excel
+            return response()->json(['message' => 'Export Excel en cours de développement']);
+        }
+    }
+
+    /**
+     * API pour les statistiques rapides
+     */
+    public function statsRapides(Request $request)
+    {
+        $query = AutreDemande::query();
+
+        if ($request->filled('date_debut') && $request->filled('date_fin')) {
+            $query->whereBetween('date_demande', [$request->date_debut, $request->date_fin]);
+        }
+
+        if ($request->filled('annee')) {
+            $query->where('annee', $request->annee);
+        }
+
+        if ($request->filled('poste_id')) {
+            $query->where('poste_id', $request->poste_id);
+        }
+
+        if ($request->filled('statut')) {
+            $query->where('statut', $request->statut);
+        }
+
+        $demandes = $query->get();
+
+        return response()->json([
+            'total_demandes' => $demandes->count(),
+            'montant_total' => number_format($demandes->sum('montant'), 0, ',', ' ') . ' FCFA',
+            'demandes_soumises' => $demandes->where('statut', 'soumis')->count(),
+            'demandes_validees' => $demandes->where('statut', 'valide')->count(),
+        ]);
+    }
+
+    /**
+     * Aperçu des données filtrées
+     */
+    public function apercu(Request $request)
+    {
+        $query = AutreDemande::with('poste');
+
+        if ($request->filled('date_debut') && $request->filled('date_fin')) {
+            $query->whereBetween('date_demande', [$request->date_debut, $request->date_fin]);
+        }
+
+        if ($request->filled('annee')) {
+            $query->where('annee', $request->annee);
+        }
+
+        if ($request->filled('poste_id')) {
+            $query->where('poste_id', $request->poste_id);
+        }
+
+        if ($request->filled('statut')) {
+            $query->where('statut', $request->statut);
+        }
+
+        $demandes = $query->orderBy('date_demande', 'desc')->limit(50)->get();
+
+        if ($request->filled('apercu')) {
+            return view('pcs.autres-demandes.apercu', compact('demandes'))->render();
+        }
+
+        return view('pcs.autres-demandes.apercu', compact('demandes'));
     }
 }
 

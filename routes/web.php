@@ -206,6 +206,25 @@ Route::middleware(['auth'])->prefix('pcs')->name('pcs.')->group(function () {
         // Génération états PDF/Excel
         Route::get('pdf/recettes', 'generatePdfRecettes')->name('pdf.recettes');
         Route::get('pdf/reversements', 'generatePdfReversements')->name('pdf.reversements');
+
+        // États consolidés (ACCT uniquement)
+        Route::middleware('role:admin,acct')->group(function () {
+            Route::get('etat-consolide/reversements', 'etatConsolideReversements')->name('etat-consolide.reversements');
+
+            // Filtrage et génération d'états personnalisés pour déclarations
+            Route::get('filtre-etat', 'filtreEtat')->name('declarations.filtre-etat');
+            Route::get('etat-consolide/filtre', 'etatConsolideFiltre')->name('declarations.etat-consolide.filtre');
+            Route::get('stats-rapides', 'statsRapides')->name('declarations.stats-rapides');
+            Route::get('apercu', 'apercu')->name('declarations.apercu');
+        });
+    });
+
+    // ===== ÉTATS CONSOLIDÉS UNIFIÉS =====
+    Route::middleware('role:admin,acct')->controller(\App\Http\Controllers\PCS\EtatsConsolidesController::class)->prefix('etats-consolides')->name('etats-consolides.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('generer', 'generer')->name('generer');
+        Route::get('apercu', 'apercu')->name('apercu');
+        Route::get('stats', 'stats')->name('stats');
     });
 
     // ===== AUTRES DEMANDES =====
@@ -222,6 +241,15 @@ Route::middleware(['auth'])->prefix('pcs')->name('pcs.')->group(function () {
         Route::middleware('role:admin,acct')->group(function () {
             Route::post('{demande}/valider', 'valider')->name('valider');
             Route::post('{demande}/rejeter', 'rejeter')->name('rejeter');
+
+            // États consolidés
+            Route::get('etat-consolide/autres-demandes', 'etatConsolideAutresDemandes')->name('etat-consolide.autres-demandes');
+
+            // Filtrage et génération d'états personnalisés
+            Route::get('filtre-etat', 'filtreEtat')->name('filtre-etat');
+            Route::get('etat-consolide/filtre', 'etatConsolideFiltre')->name('etat-consolide.filtre');
+            Route::get('stats-rapides', 'statsRapides')->name('stats-rapides');
+            Route::get('apercu', 'apercu')->name('apercu');
         });
 
         // Statistiques
