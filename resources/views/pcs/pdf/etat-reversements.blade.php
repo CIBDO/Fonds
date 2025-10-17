@@ -149,15 +149,15 @@
 
     <!-- Titre principal -->
     <div class="main-title">
-        ÉTAT DES REVERSEMENTS DU PC-{{ $programme }} AU TITRE DE L'EXERCICE {{ $annee }}
+        ÉTAT DES REVERSEMENTS DU PCS-{{ $programme }} AU TITRE DE L'EXERCICE {{ $annee }}
     </div>
 
     <div class="subtitle-period">
-        /PÉRIODE DU 01/01/{{ $annee }} AU {{ \Carbon\Carbon::now()->format('d/m/Y') }}
+        PÉRIODE DU 01/01/{{ $annee }} AU {{ \Carbon\Carbon::now()->format('d/m/Y') }}
     </div>
 
     <div style="text-align: center; font-size: 10px; font-style: italic; margin-bottom: 15px; color: #666;">
-        (Montants en millions de francs CFA - Données validées uniquement)
+        (Montants en millions de francs CFA )
     </div>
 
     <!-- Tableau REVERSEMENTS -->

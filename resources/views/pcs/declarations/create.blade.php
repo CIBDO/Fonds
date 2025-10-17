@@ -10,7 +10,7 @@
                     <h3 class="page-title fw-bold text-danger">
                         <i class="fas fa-plus-circle me-2"></i>Nouvelle Déclaration PCS
                     </h3>
-                    <p class="text-muted mb-0"> - {{ $poste->nom }} - Programme UEMOA & AES</p>
+                    {{-- <p class="text-muted mb-0"> - {{ $poste->nom }} - Programme UEMOA & AES</p> --}}
                 </div>
             </div>
             <div class="col-auto">

@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Situation des Autres Demandes PCS - {{ $annee }}</title>
+    <title>Situation des Autres Demandes - {{ $annee }}</title>
     <style>
         @page {
             size: A4 landscape;
@@ -193,7 +193,7 @@
 
     <!-- Titre principal -->
     <div class="main-title">
-        SITUATION DES AUTRES DEMANDES PCS AU TITRE DE L'EXERCICE {{ $annee }}
+        SITUATION DES DEMANDES DE FONDS DES TRESORIRIES  AU TITRE DE L'EXERCICE {{ $annee }}
     </div>
 
     <div class="subtitle-period">
@@ -202,7 +202,7 @@
 
     <!-- Tableau DÉTAILLÉ DES AUTRES DEMANDES VALIDÉES -->
     <div class="table-section">
-        <div class="table-title">DÉTAIL DES AUTRES DEMANDES VALIDÉES {{ $annee }}</div>
+        <div class="table-title">DÉTAIL DES DEMANDES  {{ $annee }}</div>
         <table>
             <thead>
                 <tr>

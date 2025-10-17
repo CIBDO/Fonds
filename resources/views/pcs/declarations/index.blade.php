@@ -10,7 +10,7 @@
                     <h3 class="page-title fw-bold text-danger">
                         <i class="fas fa-file-alt me-2"></i>Déclarations PCS
                     </h3>
-                    <p class="text-muted mb-0">Programme de Consolidation des Statistiques UEMOA/AES</p>
+                    {{-- <p class="text-muted mb-0">Programme de Consolidation des Statistiques UEMOA/AES</p> --}}
                 </div>
             </div>
             <div class="col-auto">
