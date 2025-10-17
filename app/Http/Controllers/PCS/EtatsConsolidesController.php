@@ -34,6 +34,8 @@ class EtatsConsolidesController extends Controller
                 return $this->genererRecouvrements($request);
             case 'reversements':
                 return $this->genererReversements($request);
+            case 'uemoa-aes':
+                return $this->genererUemoaAes($request);
             case 'autres-demandes':
                 return $this->genererAutresDemandes($request);
             default:
@@ -92,17 +94,10 @@ class EtatsConsolidesController extends Controller
 
         ksort($recouvrementsParPoste);
 
-        $reversementsParPoste = []; // Vide pour cet état
-        $totalReversementsMensuel = array_fill(1, 12, 0);
-        $totalReversements = 0;
-
-        $pdf = PDF::loadView('pcs.pdf.etat-reversements-consolide', compact(
+        $pdf = PDF::loadView('pcs.pdf.etat-recouvrements', compact(
             'recouvrementsParPoste',
-            'reversementsParPoste',
             'totalRecouvrementsMensuel',
-            'totalReversementsMensuel',
             'totalRecouvrements',
-            'totalReversements',
             'annee',
             'programme'
         ));
@@ -114,6 +109,85 @@ class EtatsConsolidesController extends Controller
      * Générer l'état des reversements
      */
     private function genererReversements(Request $request)
+    {
+        $annee = $request->get('annee', date('Y'));
+        $programme = $request->get('programme', 'UEMOA');
+        $dateDebut = $request->get('date_debut');
+        $dateFin = $request->get('date_fin');
+        $posteId = $request->get('poste_id');
+        $mois = $request->get('mois');
+
+        $query = DeclarationPcs::with(['poste', 'bureauDouane'])
+            ->where('annee', $annee)
+            ->where('programme', $programme)
+            ->where('statut', 'valide'); // Uniquement les déclarations validées
+
+        if ($dateDebut && $dateFin) {
+            $query->whereBetween('created_at', [$dateDebut . ' 00:00:00', $dateFin . ' 23:59:59']);
+        }
+        if ($posteId) $query->where('poste_id', $posteId);
+        if ($mois) $query->where('mois', $mois);
+
+        $declarations = $query->get();
+
+        // Organiser les données
+        $recouvrementsParPoste = [];
+        $reversementsParPoste = [];
+        $totalRecouvrementsMensuel = array_fill(1, 12, 0);
+        $totalReversementsMensuel = array_fill(1, 12, 0);
+        $totalRecouvrements = 0;
+        $totalReversements = 0;
+
+        foreach ($declarations as $declaration) {
+            $nomPoste = $declaration->poste_id ? $declaration->poste->nom : $declaration->bureauDouane->libelle;
+            $moisDeclaration = $declaration->mois;
+
+            // Convertir en millions de FCFA
+            $montantRecouvrement = $declaration->montant_recouvrement / 1000000;
+            $montantReversement = $declaration->montant_reversement / 1000000;
+
+            // Recouvrements
+            if (!isset($recouvrementsParPoste[$nomPoste])) {
+                $recouvrementsParPoste[$nomPoste] = [
+                    'mois' => array_fill(1, 12, 0),
+                    'total' => 0
+                ];
+            }
+            $recouvrementsParPoste[$nomPoste]['mois'][$moisDeclaration] += $montantRecouvrement;
+            $recouvrementsParPoste[$nomPoste]['total'] += $montantRecouvrement;
+            $totalRecouvrementsMensuel[$moisDeclaration] += $montantRecouvrement;
+            $totalRecouvrements += $montantRecouvrement;
+
+            // Reversements
+            if (!isset($reversementsParPoste[$nomPoste])) {
+                $reversementsParPoste[$nomPoste] = [
+                    'mois' => array_fill(1, 12, 0),
+                    'total' => 0
+                ];
+            }
+            $reversementsParPoste[$nomPoste]['mois'][$moisDeclaration] += $montantReversement;
+            $reversementsParPoste[$nomPoste]['total'] += $montantReversement;
+            $totalReversementsMensuel[$moisDeclaration] += $montantReversement;
+            $totalReversements += $montantReversement;
+        }
+
+        ksort($reversementsParPoste);
+
+        $pdf = PDF::loadView('pcs.pdf.etat-reversements', compact(
+            'reversementsParPoste',
+            'totalReversementsMensuel',
+            'totalReversements',
+            'annee',
+            'programme'
+        ));
+
+        return $pdf->download("Etat_Reversements_PCS_{$programme}_{$annee}.pdf");
+    }
+
+    /**
+     * Générer l'état consolidé UEMOA/AES
+     */
+    private function genererUemoaAes(Request $request)
     {
         $annee = $request->get('annee', date('Y'));
         $programme = $request->get('programme', 'UEMOA');
@@ -190,7 +264,7 @@ class EtatsConsolidesController extends Controller
             'programme'
         ));
 
-        return $pdf->download("Etat_Reversements_PCS_{$programme}_{$annee}.pdf");
+        return $pdf->download("Etat_Consolide_PCS_{$programme}_{$annee}.pdf");
     }
 
     /**

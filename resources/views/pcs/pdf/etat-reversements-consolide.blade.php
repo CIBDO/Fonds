@@ -166,7 +166,7 @@
 
     <!-- Titre principal -->
     <div class="main-title">
-        SITUATION DES REVERSEMENTS DU PC-{{ $programme }} AU TITRE DE L'EXERCICE {{ $annee }}
+        SITUATION CONSOLIDÉE DES RECOUVREMENTS ET REVERSEMENTS DU PC-{{ $programme }} AU TITRE DE L'EXERCICE {{ $annee }}
     </div>
 
     <div class="subtitle-period">

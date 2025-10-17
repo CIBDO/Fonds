@@ -807,14 +807,14 @@ function afficherStatistiquesUemoaAes(totalRecouvrements, totalReversements, tot
     document.getElementById('statsContainer').innerHTML = statsHTML;
 }
 
-// Fonction pour générer le PDF
+// Fonction pour générer le PDF UEMOA/AES consolidé
 function genererPDFUemoaAes() {
     const programme = document.getElementById('programmeUemoaAes').value;
     const annee = document.getElementById('anneeUemoaAes').value;
 
     // Préparer l'URL avec tous les paramètres nécessaires
     const params = new URLSearchParams({
-        type: programme === 'UEMOA' ? 'recouvrements' : 'reversements',
+        type: 'uemoa-aes',
         programme: programme,
         annee: annee,
         format: 'pdf',
