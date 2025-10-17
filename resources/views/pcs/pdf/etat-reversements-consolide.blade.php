@@ -173,6 +173,10 @@
         /PÉRIODE DU 01/01/{{ $annee }} AU {{ \Carbon\Carbon::now()->format('d/m/Y') }}
     </div>
 
+    <div style="text-align: center; font-size: 10px; font-style: italic; margin-bottom: 15px; color: #666;">
+        (Montants en millions de francs CFA - Données validées uniquement)
+    </div>
+
     <!-- Tableau RECOUVREMENTS -->
     <div class="table-section">
         <div class="table-title">RECOUVREMENTS {{ $annee }}</div>

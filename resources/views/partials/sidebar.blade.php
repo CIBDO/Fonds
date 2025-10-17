@@ -88,7 +88,7 @@
                     <li class="submenu">
                         <a href="#" class="submenu-toggle">
                             <i class="fas fa-chart-area"></i>
-                            <span>Rapports & Statistiques</span>
+                            <span>Rapports</span>
                             <span class="menu-arrow fas fa-chevron-right"></span>
                         </a>
                         <ul class="submenu-list">
@@ -184,7 +184,7 @@
                     <li class="{{ request()->routeIs('pcs.etats-consolides.*') ? 'active' : '' }}">
                         <a href="{{ route('pcs.etats-consolides.index') }}">
                             <i class="fas fa-chart-line"></i>
-                            <span>États Consolidés Dynamiques</span>
+                            <span>États Consolidés</span>
                         </a>
                     </li>
                 @endif

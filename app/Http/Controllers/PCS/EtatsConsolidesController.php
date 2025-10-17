@@ -55,7 +55,8 @@ class EtatsConsolidesController extends Controller
 
         $query = DeclarationPcs::with(['poste', 'bureauDouane'])
             ->where('annee', $annee)
-            ->where('programme', $programme);
+            ->where('programme', $programme)
+            ->where('statut', 'valide'); // Uniquement les déclarations validées
 
         if ($dateDebut && $dateFin) {
             $query->whereBetween('created_at', [$dateDebut . ' 00:00:00', $dateFin . ' 23:59:59']);
@@ -74,16 +75,19 @@ class EtatsConsolidesController extends Controller
             $nomPoste = $declaration->poste_id ? $declaration->poste->nom : $declaration->bureauDouane->libelle;
             $moisDeclaration = $declaration->mois;
 
+            // Convertir en millions de FCFA
+            $montantRecouvrement = $declaration->montant_recouvrement / 1000000;
+
             if (!isset($recouvrementsParPoste[$nomPoste])) {
                 $recouvrementsParPoste[$nomPoste] = [
                     'mois' => array_fill(1, 12, 0),
                     'total' => 0
                 ];
             }
-            $recouvrementsParPoste[$nomPoste]['mois'][$moisDeclaration] += $declaration->montant_recouvrement;
-            $recouvrementsParPoste[$nomPoste]['total'] += $declaration->montant_recouvrement;
-            $totalRecouvrementsMensuel[$moisDeclaration] += $declaration->montant_recouvrement;
-            $totalRecouvrements += $declaration->montant_recouvrement;
+            $recouvrementsParPoste[$nomPoste]['mois'][$moisDeclaration] += $montantRecouvrement;
+            $recouvrementsParPoste[$nomPoste]['total'] += $montantRecouvrement;
+            $totalRecouvrementsMensuel[$moisDeclaration] += $montantRecouvrement;
+            $totalRecouvrements += $montantRecouvrement;
         }
 
         ksort($recouvrementsParPoste);
@@ -120,7 +124,8 @@ class EtatsConsolidesController extends Controller
 
         $query = DeclarationPcs::with(['poste', 'bureauDouane'])
             ->where('annee', $annee)
-            ->where('programme', $programme);
+            ->where('programme', $programme)
+            ->where('statut', 'valide'); // Uniquement les déclarations validées
 
         if ($dateDebut && $dateFin) {
             $query->whereBetween('created_at', [$dateDebut . ' 00:00:00', $dateFin . ' 23:59:59']);
@@ -142,6 +147,10 @@ class EtatsConsolidesController extends Controller
             $nomPoste = $declaration->poste_id ? $declaration->poste->nom : $declaration->bureauDouane->libelle;
             $moisDeclaration = $declaration->mois;
 
+            // Convertir en millions de FCFA
+            $montantRecouvrement = $declaration->montant_recouvrement / 1000000;
+            $montantReversement = $declaration->montant_reversement / 1000000;
+
             // Recouvrements
             if (!isset($recouvrementsParPoste[$nomPoste])) {
                 $recouvrementsParPoste[$nomPoste] = [
@@ -149,10 +158,10 @@ class EtatsConsolidesController extends Controller
                     'total' => 0
                 ];
             }
-            $recouvrementsParPoste[$nomPoste]['mois'][$moisDeclaration] += $declaration->montant_recouvrement;
-            $recouvrementsParPoste[$nomPoste]['total'] += $declaration->montant_recouvrement;
-            $totalRecouvrementsMensuel[$moisDeclaration] += $declaration->montant_recouvrement;
-            $totalRecouvrements += $declaration->montant_recouvrement;
+            $recouvrementsParPoste[$nomPoste]['mois'][$moisDeclaration] += $montantRecouvrement;
+            $recouvrementsParPoste[$nomPoste]['total'] += $montantRecouvrement;
+            $totalRecouvrementsMensuel[$moisDeclaration] += $montantRecouvrement;
+            $totalRecouvrements += $montantRecouvrement;
 
             // Reversements
             if (!isset($reversementsParPoste[$nomPoste])) {
@@ -161,10 +170,10 @@ class EtatsConsolidesController extends Controller
                     'total' => 0
                 ];
             }
-            $reversementsParPoste[$nomPoste]['mois'][$moisDeclaration] += $declaration->montant_reversement;
-            $reversementsParPoste[$nomPoste]['total'] += $declaration->montant_reversement;
-            $totalReversementsMensuel[$moisDeclaration] += $declaration->montant_reversement;
-            $totalReversements += $declaration->montant_reversement;
+            $reversementsParPoste[$nomPoste]['mois'][$moisDeclaration] += $montantReversement;
+            $reversementsParPoste[$nomPoste]['total'] += $montantReversement;
+            $totalReversementsMensuel[$moisDeclaration] += $montantReversement;
+            $totalReversements += $montantReversement;
         }
 
         ksort($recouvrementsParPoste);
@@ -450,6 +459,68 @@ class EtatsConsolidesController extends Controller
             'total' => $demandes->count(),
             'montant_demande' => number_format($demandes->sum('montant'), 0, ',', ' '),
             'montant_accorde' => number_format($demandes->where('statut', 'valide')->sum('montant_accord'), 0, ',', ' '),
+        ]);
+    }
+
+    /**
+     * Récupérer les données UEMOA/AES dynamiques
+     */
+    public function getDonneesUemoaAes(Request $request)
+    {
+        $programme = $request->get('programme', 'UEMOA');
+        $annee = $request->get('annee', date('Y'));
+
+        // Récupérer uniquement les déclarations validées
+        $declarations = DeclarationPcs::with(['poste', 'bureauDouane'])
+            ->where('programme', $programme)
+            ->where('annee', $annee)
+            ->where('statut', 'valide')
+            ->get();
+
+        // Préparer les données par poste et par mois
+        $recouvrements = [];
+        $reversements = [];
+
+        foreach ($declarations as $declaration) {
+            $nomPoste = $declaration->poste_id
+                ? $declaration->poste->nom
+                : $declaration->bureauDouane->libelle;
+
+            $mois = $declaration->mois;
+
+            // Initialiser les tableaux pour ce poste s'ils n'existent pas
+            if (!isset($recouvrements[$nomPoste])) {
+                $recouvrements[$nomPoste] = array_fill(0, 13, 0); // 0-11 pour mois, 12 pour total
+            }
+            if (!isset($reversements[$nomPoste])) {
+                $reversements[$nomPoste] = array_fill(0, 13, 0);
+            }
+
+            // Convertir en millions de FCFA
+            $montantRecouvrement = $declaration->montant_recouvrement / 1000000;
+            $montantReversement = $declaration->montant_reversement / 1000000;
+
+            // Ajouter au mois (index 0-11)
+            $recouvrements[$nomPoste][$mois - 1] += $montantRecouvrement;
+            $reversements[$nomPoste][$mois - 1] += $montantReversement;
+
+            // Ajouter au total (index 12)
+            $recouvrements[$nomPoste][12] += $montantRecouvrement;
+            $reversements[$nomPoste][12] += $montantReversement;
+        }
+
+        // Trier les postes par ordre alphabétique
+        ksort($recouvrements);
+        ksort($reversements);
+
+        return response()->json([
+            'recouvrements' => $recouvrements,
+            'reversements' => $reversements,
+            'titre' => $programme === 'UEMOA'
+                ? "SITUATION MENSUELLE DES LIQUIDATIONS DES RECOUVREMENTS ET DES REVERSEMENTS DU PCS-UEMOA AU TITRE DE L'EXERCICE {$annee} (REGIONS)"
+                : "SITUATION DES REVERSEMENTS DU PC-AES AU TITRE DE L'EXERCICE {$annee}",
+            'programme' => $programme,
+            'annee' => $annee
         ]);
     }
 }

@@ -225,6 +225,7 @@ Route::middleware(['auth'])->prefix('pcs')->name('pcs.')->group(function () {
         Route::get('generer', 'generer')->name('generer');
         Route::get('apercu', 'apercu')->name('apercu');
         Route::get('stats', 'stats')->name('stats');
+        Route::get('donnees-uemoa-aes', 'getDonneesUemoaAes')->name('donnees-uemoa-aes');
     });
 
     // ===== AUTRES DEMANDES =====

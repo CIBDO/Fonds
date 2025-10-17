@@ -10,7 +10,7 @@ body {
     height: 100%;
     line-height: 1.5;
     overflow-x: hidden
-    
+
 }
 
 h1,
@@ -20,7 +20,7 @@ h4,
 h5,
 h6 {
     font-family: roboto, sans-serif;
-    margin-top: 0;
+    margin-top: 26px;
     color: #000
 }
 
@@ -2784,7 +2784,7 @@ footer p {
     margin: 0;
     padding: 0;
     position: relative
-    
+
 }
 
 .sidebar-menu li a {
@@ -11219,14 +11219,14 @@ body[data-layout-mode=dark] .alertify .ajs-footer .ajs-buttons .ajs-button.ajs-o
             padding: 5px;
             border-radius: 4px;
         }
-    
+
         .status-approuve {
             background-color: green; /* Couleur pour "Approuvé" */
             color: white;
             padding: 5px;
             border-radius: 4px;
         }
-    
+
         .status-rejete {
             background-color: red; /* Couleur pour "Rejeté" */
             color: white;
