@@ -161,6 +161,15 @@
                                         <i class="fas fa-eye"></i>
                                     </a>
 
+                                    @if(in_array($decl->statut, ['brouillon', 'rejete']) && $decl->saisi_par == auth()->id())
+                                        <a href="{{ route('pcs.declarations.edit', $decl) }}"
+                                           class="btn btn-outline-primary"
+                                           data-bs-toggle="tooltip"
+                                           title="Modifier">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    @endif
+
                                     @if(auth()->user()->peut_valider_pcs && $decl->statut == 'soumis')
                                         <button type="button"
                                                 class="btn btn-outline-success"

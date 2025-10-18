@@ -245,6 +245,92 @@ class DeclarationPcsController extends Controller
     }
 
     /**
+     * Formulaire d'édition
+     */
+    public function edit(DeclarationPcs $declaration)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        // Vérifier que c'est bien l'utilisateur qui a créé la déclaration
+        if ($declaration->saisi_par !== $user->id && !$user->peut_valider_pcs) {
+            Alert::error('Erreur', 'Vous ne pouvez pas modifier cette déclaration');
+            return redirect()->back();
+        }
+
+        // Ne peut être modifiée que si en brouillon ou rejetée
+        if (!in_array($declaration->statut, ['brouillon', 'rejete'])) {
+            Alert::error('Erreur', 'Seules les déclarations en brouillon ou rejetées peuvent être modifiées');
+            return redirect()->back();
+        }
+
+        return view('pcs.declarations.edit', compact('declaration'));
+    }
+
+    /**
+     * Mise à jour d'une déclaration
+     */
+    public function update(Request $request, DeclarationPcs $declaration)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        // Vérifier les permissions
+        if ($declaration->saisi_par !== $user->id && !$user->peut_valider_pcs) {
+            Alert::error('Erreur', 'Vous ne pouvez pas modifier cette déclaration');
+            return redirect()->back();
+        }
+
+        // Vérifier le statut
+        if (!in_array($declaration->statut, ['brouillon', 'rejete'])) {
+            Alert::error('Erreur', 'Seules les déclarations en brouillon ou rejetées peuvent être modifiées');
+            return redirect()->back();
+        }
+
+        // Validation
+        $validated = $request->validate([
+            'mois' => 'required|integer|between:1,12',
+            'annee' => 'required|integer|min:2020',
+            'montant_recouvrement' => 'nullable|numeric|min:0',
+            'montant_reversement' => 'nullable|numeric|min:0',
+            'observation' => 'nullable|string',
+        ]);
+
+        // Mise à jour
+        $declaration->update([
+            'mois' => $validated['mois'],
+            'annee' => $validated['annee'],
+            'montant_recouvrement' => $validated['montant_recouvrement'] ?? 0,
+            'montant_reversement' => $validated['montant_reversement'] ?? 0,
+            'observation' => $validated['observation'],
+            'statut' => $request->input('action') === 'soumettre' ? 'soumis' : 'brouillon',
+            'date_soumission' => $request->input('action') === 'soumettre' ? now() : $declaration->date_soumission,
+        ]);
+
+        // Envoyer notification si soumission
+        if ($request->input('action') === 'soumettre') {
+            $this->envoyerNotificationSoumissionUnique($declaration);
+        }
+
+        Alert::success('Succès', 'Déclaration modifiée avec succès');
+        return redirect()->route('pcs.declarations.index');
+    }
+
+    /**
+     * Envoyer notification de soumission pour une seule déclaration
+     */
+    private function envoyerNotificationSoumissionUnique($declaration)
+    {
+        // Récupérer tous les utilisateurs qui peuvent valider les déclarations PCS
+        $validateurs = User::where('peut_valider_pcs', true)->get();
+
+        // Envoyer notification à chaque validateur
+        foreach ($validateurs as $validateur) {
+            $validateur->notify(new PcsDeclarationSoumise($declaration));
+        }
+    }
+
+    /**
      * Validation d'une déclaration
      */
     public function valider(Request $request, DeclarationPcs $declaration)

@@ -215,9 +215,9 @@ class AutreDemandeController extends Controller
             return redirect()->back();
         }
 
-        // Ne peut être modifiée que si en brouillon
-        if ($demande->statut !== 'brouillon') {
-            Alert::error('Erreur', 'Seules les demandes en brouillon peuvent être modifiées');
+        // Ne peut être modifiée que si en brouillon ou rejetée
+        if (!in_array($demande->statut, ['brouillon', 'rejete'])) {
+            Alert::error('Erreur', 'Seules les demandes en brouillon ou rejetées peuvent être modifiées');
             return redirect()->back();
         }
 

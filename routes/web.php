@@ -196,6 +196,8 @@ Route::middleware(['auth'])->prefix('pcs')->name('pcs.')->group(function () {
         Route::get('create', 'create')->name('create');
         Route::post('/', 'store')->name('store');
         Route::get('{declaration}', 'show')->name('show');
+        Route::get('{declaration}/edit', 'edit')->name('edit');
+        Route::put('{declaration}', 'update')->name('update');
 
         // Validation (ACCT uniquement)
         Route::middleware('role:admin,acct')->group(function () {
