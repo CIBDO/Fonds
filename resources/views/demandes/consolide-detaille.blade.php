@@ -263,7 +263,7 @@
                                     <th class="text-end" style="width: 15%;">Reversement (FCFA)</th>
                                     <th class="text-end" style="width: 15%;">Total Courant (FCFA)</th>
                                     <th class="text-end" style="width: 15%;">Salaire Ancien (FCFA)</th>
-                                    <th class="text-end" style="width: 15%;">Total Demande (FCFA)</th>
+                                    <th class="text-end" style="width: 15%;">Ecart (FCFA)</th>
                                 </tr>
                             </thead>
                             <tbody>
