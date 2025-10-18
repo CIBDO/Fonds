@@ -95,9 +95,20 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/demandes-fonds/consolide/export-csv', [DemandeFondsController::class, 'consolideExportCsv'])
         ->middleware('role:acct,admin,superviseur')
         ->name('demandes-fonds.consolide.export-csv');
-    Route::get('/demandes-fonds/consolide/export-pdf', [DemandeFondsController::class, 'consolideExportPdf'])
-        ->middleware('role:acct,admin,superviseur')
-        ->name('demandes-fonds.consolide.export-pdf');
+Route::get('/demandes-fonds/consolide/export-pdf', [DemandeFondsController::class, 'consolideExportPdf'])
+    ->middleware('role:acct,admin,superviseur')
+    ->name('demandes-fonds.consolide.export-pdf');
+
+// Vue consolidée détaillée par type de personnel
+Route::get('/demandes-fonds/consolide-detaille', [DemandeFondsController::class, 'consolideDetaille'])
+    ->middleware('role:acct,admin,superviseur')
+    ->name('demandes-fonds.consolide-detaille');
+Route::get('/demandes-fonds/consolide-detaille/export-csv', [DemandeFondsController::class, 'consolideDetailleExportCsv'])
+    ->middleware('role:acct,admin,superviseur')
+    ->name('demandes-fonds.consolide-detaille.export-csv');
+Route::get('/demandes-fonds/consolide-detaille/export-pdf', [DemandeFondsController::class, 'consolideDetailleExportPdf'])
+    ->middleware('role:acct,admin,superviseur')
+    ->name('demandes-fonds.consolide-detaille.export-pdf');
 
     Route::post('/users/{user}/deactivate', [UserController::class, 'deactivate'])->name('users.deactivate');
     Route::post('/users/{user}/activate', [UserController::class, 'activate'])->name('users.activate');

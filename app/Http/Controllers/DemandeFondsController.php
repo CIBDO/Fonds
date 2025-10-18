@@ -1628,4 +1628,468 @@ class DemandeFondsController extends Controller
         return $pdf->download('demandes_consolidees_' . date('Y-m-d_His') . '.pdf');
     }
 
+    /**
+     * Vue consolidée détaillée par type de personnel
+     */
+    public function consolideDetaille(Request $request)
+    {
+        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+
+        // Initialiser la requête
+        $query = DemandeFonds::with('user', 'poste');
+
+        // Filtre par poste
+        if ($request->filled('poste')) {
+            $query->whereHas('poste', function ($q) use ($request) {
+                $q->where('nom', 'like', '%' . $request->poste . '%');
+            });
+        }
+
+        // Filtre par mois
+        if ($request->filled('mois')) {
+            $query->where('mois', $request->mois);
+        }
+
+        // Filtre par année
+        if ($request->filled('annee')) {
+            $query->where('annee', $request->annee);
+        }
+
+        // Filtre par statut
+        if ($request->filled('status')) {
+            if (is_array($request->status)) {
+                $query->whereIn('status', $request->status);
+            } else {
+                $query->where('status', $request->status);
+            }
+        }
+
+        // Filtre par utilisateur/trésorier
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        // Filtre par plage de dates
+        if ($request->filled('date_type') && ($request->filled('date_debut') || $request->filled('date_fin'))) {
+            $dateField = $request->date_type;
+
+            if ($request->filled('date_debut') && $request->filled('date_fin')) {
+                $query->whereBetween($dateField, [$request->date_debut, $request->date_fin]);
+            } elseif ($request->filled('date_debut')) {
+                $query->where($dateField, '>=', $request->date_debut);
+            } elseif ($request->filled('date_fin')) {
+                $query->where($dateField, '<=', $request->date_fin);
+            }
+        }
+
+        // Calculer les totaux agrégés par type de personnel
+        $typesPersonnel = [
+            [
+                'designation' => 'Fonctionnaires BCS',
+                'net' => $query->sum('fonctionnaires_bcs_net'),
+                'revers' => $query->sum('fonctionnaires_bcs_revers'),
+                'total_courant' => $query->sum('fonctionnaires_bcs_total_courant'),
+                'salaire_ancien' => $query->sum('fonctionnaires_bcs_salaire_ancien'),
+                'total_demande' => $query->sum('fonctionnaires_bcs_total_demande'),
+            ],
+            [
+                'designation' => 'Collectivité Santé',
+                'net' => $query->sum('collectivite_sante_net'),
+                'revers' => $query->sum('collectivite_sante_revers'),
+                'total_courant' => $query->sum('collectivite_sante_total_courant'),
+                'salaire_ancien' => $query->sum('collectivite_sante_salaire_ancien'),
+                'total_demande' => $query->sum('collectivite_sante_total_demande'),
+            ],
+            [
+                'designation' => 'Collectivité Education',
+                'net' => $query->sum('collectivite_education_net'),
+                'revers' => $query->sum('collectivite_education_revers'),
+                'total_courant' => $query->sum('collectivite_education_total_courant'),
+                'salaire_ancien' => $query->sum('collectivite_education_salaire_ancien'),
+                'total_demande' => $query->sum('collectivite_education_total_demande'),
+            ],
+            [
+                'designation' => 'Personnels Saisonniers',
+                'net' => $query->sum('personnels_saisonniers_net'),
+                'revers' => $query->sum('personnels_saisonniers_revers'),
+                'total_courant' => $query->sum('personnels_saisonniers_total_courant'),
+                'salaire_ancien' => $query->sum('personnels_saisonniers_salaire_ancien'),
+                'total_demande' => $query->sum('personnels_saisonniers_total_demande'),
+            ],
+            [
+                'designation' => 'Personnels EPN',
+                'net' => $query->sum('epn_net'),
+                'revers' => $query->sum('epn_revers'),
+                'total_courant' => $query->sum('epn_total_courant'),
+                'salaire_ancien' => $query->sum('epn_salaire_ancien'),
+                'total_demande' => $query->sum('epn_total_demande'),
+            ],
+            [
+                'designation' => 'Personnels CED',
+                'net' => $query->sum('ced_net'),
+                'revers' => $query->sum('ced_revers'),
+                'total_courant' => $query->sum('ced_total_courant'),
+                'salaire_ancien' => $query->sum('ced_salaire_ancien'),
+                'total_demande' => $query->sum('ced_total_demande'),
+            ],
+            [
+                'designation' => 'Personnels ECOM',
+                'net' => $query->sum('ecom_net'),
+                'revers' => $query->sum('ecom_revers'),
+                'total_courant' => $query->sum('ecom_total_courant'),
+                'salaire_ancien' => $query->sum('ecom_salaire_ancien'),
+                'total_demande' => $query->sum('ecom_total_demande'),
+            ],
+            [
+                'designation' => 'Personnels CFP/CPAM',
+                'net' => $query->sum('cfp_cpam_net'),
+                'revers' => $query->sum('cfp_cpam_revers'),
+                'total_courant' => $query->sum('cfp_cpam_total_courant'),
+                'salaire_ancien' => $query->sum('cfp_cpam_salaire_ancien'),
+                'total_demande' => $query->sum('cfp_cpam_total_demande'),
+            ],
+        ];
+
+        // Calculer les totaux généraux
+        $totaux = [
+            'total_net' => $query->sum('total_net'),
+            'total_revers' => $query->sum('total_revers'),
+            'total_courant' => $query->sum('total_courant'),
+            'total_ancien' => $query->sum('total_ancien'),
+            'total_demande' => collect($typesPersonnel)->sum('total_demande'),
+        ];
+
+        // Récupérer les postes pour le filtre
+        $postes = Poste::orderBy('nom')->get();
+
+        // Récupérer les utilisateurs (trésoriers) pour le filtre
+        $users = User::where('role', 'tresorier')->orderBy('name')->get();
+
+        // Liste des mois
+        $mois = [
+            'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+            'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+        ];
+
+        // Générer les années (5 dernières années + année actuelle + 2 prochaines)
+        $currentYear = Carbon::now()->year;
+        $annees = range($currentYear - 5, $currentYear + 2);
+
+        return view('demandes.consolide-detaille', compact(
+            'typesPersonnel',
+            'totaux',
+            'postes',
+            'users',
+            'mois',
+            'annees'
+        ));
+    }
+
+    /**
+     * Export CSV de la vue consolidée détaillée
+     */
+    public function consolideDetailleExportCsv(Request $request)
+    {
+        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+
+        // Appliquer les mêmes filtres
+        $query = DemandeFonds::with('user', 'poste');
+
+        if ($request->filled('poste')) {
+            $query->whereHas('poste', function ($q) use ($request) {
+                $q->where('nom', 'like', '%' . $request->poste . '%');
+            });
+        }
+
+        if ($request->filled('mois')) {
+            $query->where('mois', $request->mois);
+        }
+
+        if ($request->filled('annee')) {
+            $query->where('annee', $request->annee);
+        }
+
+        if ($request->filled('status')) {
+            if (is_array($request->status)) {
+                $query->whereIn('status', $request->status);
+            } else {
+                $query->where('status', $request->status);
+            }
+        }
+
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        if ($request->filled('date_type') && ($request->filled('date_debut') || $request->filled('date_fin'))) {
+            $dateField = $request->date_type;
+
+            if ($request->filled('date_debut') && $request->filled('date_fin')) {
+                $query->whereBetween($dateField, [$request->date_debut, $request->date_fin]);
+            } elseif ($request->filled('date_debut')) {
+                $query->where($dateField, '>=', $request->date_debut);
+            } elseif ($request->filled('date_fin')) {
+                $query->where($dateField, '<=', $request->date_fin);
+            }
+        }
+
+        // Calculer les totaux agrégés par type de personnel
+        $typesPersonnel = [
+            [
+                'designation' => 'Fonctionnaires BCS',
+                'net' => $query->sum('fonctionnaires_bcs_net'),
+                'revers' => $query->sum('fonctionnaires_bcs_revers'),
+                'total_courant' => $query->sum('fonctionnaires_bcs_total_courant'),
+                'salaire_ancien' => $query->sum('fonctionnaires_bcs_salaire_ancien'),
+                'total_demande' => $query->sum('fonctionnaires_bcs_total_demande'),
+            ],
+            [
+                'designation' => 'Collectivité Santé',
+                'net' => $query->sum('collectivite_sante_net'),
+                'revers' => $query->sum('collectivite_sante_revers'),
+                'total_courant' => $query->sum('collectivite_sante_total_courant'),
+                'salaire_ancien' => $query->sum('collectivite_sante_salaire_ancien'),
+                'total_demande' => $query->sum('collectivite_sante_total_demande'),
+            ],
+            [
+                'designation' => 'Collectivité Education',
+                'net' => $query->sum('collectivite_education_net'),
+                'revers' => $query->sum('collectivite_education_revers'),
+                'total_courant' => $query->sum('collectivite_education_total_courant'),
+                'salaire_ancien' => $query->sum('collectivite_education_salaire_ancien'),
+                'total_demande' => $query->sum('collectivite_education_total_demande'),
+            ],
+            [
+                'designation' => 'Personnels Saisonniers',
+                'net' => $query->sum('personnels_saisonniers_net'),
+                'revers' => $query->sum('personnels_saisonniers_revers'),
+                'total_courant' => $query->sum('personnels_saisonniers_total_courant'),
+                'salaire_ancien' => $query->sum('personnels_saisonniers_salaire_ancien'),
+                'total_demande' => $query->sum('personnels_saisonniers_total_demande'),
+            ],
+            [
+                'designation' => 'Personnels EPN',
+                'net' => $query->sum('epn_net'),
+                'revers' => $query->sum('epn_revers'),
+                'total_courant' => $query->sum('epn_total_courant'),
+                'salaire_ancien' => $query->sum('epn_salaire_ancien'),
+                'total_demande' => $query->sum('epn_total_demande'),
+            ],
+            [
+                'designation' => 'Personnels CED',
+                'net' => $query->sum('ced_net'),
+                'revers' => $query->sum('ced_revers'),
+                'total_courant' => $query->sum('ced_total_courant'),
+                'salaire_ancien' => $query->sum('ced_salaire_ancien'),
+                'total_demande' => $query->sum('ced_total_demande'),
+            ],
+            [
+                'designation' => 'Personnels ECOM',
+                'net' => $query->sum('ecom_net'),
+                'revers' => $query->sum('ecom_revers'),
+                'total_courant' => $query->sum('ecom_total_courant'),
+                'salaire_ancien' => $query->sum('ecom_salaire_ancien'),
+                'total_demande' => $query->sum('ecom_total_demande'),
+            ],
+            [
+                'designation' => 'Personnels CFP/CPAM',
+                'net' => $query->sum('cfp_cpam_net'),
+                'revers' => $query->sum('cfp_cpam_revers'),
+                'total_courant' => $query->sum('cfp_cpam_total_courant'),
+                'salaire_ancien' => $query->sum('cfp_cpam_salaire_ancien'),
+                'total_demande' => $query->sum('cfp_cpam_total_demande'),
+            ],
+        ];
+
+        $fileName = 'types_personnel_' . date('Y-m-d_His') . '.csv';
+
+        $headers = [
+            "Content-type" => "text/csv; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
+        ];
+
+        $columns = [
+            'Désignation',
+            'Salaire Net (FCFA)',
+            'Reversement (FCFA)',
+            'Total Courant (FCFA)',
+            'Salaire Ancien (FCFA)',
+            'Total Demande (FCFA)'
+        ];
+
+        $callback = function () use ($typesPersonnel, $columns) {
+            $file = fopen('php://output', 'w');
+
+            // Ajouter le BOM UTF-8 pour Excel
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+
+            // En-têtes
+            fputcsv($file, $columns, ';');
+
+            // Données agrégées
+            foreach ($typesPersonnel as $type) {
+                fputcsv($file, [
+                    $type['designation'],
+                    number_format($type['net'], 0, ',', ' '),
+                    number_format($type['revers'], 0, ',', ' '),
+                    number_format($type['total_courant'], 0, ',', ' '),
+                    number_format($type['salaire_ancien'], 0, ',', ' '),
+                    number_format($type['total_demande'], 0, ',', ' '),
+                ], ';');
+            }
+
+            // Ligne de totaux
+            fputcsv($file, [], ';');
+            fputcsv($file, [
+                'TOTAUX GÉNÉRAUX',
+                number_format(collect($typesPersonnel)->sum('net'), 0, ',', ' '),
+                number_format(collect($typesPersonnel)->sum('revers'), 0, ',', ' '),
+                number_format(collect($typesPersonnel)->sum('total_courant'), 0, ',', ' '),
+                number_format(collect($typesPersonnel)->sum('salaire_ancien'), 0, ',', ' '),
+                number_format(collect($typesPersonnel)->sum('total_demande'), 0, ',', ' '),
+            ], ';');
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Export PDF de la vue consolidée détaillée
+     */
+    public function consolideDetailleExportPdf(Request $request)
+    {
+        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+
+        // Appliquer les mêmes filtres
+        $query = DemandeFonds::with('user', 'poste');
+
+        if ($request->filled('poste')) {
+            $query->whereHas('poste', function ($q) use ($request) {
+                $q->where('nom', 'like', '%' . $request->poste . '%');
+            });
+        }
+
+        if ($request->filled('mois')) {
+            $query->where('mois', $request->mois);
+        }
+
+        if ($request->filled('annee')) {
+            $query->where('annee', $request->annee);
+        }
+
+        if ($request->filled('status')) {
+            if (is_array($request->status)) {
+                $query->whereIn('status', $request->status);
+            } else {
+                $query->where('status', $request->status);
+            }
+        }
+
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        if ($request->filled('date_type') && ($request->filled('date_debut') || $request->filled('date_fin'))) {
+            $dateField = $request->date_type;
+
+            if ($request->filled('date_debut') && $request->filled('date_fin')) {
+                $query->whereBetween($dateField, [$request->date_debut, $request->date_fin]);
+            } elseif ($request->filled('date_debut')) {
+                $query->where($dateField, '>=', $request->date_debut);
+            } elseif ($request->filled('date_fin')) {
+                $query->where($dateField, '<=', $request->date_fin);
+            }
+        }
+
+        // Calculer les totaux agrégés par type de personnel
+        $typesPersonnel = [
+            [
+                'designation' => 'Fonctionnaires BCS',
+                'net' => $query->sum('fonctionnaires_bcs_net'),
+                'revers' => $query->sum('fonctionnaires_bcs_revers'),
+                'total_courant' => $query->sum('fonctionnaires_bcs_total_courant'),
+                'salaire_ancien' => $query->sum('fonctionnaires_bcs_salaire_ancien'),
+                'total_demande' => $query->sum('fonctionnaires_bcs_total_demande'),
+            ],
+            [
+                'designation' => 'Collectivité Santé',
+                'net' => $query->sum('collectivite_sante_net'),
+                'revers' => $query->sum('collectivite_sante_revers'),
+                'total_courant' => $query->sum('collectivite_sante_total_courant'),
+                'salaire_ancien' => $query->sum('collectivite_sante_salaire_ancien'),
+                'total_demande' => $query->sum('collectivite_sante_total_demande'),
+            ],
+            [
+                'designation' => 'Collectivité Education',
+                'net' => $query->sum('collectivite_education_net'),
+                'revers' => $query->sum('collectivite_education_revers'),
+                'total_courant' => $query->sum('collectivite_education_total_courant'),
+                'salaire_ancien' => $query->sum('collectivite_education_salaire_ancien'),
+                'total_demande' => $query->sum('collectivite_education_total_demande'),
+            ],
+            [
+                'designation' => 'Personnels Saisonniers',
+                'net' => $query->sum('personnels_saisonniers_net'),
+                'revers' => $query->sum('personnels_saisonniers_revers'),
+                'total_courant' => $query->sum('personnels_saisonniers_total_courant'),
+                'salaire_ancien' => $query->sum('personnels_saisonniers_salaire_ancien'),
+                'total_demande' => $query->sum('personnels_saisonniers_total_demande'),
+            ],
+            [
+                'designation' => 'Personnels EPN',
+                'net' => $query->sum('epn_net'),
+                'revers' => $query->sum('epn_revers'),
+                'total_courant' => $query->sum('epn_total_courant'),
+                'salaire_ancien' => $query->sum('epn_salaire_ancien'),
+                'total_demande' => $query->sum('epn_total_demande'),
+            ],
+            [
+                'designation' => 'Personnels CED',
+                'net' => $query->sum('ced_net'),
+                'revers' => $query->sum('ced_revers'),
+                'total_courant' => $query->sum('ced_total_courant'),
+                'salaire_ancien' => $query->sum('ced_salaire_ancien'),
+                'total_demande' => $query->sum('ced_total_demande'),
+            ],
+            [
+                'designation' => 'Personnels ECOM',
+                'net' => $query->sum('ecom_net'),
+                'revers' => $query->sum('ecom_revers'),
+                'total_courant' => $query->sum('ecom_total_courant'),
+                'salaire_ancien' => $query->sum('ecom_salaire_ancien'),
+                'total_demande' => $query->sum('ecom_total_demande'),
+            ],
+            [
+                'designation' => 'Personnels CFP/CPAM',
+                'net' => $query->sum('cfp_cpam_net'),
+                'revers' => $query->sum('cfp_cpam_revers'),
+                'total_courant' => $query->sum('cfp_cpam_total_courant'),
+                'salaire_ancien' => $query->sum('cfp_cpam_salaire_ancien'),
+                'total_demande' => $query->sum('cfp_cpam_total_demande'),
+            ],
+        ];
+
+        // Calculer les totaux généraux
+        $totaux = [
+            'total_net' => collect($typesPersonnel)->sum('net'),
+            'total_revers' => collect($typesPersonnel)->sum('revers'),
+            'total_courant' => collect($typesPersonnel)->sum('total_courant'),
+            'total_ancien' => collect($typesPersonnel)->sum('salaire_ancien'),
+            'total_demande' => collect($typesPersonnel)->sum('total_demande'),
+        ];
+
+        // Récupérer les filtres appliqués pour l'affichage
+        $filtres = $request->only(['poste', 'mois', 'annee', 'status', 'date_debut', 'date_fin']);
+
+        $pdf = FacadePdf::loadView('demandes.consolide_detaille_pdf', compact('typesPersonnel', 'totaux', 'filtres'))
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->download('types_personnel_' . date('Y-m-d_His') . '.pdf');
+    }
+
 }

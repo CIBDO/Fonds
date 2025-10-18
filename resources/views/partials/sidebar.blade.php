@@ -93,19 +93,9 @@
                         </a>
                         <ul class="submenu-list">
                             <li><a href="{{ route('demandes-fonds.consolide') }}" class="{{ request()->routeIs('demandes-fonds.consolide') ? 'active' : '' }}">
-                                <i class="fas fa-chart-bar"></i>Vue Consolidée</a></li>
-                            <li><a href="{{ route('demandes-fonds.situationDF') }}">
-                                <i class="fas fa-file-alt"></i>Rapport Mensuel DF</a></li>
-                            <li><a href="{{ route('demandes-fonds.situationFE') }}">
-                                <i class="fas fa-file-invoice"></i>Rapport Mensuel FE</a></li>
-                            <li><a href="{{ route('demandes-fonds.recap') }}">
-                                <i class="fas fa-table"></i>Tableau Détaillé DF</a></li>
-                            <li><a href="{{ route('demandes-fonds.detail') }}">
-                                <i class="fas fa-globe"></i>Situation Globale DF</a></li>
-                            <li><a href="{{ route('demandes-fonds.fonctionnaires') }}">
-                                <i class="fas fa-users"></i>Situation Personnel</a></li>
-                            <li><a href="{{ route('demandes-fonds.totaux-par-mois') }}">
-                                <i class="fas fa-calendar-alt"></i>Demandes par Mois</a></li>
+                                <i class="fas fa-chart-bar"></i> Etat detaille/Poste</a></li>
+                            <li><a href="{{ route('demandes-fonds.consolide-detaille') }}" class="{{ request()->routeIs('demandes-fonds.consolide-detaille') ? 'active' : '' }}">
+                                <i class="fas fa-table"></i> Etat Détaillé/Personnel</a></li>
                         </ul>
                     </li>
                 @endif
