@@ -75,23 +75,25 @@
                         <ul class="submenu-list">
                             <li><a href="{{ route('demandes-fonds.situation-mensuelle') }}" class="{{ request()->routeIs('demandes-fonds.situation-mensuelle') ? 'active' : '' }}">
                                 <i class="fas fa-file-alt"></i>Situation Mensuelle</a></li>
-                            <li><a href="{{ route('demandes-fonds.etat-avant-envoi') }}" class="{{ request()->routeIs('demandes-fonds.etat-avant-envoi') ? 'active' : '' }}">
-                                <i class="fas fa-file-invoice"></i>Situation Avant Envoi</a></li>
+                            {{-- <li><a href="{{ route('demandes-fonds.etat-avant-envoi') }}" class="{{ request()->routeIs('demandes-fonds.etat-avant-envoi') ? 'active' : '' }}">
+                                <i class="fas fa-file-invoice"></i>Situation Avant Envoi</a></li> --}}
                             <li><a href="{{ route('demandes-fonds.etat-detaille-avant-envoi') }}" class="{{ request()->routeIs('demandes-fonds.etat-detaille-avant-envoi') ? 'active' : '' }}">
-                                <i class="fas fa-file-excel"></i>État Détaillé Avant Envoi</a></li>
+                                <i class="fas fa-file-excel"></i>Situation Mensuelle détaillée</a></li>
                         </ul>
                     </li>
                 @endif
 
                 <!-- Rapports Statistiques -->
-                @if (Auth::user()->hasAnyRole(['admin', 'acct']))
-                    <li class="submenu">
+                @if (Auth::user()->hasAnyRole(['admin', 'acct', 'superviseur']))
+                    <li class="submenu {{ request()->routeIs('demandes-fonds.consolide') ? 'active' : '' }}">
                         <a href="#" class="submenu-toggle">
                             <i class="fas fa-chart-area"></i>
                             <span>Rapports</span>
                             <span class="menu-arrow fas fa-chevron-right"></span>
                         </a>
                         <ul class="submenu-list">
+                            <li><a href="{{ route('demandes-fonds.consolide') }}" class="{{ request()->routeIs('demandes-fonds.consolide') ? 'active' : '' }}">
+                                <i class="fas fa-chart-bar"></i>Vue Consolidée</a></li>
                             <li><a href="{{ route('demandes-fonds.situationDF') }}">
                                 <i class="fas fa-file-alt"></i>Rapport Mensuel DF</a></li>
                             <li><a href="{{ route('demandes-fonds.situationFE') }}">

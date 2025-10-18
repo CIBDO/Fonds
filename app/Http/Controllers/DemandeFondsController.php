@@ -1352,4 +1352,280 @@ class DemandeFondsController extends Controller
         return view('demandes.etat_detaille_avant_envoi', compact('demandesParPoste', 'totalGeneral', 'mois', 'annee'));
     }
 
+    /**
+     * Vue consolidée de toutes les demandes de fonds avec filtres avancés
+     */
+    public function consolide(Request $request)
+    {
+        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+
+        // Initialiser la requête
+        $query = DemandeFonds::with('user', 'poste');
+
+        // Filtre par poste
+        if ($request->filled('poste')) {
+            $query->whereHas('poste', function ($q) use ($request) {
+                $q->where('nom', 'like', '%' . $request->poste . '%');
+            });
+        }
+
+        // Filtre par mois
+        if ($request->filled('mois')) {
+            $query->where('mois', $request->mois);
+        }
+
+        // Filtre par année
+        if ($request->filled('annee')) {
+            $query->where('annee', $request->annee);
+        }
+
+        // Filtre par statut
+        if ($request->filled('status')) {
+            if (is_array($request->status)) {
+                $query->whereIn('status', $request->status);
+            } else {
+                $query->where('status', $request->status);
+            }
+        }
+
+        // Filtre par utilisateur/trésorier
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        // Filtre par plage de dates
+        if ($request->filled('date_type') && ($request->filled('date_debut') || $request->filled('date_fin'))) {
+            $dateField = $request->date_type; // date_envois, date_reception, ou created_at
+
+            if ($request->filled('date_debut') && $request->filled('date_fin')) {
+                $query->whereBetween($dateField, [$request->date_debut, $request->date_fin]);
+            } elseif ($request->filled('date_debut')) {
+                $query->where($dateField, '>=', $request->date_debut);
+            } elseif ($request->filled('date_fin')) {
+                $query->where($dateField, '<=', $request->date_fin);
+            }
+        }
+
+        // Récupérer les demandes paginées
+        $demandeFonds = $query->orderBy('created_at', 'desc')
+            ->paginate(21)
+            ->appends($request->except('page'));
+
+        // Calculer les totaux globaux (sur toute la requête, pas seulement la page actuelle)
+        $totaux = [
+            'total_courant' => $query->sum('total_courant'),
+            'montant_disponible' => $query->sum('montant_disponible'),
+            'solde' => $query->sum('solde'),
+            'montant_envoye' => $query->where('status', 'approuve')->sum('montant'),
+        ];
+
+        // Récupérer les postes pour le filtre
+        $postes = Poste::orderBy('nom')->get();
+
+        // Récupérer les utilisateurs (trésoriers) pour le filtre
+        $users = User::where('role', 'tresorier')->orderBy('name')->get();
+
+        // Liste des mois
+        $mois = [
+            'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+            'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+        ];
+
+        // Générer les années (5 dernières années + année actuelle + 2 prochaines)
+        $currentYear = Carbon::now()->year;
+        $annees = range($currentYear - 5, $currentYear + 2);
+
+        return view('demandes.consolide', compact(
+            'demandeFonds',
+            'totaux',
+            'postes',
+            'users',
+            'mois',
+            'annees'
+        ));
+    }
+
+    /**
+     * Export CSV de la vue consolidée
+     */
+    public function consolideExportCsv(Request $request)
+    {
+        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+
+        // Appliquer les mêmes filtres que la méthode consolide
+        $query = DemandeFonds::with('user', 'poste');
+
+        if ($request->filled('poste')) {
+            $query->whereHas('poste', function ($q) use ($request) {
+                $q->where('nom', 'like', '%' . $request->poste . '%');
+            });
+        }
+
+        if ($request->filled('mois')) {
+            $query->where('mois', $request->mois);
+        }
+
+        if ($request->filled('annee')) {
+            $query->where('annee', $request->annee);
+        }
+
+        if ($request->filled('status')) {
+            if (is_array($request->status)) {
+                $query->whereIn('status', $request->status);
+            } else {
+                $query->where('status', $request->status);
+            }
+        }
+
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        if ($request->filled('date_type') && ($request->filled('date_debut') || $request->filled('date_fin'))) {
+            $dateField = $request->date_type;
+
+            if ($request->filled('date_debut') && $request->filled('date_fin')) {
+                $query->whereBetween($dateField, [$request->date_debut, $request->date_fin]);
+            } elseif ($request->filled('date_debut')) {
+                $query->where($dateField, '>=', $request->date_debut);
+            } elseif ($request->filled('date_fin')) {
+                $query->where($dateField, '<=', $request->date_fin);
+            }
+        }
+
+        // Récupérer toutes les demandes (sans pagination)
+        $demandes = $query->orderBy('created_at', 'desc')->get();
+
+        $fileName = 'demandes_consolidees_' . date('Y-m-d_His') . '.csv';
+
+        $headers = [
+            "Content-type" => "text/csv; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
+        ];
+
+        $columns = [
+            'Poste',
+            'Mois',
+            'Année',
+            'Total Courant (FCFA)',
+            'Montant Disponible (FCFA)',
+            'Solde (FCFA)',
+            'Montant Envoyé (FCFA)',
+            'Date Envoi'
+        ];
+
+        $callback = function () use ($demandes, $columns) {
+            $file = fopen('php://output', 'w');
+
+            // Ajouter le BOM UTF-8 pour Excel
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+
+            // En-têtes
+            fputcsv($file, $columns, ';');
+
+            // Données
+            foreach ($demandes as $demande) {
+                fputcsv($file, [
+                    $demande->poste->nom ?? 'N/A',
+                    $demande->mois,
+                    $demande->annee,
+                    number_format($demande->total_courant, 0, ',', ' '),
+                    number_format($demande->montant_disponible, 0, ',', ' '),
+                    number_format($demande->solde, 0, ',', ' '),
+                    $demande->status === 'approuve' ? number_format($demande->montant, 0, ',', ' ') : '-',
+                    $demande->date_envois ? Carbon::parse($demande->date_envois)->format('d/m/Y') : '-'
+                ], ';');
+            }
+
+            // Ligne de totaux
+            fputcsv($file, [], ';');
+            fputcsv($file, [
+                '',
+                '',
+                '',
+                'TOTAUX',
+                number_format($demandes->sum('total_courant'), 0, ',', ' '),
+                number_format($demandes->sum('montant_disponible'), 0, ',', ' '),
+                number_format($demandes->sum('solde'), 0, ',', ' '),
+                number_format($demandes->where('status', 'approuve')->sum('montant'), 0, ',', ' '),
+                ''
+            ], ';');
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Export PDF de la vue consolidée
+     */
+    public function consolideExportPdf(Request $request)
+    {
+        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+
+        // Appliquer les mêmes filtres
+        $query = DemandeFonds::with('user', 'poste');
+
+        if ($request->filled('poste')) {
+            $query->whereHas('poste', function ($q) use ($request) {
+                $q->where('nom', 'like', '%' . $request->poste . '%');
+            });
+        }
+
+        if ($request->filled('mois')) {
+            $query->where('mois', $request->mois);
+        }
+
+        if ($request->filled('annee')) {
+            $query->where('annee', $request->annee);
+        }
+
+        if ($request->filled('status')) {
+            if (is_array($request->status)) {
+                $query->whereIn('status', $request->status);
+            } else {
+                $query->where('status', $request->status);
+            }
+        }
+
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        if ($request->filled('date_type') && ($request->filled('date_debut') || $request->filled('date_fin'))) {
+            $dateField = $request->date_type;
+
+            if ($request->filled('date_debut') && $request->filled('date_fin')) {
+                $query->whereBetween($dateField, [$request->date_debut, $request->date_fin]);
+            } elseif ($request->filled('date_debut')) {
+                $query->where($dateField, '>=', $request->date_debut);
+            } elseif ($request->filled('date_fin')) {
+                $query->where($dateField, '<=', $request->date_fin);
+            }
+        }
+
+        // Récupérer toutes les demandes
+        $demandes = $query->orderBy('created_at', 'desc')->get();
+
+        // Calculer les totaux
+        $totaux = [
+            'total_courant' => $demandes->sum('total_courant'),
+            'montant_disponible' => $demandes->sum('montant_disponible'),
+            'solde' => $demandes->sum('solde'),
+            'montant_envoye' => $demandes->where('status', 'approuve')->sum('montant'),
+        ];
+
+        // Récupérer les filtres appliqués pour l'affichage
+        $filtres = $request->only(['poste', 'mois', 'annee', 'status', 'date_debut', 'date_fin']);
+
+        $pdf = FacadePdf::loadView('demandes.consolide_pdf', compact('demandes', 'totaux', 'filtres'))
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->download('demandes_consolidees_' . date('Y-m-d_His') . '.pdf');
+    }
+
 }

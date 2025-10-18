@@ -88,6 +88,17 @@ Route::middleware(['auth'])->group(function () {
         ->middleware('role:acct,admin,superviseur') // Tous les rôles sauf trésorier
         ->name('demandes-fonds.recap');
 
+    // Routes pour la vue consolidée
+    Route::get('/demandes-fonds/consolide', [DemandeFondsController::class, 'consolide'])
+        ->middleware('role:acct,admin,superviseur')
+        ->name('demandes-fonds.consolide');
+    Route::get('/demandes-fonds/consolide/export-csv', [DemandeFondsController::class, 'consolideExportCsv'])
+        ->middleware('role:acct,admin,superviseur')
+        ->name('demandes-fonds.consolide.export-csv');
+    Route::get('/demandes-fonds/consolide/export-pdf', [DemandeFondsController::class, 'consolideExportPdf'])
+        ->middleware('role:acct,admin,superviseur')
+        ->name('demandes-fonds.consolide.export-pdf');
+
     Route::post('/users/{user}/deactivate', [UserController::class, 'deactivate'])->name('users.deactivate');
     Route::post('/users/{user}/activate', [UserController::class, 'activate'])->name('users.activate');
 
