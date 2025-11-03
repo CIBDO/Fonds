@@ -23,6 +23,12 @@ use App\Http\Controllers\PCS\{
     AutreDemandeController,
 };
 
+// Contrôleurs TRIE
+use App\Http\Controllers\TRIE\{
+    BureauTrieController,
+    CotisationTrieController,
+};
+
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -296,7 +302,39 @@ Route::middleware(['auth'])->prefix('pcs')->name('pcs.')->group(function () {
         // Statistiques
         Route::get('statistiques/index', 'statistiques')->name('statistiques');
     });
-});
+}); // FIN DU GROUPE PCS
+
+// ===== MODULE TRIE - COTISATIONS CCIM =====
+Route::middleware(['auth'])->prefix('trie')->name('trie.')->group(function () {
+        
+        // ===== BUREAUX TRIE =====
+        Route::controller(BureauTrieController::class)->prefix('bureaux')->name('bureaux.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('{poste}/manage', 'manage')->name('manage');
+            Route::post('/', 'store')->name('store');
+            Route::put('{bureau}', 'update')->name('update');
+            Route::patch('{bureau}/toggle-status', 'toggleStatus')->name('toggle-status');
+            Route::delete('{bureau}', 'destroy')->name('destroy');
+            
+            // API pour récupérer les bureaux d'un poste
+            Route::get('api/{poste}/bureaux', 'getBureaux')->name('api.bureaux');
+        });
+
+    // ===== COTISATIONS TRIE =====
+    Route::controller(CotisationTrieController::class)->prefix('cotisations')->name('cotisations.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+        Route::get('{cotisation}', 'show')->name('show');
+    });
+
+    // ===== ÉTATS TRIE (À implémenter) =====
+    Route::middleware('role:admin,acct')->prefix('etats')->name('etats.')->group(function () {
+        Route::get('/', function() {
+            return view('trie.etats.index');
+        })->name('index');
+    });
+}); // FIN DU GROUPE TRIE
 
 // Ajoutez la route d'authentification
 require __DIR__.'/auth.php';

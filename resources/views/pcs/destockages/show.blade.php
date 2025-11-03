@@ -10,7 +10,7 @@
                     <h3 class="page-title fw-bold text-danger">
                         <i class="fas fa-file-invoice me-2"></i>Détail du Déstockage
                     </h3>
-                    <p class="text-muted mb-0">{{ $destockage->reference_destockage }}</p>
+                    {{-- <p class="text-muted mb-0">{{ $destockage->reference_destockage }}</p> --}}
                 </div>
             </div>
             <div class="col-auto">
@@ -205,8 +205,8 @@
                     <i class="fas fa-balance-scale fa-2x mb-2"></i>
                     <h6 class="mb-1">Taux Déstockage</h6>
                     <h5 class="fw-bold">
-                        {{ $destockage->postes->sum('montant_collecte') > 0 
-                           ? number_format(($destockage->postes->sum('montant_destocke') / $destockage->postes->sum('montant_collecte')) * 100, 1) 
+                        {{ $destockage->postes->sum('montant_collecte') > 0
+                           ? number_format(($destockage->postes->sum('montant_destocke') / $destockage->postes->sum('montant_collecte')) * 100, 1)
                            : 0 }}%
                     </h5>
                 </div>

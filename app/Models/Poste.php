@@ -55,6 +55,22 @@ class Poste extends Model
     }
 
     /**
+     * Relation : Bureaux TRIE du poste
+     */
+    public function bureauxTrie()
+    {
+        return $this->hasMany(BureauTrie::class, 'poste_id');
+    }
+
+    /**
+     * Relation : Cotisations TRIE du poste
+     */
+    public function cotisationsTrie()
+    {
+        return $this->hasMany(CotisationTrie::class, 'poste_id');
+    }
+
+    /**
      * Méthode : Vérifier si c'est la RGD
      */
     public function isRgd()

@@ -218,6 +218,51 @@
                     </li>
                 @endif
 
+                <!-- MODULE TRIE - COTISATIONS CCIM -->
+                <li class="menu-title">
+                    <span>TRIE - CCIM</span>
+                </li>
+
+                <!-- Bureaux TRIE -->
+                <li class="submenu {{ request()->routeIs('trie.bureaux.*') ? 'active' : '' }}">
+                    <a href="#" class="submenu-toggle">
+                        <i class="fas fa-building"></i>
+                        <span>Bureaux TRIE</span>
+                        <span class="menu-arrow fas fa-chevron-right"></span>
+                    </a>
+                    <ul class="submenu-list">
+                        <li><a href="{{ route('trie.bureaux.index') }}" class="{{ request()->routeIs('trie.bureaux.index') ? 'active' : '' }}">
+                            <i class="fas fa-list"></i>Liste des Bureaux</a></li>
+                    </ul>
+                </li>
+
+                <!-- Cotisations TRIE -->
+                <li class="submenu {{ request()->routeIs('trie.cotisations.*') ? 'active' : '' }}">
+                    <a href="#" class="submenu-toggle">
+                        <i class="fas fa-coins"></i>
+                        <span>Cotisations TRIE</span>
+                        <span class="menu-arrow fas fa-chevron-right"></span>
+                    </a>
+                    <ul class="submenu-list">
+                        @if (Auth::user()->poste_id)
+                            <li><a href="{{ route('trie.cotisations.create') }}" class="{{ request()->routeIs('trie.cotisations.create') ? 'active' : '' }}">
+                                <i class="fas fa-plus-circle"></i>Nouvelle Cotisation</a></li>
+                        @endif
+                        <li><a href="{{ route('trie.cotisations.index') }}" class="{{ request()->routeIs('trie.cotisations.index') || request()->routeIs('trie.cotisations.show') ? 'active' : '' }}">
+                            <i class="fas fa-list"></i>Liste des Cotisations</a></li>
+                    </ul>
+                </li>
+
+                <!-- États TRIE (ACCT uniquement) -->
+                @if (Auth::user()->hasAnyRole(['admin', 'acct']))
+                    <li class="{{ request()->routeIs('trie.etats.*') ? 'active' : '' }}">
+                        <a href="{{ route('trie.etats.index') }}">
+                            <i class="fas fa-chart-line"></i>
+                            <span>États et Rapports</span>
+                        </a>
+                    </li>
+                @endif
+
                 <li class="menu-title">
                     <span>Management</span>
                 </li>

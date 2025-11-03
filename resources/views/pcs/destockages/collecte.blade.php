@@ -10,7 +10,7 @@
                     <h3 class="page-title fw-bold text-danger">
                         <i class="fas fa-coins me-2"></i>Fonds Collectés - Vue de Collecte
                     </h3>
-                    <p class="text-muted mb-0">Consultez les fonds collectés par poste et programme</p>
+                    {{-- <p class="text-muted mb-0">Consultez les fonds collectés par poste et programme</p> --}}
                 </div>
             </div>
             <div class="col-auto">
@@ -138,7 +138,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($collecte['solde_disponible'] > 0)
-                                        <a href="{{ route('pcs.destockages.create', ['programme' => $programme, 'mois' => $mois, 'annee' => $annee]) }}" 
+                                        <a href="{{ route('pcs.destockages.create', ['programme' => $programme, 'mois' => $mois, 'annee' => $annee]) }}"
                                            class="btn btn-sm btn-outline-danger"
                                            data-bs-toggle="tooltip"
                                            title="Créer un déstockage">

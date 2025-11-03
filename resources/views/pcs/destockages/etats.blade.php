@@ -10,7 +10,7 @@
                     <h3 class="page-title fw-bold text-danger">
                         <i class="fas fa-chart-line me-2"></i>États et Rapports - Déstockages PCS
                     </h3>
-                    <p class="text-muted mb-0">Générez vos états de collecte et déstockages</p>
+                     {{-- <p class="text-muted mb-0">Générez vos états de collecte et déstockages</p> --}}
                 </div>
             </div>
         </div>

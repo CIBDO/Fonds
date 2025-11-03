@@ -10,7 +10,7 @@
                     <h3 class="page-title fw-bold text-danger">
                         <i class="fas fa-list me-2"></i>Liste des Déstockages
                     </h3>
-                    <p class="text-muted mb-0">Historique des déstockages de fonds PCS</p>
+                    {{-- <p class="text-muted mb-0">Historique des déstockages de fonds PCS</p> --}}
                 </div>
             </div>
             <div class="col-auto">
@@ -180,13 +180,13 @@
                             </td>
                             <td class="text-center">
                                 <div class="btn-group" role="group">
-                                    <a href="{{ route('pcs.destockages.show', $destockage) }}" 
+                                    <a href="{{ route('pcs.destockages.show', $destockage) }}"
                                        class="btn btn-sm btn-outline-primary"
                                        data-bs-toggle="tooltip"
                                        title="Voir le détail">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    <a href="{{ route('pcs.destockages.pdf', $destockage) }}" 
+                                    <a href="{{ route('pcs.destockages.pdf', $destockage) }}"
                                        class="btn btn-sm btn-outline-danger"
                                        data-bs-toggle="tooltip"
                                        title="Télécharger le bordereau">

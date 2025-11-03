@@ -1,0 +1,320 @@
+<?php
+
+namespace App\Http\Controllers\TRIE;
+
+use App\Http\Controllers\Controller;
+use App\Models\CotisationTrie;
+use App\Models\BureauTrie;
+use App\Models\Poste;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use RealRashid\SweetAlert\Facades\Alert;
+use Carbon\Carbon;
+
+class CotisationTrieController extends Controller
+{
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    /**
+     * Liste des cotisations
+     */
+    public function index(Request $request)
+    {
+        $user = Auth::user();
+
+        $query = CotisationTrie::with(['poste', 'bureauTrie', 'saisiPar'])
+            ->orderBy('annee', 'desc')
+            ->orderBy('mois', 'desc');
+
+        // Filtres
+        if ($request->filled('poste_id')) {
+            $query->where('poste_id', $request->poste_id);
+        }
+
+        if ($request->filled('mois')) {
+            $query->where('mois', $request->mois);
+        }
+
+        if ($request->filled('annee')) {
+            $query->where('annee', $request->annee);
+        }
+
+        if ($request->filled('statut')) {
+            $query->where('statut', $request->statut);
+        }
+
+        // Si l'utilisateur n'est pas ACCT/Admin, voir uniquement ses cotisations
+        if (!in_array($user->role, ['acct', 'admin'])) {
+            $query->where('poste_id', $user->poste_id);
+        }
+
+        $cotisations = $query->paginate(20);
+
+        // Données pour les filtres
+        $postes = Poste::orderBy('nom')->get();
+        $moisList = [
+            1 => 'Janvier', 2 => 'Février', 3 => 'Mars', 4 => 'Avril',
+            5 => 'Mai', 6 => 'Juin', 7 => 'Juillet', 8 => 'Août',
+            9 => 'Septembre', 10 => 'Octobre', 11 => 'Novembre', 12 => 'Décembre'
+        ];
+        $annees = range(date('Y'), date('Y') - 5);
+
+        return view('trie.cotisations.index', compact('cotisations', 'postes', 'moisList', 'annees'));
+    }
+
+    /**
+     * Formulaire de création - Sélection poste et période
+     */
+    public function create(Request $request)
+    {
+        $user = Auth::user();
+
+        // Si l'utilisateur n'est pas ACCT/Admin, il peut seulement saisir pour son poste
+        if (in_array($user->role, ['acct', 'admin'])) {
+            $postes = Poste::orderBy('nom')->get();
+        } else {
+            // Vérifier que l'utilisateur a un poste associé
+            if (!$user->poste_id) {
+                Alert::error('Erreur', 'Vous n\'êtes pas associé à un poste. Veuillez contacter l\'administrateur.');
+                return redirect()->route('trie.cotisations.index');
+            }
+            $postes = Poste::where('id', $user->poste_id)->get();
+        }
+
+        $moisList = [
+            1 => 'Janvier', 2 => 'Février', 3 => 'Mars', 4 => 'Avril',
+            5 => 'Mai', 6 => 'Juin', 7 => 'Juillet', 8 => 'Août',
+            9 => 'Septembre', 10 => 'Octobre', 11 => 'Novembre', 12 => 'Décembre'
+        ];
+        $annees = range(date('Y'), date('Y') - 5);
+
+        // Présélectionner le poste de l'utilisateur connecté par défaut
+        $posteId = $request->get('poste_id');
+        
+        // Si aucun poste n'est sélectionné et que l'utilisateur n'est pas admin/acct
+        if (!$posteId && !in_array($user->role, ['acct', 'admin'])) {
+            $posteId = $user->poste_id;
+        }
+        
+        $mois = $request->get('mois', date('n'));
+        $annee = $request->get('annee', date('Y'));
+
+        $bureaux = collect(); // Collection vide au lieu d'un tableau
+        $poste = null;
+
+        // Si un poste est sélectionné, récupérer ses bureaux
+        if ($posteId) {
+            $poste = Poste::findOrFail($posteId);
+            $bureaux = BureauTrie::where('poste_id', $posteId)
+                ->where('actif', true)
+                ->orderBy('code_bureau')
+                ->get();
+
+            // Vérifier les cotisations existantes
+            foreach ($bureaux as $bureau) {
+                $cotisationExistante = CotisationTrie::where('bureau_trie_id', $bureau->id)
+                    ->where('mois', $mois)
+                    ->where('annee', $annee)
+                    ->first();
+
+                $bureau->cotisation_existante = $cotisationExistante;
+            }
+        }
+
+        return view('trie.cotisations.create', compact(
+            'postes',
+            'moisList',
+            'annees',
+            'bureaux',
+            'poste',
+            'posteId',
+            'mois',
+            'annee'
+        ));
+    }
+
+    /**
+     * Enregistrer les cotisations
+     */
+    public function store(Request $request)
+    {
+        $user = Auth::user();
+        $mode = $request->input('mode', 'normal');
+
+        try {
+            DB::beginTransaction();
+
+            if ($mode === 'rattrapage') {
+                // Mode rattrapage : plusieurs mois
+                $this->storeRattrapage($request, $user);
+            } else {
+                // Mode normal : un seul mois
+                $this->storeNormal($request, $user);
+            }
+
+            DB::commit();
+
+            $message = $mode === 'rattrapage' 
+                ? 'Les cotisations ont été enregistrées pour tous les mois sélectionnés avec succès.'
+                : 'Les cotisations ont été enregistrées avec succès.';
+            
+            Alert::success('Succès', $message);
+            return redirect()->route('trie.cotisations.index');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Alert::error('Erreur', 'Une erreur est survenue lors de l\'enregistrement : ' . $e->getMessage());
+            return redirect()->back()->withInput();
+        }
+    }
+
+    /**
+     * Enregistrer en mode normal (un seul mois)
+     */
+    private function storeNormal(Request $request, $user)
+    {
+        $validated = $request->validate([
+            'poste_id' => 'required|exists:postes,id',
+            'mois' => 'required|integer|min:1|max:12',
+            'annee' => 'required|integer|min:2020',
+            'bureaux' => 'required|array|min:1',
+            'bureaux.*.bureau_trie_id' => 'required|exists:bureaux_trie,id',
+            'bureaux.*.montant_cotisation_courante' => 'required|numeric|min:0',
+            'bureaux.*.montant_apurement' => 'nullable|numeric|min:0',
+            'bureaux.*.detail_apurement' => 'nullable|string',
+            'bureaux.*.mode_paiement' => 'nullable|in:cheque,virement,especes,autre',
+            'bureaux.*.reference_paiement' => 'nullable|string',
+            'bureaux.*.date_paiement' => 'nullable|date',
+            'bureaux.*.observation' => 'nullable|string',
+        ]);
+
+        $posteId = $validated['poste_id'];
+        $mois = $validated['mois'];
+        $annee = $validated['annee'];
+
+        foreach ($validated['bureaux'] as $bureauData) {
+            // Vérifier si une cotisation existe déjà
+            $existante = CotisationTrie::where('bureau_trie_id', $bureauData['bureau_trie_id'])
+                ->where('mois', $mois)
+                ->where('annee', $annee)
+                ->first();
+
+            if ($existante) {
+                throw new \Exception('Une cotisation existe déjà pour ce bureau et cette période.');
+            }
+
+            // Créer la cotisation directement validée
+            CotisationTrie::create([
+                'poste_id' => $posteId,
+                'bureau_trie_id' => $bureauData['bureau_trie_id'],
+                'mois' => $mois,
+                'annee' => $annee,
+                'montant_cotisation_courante' => $bureauData['montant_cotisation_courante'],
+                'montant_apurement' => $bureauData['montant_apurement'] ?? 0,
+                'detail_apurement' => $bureauData['detail_apurement'] ?? null,
+                'mode_paiement' => $bureauData['mode_paiement'] ?? null,
+                'reference_paiement' => $bureauData['reference_paiement'] ?? null,
+                'date_paiement' => $bureauData['date_paiement'] ?? null,
+                'observation' => $bureauData['observation'] ?? null,
+                'statut' => 'valide',
+                'date_saisie' => now(),
+                'date_validation' => now(),
+                'saisi_par' => $user->id,
+                'valide_par' => $user->id,
+            ]);
+        }
+    }
+
+    /**
+     * Enregistrer en mode rattrapage (plusieurs mois)
+     */
+    private function storeRattrapage(Request $request, $user)
+    {
+        $validated = $request->validate([
+            'poste_id' => 'required|exists:postes,id',
+            'annee' => 'required|integer|min:2020',
+            'mois_selectionnes' => 'required|array|min:1',
+            'mois_selectionnes.*' => 'integer|min:1|max:12',
+        ]);
+
+        $posteId = $validated['poste_id'];
+        $annee = $validated['annee'];
+        $moisSelectionnes = $validated['mois_selectionnes'];
+
+        // Récupérer tous les bureaux actifs du poste
+        $bureaux = BureauTrie::where('poste_id', $posteId)
+            ->where('actif', true)
+            ->get();
+
+        $nbCotisations = 0;
+
+        foreach ($moisSelectionnes as $mois) {
+            foreach ($bureaux as $bureau) {
+                // Récupérer les données du formulaire pour ce mois et ce bureau
+                $montantCotisation = $request->input("cotisation_{$mois}_{$bureau->id}_montant_cotisation", 0);
+                $montantApurement = $request->input("cotisation_{$mois}_{$bureau->id}_montant_apurement", 0);
+                $reference = $request->input("cotisation_{$mois}_{$bureau->id}_reference");
+                $datePaiement = $request->input("cotisation_{$mois}_{$bureau->id}_date_paiement");
+
+                // Ne créer que si au moins un montant est renseigné
+                if ($montantCotisation > 0 || $montantApurement > 0) {
+                    // Vérifier si une cotisation existe déjà
+                    $existante = CotisationTrie::where('bureau_trie_id', $bureau->id)
+                        ->where('mois', $mois)
+                        ->where('annee', $annee)
+                        ->first();
+
+                    if ($existante) {
+                        throw new \Exception("Une cotisation existe déjà pour le bureau {$bureau->nom_bureau} en {$this->moisNoms[$mois]} {$annee}.");
+                    }
+
+                    // Créer la cotisation directement validée
+                    CotisationTrie::create([
+                        'poste_id' => $posteId,
+                        'bureau_trie_id' => $bureau->id,
+                        'mois' => $mois,
+                        'annee' => $annee,
+                        'montant_cotisation_courante' => $montantCotisation,
+                        'montant_apurement' => $montantApurement,
+                        'detail_apurement' => $montantApurement > 0 ? "Rattrapage {$this->moisNoms[$mois]} {$annee}" : null,
+                        'mode_paiement' => null,
+                        'reference_paiement' => $reference,
+                        'date_paiement' => $datePaiement,
+                        'observation' => "Saisie en mode rattrapage multi-mois",
+                        'statut' => 'valide',
+                        'date_saisie' => now(),
+                        'date_validation' => now(),
+                        'saisi_par' => $user->id,
+                        'valide_par' => $user->id,
+                    ]);
+
+                    $nbCotisations++;
+                }
+            }
+        }
+
+        if ($nbCotisations === 0) {
+            throw new \Exception('Aucune cotisation à enregistrer. Veuillez saisir au moins un montant.');
+        }
+    }
+
+    // Tableau des mois pour les messages
+    private $moisNoms = [
+        1 => 'Janvier', 2 => 'Février', 3 => 'Mars', 4 => 'Avril',
+        5 => 'Mai', 6 => 'Juin', 7 => 'Juillet', 8 => 'Août',
+        9 => 'Septembre', 10 => 'Octobre', 11 => 'Novembre', 12 => 'Décembre'
+    ];
+
+    /**
+     * Afficher une cotisation
+     */
+    public function show(CotisationTrie $cotisation)
+    {
+        $cotisation->load(['poste', 'bureauTrie', 'saisiPar', 'validePar']);
+        return view('trie.cotisations.show', compact('cotisation'));
+    }
+}

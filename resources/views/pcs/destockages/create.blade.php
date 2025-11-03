@@ -10,7 +10,7 @@
                     <h3 class="page-title fw-bold text-danger">
                         <i class="fas fa-cash-register me-2"></i>Nouveau Déstockage
                     </h3>
-                    <p class="text-muted mb-0">Sélectionnez les postes et saisissez les montants à déstocker</p>
+                    {{-- <p class="text-muted mb-0">Sélectionnez les postes et saisissez les montants à déstocker</p> --}}
                 </div>
             </div>
             <div class="col-auto">
