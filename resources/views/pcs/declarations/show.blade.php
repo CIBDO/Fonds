@@ -61,6 +61,18 @@
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Référence</label>
+                            <div>
+                                @if($declaration->reference)
+                                    <span class="badge bg-info text-dark fs-6">
+                                        <i class="fas fa-hashtag me-1"></i>{{ $declaration->reference }}
+                                    </span>
+                                @else
+                                    <span class="text-muted">Non renseignée</span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
                             <label class="text-muted small">Période</label>
                             <div class="fw-bold">
                                 {{ \Carbon\Carbon::create()->month($declaration->mois)->locale('fr')->translatedFormat('F') }} {{ $declaration->annee }}

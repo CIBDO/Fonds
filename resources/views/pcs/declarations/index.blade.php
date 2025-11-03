@@ -106,6 +106,7 @@
                             <th><i class="fas fa-calendar"></i> Période</th>
                             <th><i class="fas fa-building"></i> Entité</th>
                             <th><i class="fas fa-globe"></i> Programme</th>
+                            <th><i class="fas fa-hashtag"></i> Référence</th>
                             <th class="text-end"><i class="fas fa-arrow-up"></i> Recouvrement</th>
                             <th class="text-end"><i class="fas fa-arrow-down"></i> Reversement</th>
                             <th class="text-center"><i class="fas fa-flag"></i> Statut</th>
@@ -130,6 +131,15 @@
                                 <span class="badge bg-{{ $decl->programme == 'UEMOA' ? 'success' : 'warning' }} programme-badge">
                                     {{ $decl->programme }}
                                 </span>
+                            </td>
+                            <td>
+                                @if($decl->reference)
+                                    <span class="badge bg-info text-dark">
+                                        <i class="fas fa-hashtag"></i> {{ $decl->reference }}
+                                    </span>
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
                             </td>
                             <td class="text-end fw-bold">{{ number_format($decl->montant_recouvrement, 0, ',', ' ') }} FCFA</td>
                             <td class="text-end fw-bold">{{ number_format($decl->montant_reversement, 0, ',', ' ') }} FCFA</td>

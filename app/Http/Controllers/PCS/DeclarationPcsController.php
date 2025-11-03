@@ -86,8 +86,92 @@ class DeclarationPcsController extends Controller
         $programmes = ['UEMOA', 'AES'];
         $mois = range(1, 12);
         $annee = date('Y');
+        
+        // Détecter les mois manquants pour chaque programme
+        $moisManquants = [];
+        $moisRenseignes = []; // Nouveau : mois déjà renseignés
+        $anneeCourante = $annee;
+        
+        // Pour chaque programme, détecter les mois non renseignés et les mois déjà renseignés
+        foreach ($programmes as $programme) {
+            $moisManquants[$programme] = [];
+            $moisRenseignes[$programme] = [];
+            
+            // Récupérer les déclarations existantes pour ce poste et ce programme
+            if ($poste->isRgd()) {
+                // Pour RGD, vérifier les déclarations propres (poste_id = poste->id, bureau_douane_id = null)
+                $declarationsExistentes = DeclarationPcs::where('poste_id', $poste->id)
+                    ->where('bureau_douane_id', null)
+                    ->where('programme', $programme)
+                    ->where('annee', $anneeCourante)
+                    ->pluck('mois')
+                    ->toArray();
+            } else {
+                // Pour poste normal
+                $declarationsExistentes = DeclarationPcs::where('poste_id', $poste->id)
+                    ->where('programme', $programme)
+                    ->where('annee', $anneeCourante)
+                    ->pluck('mois')
+                    ->toArray();
+            }
+            
+            // Trouver les mois manquants et les mois déjà renseignés (de janvier jusqu'au mois actuel)
+            $moisActuel = (int)date('n');
+            for ($m = 1; $m <= $moisActuel; $m++) {
+                if (!in_array($m, $declarationsExistentes)) {
+                    $moisManquants[$programme][] = $m;
+                } else {
+                    $moisRenseignes[$programme][] = $m;
+                }
+            }
+        }
+        
+        // Vérifier aussi l'année précédente (derniers mois de l'année passée)
+        $anneePrecedente = $anneeCourante - 1;
+        $moisManquantsAnneePrecedente = [];
+        $moisRenseignesAnneePrecedente = [];
+        
+        foreach ($programmes as $programme) {
+            $moisManquantsAnneePrecedente[$programme] = [];
+            $moisRenseignesAnneePrecedente[$programme] = [];
+            
+            if ($poste->isRgd()) {
+                $declarationsAnneePrecedente = DeclarationPcs::where('poste_id', $poste->id)
+                    ->where('bureau_douane_id', null)
+                    ->where('programme', $programme)
+                    ->where('annee', $anneePrecedente)
+                    ->pluck('mois')
+                    ->toArray();
+            } else {
+                $declarationsAnneePrecedente = DeclarationPcs::where('poste_id', $poste->id)
+                    ->where('programme', $programme)
+                    ->where('annee', $anneePrecedente)
+                    ->pluck('mois')
+                    ->toArray();
+            }
+            
+            // Vérifier les mois de septembre à décembre de l'année précédente
+            for ($m = 9; $m <= 12; $m++) {
+                if (!in_array($m, $declarationsAnneePrecedente)) {
+                    $moisManquantsAnneePrecedente[$programme][] = $m;
+                } else {
+                    $moisRenseignesAnneePrecedente[$programme][] = $m;
+                }
+            }
+        }
 
-        return view('pcs.declarations.create', compact('poste', 'bureaux', 'programmes', 'mois', 'annee'));
+        return view('pcs.declarations.create', compact(
+            'poste', 
+            'bureaux', 
+            'programmes', 
+            'mois', 
+            'annee',
+            'moisManquants',
+            'moisRenseignes',
+            'anneePrecedente',
+            'moisManquantsAnneePrecedente',
+            'moisRenseignesAnneePrecedente'
+        ));
     }
 
     /**
@@ -106,12 +190,19 @@ class DeclarationPcsController extends Controller
 
         DB::beginTransaction();
         try {
-            // Si c'est la RGD, traiter toutes les déclarations
-            if ($poste->isRgd()) {
-                $this->storeDeclarationsRgd($request, $poste, $user);
+            // Vérifier si c'est un mode rattrapage (plusieurs mois)
+            $moisSelectionnes = $request->input('mois_selectionnes', []);
+            
+            if (!empty($moisSelectionnes) && is_array($moisSelectionnes)) {
+                // Mode rattrapage : traiter plusieurs mois
+                $this->storeRattrapageMultiple($request, $poste, $user, $moisSelectionnes);
             } else {
-                // Poste normal
-                $this->storeDeclarationNormale($request, $poste, $user);
+                // Mode normal : un seul mois
+                if ($poste->isRgd()) {
+                    $this->storeDeclarationsRgd($request, $poste, $user);
+                } else {
+                    $this->storeDeclarationNormale($request, $poste, $user);
+                }
             }
 
             DB::commit();
@@ -121,13 +212,134 @@ class DeclarationPcsController extends Controller
                 $this->envoyerNotificationValidation($poste, $request);
             }
 
-            Alert::success('Succès', 'Déclaration(s) enregistrée(s) avec succès');
+            $nbMois = !empty($moisSelectionnes) ? count($moisSelectionnes) : 1;
+            Alert::success('Succès', $nbMois . ' déclaration(s) enregistrée(s) avec succès');
             return redirect()->route('pcs.declarations.index');
 
         } catch (\Exception $e) {
             DB::rollBack();
             Alert::error('Erreur', 'Erreur lors de l\'enregistrement: ' . $e->getMessage());
             return redirect()->back()->withInput();
+        }
+    }
+
+    /**
+     * Enregistrer le rattrapage de plusieurs mois
+     */
+    private function storeRattrapageMultiple(Request $request, $poste, $user, $moisSelectionnes)
+    {
+        $annee = $request->input('annee');
+        
+        foreach ($moisSelectionnes as $mois) {
+            // Pour chaque mois, traiter les déclarations
+            if ($poste->isRgd()) {
+                $this->storeDeclarationsRgdRattrapage($request, $poste, $user, $mois, $annee);
+            } else {
+                $this->storeDeclarationNormaleRattrapage($request, $poste, $user, $mois, $annee);
+            }
+        }
+    }
+
+    /**
+     * Enregistrer déclarations RGD en mode rattrapage
+     */
+    private function storeDeclarationsRgdRattrapage(Request $request, $poste, $user, $mois, $annee)
+    {
+        // Pour chaque programme (UEMOA et AES)
+        foreach (['UEMOA', 'AES'] as $programme) {
+            // Déclaration RGD propre
+            $recouvrementRgd = $request->input("mois_{$mois}_rgd_{$programme}_recouvrement");
+            $reversementRgd = $request->input("mois_{$mois}_rgd_{$programme}_reversement");
+
+            if ($recouvrementRgd || $reversementRgd || $request->input("mois_{$mois}_rgd_{$programme}_reference")) {
+                DeclarationPcs::updateOrCreate(
+                    [
+                        'poste_id' => $poste->id,
+                        'bureau_douane_id' => null,
+                        'programme' => $programme,
+                        'mois' => $mois,
+                        'annee' => $annee,
+                    ],
+                    [
+                        'montant_recouvrement' => $recouvrementRgd ?? 0,
+                        'montant_reversement' => $reversementRgd ?? 0,
+                        'reference' => $request->input("mois_{$mois}_rgd_{$programme}_reference"),
+                        'observation' => $request->input("mois_{$mois}_rgd_{$programme}_observation"),
+                        'statut' => $request->input('action') === 'soumettre' ? 'valide' : 'brouillon',
+                        'date_saisie' => now(),
+                        'date_soumission' => $request->input('action') === 'soumettre' ? now() : null,
+                        'date_validation' => $request->input('action') === 'soumettre' ? now() : null,
+                        'valide_par' => $request->input('action') === 'soumettre' ? $user->id : null,
+                        'saisi_par' => $user->id,
+                    ]
+                );
+            }
+
+            // Déclarations des bureaux
+            $bureaux = $poste->bureauxDouanes()->actif()->get();
+            foreach ($bureaux as $bureau) {
+                $recouvrementBureau = $request->input("mois_{$mois}_bureau_{$bureau->id}_{$programme}_recouvrement");
+                $reversementBureau = $request->input("mois_{$mois}_bureau_{$bureau->id}_{$programme}_reversement");
+
+                if ($recouvrementBureau || $reversementBureau || $request->input("mois_{$mois}_bureau_{$bureau->id}_{$programme}_reference")) {
+                    DeclarationPcs::updateOrCreate(
+                        [
+                            'poste_id' => null,
+                            'bureau_douane_id' => $bureau->id,
+                            'programme' => $programme,
+                            'mois' => $mois,
+                            'annee' => $annee,
+                        ],
+                        [
+                            'montant_recouvrement' => $recouvrementBureau ?? 0,
+                            'montant_reversement' => $reversementBureau ?? 0,
+                            'reference' => $request->input("mois_{$mois}_bureau_{$bureau->id}_{$programme}_reference"),
+                            'observation' => $request->input("mois_{$mois}_bureau_{$bureau->id}_{$programme}_observation"),
+                            'statut' => $request->input('action') === 'soumettre' ? 'valide' : 'brouillon',
+                            'date_saisie' => now(),
+                            'date_soumission' => $request->input('action') === 'soumettre' ? now() : null,
+                            'date_validation' => $request->input('action') === 'soumettre' ? now() : null,
+                            'valide_par' => $request->input('action') === 'soumettre' ? $user->id : null,
+                            'saisi_par' => $user->id,
+                        ]
+                    );
+                }
+            }
+        }
+    }
+
+    /**
+     * Enregistrer déclaration poste normal en mode rattrapage
+     */
+    private function storeDeclarationNormaleRattrapage(Request $request, $poste, $user, $mois, $annee)
+    {
+        foreach (['UEMOA', 'AES'] as $programme) {
+            $recouvrement = $request->input("mois_{$mois}_{$programme}_recouvrement");
+            $reversement = $request->input("mois_{$mois}_{$programme}_reversement");
+
+            if ($recouvrement || $reversement || $request->input("mois_{$mois}_{$programme}_reference")) {
+                DeclarationPcs::updateOrCreate(
+                    [
+                        'poste_id' => $poste->id,
+                        'bureau_douane_id' => null,
+                        'programme' => $programme,
+                        'mois' => $mois,
+                        'annee' => $annee,
+                    ],
+                    [
+                        'montant_recouvrement' => $recouvrement ?? 0,
+                        'montant_reversement' => $reversement ?? 0,
+                        'reference' => $request->input("mois_{$mois}_{$programme}_reference"),
+                        'observation' => $request->input("mois_{$mois}_{$programme}_observation"),
+                        'statut' => $request->input('action') === 'soumettre' ? 'valide' : 'brouillon',
+                        'date_saisie' => now(),
+                        'date_soumission' => $request->input('action') === 'soumettre' ? now() : null,
+                        'date_validation' => $request->input('action') === 'soumettre' ? now() : null,
+                        'valide_par' => $request->input('action') === 'soumettre' ? $user->id : null,
+                        'saisi_par' => $user->id,
+                    ]
+                );
+            }
         }
     }
 
