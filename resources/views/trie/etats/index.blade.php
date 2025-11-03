@@ -29,17 +29,48 @@
                         <i class="fas fa-calendar-alt me-2"></i>État Mensuel des Paiements
                     </h5>
                 </div>
-                <div class="card-body text-center">
-                    <i class="fas fa-receipt fa-4x text-primary mb-3"></i>
-                    <p class="text-muted">
-                        Générer l'état des paiements TRIE/CCIM pour un mois donné
-                        (similaire au document "SITUATION DES PAIEMENTS CFG-TRIE / CCIM")
-                    </p>
-                    <button class="btn btn-primary" disabled>
-                        <i class="fas fa-download me-1"></i>Générer l'État Mensuel
-                    </button>
-                    <br>
-                    <small class="text-muted mt-2 d-block">À implémenter</small>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-receipt fa-4x text-primary mb-3"></i>
+                        <p class="text-muted">
+                            Générer l'état des paiements TRIE/CCIM pour un mois donné.
+                            <br>Regroupe les données par <strong>POSTE</strong> avec le détail des paiements.
+                        </p>
+                    </div>
+                    <form method="GET" action="{{ route('trie.etats.mensuel') }}" target="_blank">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Mois <span class="text-danger">*</span></label>
+                            <select name="mois" class="form-select" required>
+                                @php
+                                    $moisList = [
+                                        1 => 'Janvier', 2 => 'Février', 3 => 'Mars', 4 => 'Avril',
+                                        5 => 'Mai', 6 => 'Juin', 7 => 'Juillet', 8 => 'Août',
+                                        9 => 'Septembre', 10 => 'Octobre', 11 => 'Novembre', 12 => 'Décembre'
+                                    ];
+                                @endphp
+                                @foreach($moisList as $num => $nom)
+                                    <option value="{{ $num }}" {{ $num == date('n') ? 'selected' : '' }}>
+                                        {{ $nom }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Année <span class="text-danger">*</span></label>
+                            <select name="annee" class="form-select" required>
+                                @for($i = date('Y'); $i >= date('Y') - 5; $i--)
+                                    <option value="{{ $i }}" {{ $i == date('Y') ? 'selected' : '' }}>
+                                        {{ $i }}
+                                    </option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-download me-1"></i>Générer l'État Mensuel
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -52,17 +83,32 @@
                         <i class="fas fa-chart-bar me-2"></i>État Consolidé Annuel
                     </h5>
                 </div>
-                <div class="card-body text-center">
-                    <i class="fas fa-table fa-4x text-success mb-3"></i>
-                    <p class="text-muted">
-                        Générer l'état consolidé des cotisations par poste et bureau
-                        pour une année complète (similaire au tableau mensuel détaillé)
-                    </p>
-                    <button class="btn btn-success" disabled>
-                        <i class="fas fa-download me-1"></i>Générer l'État Consolidé
-                    </button>
-                    <br>
-                    <small class="text-muted mt-2 d-block">À implémenter</small>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-table fa-4x text-success mb-3"></i>
+                        <p class="text-muted">
+                            Générer l'état consolidé des cotisations par poste et bureau
+                            pour une année complète.
+                            <br>Affiche le détail <strong>mensuel par BUREAU</strong> + récapitulatif bi-annuel.
+                        </p>
+                    </div>
+                    <form method="GET" action="{{ route('trie.etats.consolide') }}" target="_blank">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Année <span class="text-danger">*</span></label>
+                            <select name="annee" class="form-select" required>
+                                @for($i = date('Y'); $i >= date('Y') - 5; $i--)
+                                    <option value="{{ $i }}" {{ $i == date('Y') ? 'selected' : '' }}>
+                                        {{ $i }}
+                                    </option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-download me-1"></i>Générer l'État Consolidé
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

@@ -27,6 +27,7 @@ use App\Http\Controllers\PCS\{
 use App\Http\Controllers\TRIE\{
     BureauTrieController,
     CotisationTrieController,
+    EtatTrieController,
 };
 
 use Illuminate\Support\Facades\Route;
@@ -331,11 +332,15 @@ Route::middleware(['auth'])->prefix('trie')->name('trie.')->group(function () {
         Route::delete('{cotisation}', 'destroy')->name('destroy');
     });
 
-    // ===== ÉTATS TRIE (À implémenter) =====
-    Route::middleware('role:admin,acct')->prefix('etats')->name('etats.')->group(function () {
-        Route::get('/', function() {
-            return view('trie.etats.index');
-        })->name('index');
+    // ===== ÉTATS TRIE =====
+    Route::controller(EtatTrieController::class)->prefix('etats')->name('etats.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        
+        // Génération des PDF (ACCT/Admin uniquement)
+        Route::middleware('role:admin,acct')->group(function () {
+            Route::get('mensuel', 'etatMensuel')->name('mensuel');
+            Route::get('consolide', 'etatConsolide')->name('consolide');
+        });
     });
 }); // FIN DU GROUPE TRIE
 
