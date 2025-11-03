@@ -119,21 +119,21 @@
     <div class="header clearfix">
         <div class="header-left">
             <div class="title">MINISTERE DE L'ECONOMIE</div>
-            <div class="title">ET DES FINANCES</div>
-            <div class="stars">* * * * *</div>
+            <div class="title" style="margin-left: 20px;">ET DES FINANCES</div>
+            <div class="stars" style="margin-left: 40px;">* * * * *</div>
             <div class="subtitle">DIRECTION GENERALE DU TRESOR</div>
             <div class="subtitle">ET DE LA COMPTABILITE PUBLIQUE</div>
         </div>
         <div class="header-right">
             <div class="title">REPUBLIQUE DU MALI</div>
             <div class="subtitle">Un Peuple - Un But - Une Foi</div>
-            <div class="stars">* * * * *</div>
+            {{-- <div class="stars">* * * * *</div> --}}
         </div>
     </div>
 
     <!-- Titre principal -->
     <div class="main-title">
-        SITUATION DES PAIEMENTS CFG-TRIE / CCIM<br>
+        SITUATION DES PAIEMENTS CFG-TRIE / CCIM
         DU MOIS DE {{ strtoupper($nomMois) }} {{ $annee }}
     </div>
 

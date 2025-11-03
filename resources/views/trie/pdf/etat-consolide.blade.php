@@ -51,7 +51,7 @@
         }
 
         .stars {
-            font-size: 8px;
+            font-size: 14px;
             margin: 3px 0;
         }
 
@@ -121,15 +121,15 @@
     <div class="header clearfix">
         <div class="header-left">
             <div class="title">MINISTERE DE L'ECONOMIE</div>
-            <div class="title">ET DES FINANCES</div>
-            <div class="stars">* * * * *</div>
+            <div class="title" style="margin-left: 40px;">ET DES FINANCES</div>
+            <div class="stars" style="margin-left: 20px;">* * * * *</div>
             <div class="subtitle">DIRECTION GENERALE DU TRESOR</div>
             <div class="subtitle">ET DE LA COMPTABILITE PUBLIQUE</div>
         </div>
         <div class="header-right">
             <div class="title">REPUBLIQUE DU MALI</div>
             <div class="subtitle">Un Peuple - Un But - Une Foi</div>
-            <div class="stars">* * * * *</div>
+           {{--  <div class="stars">* * * * *</div> --}}
         </div>
     </div>
 

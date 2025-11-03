@@ -128,18 +128,18 @@
                     $totalAnnee = \App\Models\CotisationTrie::where('annee', $anneeActuelle)
                         ->where('statut', 'valide')
                         ->sum('montant_total');
-                    
+
                     $moisActuel = date('n');
                     $totalMois = \App\Models\CotisationTrie::where('annee', $anneeActuelle)
                         ->where('mois', $moisActuel)
                         ->where('statut', 'valide')
                         ->sum('montant_total');
-                    
+
                     $totalApurement = \App\Models\CotisationTrie::where('annee', $anneeActuelle)
                         ->where('statut', 'valide')
                         ->sum('montant_apurement');
                 @endphp
-                
+
                 <div class="col-md-4">
                     <div class="card border-primary">
                         <div class="card-body text-center">
@@ -151,7 +151,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="col-md-4">
                     <div class="card border-success">
                         <div class="card-body text-center">
@@ -163,7 +163,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="col-md-4">
                     <div class="card border-warning">
                         <div class="card-body text-center">
