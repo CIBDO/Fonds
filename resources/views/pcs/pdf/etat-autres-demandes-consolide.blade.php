@@ -193,7 +193,7 @@
 
     <!-- Titre principal -->
     <div class="main-title">
-        SITUATION DES DEMANDES DE FONDS DES TRESORIRIES  AU TITRE DE L'EXERCICE {{ $annee }}
+        SITUATION DES DEMANDES DE FONDS DES TRESORERIES  AU TITRE DE L'EXERCICE {{ $annee }}
     </div>
 
     <div class="subtitle-period">

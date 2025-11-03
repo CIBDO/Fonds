@@ -255,6 +255,19 @@ Route::middleware(['auth'])->prefix('pcs')->name('pcs.')->group(function () {
         Route::get('donnees-uemoa-aes', 'getDonneesUemoaAes')->name('donnees-uemoa-aes');
     });
 
+    // ===== DÉSTOCKAGES PCS (ACCT uniquement) =====
+    Route::middleware('role:admin,acct')->controller(\App\Http\Controllers\PCS\DestockagePcsController::class)->prefix('destockages')->name('destockages.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('collecte', 'collecte')->name('collecte');
+        Route::get('etats', 'etats')->name('etats');
+        Route::get('create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+        Route::get('pdf/etat-collecte', 'etatCollectePdf')->name('pdf.etat-collecte');
+        Route::get('pdf/etat-consolide', 'etatConsolidePdf')->name('pdf.etat-consolide');
+        Route::get('{destockage}', 'show')->name('show');
+        Route::get('{destockage}/pdf', 'pdf')->name('pdf');
+    });
+
     // ===== AUTRES DEMANDES =====
     Route::controller(AutreDemandeController::class)->prefix('autres-demandes')->name('autres-demandes.')->group(function () {
         Route::get('/', 'index')->name('index');

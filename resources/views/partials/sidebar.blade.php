@@ -179,6 +179,25 @@
                             <span>États Consolidés</span>
                         </a>
                     </li>
+
+                    <!-- Déstockages PCS -->
+                    <li class="submenu {{ request()->routeIs('pcs.destockages.*') ? 'active' : '' }}">
+                        <a href="#" class="submenu-toggle">
+                            <i class="fas fa-cash-register"></i>
+                            <span>Déstockages</span>
+                            <span class="menu-arrow fas fa-chevron-right"></span>
+                        </a>
+                        <ul class="submenu-list">
+                            <li><a href="{{ route('pcs.destockages.collecte') }}" class="{{ request()->routeIs('pcs.destockages.collecte') ? 'active' : '' }}">
+                                <i class="fas fa-coins"></i>Vue de Collecte</a></li>
+                            <li><a href="{{ route('pcs.destockages.create') }}" class="{{ request()->routeIs('pcs.destockages.create') ? 'active' : '' }}">
+                                <i class="fas fa-plus-circle"></i>Nouveau Déstockage</a></li>
+                            <li><a href="{{ route('pcs.destockages.index') }}" class="{{ request()->routeIs('pcs.destockages.index') || request()->routeIs('pcs.destockages.show') ? 'active' : '' }}">
+                                <i class="fas fa-list"></i>Liste des Déstockages</a></li>
+                            <li><a href="{{ route('pcs.destockages.etats') }}" class="{{ request()->routeIs('pcs.destockages.etats') ? 'active' : '' }}">
+                                <i class="fas fa-chart-line"></i>États et Rapports</a></li>
+                        </ul>
+                    </li>
                 @endif
 
                 <!-- MODULE PCS - ADMIN (Gestion complète) -->
