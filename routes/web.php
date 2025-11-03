@@ -222,10 +222,13 @@ Route::middleware(['auth'])->prefix('pcs')->name('pcs.')->group(function () {
         Route::put('{declaration}', 'update')->name('update');
 
         // Validation (ACCT uniquement)
+        // DÉSACTIVÉ : La soumission passe directement au statut "valide", plus besoin de validation
+        /*
         Route::middleware('role:admin,acct')->group(function () {
             Route::post('{declaration}/valider', 'valider')->name('valider');
             Route::post('{declaration}/rejeter', 'rejeter')->name('rejeter');
         });
+        */
 
         // Génération états PDF/Excel
         Route::get('pdf/recettes', 'generatePdfRecettes')->name('pdf.recettes');

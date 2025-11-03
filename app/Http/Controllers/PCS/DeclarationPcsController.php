@@ -12,9 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use RealRashid\SweetAlert\Facades\Alert;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
-use App\Notifications\PcsDeclarationSoumise;
 use App\Notifications\PcsDeclarationValidee;
-use App\Notifications\PcsDeclarationRejetee;
 
 class DeclarationPcsController extends Controller
 {
@@ -118,9 +116,9 @@ class DeclarationPcsController extends Controller
 
             DB::commit();
 
-            // Envoyer notification si soumission
+            // Envoyer notification à l'ACCT si soumission (déclaration validée)
             if ($request->input('action') === 'soumettre') {
-                $this->envoyerNotificationSoumission($poste, $request);
+                $this->envoyerNotificationValidation($poste, $request);
             }
 
             Alert::success('Succès', 'Déclaration(s) enregistrée(s) avec succès');
@@ -159,10 +157,13 @@ class DeclarationPcsController extends Controller
                     [
                         'montant_recouvrement' => $recouvrementRgd ?? 0,
                         'montant_reversement' => $reversementRgd ?? 0,
+                        'reference' => $request->input("rgd_{$programme}_reference"),
                         'observation' => $request->input("rgd_{$programme}_observation"),
-                        'statut' => $request->input('action') === 'soumettre' ? 'soumis' : 'brouillon',
+                        'statut' => $request->input('action') === 'soumettre' ? 'valide' : 'brouillon',
                         'date_saisie' => now(),
                         'date_soumission' => $request->input('action') === 'soumettre' ? now() : null,
+                        'date_validation' => $request->input('action') === 'soumettre' ? now() : null,
+                        'valide_par' => $request->input('action') === 'soumettre' ? $user->id : null,
                         'saisi_par' => $user->id,
                     ]
                 );
@@ -186,6 +187,7 @@ class DeclarationPcsController extends Controller
                         [
                             'montant_recouvrement' => $recouvrementBureau ?? 0,
                             'montant_reversement' => $reversementBureau ?? 0,
+                            'reference' => $request->input("bureau_{$bureau->id}_{$programme}_reference"),
                             'observation' => $request->input("bureau_{$bureau->id}_{$programme}_observation"),
                             'statut' => $request->input('action') === 'soumettre' ? 'soumis' : 'brouillon',
                             'date_saisie' => now(),
@@ -225,10 +227,13 @@ class DeclarationPcsController extends Controller
                     'annee' => $request->annee,
                     'montant_recouvrement' => $recouvrement ?? 0,
                     'montant_reversement' => $reversement ?? 0,
+                    'reference' => $request->input("{$programme}_reference"),
                     'observation' => $request->input("{$programme}_observation"),
-                    'statut' => $request->input('action') === 'soumettre' ? 'soumis' : 'brouillon',
+                    'statut' => $request->input('action') === 'soumettre' ? 'valide' : 'brouillon',
                     'date_saisie' => now(),
                     'date_soumission' => $request->input('action') === 'soumettre' ? now() : null,
+                    'date_validation' => $request->input('action') === 'soumettre' ? now() : null,
+                    'valide_par' => $request->input('action') === 'soumettre' ? $user->id : null,
                     'saisi_par' => $user->id,
                 ]);
             }
@@ -258,9 +263,9 @@ class DeclarationPcsController extends Controller
             return redirect()->back();
         }
 
-        // Ne peut être modifiée que si en brouillon ou rejetée
-        if (!in_array($declaration->statut, ['brouillon', 'rejete'])) {
-            Alert::error('Erreur', 'Seules les déclarations en brouillon ou rejetées peuvent être modifiées');
+        // Ne peut être modifiée que si non rejetée
+        if ($declaration->statut === 'rejete') {
+            Alert::error('Erreur', 'Les déclarations rejetées ne peuvent pas être modifiées');
             return redirect()->back();
         }
 
@@ -281,9 +286,9 @@ class DeclarationPcsController extends Controller
             return redirect()->back();
         }
 
-        // Vérifier le statut
-        if (!in_array($declaration->statut, ['brouillon', 'rejete'])) {
-            Alert::error('Erreur', 'Seules les déclarations en brouillon ou rejetées peuvent être modifiées');
+        // Vérifier le statut - permettre la modification même si validée
+        if ($declaration->statut === 'rejete') {
+            Alert::error('Erreur', 'Les déclarations rejetées ne peuvent pas être modifiées');
             return redirect()->back();
         }
 
@@ -293,6 +298,7 @@ class DeclarationPcsController extends Controller
             'annee' => 'required|integer|min:2020',
             'montant_recouvrement' => 'nullable|numeric|min:0',
             'montant_reversement' => 'nullable|numeric|min:0',
+            'reference' => 'nullable|string',
             'observation' => 'nullable|string',
         ]);
 
@@ -302,14 +308,17 @@ class DeclarationPcsController extends Controller
             'annee' => $validated['annee'],
             'montant_recouvrement' => $validated['montant_recouvrement'] ?? 0,
             'montant_reversement' => $validated['montant_reversement'] ?? 0,
+            'reference' => $validated['reference'],
             'observation' => $validated['observation'],
-            'statut' => $request->input('action') === 'soumettre' ? 'soumis' : 'brouillon',
+            'statut' => $request->input('action') === 'soumettre' ? 'valide' : $declaration->statut,
             'date_soumission' => $request->input('action') === 'soumettre' ? now() : $declaration->date_soumission,
+            'date_validation' => $request->input('action') === 'soumettre' ? now() : $declaration->date_validation,
+            'valide_par' => $request->input('action') === 'soumettre' ? $user->id : $declaration->valide_par,
         ]);
 
-        // Envoyer notification si soumission
+        // Envoyer notification à l'ACCT si soumission (déclaration validée)
         if ($request->input('action') === 'soumettre') {
-            $this->envoyerNotificationSoumissionUnique($declaration);
+            $this->envoyerNotificationValidationUnique($declaration);
         }
 
         Alert::success('Succès', 'Déclaration modifiée avec succès');
@@ -317,72 +326,19 @@ class DeclarationPcsController extends Controller
     }
 
     /**
-     * Envoyer notification de soumission pour une seule déclaration
+     * Envoyer notification de validation à l'ACCT pour une seule déclaration
      */
-    private function envoyerNotificationSoumissionUnique($declaration)
+    private function envoyerNotificationValidationUnique($declaration)
     {
-        // Récupérer tous les utilisateurs qui peuvent valider les déclarations PCS
-        $validateurs = User::where('peut_valider_pcs', true)->get();
+        // Récupérer tous les utilisateurs ACCT pour les notifier
+        $acctUsers = User::whereIn('role', ['acct', 'admin'])->get();
 
-        // Envoyer notification à chaque validateur
-        foreach ($validateurs as $validateur) {
-            $validateur->notify(new PcsDeclarationSoumise($declaration));
+        // Envoyer notification à chaque utilisateur ACCT
+        foreach ($acctUsers as $acctUser) {
+            $acctUser->notify(new PcsDeclarationValidee($declaration));
         }
     }
 
-    /**
-     * Validation d'une déclaration
-     */
-    public function valider(Request $request, DeclarationPcs $declaration)
-    {
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-
-        if (!$user->peut_valider_pcs) {
-            Alert::error('Erreur', 'Vous n\'avez pas l\'autorisation de valider');
-            return redirect()->back();
-        }
-
-        $declaration->valider($user->id);
-
-        // Notifier le déclarant
-        if ($declaration->saisiPar) {
-            $declaration->saisiPar->notify(new PcsDeclarationValidee($declaration));
-        }
-
-        Alert::success('Succès', 'Déclaration validée avec succès');
-
-        return redirect()->back();
-    }
-
-    /**
-     * Rejet d'une déclaration
-     */
-    public function rejeter(Request $request, DeclarationPcs $declaration)
-    {
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-
-        $request->validate([
-            'motif_rejet' => 'required|string|min:10',
-        ]);
-
-        if (!$user->peut_valider_pcs) {
-            Alert::error('Erreur', 'Vous n\'avez pas l\'autorisation de rejeter');
-            return redirect()->back();
-        }
-
-        $declaration->rejeter($user->id, $request->motif_rejet);
-
-        // Notifier le déclarant
-        if ($declaration->saisiPar) {
-            $declaration->saisiPar->notify(new PcsDeclarationRejetee($declaration));
-        }
-
-        Alert::success('Succès', 'Déclaration rejetée');
-
-        return redirect()->back();
-    }
 
     /**
      * Génération PDF - État des recettes
@@ -456,22 +412,24 @@ class DeclarationPcsController extends Controller
     }
 
     /**
-     * Envoyer notification de soumission aux validateurs
+     * Envoyer notification de validation à l'ACCT pour les déclarations créées
      */
-    private function envoyerNotificationSoumission($poste, $request)
+    private function envoyerNotificationValidation($poste, $request)
     {
-        // Récupérer tous les utilisateurs qui peuvent valider les déclarations PCS
-        $validateurs = User::where('peut_valider_pcs', true)->get();
+        // Récupérer tous les utilisateurs ACCT pour les notifier
+        $acctUsers = User::whereIn('role', ['acct', 'admin'])->get();
 
-        // Récupérer les déclarations créées pour cette soumission
+        // Récupérer les déclarations créées pour cette soumission (validées)
+        // On utilise une plage de temps pour récupérer les déclarations créées pendant la transaction
         $declarations = DeclarationPcs::where('saisi_par', Auth::id())
-            ->where('date_soumission', now()->format('Y-m-d H:i:s'))
+            ->where('date_soumission', '>=', now()->subMinutes(1)->format('Y-m-d H:i:s'))
+            ->where('statut', 'valide')
             ->get();
 
-        // Envoyer notification pour chaque déclaration
+        // Envoyer notification pour chaque déclaration à chaque utilisateur ACCT
         foreach ($declarations as $declaration) {
-            foreach ($validateurs as $validateur) {
-                $validateur->notify(new PcsDeclarationSoumise($declaration));
+            foreach ($acctUsers as $acctUser) {
+                $acctUser->notify(new PcsDeclarationValidee($declaration));
             }
         }
     }

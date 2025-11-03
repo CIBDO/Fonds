@@ -1,8 +1,25 @@
 -- =========================================================
 -- STRUCTURE SQL - MODULE PCS (Programme de Consolidation Statistiques)
--- Date: 15/10/2025
+-- Date: 03/11/2025
 -- Base de données: MySQL / MariaDB
 -- Encodage: UTF8MB4
+-- =========================================================
+
+-- Table: types_postes
+-- Description: Types de postes (Bureau, RGD, ACCT)
+CREATE TABLE IF NOT EXISTS `types_postes` (
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `code` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `libelle` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `niveau_hierarchique` int(11) NOT NULL,
+  `peut_saisir` tinyint(1) NOT NULL DEFAULT 1,
+  `peut_consolider` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `types_postes_code_unique` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- =========================================================
 
 -- Table: bureaux_douanes
@@ -33,6 +50,7 @@ CREATE TABLE IF NOT EXISTS `declarations_pcs` (
   `annee` int(11) NOT NULL,
   `montant_recouvrement` decimal(15,2) NOT NULL,
   `montant_reversement` decimal(15,2) NOT NULL,
+  `reference` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `observation` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `statut` enum('brouillon','soumis','valide','rejete') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'brouillon',
   `date_saisie` datetime NOT NULL,
@@ -65,6 +83,7 @@ CREATE TABLE IF NOT EXISTS `autres_demandes` (
   `poste_id` bigint(20) UNSIGNED NOT NULL,
   `designation` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
   `montant` decimal(15,2) NOT NULL,
+  `montant_accord` decimal(15,2) DEFAULT NULL COMMENT 'Montant effectivement accordé par l\'ACCT',
   `observation` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_demande` date NOT NULL,
   `annee` int(11) NOT NULL,
@@ -132,9 +151,36 @@ CREATE TABLE IF NOT EXISTS `historique_statuts_pcs` (
 
 -- Modification de la table users
 -- Description: Ajout des champs pour les droits PCS
+-- Note: Si les colonnes existent déjà, commenter cette section
 ALTER TABLE `users`
 ADD COLUMN `peut_saisir_pcs` tinyint(1) NOT NULL DEFAULT 0 AFTER `poste_id`,
 ADD COLUMN `peut_valider_pcs` tinyint(1) NOT NULL DEFAULT 0 AFTER `peut_saisir_pcs`;
+
+-- =========================================================
+
+-- Modifications des tables existantes (si les tables existent déjà)
+-- Note: Exécuter ces commandes uniquement si les colonnes n'existent pas encore
+
+-- Ajout du champ reference à declarations_pcs
+-- Vérifier d'abord si la colonne existe: SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'declarations_pcs' AND COLUMN_NAME = 'reference';
+ALTER TABLE `declarations_pcs`
+ADD COLUMN `reference` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL AFTER `montant_reversement`;
+
+-- Ajout du champ montant_accord à autres_demandes
+-- Vérifier d'abord si la colonne existe: SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'autres_demandes' AND COLUMN_NAME = 'montant_accord';
+ALTER TABLE `autres_demandes`
+ADD COLUMN `montant_accord` decimal(15,2) DEFAULT NULL COMMENT 'Montant effectivement accordé par l\'ACCT' AFTER `montant`;
+
+-- =========================================================
+
+-- Mise à jour des données existantes
+-- Description: Mise à jour des déclarations en statut "soumis" vers "valide"
+-- Cette commande peut être exécutée plusieurs fois sans risque
+UPDATE `declarations_pcs`
+SET `statut` = 'valide',
+    `date_validation` = COALESCE(`date_validation`, `date_soumission`),
+    `valide_par` = COALESCE(`valide_par`, `saisi_par`)
+WHERE `statut` = 'soumis';
 
 -- =========================================================
 -- FIN DU SCRIPT
@@ -146,4 +192,6 @@ ADD COLUMN `peut_valider_pcs` tinyint(1) NOT NULL DEFAULT 0 AFTER `peut_saisir_p
 -- 3. La table 'users' doit déjà exister dans la base de données
 -- 4. Tous les index et clés étrangères sont créés automatiquement
 -- 5. L'encodage UTF8MB4 est requis pour supporter tous les caractères
+-- 6. Pour les modifications ALTER TABLE, vérifier d'abord si les colonnes existent déjà
+-- 7. La mise à jour des statuts "soumis" vers "valide" peut être exécutée plusieurs fois sans risque
 

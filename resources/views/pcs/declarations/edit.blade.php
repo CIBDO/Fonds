@@ -103,6 +103,15 @@
                     </div>
                 </div>
 
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Référence</label>
+                    <input type="text"
+                           name="reference"
+                           class="form-control form-control-lg"
+                           value="{{ old('reference', $declaration->reference) }}"
+                           placeholder="Référence...">
+                </div>
+
                 <div>
                     <label class="form-label fw-bold">Observation</label>
                     <textarea name="observation"
@@ -139,7 +148,7 @@
                         <i class="fas fa-save me-1"></i>Enregistrer Brouillon
                     </button>
                     <button type="submit" name="action" value="soumettre" class="btn btn-danger btn-lg">
-                        <i class="fas fa-paper-plane me-1"></i>Soumettre pour Validation
+                        <i class="fas fa-check-circle me-1"></i>Valider et Envoyer
                     </button>
                 </div>
             </div>
@@ -152,7 +161,7 @@
     document.getElementById('declarationForm').addEventListener('submit', function(e) {
         const action = e.submitter.value;
         if (action === 'soumettre') {
-            if (!confirm('Êtes-vous sûr de vouloir soumettre cette déclaration ? Elle sera envoyée pour validation et ne pourra plus être modifiée.')) {
+            if (!confirm('Êtes-vous sûr de vouloir valider cette déclaration ? Elle sera automatiquement validée et envoyée à l\'ACCT.')) {
                 e.preventDefault();
             }
         }

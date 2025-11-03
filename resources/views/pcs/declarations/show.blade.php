@@ -137,24 +137,6 @@
                 </div>
             </div>
 
-            <!-- Actions de validation -->
-            @if(auth()->user()->peut_valider_pcs && $declaration->statut == 'soumis')
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0"><i class="fas fa-tasks me-2"></i>Actions de Validation</h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#validerModal">
-                            <i class="fas fa-check-circle me-1"></i>Valider
-                        </button>
-                        <button type="button" class="btn btn-danger btn-lg" data-bs-toggle="modal" data-bs-target="#rejeterModal">
-                            <i class="fas fa-times-circle me-1"></i>Rejeter
-                        </button>
-                    </div>
-                </div>
-            </div>
-            @endif
 
             <!-- Pièces jointes -->
             @if($declaration->piecesJointes->count() > 0)
@@ -254,65 +236,5 @@
     </div>
 </div>
 
-<!-- Modal Valider -->
-<div class="modal fade" id="validerModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title">Valider la Déclaration</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <form action="{{ route('pcs.declarations.valider', $declaration) }}" method="POST">
-                @csrf
-                <div class="modal-body">
-                    <p class="fw-bold">Êtes-vous sûr de vouloir valider cette déclaration ?</p>
-                    <p class="text-muted">Cette action est irréversible. La déclaration sera marquée comme validée et incluse dans les états financiers.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn btn-success">
-                        <i class="fas fa-check-circle me-1"></i>Confirmer la Validation
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Rejeter -->
-<div class="modal fade" id="rejeterModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">Rejeter la Déclaration</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <form action="{{ route('pcs.declarations.rejeter', $declaration) }}" method="POST">
-                @csrf
-                <div class="modal-body">
-                    <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        Le rejet d'une déclaration nécessite un motif détaillé.
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Motif du rejet <span class="text-danger">*</span></label>
-                        <textarea name="motif_rejet"
-                                  class="form-control"
-                                  rows="5"
-                                  required
-                                  placeholder="Expliquez en détail la raison du rejet..."></textarea>
-                        <small class="text-muted">Le déclarant pourra voir ce motif et corriger sa déclaration</small>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-times-circle me-1"></i>Confirmer le Rejet
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 @endsection
 

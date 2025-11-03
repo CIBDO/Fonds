@@ -161,7 +161,7 @@
                                         <i class="fas fa-eye"></i>
                                     </a>
 
-                                    @if(in_array($decl->statut, ['brouillon', 'rejete']) && $decl->saisi_par == auth()->id())
+                                    @if($decl->statut !== 'rejete' && $decl->saisi_par == auth()->id())
                                         <a href="{{ route('pcs.declarations.edit', $decl) }}"
                                            class="btn btn-outline-primary"
                                            data-bs-toggle="tooltip"
@@ -169,81 +169,9 @@
                                             <i class="fas fa-edit"></i>
                                         </a>
                                     @endif
-
-                                    @if(auth()->user()->peut_valider_pcs && $decl->statut == 'soumis')
-                                        <button type="button"
-                                                class="btn btn-outline-success"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#validerModal{{ $decl->id }}"
-                                                title="Valider">
-                                            <i class="fas fa-check"></i>
-                                        </button>
-                                        <button type="button"
-                                                class="btn btn-outline-danger"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#rejeterModal{{ $decl->id }}"
-                                                title="Rejeter">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    @endif
                                 </div>
                             </td>
                         </tr>
-
-                        <!-- Modal Valider -->
-                        @if(auth()->user()->peut_valider_pcs && $decl->statut == 'soumis')
-                        <div class="modal fade" id="validerModal{{ $decl->id }}" tabindex="-1">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header bg-success text-white">
-                                        <h5 class="modal-title">Valider la Déclaration</h5>
-                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <form action="{{ route('pcs.declarations.valider', $decl) }}" method="POST">
-                                        @csrf
-                                        <div class="modal-body">
-                                            <p>Êtes-vous sûr de vouloir valider cette déclaration ?</p>
-                                            <ul class="list-unstyled">
-                                                <li><strong>Période :</strong> {{ \Carbon\Carbon::create()->month($decl->mois)->translatedFormat('F') }} {{ $decl->annee }}</li>
-                                                <li><strong>Programme :</strong> {{ $decl->programme }}</li>
-                                                <li><strong>Montant :</strong> {{ number_format($decl->montant_recouvrement, 0, ',', ' ') }} FCFA</li>
-                                            </ul>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                                            <button type="submit" class="btn btn-success">Valider</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Modal Rejeter -->
-                        <div class="modal fade" id="rejeterModal{{ $decl->id }}" tabindex="-1">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header bg-danger text-white">
-                                        <h5 class="modal-title">Rejeter la Déclaration</h5>
-                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <form action="{{ route('pcs.declarations.rejeter', $decl) }}" method="POST">
-                                        @csrf
-                                        <div class="modal-body">
-                                            <div class="mb-3">
-                                                <label class="form-label fw-bold">Motif du rejet <span class="text-danger">*</span></label>
-                                                <textarea name="motif_rejet" class="form-control" rows="4" required
-                                                          placeholder="Expliquez la raison du rejet..."></textarea>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                                            <button type="submit" class="btn btn-danger">Rejeter</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        @endif
                         @endforeach
                     </tbody>
                 </table>

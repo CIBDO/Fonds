@@ -68,7 +68,7 @@
                         <div class="col-md-6">
                             <div class="border-end pe-3">
                                 <h6 class="text-success fw-bold mb-3">
-                                    <i class="fas fa-globe"></i> Programme UEMOA
+                                    <i class="fas fa-globe"></i> Prélèvement UEMOA
                                 </h6>
                                 <div class="mb-3">
                                     <label class="form-label">Montant Recouvré (FCFA)</label>
@@ -90,6 +90,14 @@
                                            value="{{ old('rgd_UEMOA_reversement') }}"
                                            placeholder="0">
                                 </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Référence</label>
+                                    <input type="text"
+                                           name="rgd_UEMOA_reference"
+                                           class="form-control"
+                                           value="{{ old('rgd_UEMOA_reference') }}"
+                                           placeholder="Référence...">
+                                </div>
                                 <div>
                                     <label class="form-label">Observation</label>
                                     <textarea name="rgd_UEMOA_observation"
@@ -103,7 +111,7 @@
                         <!-- AES -->
                         <div class="col-md-6">
                             <h6 class="text-warning fw-bold mb-3">
-                                <i class="fas fa-globe"></i> Programme AES
+                                <i class="fas fa-globe"></i> Prélèvement AES (PC)
                             </h6>
                             <div class="mb-3">
                                 <label class="form-label">Montant Recouvré (FCFA)</label>
@@ -124,6 +132,14 @@
                                        min="0"
                                        value="{{ old('rgd_AES_reversement') }}"
                                        placeholder="0">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Référence</label>
+                                <input type="text"
+                                       name="rgd_AES_reference"
+                                       class="form-control"
+                                       value="{{ old('rgd_AES_reference') }}"
+                                       placeholder="Référence...">
                             </div>
                             <div>
                                 <label class="form-label">Observation</label>
@@ -154,7 +170,7 @@
                             <div class="col-md-6">
                                 <div class="border-end pe-3">
                                     <p class="text-success fw-bold mb-2">
-                                        <i class="fas fa-globe"></i> Programme UEMOA
+                                        <i class="fas fa-globe"></i> Prélèvement UEMOA
                                     </p>
                                     <div class="mb-2">
                                         <label class="form-label small">Recouvré (FCFA)</label>
@@ -176,6 +192,14 @@
                                                value="{{ old('bureau_'.$bureau->id.'_UEMOA_reversement') }}"
                                                placeholder="0">
                                     </div>
+                                    <div class="mb-2">
+                                        <label class="form-label small">Référence</label>
+                                        <input type="text"
+                                               name="bureau_{{ $bureau->id }}_UEMOA_reference"
+                                               class="form-control form-control-sm"
+                                               value="{{ old('bureau_'.$bureau->id.'_UEMOA_reference') }}"
+                                               placeholder="Référence...">
+                                    </div>
                                     <div>
                                         <label class="form-label small">Observation</label>
                                         <textarea name="bureau_{{ $bureau->id }}_UEMOA_observation"
@@ -189,7 +213,7 @@
                             <!-- AES -->
                             <div class="col-md-6">
                                 <p class="text-warning fw-bold mb-2">
-                                    <i class="fas fa-globe"></i> Programme AES
+                                    <i class="fas fa-globe"></i> Prélèvement AES
                                 </p>
                                 <div class="mb-2">
                                     <label class="form-label small">Recouvré (FCFA)</label>
@@ -210,6 +234,14 @@
                                            min="0"
                                            value="{{ old('bureau_'.$bureau->id.'_AES_reversement') }}"
                                            placeholder="0">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small">Référence</label>
+                                    <input type="text"
+                                           name="bureau_{{ $bureau->id }}_AES_reference"
+                                           class="form-control form-control-sm"
+                                           value="{{ old('bureau_'.$bureau->id.'_AES_reference') }}"
+                                           placeholder="Référence...">
                                 </div>
                                 <div>
                                     <label class="form-label small">Observation</label>
@@ -238,7 +270,7 @@
                         <div class="col-md-6">
                             <div class="border-end pe-4">
                                 <h5 class="text-success fw-bold mb-3">
-                                    <i class="fas fa-globe"></i> Programme UEMOA
+                                    <i class="fas fa-globe"></i> Prélèvement UEMOA
                                 </h5>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Montant Recouvré (FCFA)</label>
@@ -260,7 +292,15 @@
                                            min="0"
                                            value="{{ old('UEMOA_reversement') }}"
                                            placeholder="0">
-                                    <small class="text-muted">Montant reversé à l'ACCT</small>
+                                    <small class="text-muted">Montant reversé </small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Référence</label>
+                                    <input type="text"
+                                           name="UEMOA_reference"
+                                           class="form-control form-control-lg"
+                                           value="{{ old('UEMOA_reference') }}"
+                                           placeholder="Référence...">
                                 </div>
                                 <div>
                                     <label class="form-label fw-bold">Observation</label>
@@ -275,7 +315,7 @@
                         <!-- AES -->
                         <div class="col-md-6">
                             <h5 class="text-warning fw-bold mb-3">
-                                <i class="fas fa-globe"></i> Programme AES
+                                <i class="fas fa-globe"></i> Prélèvement AES
                             </h5>
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Montant Recouvré (FCFA)</label>
@@ -297,7 +337,15 @@
                                        min="0"
                                        value="{{ old('AES_reversement') }}"
                                        placeholder="0">
-                                <small class="text-muted">Montant reversé à l'ACCT</small>
+                                <small class="text-muted">Montant reversé </small>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Référence</label>
+                                <input type="text"
+                                       name="AES_reference"
+                                       class="form-control form-control-lg"
+                                       value="{{ old('AES_reference') }}"
+                                       placeholder="Référence...">
                             </div>
                             <div>
                                 <label class="form-label fw-bold">Observation</label>
@@ -323,7 +371,7 @@
                         <i class="fas fa-save me-1"></i>Enregistrer Brouillon
                     </button>
                     <button type="submit" name="action" value="soumettre" class="btn btn-danger btn-lg">
-                        <i class="fas fa-paper-plane me-1"></i>Soumettre pour Validation
+                        <i class="fas fa-check-circle me-1"></i>Valider et Envoyer
                     </button>
                 </div>
             </div>
@@ -336,7 +384,7 @@
     document.getElementById('declarationForm').addEventListener('submit', function(e) {
         const action = e.submitter.value;
         if (action === 'soumettre') {
-            if (!confirm('Êtes-vous sûr de vouloir soumettre cette déclaration ? Elle sera envoyée pour validation et ne pourra plus être modifiée.')) {
+            if (!confirm('Êtes-vous sûr de vouloir valider cette déclaration ? Elle sera automatiquement validée et envoyée à l\'ACCT.')) {
                 e.preventDefault();
             }
         }

@@ -19,6 +19,7 @@ class DeclarationPcs extends Model
         'annee',
         'montant_recouvrement',
         'montant_reversement',
+        'reference',
         'observation',
         'statut',
         'date_saisie',
