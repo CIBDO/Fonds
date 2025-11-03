@@ -157,13 +157,67 @@
     <!-- Actions -->
     <div class="card shadow-sm border-0">
         <div class="card-body">
-            <div class="d-flex justify-content-end">
-                <a href="{{ route('trie.cotisations.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left me-1"></i>Retour à la liste
-                </a>
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    @php
+                        $user = Auth::user();
+                        $peutModifier = in_array($user->role, ['admin', 'acct']) || $user->poste_id == $cotisation->poste_id;
+                    @endphp
+                    
+                    @if($peutModifier)
+                        <a href="{{ route('trie.cotisations.edit', $cotisation) }}" class="btn btn-warning">
+                            <i class="fas fa-edit me-1"></i>Modifier
+                        </a>
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalSuppression">
+                            <i class="fas fa-trash me-1"></i>Supprimer
+                        </button>
+                    @endif
+                </div>
+                <div>
+                    <a href="{{ route('trie.cotisations.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Retour à la liste
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 </div>
-@endsection
 
+<!-- Modal Confirmation Suppression -->
+<div class="modal fade" id="modalSuppression" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ route('trie.cotisations.destroy', $cotisation) }}" method="POST">
+                @csrf
+                @method('DELETE')
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Confirmer la Suppression
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Attention !</strong> Cette action est irréversible.
+                    </div>
+                    <p>Êtes-vous sûr de vouloir supprimer cette cotisation ?</p>
+                    <div class="card border-danger">
+                        <div class="card-body">
+                            <p class="mb-1"><strong>Période :</strong> {{ $cotisation->nom_mois }} {{ $cotisation->annee }}</p>
+                            <p class="mb-1"><strong>Bureau :</strong> {{ $cotisation->bureauTrie->nom_complet }}</p>
+                            <p class="mb-0"><strong>Montant Total :</strong> <span class="text-danger">{{ number_format($cotisation->montant_total, 0, ',', ' ') }} FCFA</span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i>Confirmer la Suppression
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection

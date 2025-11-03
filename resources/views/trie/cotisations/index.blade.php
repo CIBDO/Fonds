@@ -126,11 +126,24 @@
                                 <strong class="text-success">{{ number_format($cotisation->montant_total, 0, ',', ' ') }}</strong>
                             </td>
                             <td class="text-center">
-                                <a href="{{ route('trie.cotisations.show', $cotisation) }}" 
-                                   class="btn btn-sm btn-outline-primary"
-                                   title="Voir">
-                                    <i class="fas fa-eye"></i>
-                                </a>
+                                <div class="btn-group" role="group">
+                                    <a href="{{ route('trie.cotisations.show', $cotisation) }}" 
+                                       class="btn btn-sm btn-outline-primary"
+                                       title="Voir">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    @php
+                                        $user = Auth::user();
+                                        $peutModifier = in_array($user->role, ['admin', 'acct']) || $user->poste_id == $cotisation->poste_id;
+                                    @endphp
+                                    @if($peutModifier)
+                                        <a href="{{ route('trie.cotisations.edit', $cotisation) }}" 
+                                           class="btn btn-sm btn-outline-warning"
+                                           title="Modifier">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                         @endforeach

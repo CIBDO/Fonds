@@ -326,6 +326,9 @@ Route::middleware(['auth'])->prefix('trie')->name('trie.')->group(function () {
         Route::get('create', 'create')->name('create');
         Route::post('/', 'store')->name('store');
         Route::get('{cotisation}', 'show')->name('show');
+        Route::get('{cotisation}/edit', 'edit')->name('edit');
+        Route::put('{cotisation}', 'update')->name('update');
+        Route::delete('{cotisation}', 'destroy')->name('destroy');
     });
 
     // ===== ÉTATS TRIE (À implémenter) =====

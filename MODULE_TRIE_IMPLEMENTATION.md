@@ -63,10 +63,13 @@ Le module TRIE a été implémenté avec succès pour permettre aux postes de re
 - **getBureaux($posteId)** : API pour récupérer les bureaux actifs
 
 #### `CotisationTrieController`
-- **index()** : Liste des cotisations avec filtres
-- **create()** : Formulaire de saisie multi-bureaux (avec présélection du poste)
-- **store()** : Enregistrer les cotisations (validation automatique)
-- **show()** : Consultation d'une cotisation (lecture seule)
+- **index()** : Liste des cotisations avec filtres (restreint par poste)
+- **create()** : Formulaire de saisie multi-bureaux avec mode rattrapage
+- **store()** : Enregistrer les cotisations (validation automatique, mode normal ou rattrapage)
+- **show()** : Consultation d'une cotisation
+- **edit()** : Formulaire de modification (uniquement son poste)
+- **update()** : Mettre à jour une cotisation (uniquement son poste)
+- **destroy()** : Supprimer une cotisation (uniquement son poste)
 
 ### 4. **Vues**
 
@@ -99,6 +102,9 @@ Toutes les routes sont préfixées par `/trie` et nommées `trie.*`
 - `GET /trie/cotisations/create` : Créer
 - `POST /trie/cotisations` : Enregistrer
 - `GET /trie/cotisations/{cotisation}` : Voir
+- `GET /trie/cotisations/{cotisation}/edit` : Modifier
+- `PUT /trie/cotisations/{cotisation}` : Mettre à jour
+- `DELETE /trie/cotisations/{cotisation}` : Supprimer
 
 #### États
 - `GET /trie/etats` : Page des états
@@ -133,6 +139,11 @@ Toutes les routes sont préfixées par `/trie` et nommées `trie.*`
 - Toutes les cotisations sont enregistrées directement avec le statut "validé"
 - Pas de brouillon, pas d'étape intermédiaire
 - Création = Validation automatique
+
+**Possibilité d'édition** :
+- ✅ Les postes peuvent **modifier** leurs propres cotisations
+- ✅ Les postes peuvent **supprimer** leurs propres cotisations
+- ✅ Admin/ACCT peuvent modifier/supprimer toutes les cotisations
 
 ### 🔒 Contrôle d'Accès
 - **Tous les utilisateurs avec poste** : Voir et saisir les cotisations pour leur poste uniquement

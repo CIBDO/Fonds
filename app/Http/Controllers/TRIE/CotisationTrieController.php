@@ -322,4 +322,80 @@ class CotisationTrieController extends Controller
         $cotisation->load(['poste', 'bureauTrie', 'saisiPar', 'validePar']);
         return view('trie.cotisations.show', compact('cotisation'));
     }
+
+    /**
+     * Formulaire d'édition
+     */
+    public function edit(CotisationTrie $cotisation)
+    {
+        $user = Auth::user();
+        
+        // Vérifier que l'utilisateur peut modifier cette cotisation
+        if (!in_array($user->role, ['admin', 'acct'])) {
+            if ($user->poste_id != $cotisation->poste_id) {
+                Alert::error('Erreur', 'Vous ne pouvez modifier que les cotisations de votre propre poste.');
+                return redirect()->route('trie.cotisations.show', $cotisation);
+            }
+        }
+
+        $moisList = [
+            1 => 'Janvier', 2 => 'Février', 3 => 'Mars', 4 => 'Avril',
+            5 => 'Mai', 6 => 'Juin', 7 => 'Juillet', 8 => 'Août',
+            9 => 'Septembre', 10 => 'Octobre', 11 => 'Novembre', 12 => 'Décembre'
+        ];
+
+        return view('trie.cotisations.edit', compact('cotisation', 'moisList'));
+    }
+
+    /**
+     * Mettre à jour une cotisation
+     */
+    public function update(Request $request, CotisationTrie $cotisation)
+    {
+        $user = Auth::user();
+        
+        // Vérifier que l'utilisateur peut modifier cette cotisation
+        if (!in_array($user->role, ['admin', 'acct'])) {
+            if ($user->poste_id != $cotisation->poste_id) {
+                Alert::error('Erreur', 'Vous ne pouvez modifier que les cotisations de votre propre poste.');
+                return redirect()->route('trie.cotisations.show', $cotisation);
+            }
+        }
+
+        $validated = $request->validate([
+            'montant_cotisation_courante' => 'required|numeric|min:0',
+            'montant_apurement' => 'nullable|numeric|min:0',
+            'detail_apurement' => 'nullable|string',
+            'mode_paiement' => 'nullable|in:cheque,virement,especes,autre',
+            'reference_paiement' => 'nullable|string',
+            'date_paiement' => 'nullable|date',
+            'observation' => 'nullable|string',
+        ]);
+
+        $cotisation->update($validated);
+
+        Alert::success('Succès', 'La cotisation a été modifiée avec succès.');
+        return redirect()->route('trie.cotisations.show', $cotisation);
+    }
+
+    /**
+     * Supprimer une cotisation
+     */
+    public function destroy(CotisationTrie $cotisation)
+    {
+        $user = Auth::user();
+        
+        // Vérifier que l'utilisateur peut supprimer cette cotisation
+        if (!in_array($user->role, ['admin', 'acct'])) {
+            if ($user->poste_id != $cotisation->poste_id) {
+                Alert::error('Erreur', 'Vous ne pouvez supprimer que les cotisations de votre propre poste.');
+                return redirect()->back();
+            }
+        }
+
+        $cotisation->delete();
+
+        Alert::success('Succès', 'La cotisation a été supprimée avec succès.');
+        return redirect()->route('trie.cotisations.index');
+    }
 }
