@@ -30,6 +30,7 @@
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
             <form method="GET" action="{{ route('trie.cotisations.index') }}" class="row g-3">
+                @if(in_array(Auth::user()->role, ['admin', 'acct']) && $postes->count() > 1)
                 <div class="col-md-3">
                     <label class="form-label fw-bold">Poste</label>
                     <select name="poste_id" class="form-select">
@@ -41,6 +42,12 @@
                         @endforeach
                     </select>
                 </div>
+                @else
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Poste</label>
+                    <input type="text" class="form-control" value="{{ $postes->first()->nom ?? 'N/A' }}" disabled>
+                </div>
+                @endif
                 <div class="col-md-2">
                     <label class="form-label fw-bold">Mois</label>
                     <select name="mois" class="form-select">

@@ -157,6 +157,21 @@
                 </h5>
             </div>
             <div class="card-body">
+                @php
+                    $bureauxACompleter = $bureaux->filter(fn($b) => !$b->cotisation_existante);
+                    $bureauxDejaSaisis = $bureaux->filter(fn($b) => $b->cotisation_existante);
+                @endphp
+
+                @if($bureauxDejaSaisis->count() > 0)
+                <div class="alert alert-info mb-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>{{ $bureauxDejaSaisis->count() }} bureau(x)</strong> a/ont déjà une cotisation enregistrée pour cette période.
+                    Les données de ces bureaux sont affichées ci-dessous en <strong class="text-success">vert</strong> (lecture seule).
+                    @if($bureauxACompleter->count() > 0)
+                        <br>Il reste <strong>{{ $bureauxACompleter->count() }} bureau(x)</strong> à saisir.
+                    @endif
+                </div>
+                @endif
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
                         <thead class="table-light">
@@ -175,23 +190,18 @@
                         </thead>
                         <tbody>
                             @foreach($bureaux as $index => $bureau)
-                            <tr class="bureau-row {{ $bureau->cotisation_existante ? 'table-warning' : '' }}">
+                            @if(!$bureau->cotisation_existante)
+                            <!-- Bureau sans cotisation : Formulaire de saisie -->
+                            <tr class="bureau-row">
                                 <td>
-                                    @if(!$bureau->cotisation_existante)
                                     <input type="checkbox"
                                            class="form-check-input bureau-checkbox"
                                            data-index="{{ $index }}"
                                            {{ old('bureaux.' . $index . '.bureau_trie_id') ? 'checked' : '' }}>
-                                    @else
-                                    <i class="fas fa-check-circle text-warning" title="Déjà enregistré"></i>
-                                    @endif
                                 </td>
                                 <td>
                                     <strong class="text-primary">{{ $bureau->code_bureau }}</strong>
                                     <br><small class="text-muted">{{ $bureau->nom_bureau }}</small>
-                                    @if($bureau->cotisation_existante)
-                                    <br><small class="text-warning"><i class="fas fa-exclamation-triangle"></i> Déjà enregistré</small>
-                                    @endif
                                 </td>
                                 <td>
                                     <input type="hidden" name="bureaux[{{ $index }}][bureau_trie_id]" value="{{ $bureau->id }}" class="bureau-id-input" disabled>
@@ -203,7 +213,6 @@
                                            value="{{ old('bureaux.' . $index . '.montant_cotisation_courante', 0) }}"
                                            data-index="{{ $index }}"
                                            placeholder="0"
-                                           {{ $bureau->cotisation_existante ? 'disabled' : '' }}
                                            disabled>
                                 </td>
                                 <td>
@@ -215,7 +224,6 @@
                                            value="{{ old('bureaux.' . $index . '.montant_apurement', 0) }}"
                                            data-index="{{ $index }}"
                                            placeholder="0"
-                                           {{ $bureau->cotisation_existante ? 'disabled' : '' }}
                                            disabled>
                                 </td>
                                 <td>
@@ -224,13 +232,11 @@
                                            class="form-control form-control-sm detail-apurement-input"
                                            placeholder="Ex: janv-mars 2024"
                                            value="{{ old('bureaux.' . $index . '.detail_apurement') }}"
-                                           {{ $bureau->cotisation_existante ? 'disabled' : '' }}
                                            disabled>
                                 </td>
                                 <td>
                                     <select name="bureaux[{{ $index }}][mode_paiement]"
                                             class="form-select form-select-sm mode-paiement-input"
-                                            {{ $bureau->cotisation_existante ? 'disabled' : '' }}
                                             disabled>
                                         <option value="">-- Mode --</option>
                                         <option value="cheque" {{ old('bureaux.' . $index . '.mode_paiement') == 'cheque' ? 'selected' : '' }}>Chèque</option>
@@ -245,7 +251,6 @@
                                            class="form-control form-control-sm reference-input"
                                            placeholder="Ex: CHQ n°123"
                                            value="{{ old('bureaux.' . $index . '.reference_paiement') }}"
-                                           {{ $bureau->cotisation_existante ? 'disabled' : '' }}
                                            disabled>
                                 </td>
                                 <td>
@@ -253,15 +258,76 @@
                                            name="bureaux[{{ $index }}][date_paiement]"
                                            class="form-control form-control-sm date-input"
                                            value="{{ old('bureaux.' . $index . '.date_paiement', date('Y-m-d')) }}"
-                                           {{ $bureau->cotisation_existante ? 'disabled' : '' }}
                                            disabled>
                                 </td>
                             </tr>
+                            @else
+                            <!-- Bureau avec cotisation existante : Affichage des données -->
+                            <tr class="table-success">
+                                <td class="text-center">
+                                    <i class="fas fa-check-circle text-success fs-5" title="Cotisation validée"></i>
+                                </td>
+                                <td>
+                                    <strong class="text-success">{{ $bureau->code_bureau }}</strong>
+                                    <br><small class="text-muted">{{ $bureau->nom_bureau }}</small>
+                                    <br><small class="text-success"><i class="fas fa-check-circle"></i> Cotisation enregistrée</small>
+                                </td>
+                                <td class="text-end">
+                                    <strong class="text-primary">{{ number_format($bureau->cotisation_existante->montant_cotisation_courante, 0, ',', ' ') }}</strong>
+                                    <br><small class="text-muted">FCFA</small>
+                                </td>
+                                <td class="text-end">
+                                    @if($bureau->cotisation_existante->montant_apurement > 0)
+                                        <strong class="text-warning">{{ number_format($bureau->cotisation_existante->montant_apurement, 0, ',', ' ') }}</strong>
+                                        <br><small class="text-muted">FCFA</small>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <small class="text-muted">{{ $bureau->cotisation_existante->detail_apurement ?? '-' }}</small>
+                                </td>
+                                <td class="text-center">
+                                    @if($bureau->cotisation_existante->mode_paiement)
+                                        <span class="badge bg-info">{{ ucfirst($bureau->cotisation_existante->mode_paiement) }}</span>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <small>{{ $bureau->cotisation_existante->reference_paiement ?? '-' }}</small>
+                                </td>
+                                <td class="text-center">
+                                    <small>{{ $bureau->cotisation_existante->date_paiement?->format('d/m/Y') ?? '-' }}</small>
+                                </td>
+                            </tr>
+                            @endif
                             @endforeach
                         </tbody>
                         <tfoot class="table-light">
+                            @php
+                                $totalCotisationExistante = $bureauxDejaSaisis->sum(fn($b) => $b->cotisation_existante->montant_cotisation_courante);
+                                $totalApurementExistant = $bureauxDejaSaisis->sum(fn($b) => $b->cotisation_existante->montant_apurement);
+                                $totalExistant = $totalCotisationExistante + $totalApurementExistant;
+                            @endphp
+                            @if($bureauxDejaSaisis->count() > 0)
+                            <tr class="table-success">
+                                <th colspan="2" class="text-end">TOTAL DÉJÀ ENREGISTRÉ:</th>
+                                <th class="text-end">
+                                    <span class="fw-bold text-success">{{ number_format($totalCotisationExistante, 0, ',', ' ') }} FCFA</span>
+                                </th>
+                                <th class="text-end">
+                                    <span class="fw-bold text-success">{{ number_format($totalApurementExistant, 0, ',', ' ') }} FCFA</span>
+                                </th>
+                                <th colspan="4" class="text-end">
+                                    <strong>TOTAL: </strong>
+                                    <span class="fw-bold text-success fs-5">{{ number_format($totalExistant, 0, ',', ' ') }} FCFA</span>
+                                </th>
+                            </tr>
+                            @endif
+                            @if($bureauxACompleter->count() > 0)
                             <tr>
-                                <th colspan="2" class="text-end">TOTAL SÉLECTIONNÉ:</th>
+                                <th colspan="2" class="text-end">TOTAL À SAISIR:</th>
                                 <th class="text-end">
                                     <span id="totalCotisation" class="fw-bold text-primary">0 FCFA</span>
                                 </th>
@@ -269,10 +335,38 @@
                                     <span id="totalApurement" class="fw-bold text-warning">0 FCFA</span>
                                 </th>
                                 <th colspan="4" class="text-end">
-                                    <strong>TOTAL GÉNÉRAL: </strong>
-                                    <span id="totalGeneral" class="fw-bold text-success fs-5">0 FCFA</span>
+                                    <strong>TOTAL: </strong>
+                                    <span id="totalGeneral" class="fw-bold text-primary fs-5">0 FCFA</span>
                                 </th>
                             </tr>
+                            <tr class="table-info">
+                                <th colspan="2" class="text-end">TOTAL GLOBAL (Enregistré + À saisir):</th>
+                                <th class="text-end">
+                                    <span id="totalCotisationGlobal" class="fw-bold text-dark">{{ number_format($totalCotisationExistante, 0, ',', ' ') }} FCFA</span>
+                                </th>
+                                <th class="text-end">
+                                    <span id="totalApurementGlobal" class="fw-bold text-dark">{{ number_format($totalApurementExistant, 0, ',', ' ') }} FCFA</span>
+                                </th>
+                                <th colspan="4" class="text-end">
+                                    <strong>TOTAL: </strong>
+                                    <span id="grandTotal" class="fw-bold text-dark fs-4">{{ number_format($totalExistant, 0, ',', ' ') }} FCFA</span>
+                                </th>
+                            </tr>
+                            @else
+                            <tr class="table-success">
+                                <th colspan="2" class="text-end">TOTAL PÉRIODE ({{ $moisList[$mois] }} {{ $annee }}):</th>
+                                <th class="text-end">
+                                    <span class="fw-bold text-success">{{ number_format($totalCotisationExistante, 0, ',', ' ') }} FCFA</span>
+                                </th>
+                                <th class="text-end">
+                                    <span class="fw-bold text-success">{{ number_format($totalApurementExistant, 0, ',', ' ') }} FCFA</span>
+                                </th>
+                                <th colspan="4" class="text-end">
+                                    <strong>TOTAL: </strong>
+                                    <span class="fw-bold text-success fs-5">{{ number_format($totalExistant, 0, ',', ' ') }} FCFA</span>
+                                </th>
+                            </tr>
+                            @endif
                         </tfoot>
                     </table>
                 </div>
@@ -544,6 +638,7 @@
     });
 
     function updateTotals() {
+        // Totaux des bureaux à saisir (sélectionnés)
         let totalCotisation = 0;
         let totalApurement = 0;
 
@@ -562,9 +657,39 @@
 
         const totalGeneral = totalCotisation + totalApurement;
 
-        document.getElementById('totalCotisation').textContent = new Intl.NumberFormat('fr-FR').format(totalCotisation) + ' FCFA';
-        document.getElementById('totalApurement').textContent = new Intl.NumberFormat('fr-FR').format(totalApurement) + ' FCFA';
-        document.getElementById('totalGeneral').textContent = new Intl.NumberFormat('fr-FR').format(totalGeneral) + ' FCFA';
+        // Mettre à jour les totaux à saisir
+        const totalCotisationElement = document.getElementById('totalCotisation');
+        const totalApurementElement = document.getElementById('totalApurement');
+        const totalGeneralElement = document.getElementById('totalGeneral');
+
+        if (totalCotisationElement) {
+            totalCotisationElement.textContent = new Intl.NumberFormat('fr-FR').format(totalCotisation) + ' FCFA';
+        }
+        if (totalApurementElement) {
+            totalApurementElement.textContent = new Intl.NumberFormat('fr-FR').format(totalApurement) + ' FCFA';
+        }
+        if (totalGeneralElement) {
+            totalGeneralElement.textContent = new Intl.NumberFormat('fr-FR').format(totalGeneral) + ' FCFA';
+        }
+
+        // Calculer et mettre à jour les totaux globaux (existant + à saisir)
+        const totalCotisationGlobalElement = document.getElementById('totalCotisationGlobal');
+        const totalApurementGlobalElement = document.getElementById('totalApurementGlobal');
+        const grandTotalElement = document.getElementById('grandTotal');
+
+        if (totalCotisationGlobalElement && totalApurementGlobalElement && grandTotalElement) {
+            // Récupérer les totaux existants depuis les valeurs initiales
+            const totalExistantCotisation = {{ $totalCotisationExistante }};
+            const totalExistantApurement = {{ $totalApurementExistant }};
+
+            const totalGlobalCotisation = totalExistantCotisation + totalCotisation;
+            const totalGlobalApurement = totalExistantApurement + totalApurement;
+            const grandTotal = totalGlobalCotisation + totalGlobalApurement;
+
+            totalCotisationGlobalElement.textContent = new Intl.NumberFormat('fr-FR').format(totalGlobalCotisation) + ' FCFA';
+            totalApurementGlobalElement.textContent = new Intl.NumberFormat('fr-FR').format(totalGlobalApurement) + ' FCFA';
+            grandTotalElement.textContent = new Intl.NumberFormat('fr-FR').format(grandTotal) + ' FCFA';
+        }
     }
 
     // Vérifier la validité du formulaire
@@ -617,6 +742,11 @@
             e.preventDefault();
             return false;
         }
+    });
+
+    // Initialiser les totaux au chargement de la page
+    document.addEventListener('DOMContentLoaded', function() {
+        updateTotals();
     });
 </script>
 @endpush

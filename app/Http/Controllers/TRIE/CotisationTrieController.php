@@ -30,6 +30,11 @@ class CotisationTrieController extends Controller
             ->orderBy('annee', 'desc')
             ->orderBy('mois', 'desc');
 
+        // Si l'utilisateur n'est pas ACCT/Admin, filtrer par son poste
+        if (!in_array($user->role, ['acct', 'admin'])) {
+            $query->where('poste_id', $user->poste_id);
+        }
+
         // Filtres
         if ($request->filled('poste_id')) {
             $query->where('poste_id', $request->poste_id);
@@ -43,19 +48,19 @@ class CotisationTrieController extends Controller
             $query->where('annee', $request->annee);
         }
 
-        if ($request->filled('statut')) {
-            $query->where('statut', $request->statut);
-        }
-
-        // Si l'utilisateur n'est pas ACCT/Admin, voir uniquement ses cotisations
-        if (!in_array($user->role, ['acct', 'admin'])) {
-            $query->where('poste_id', $user->poste_id);
-        }
-
         $cotisations = $query->paginate(20);
 
-        // Données pour les filtres
-        $postes = Poste::orderBy('nom')->get();
+        // Données pour les filtres - Filtrer les postes selon le profil
+        if (in_array($user->role, ['acct', 'admin'])) {
+            // Admin/ACCT peuvent filtrer par tous les postes
+            $postes = Poste::orderBy('nom')->get();
+        } else {
+            // Les autres utilisateurs ne voient que leur propre poste
+            $postes = $user->poste_id 
+                ? Poste::where('id', $user->poste_id)->get() 
+                : collect();
+        }
+
         $moisList = [
             1 => 'Janvier', 2 => 'Février', 3 => 'Mars', 4 => 'Avril',
             5 => 'Mai', 6 => 'Juin', 7 => 'Juillet', 8 => 'Août',
