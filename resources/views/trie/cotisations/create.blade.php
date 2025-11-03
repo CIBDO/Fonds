@@ -1,6 +1,13 @@
 @extends('layouts.master')
 
 @section('content')
+@php
+    // Initialiser les variables pour JavaScript (toujours disponibles)
+    $totalCotisationExistante = 0;
+    $totalApurementExistant = 0;
+    $totalExistant = 0;
+@endphp
+
 <div class="content container-fluid">
     <!-- En-tête de page -->
     <div class="page-header mb-4">
@@ -22,7 +29,7 @@
 
     <!-- Sélection Poste et Mode -->
     <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <div class="card-header bg-primary text-black d-flex justify-content-between align-items-center">
             <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Sélection du Poste et de la Période</h5>
             @if($poste && count($bureaux) > 0)
             <div class="btn-group" role="group">
@@ -141,6 +148,19 @@
 
     @if($poste && count($bureaux) > 0)
 
+    @php
+        // Filtrer les bureaux
+        $bureauxACompleter = $bureaux->filter(fn($b) => !$b->cotisation_existante);
+        $bureauxDejaSaisis = $bureaux->filter(fn($b) => $b->cotisation_existante);
+
+        // Recalculer les totaux (écraser les valeurs par défaut)
+        if ($bureauxDejaSaisis->count() > 0) {
+            $totalCotisationExistante = $bureauxDejaSaisis->sum(fn($b) => $b->cotisation_existante->montant_cotisation_courante);
+            $totalApurementExistant = $bureauxDejaSaisis->sum(fn($b) => $b->cotisation_existante->montant_apurement);
+            $totalExistant = $totalCotisationExistante + $totalApurementExistant;
+        }
+    @endphp
+
     <!-- FORMULAIRE MODE NORMAL -->
     <form action="{{ route('trie.cotisations.store') }}" method="POST" id="cotisationFormNormal">
         @csrf
@@ -150,17 +170,13 @@
         <input type="hidden" name="annee" value="{{ $annee }}">
 
         <div class="card shadow-sm border-0 mb-4">
-            <div class="card-header bg-success text-white">
+            <div class="card-header bg-success text-black">
                 <h5 class="mb-0">
                     <i class="fas fa-money-check-alt me-2"></i>Saisie des Cotisations - {{ $poste->nom }}
                     <small class="ms-2">({{ $moisList[$mois] }} {{ $annee }})</small>
                 </h5>
             </div>
             <div class="card-body">
-                @php
-                    $bureauxACompleter = $bureaux->filter(fn($b) => !$b->cotisation_existante);
-                    $bureauxDejaSaisis = $bureaux->filter(fn($b) => $b->cotisation_existante);
-                @endphp
 
                 @if($bureauxDejaSaisis->count() > 0)
                 <div class="alert alert-info mb-3">
@@ -305,11 +321,6 @@
                             @endforeach
                         </tbody>
                         <tfoot class="table-light">
-                            @php
-                                $totalCotisationExistante = $bureauxDejaSaisis->sum(fn($b) => $b->cotisation_existante->montant_cotisation_courante);
-                                $totalApurementExistant = $bureauxDejaSaisis->sum(fn($b) => $b->cotisation_existante->montant_apurement);
-                                $totalExistant = $totalCotisationExistante + $totalApurementExistant;
-                            @endphp
                             @if($bureauxDejaSaisis->count() > 0)
                             <tr class="table-success">
                                 <th colspan="2" class="text-end">TOTAL DÉJÀ ENREGISTRÉ:</th>
@@ -396,7 +407,7 @@
         <input type="hidden" name="annee" value="{{ $annee }}">
 
         <div class="card shadow-sm border-0 mb-4">
-            <div class="card-header bg-warning text-dark">
+            <div class="card-header bg-warning text-black">
                 <h5 class="mb-0">
                     <i class="fas fa-history me-2"></i>Rattrapage Multi-Mois - {{ $poste->nom }}
                     <small class="ms-2">({{ $annee }})</small>
@@ -515,7 +526,7 @@
 
         // En-têtes des bureaux
         bureaux.forEach(bureau => {
-            html += `<th colspan="4" class="text-center bg-primary text-white">${bureau.code} - ${bureau.nom}</th>`;
+            html += `<th colspan="4" class="text-center bg-primary text-black">${bureau.code} - ${bureau.nom}</th>`;
         });
 
         html += `</tr><tr>`;

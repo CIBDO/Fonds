@@ -220,7 +220,7 @@
 
                 <!-- MODULE TRIE - COTISATIONS CCIM -->
                 <li class="menu-title">
-                    <span>TRIE - CCIM</span>
+                    <span> FONDS DE GARANTIE TRIE</span>
                 </li>
 
                 <!-- Bureaux TRIE -->
