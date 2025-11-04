@@ -77,8 +77,8 @@ class EtatsConsolidesController extends Controller
             $nomPoste = $declaration->poste_id ? $declaration->poste->nom : $declaration->bureauDouane->libelle;
             $moisDeclaration = $declaration->mois;
 
-            // Convertir en millions de FCFA
-            $montantRecouvrement = $declaration->montant_recouvrement / 1000000;
+            // Montant en FCFA (sans conversion)
+            $montantRecouvrement = $declaration->montant_recouvrement;
 
             if (!isset($recouvrementsParPoste[$nomPoste])) {
                 $recouvrementsParPoste[$nomPoste] = [
@@ -142,9 +142,9 @@ class EtatsConsolidesController extends Controller
             $nomPoste = $declaration->poste_id ? $declaration->poste->nom : $declaration->bureauDouane->libelle;
             $moisDeclaration = $declaration->mois;
 
-            // Convertir en millions de FCFA
-            $montantRecouvrement = $declaration->montant_recouvrement / 1000000;
-            $montantReversement = $declaration->montant_reversement / 1000000;
+            // Montants en FCFA (sans conversion)
+            $montantRecouvrement = $declaration->montant_recouvrement;
+            $montantReversement = $declaration->montant_reversement;
 
             // Recouvrements
             if (!isset($recouvrementsParPoste[$nomPoste])) {
@@ -221,9 +221,9 @@ class EtatsConsolidesController extends Controller
             $nomPoste = $declaration->poste_id ? $declaration->poste->nom : $declaration->bureauDouane->libelle;
             $moisDeclaration = $declaration->mois;
 
-            // Convertir en millions de FCFA
-            $montantRecouvrement = $declaration->montant_recouvrement / 1000000;
-            $montantReversement = $declaration->montant_reversement / 1000000;
+            // Montants en FCFA (sans conversion)
+            $montantRecouvrement = $declaration->montant_recouvrement;
+            $montantReversement = $declaration->montant_reversement;
 
             // Recouvrements
             if (!isset($recouvrementsParPoste[$nomPoste])) {
@@ -570,9 +570,9 @@ class EtatsConsolidesController extends Controller
                 $reversements[$nomPoste] = array_fill(0, 13, 0);
             }
 
-            // Convertir en millions de FCFA
-            $montantRecouvrement = $declaration->montant_recouvrement / 1000000;
-            $montantReversement = $declaration->montant_reversement / 1000000;
+            // Montants en FCFA (sans conversion)
+            $montantRecouvrement = $declaration->montant_recouvrement;
+            $montantReversement = $declaration->montant_reversement;
 
             // Ajouter au mois (index 0-11)
             $recouvrements[$nomPoste][$mois - 1] += $montantRecouvrement;

@@ -6,19 +6,19 @@
     <style>
         @page {
             size: A4 landscape;
-            margin: 15mm;
+            margin: 10mm;
         }
 
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 10px;
-            font-size: 9px;
-            line-height: 1.2;
+            padding: 5px;
+            font-size: 8px;
+            line-height: 1.1;
         }
 
         .header {
-            margin-bottom: 25px;
+            margin-bottom: 15px;
         }
 
         .header-left {
@@ -41,60 +41,63 @@
 
         .title {
             font-weight: bold;
-            font-size: 12px;
-            margin: 3px 0;
-        }
-
-        .subtitle {
             font-size: 10px;
             margin: 2px 0;
         }
 
-        .stars {
+        .subtitle {
             font-size: 8px;
-            margin: 3px 0;
+            margin: 1px 0;
+        }
+
+        .stars {
+            font-size: 7px;
+            margin: 2px 0;
         }
 
         .main-title {
-            font-size: 13px;
+            font-size: 11px;
             font-weight: bold;
             text-decoration: underline;
-            margin: 25px 0 20px 0;
+            margin: 10px 0 8px 0;
             text-align: center;
         }
 
         .subtitle-period {
-            font-size: 11px;
+            font-size: 9px;
             font-weight: bold;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 8px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 15px 0;
-            font-size: 8px;
+            margin: 8px 0;
+            font-size: 6.5px;
         }
 
         th, td {
             border: 1px solid #000;
-            padding: 3px;
+            padding: 2px;
             text-align: center;
+            white-space: nowrap;
         }
 
         th {
             background-color: #f0f0f0;
             font-weight: bold;
-            font-size: 7px;
+            font-size: 6px;
         }
 
         .text-left {
             text-align: left;
+            white-space: normal;
         }
 
         .text-right {
             text-align: right;
+            white-space: nowrap;
         }
 
         .total-row {
@@ -102,24 +105,19 @@
             font-weight: bold;
         }
 
-        .total-row td:last-child {
-            white-space: nowrap;
-            min-width: 120px;
-        }
-
         .signature {
-            margin-right: 100px;
+            margin-right: 80px;
             text-align: right;
-            margin-top: 30px;
+            margin-top: 15px;
         }
 
         .date-signature {
-            font-size: 10px;
-            margin-bottom: 50px;
+            font-size: 8px;
+            margin-bottom: 30px;
         }
 
         .agent-signature {
-            font-size: 10px;
+            font-size: 8px;
             font-weight: bold;
         }
 
@@ -132,14 +130,14 @@
         }
 
         .table-section {
-            margin-bottom: 30px;
+            margin-bottom: 10px;
         }
 
         .table-title {
-            font-size: 11px;
+            font-size: 9px;
             font-weight: bold;
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             text-decoration: underline;
         }
     </style>
@@ -173,8 +171,8 @@
         PÉRIODE DU 01/01/{{ $annee }} AU {{ \Carbon\Carbon::now()->format('d/m/Y') }}
     </div>
 
-    <div style="text-align: center; font-size: 10px; font-style: italic; margin-bottom: 15px; color: #666;">
-        (Montants en millions de francs CFA )
+    <div style="text-align: center; font-size: 8px; font-style: italic; margin-bottom: 8px; color: #666;">
+        (Montants en francs CFA)
     </div>
 
     <!-- Tableau RECOUVREMENTS -->
@@ -183,20 +181,20 @@
         <table>
             <thead>
                 <tr>
-                    <th style="width: 22%;">POSTES</th>
-                    <th style="width: 6%;">JANVIER</th>
-                    <th style="width: 6%;">FÉVRIER</th>
-                    <th style="width: 6%;">MARS</th>
-                    <th style="width: 6%;">AVRIL</th>
-                    <th style="width: 6%;">MAI</th>
-                    <th style="width: 6%;">JUIN</th>
-                    <th style="width: 6%;">JUILLET</th>
-                    <th style="width: 6%;">AOÛT</th>
-                    <th style="width: 6%;">SEPTEMBRE</th>
-                    <th style="width: 6%;">OCTOBRE</th>
-                    <th style="width: 6%;">NOVEMBRE</th>
-                    <th style="width: 6%;">DÉCEMBRE</th>
-                    <th style="width: 10%;">TOTAL GÉNÉRAL</th>
+                    <th style="width: 14%;">POSTES</th>
+                    <th style="width: 5.5%;">JANV.</th>
+                    <th style="width: 5.5%;">FÉV.</th>
+                    <th style="width: 5.5%;">MARS</th>
+                    <th style="width: 5.5%;">AVR.</th>
+                    <th style="width: 5.5%;">MAI</th>
+                    <th style="width: 5.5%;">JUIN</th>
+                    <th style="width: 5.5%;">JUIL.</th>
+                    <th style="width: 5.5%;">AOÛT</th>
+                    <th style="width: 5.5%;">SEPT.</th>
+                    <th style="width: 5.5%;">OCT.</th>
+                    <th style="width: 5.5%;">NOV.</th>
+                    <th style="width: 5.5%;">DÉC.</th>
+                    <th style="width: 14%;">TOTAL GÉNÉRAL</th>
                 </tr>
             </thead>
             <tbody>
@@ -244,20 +242,20 @@
         <table>
             <thead>
                 <tr>
-                    <th style="width: 22%;">POSTES</th>
-                    <th style="width: 6%;">JANVIER</th>
-                    <th style="width: 6%;">FÉVRIER</th>
-                    <th style="width: 6%;">MARS</th>
-                    <th style="width: 6%;">AVRIL</th>
-                    <th style="width: 6%;">MAI</th>
-                    <th style="width: 6%;">JUIN</th>
-                    <th style="width: 6%;">JUILLET</th>
-                    <th style="width: 6%;">AOÛT</th>
-                    <th style="width: 6%;">SEPTEMBRE</th>
-                    <th style="width: 6%;">OCTOBRE</th>
-                    <th style="width: 6%;">NOVEMBRE</th>
-                    <th style="width: 6%;">DÉCEMBRE</th>
-                    <th style="width: 10%;">TOTAL GÉNÉRAL</th>
+                    <th style="width: 14%;">POSTES</th>
+                    <th style="width: 5.5%;">JANV.</th>
+                    <th style="width: 5.5%;">FÉV.</th>
+                    <th style="width: 5.5%;">MARS</th>
+                    <th style="width: 5.5%;">AVR.</th>
+                    <th style="width: 5.5%;">MAI</th>
+                    <th style="width: 5.5%;">JUIN</th>
+                    <th style="width: 5.5%;">JUIL.</th>
+                    <th style="width: 5.5%;">AOÛT</th>
+                    <th style="width: 5.5%;">SEPT.</th>
+                    <th style="width: 5.5%;">OCT.</th>
+                    <th style="width: 5.5%;">NOV.</th>
+                    <th style="width: 5.5%;">DÉC.</th>
+                    <th style="width: 14%;">TOTAL GÉNÉRAL</th>
                 </tr>
             </thead>
             <tbody>

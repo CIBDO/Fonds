@@ -157,7 +157,7 @@
     </div>
 
     <div style="text-align: center; font-size: 10px; font-style: italic; margin-bottom: 15px; color: #666;">
-        (Montants en millions de francs CFA )
+        (Montants en francs CFA)
     </div>
 
     <!-- Tableau REVERSEMENTS -->
@@ -185,9 +185,9 @@
             <tr>
                 <td class="text-left"><strong>{{ $poste }}</strong></td>
                 @for($mois = 1; $mois <= 12; $mois++)
-                    <td class="text-right">{{ number_format($data['mois'][$mois] ?? 0, 2, ',', ' ') }}</td>
+                    <td class="text-right">{{ number_format($data['mois'][$mois] ?? 0, 0, ',', ' ') }}</td>
                 @endfor
-                <td class="text-right"><strong>{{ number_format($data['total'], 2, ',', ' ') }}</strong></td>
+                <td class="text-right"><strong>{{ number_format($data['total'], 0, ',', ' ') }}</strong></td>
             </tr>
             @endforeach
         </tbody>
@@ -195,9 +195,9 @@
             <tr class="total-row">
                 <td class="text-left"><strong>TOTAL REVERSEMENTS</strong></td>
                 @for($mois = 1; $mois <= 12; $mois++)
-                    <td class="text-right"><strong>{{ number_format($totalReversementsMensuel[$mois] ?? 0, 2, ',', ' ') }}</strong></td>
+                    <td class="text-right"><strong>{{ number_format($totalReversementsMensuel[$mois] ?? 0, 0, ',', ' ') }}</strong></td>
                 @endfor
-                <td class="text-right"><strong>{{ number_format($totalReversements, 2, ',', ' ') }}</strong></td>
+                <td class="text-right"><strong>{{ number_format($totalReversements, 0, ',', ' ') }}</strong></td>
             </tr>
         </tfoot>
     </table>
