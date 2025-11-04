@@ -8,9 +8,9 @@
             <div class="col">
                 <div class="page-sub-header">
                     <h3 class="page-title fw-bold text-danger">
-                        <i class="fas fa-list me-2"></i>Liste des Déstockages
+                        <i class="fas fa-list me-2"></i>Liste des Règlements
                     </h3>
-                    {{-- <p class="text-muted mb-0">Historique des déstockages de fonds PCS</p> --}}
+                    {{-- <p class="text-muted mb-0">Historique des règlements de fonds PCS</p> --}}
                 </div>
             </div>
             <div class="col-auto">
@@ -32,12 +32,12 @@
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <a class="dropdown-item" href="{{ route('pcs.destockages.pdf.etat-consolide', ['programme' => 'UEMOA', 'annee' => date('Y')]) }}">
-                                <i class="fas fa-chart-bar text-primary"></i> Déstockages UEMOA {{ date('Y') }}
+                                <i class="fas fa-chart-bar text-primary"></i> Règlements UEMOA {{ date('Y') }}
                             </a>
                         </li>
                         <li>
                             <a class="dropdown-item" href="{{ route('pcs.destockages.pdf.etat-consolide', ['programme' => 'AES', 'annee' => date('Y')]) }}">
-                                <i class="fas fa-chart-bar text-info"></i> Déstockages AES {{ date('Y') }}
+                                <i class="fas fa-chart-bar text-info"></i> Règlements AES {{ date('Y') }}
                             </a>
                         </li>
                     </ul>
@@ -46,7 +46,7 @@
                     <i class="fas fa-coins me-1"></i>Vue de Collecte
                 </a>
                 <a href="{{ route('pcs.destockages.create') }}" class="btn btn-danger btn-sm">
-                    <i class="fas fa-plus me-1"></i>Nouveau Déstockage
+                    <i class="fas fa-plus me-1"></i>Nouveau Règlement
                 </a>
             </div>
         </div>
@@ -111,8 +111,8 @@
     <div class="card shadow-sm border-0">
         <div class="card-header bg-danger text-white">
             <div class="d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="fas fa-list me-2"></i>Historique des Déstockages</h5>
-                <span class="badge bg-white text-danger">{{ $destockages->total() }} déstockages</span>
+                <h5 class="mb-0"><i class="fas fa-list me-2"></i>Historique des Règlements</h5>
+                <span class="badge bg-white text-danger">{{ $destockages->total() }} règlements</span>
             </div>
         </div>
 
@@ -125,7 +125,7 @@
                             <th><i class="fas fa-hashtag"></i> Référence</th>
                             <th><i class="fas fa-flag"></i> Programme</th>
                             <th><i class="fas fa-calendar"></i> Période</th>
-                            <th><i class="fas fa-calendar-check"></i> Date Déstockage</th>
+                            <th><i class="fas fa-calendar-check"></i> Date Règlement</th>
                             <th class="text-end"><i class="fas fa-money-bill-wave"></i> Montant Total</th>
                             <th class="text-center"><i class="fas fa-list-ol"></i> Nb Postes</th>
                             <th class="text-center"><i class="fas fa-info-circle"></i> Statut</th>
@@ -213,7 +213,7 @@
             <div class="d-flex justify-content-between align-items-center mt-4">
                 <div class="text-muted">
                     Affichage de <strong>{{ $destockages->firstItem() ?? 0 }}</strong> à <strong>{{ $destockages->lastItem() ?? 0 }}</strong>
-                    sur <strong>{{ $destockages->total() }}</strong> déstockage(s)
+                    sur <strong>{{ $destockages->total() }}</strong> règlement(s)
                 </div>
                 <div>
                     @if ($destockages->hasPages())
@@ -257,9 +257,9 @@
             @else
             <div class="alert alert-info text-center">
                 <i class="fas fa-info-circle fa-2x mb-2"></i>
-                <p class="mb-0">Aucun déstockage trouvé.</p>
+                <p class="mb-0">Aucun règlement trouvé.</p>
                 <a href="{{ route('pcs.destockages.create') }}" class="btn btn-danger mt-3">
-                    <i class="fas fa-plus me-1"></i>Créer un Déstockage
+                    <i class="fas fa-plus me-1"></i>Créer un Règlement
                 </a>
             </div>
             @endif

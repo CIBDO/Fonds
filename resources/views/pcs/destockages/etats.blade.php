@@ -8,9 +8,9 @@
             <div class="col">
                 <div class="page-sub-header">
                     <h3 class="page-title fw-bold text-danger">
-                        <i class="fas fa-chart-line me-2"></i>États et Rapports - Déstockages PCS
+                        <i class="fas fa-chart-line me-2"></i>États et Rapports - Règlements PCS
                     </h3>
-                     {{-- <p class="text-muted mb-0">Générez vos états de collecte et déstockages</p> --}}
+                     {{-- <p class="text-muted mb-0">Générez vos états de collecte et règlements</p> --}}
                 </div>
             </div>
         </div>
@@ -46,9 +46,9 @@
                             <div class="card border-primary h-100">
                                 <div class="card-body text-center">
                                     <i class="fas fa-chart-bar fa-4x text-primary mb-3"></i>
-                                    <h5 class="fw-bold">État Consolidé des Déstockages</h5>
+                                    <h5 class="fw-bold">État Consolidé des Règlements</h5>
                                     <p class="text-muted">
-                                        Affiche tous les déstockages effectués par poste et par mois pour un programme et une année donnés.
+                                        Affiche tous les règlements effectués par poste et par mois pour un programme et une année donnés.
                                     </p>
                                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalEtatConsolide">
                                         <i class="fas fa-download me-1"></i>Générer l'État Consolidé
@@ -150,7 +150,7 @@
                                         {{ number_format($collecteUemoa - $destockeUemoa, 0, ',', ' ') }} FCFA
                                     </h3>
                                     <small class="text-muted">
-                                        Taux déstockage : {{ $collecteUemoa > 0 ? number_format(($destockeUemoa / $collecteUemoa) * 100, 1) : 0 }}%
+                                        Taux règlement : {{ $collecteUemoa > 0 ? number_format(($destockeUemoa / $collecteUemoa) * 100, 1) : 0 }}%
                                     </small>
                                 </div>
                             </div>
@@ -163,7 +163,7 @@
                                         {{ number_format($collecteAes - $destockeAes, 0, ',', ' ') }} FCFA
                                     </h3>
                                     <small class="text-muted">
-                                        Taux déstockage : {{ $collecteAes > 0 ? number_format(($destockeAes / $collecteAes) * 100, 1) : 0 }}%
+                                        Taux règlement : {{ $collecteAes > 0 ? number_format(($destockeAes / $collecteAes) * 100, 1) : 0 }}%
                                     </small>
                                 </div>
                             </div>

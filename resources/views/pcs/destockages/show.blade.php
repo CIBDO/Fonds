@@ -8,9 +8,9 @@
             <div class="col">
                 <div class="page-sub-header">
                     <h3 class="page-title fw-bold text-danger">
-                        <i class="fas fa-file-invoice me-2"></i>Détail du Déstockage
+                        <i class="fas fa-file-invoice me-2"></i>Détail du Règlement
                     </h3>
-                    {{-- <p class="text-muted mb-0">{{ $destockage->reference_destockage }}</p> --}}
+                    {{-- <p class="text-muted mb-0">{{ $destockage->reference_règlement }}</p> --}}
                 </div>
             </div>
             <div class="col-auto">
@@ -52,7 +52,7 @@
                     <div class="fw-bold">{{ $destockage->nom_mois }} {{ $destockage->periode_annee }}</div>
                 </div>
                 <div class="col-md-3 mb-3">
-                    <label class="text-muted small">Date Déstockage</label>
+                    <label class="text-muted small">Date Règlement</label>
                     <div class="fw-bold">
                         <i class="fas fa-calendar-check text-danger me-1"></i>
                         {{ \Carbon\Carbon::parse($destockage->date_destockage)->format('d/m/Y') }}
@@ -61,7 +61,7 @@
             </div>
             <div class="row">
                 <div class="col-md-3 mb-3">
-                    <label class="text-muted small">Montant Total Déstocké</label>
+                    <label class="text-muted small">Montant Total Règlement</label>
                     <div class="fw-bold text-success fs-5">
                         {{ number_format($destockage->montant_total_destocke, 0, ',', ' ') }} FCFA
                     </div>
@@ -194,7 +194,7 @@
             <div class="card shadow-sm border-0 bg-danger text-white">
                 <div class="card-body text-center">
                     <i class="fas fa-arrow-down fa-2x mb-2"></i>
-                    <h6 class="mb-1">Total Déstocké</h6>
+                    <h6 class="mb-1">Total Règlement</h6>
                     <h5 class="fw-bold">{{ number_format($destockage->postes->sum('montant_destocke'), 0, ',', ' ') }} FCFA</h5>
                 </div>
             </div>
@@ -203,7 +203,7 @@
             <div class="card shadow-sm border-0 bg-warning text-dark">
                 <div class="card-body text-center">
                     <i class="fas fa-balance-scale fa-2x mb-2"></i>
-                    <h6 class="mb-1">Taux Déstockage</h6>
+                    <h6 class="mb-1">Taux Règlement</h6>
                     <h5 class="fw-bold">
                         {{ $destockage->postes->sum('montant_collecte') > 0
                            ? number_format(($destockage->postes->sum('montant_destocke') / $destockage->postes->sum('montant_collecte')) * 100, 1)

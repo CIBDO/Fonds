@@ -8,7 +8,7 @@
             <div class="col">
                 <div class="page-sub-header">
                     <h3 class="page-title fw-bold text-danger">
-                        <i class="fas fa-cash-register me-2"></i>Nouveau Déstockage
+                        <i class="fas fa-cash-register me-2"></i>Nouveau Règlement
                     </h3>
                     {{-- <p class="text-muted mb-0">Sélectionnez les postes et saisissez les montants à déstocker</p> --}}
                 </div>
@@ -77,7 +77,7 @@
             <div class="card-header bg-warning text-dark">
                 <h5 class="mb-0">
                     <i class="fas fa-list-check me-2"></i>Sélection des Postes
-                    <small class="text-muted">Cochez les postes à inclure dans ce déstockage</small>
+                    <small class="text-muted">Cochez les postes à inclure dans ce règlement</small>
                 </h5>
             </div>
             <div class="card-body">
@@ -91,9 +91,9 @@
                                 </th>
                                 <th><i class="fas fa-building"></i> Entité</th>
                                 <th class="text-end"><i class="fas fa-arrow-up"></i> Collecté</th>
-                                <th class="text-end"><i class="fas fa-arrow-down"></i> Déjà Déstocké</th>
+                                <th class="text-end"><i class="fas fa-arrow-down"></i> Déjà Règlement</th>
                                 <th class="text-end"><i class="fas fa-balance-scale"></i> Disponible</th>
-                                <th class="text-end"><i class="fas fa-money-bill-wave"></i> Montant à Déstocker</th>
+                                <th class="text-end"><i class="fas fa-money-bill-wave"></i> Montant à Règlement</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -165,7 +165,7 @@
                         </tbody>
                         <tfoot class="table-light">
                             <tr>
-                                <th colspan="5" class="text-end">TOTAL À DÉSTOCKER:</th>
+                                <th colspan="5" class="text-end">TOTAL À RÈGLEMENT:</th>
                                 <th class="text-end">
                                     <span id="totalDestockage" class="fw-bold text-danger fs-5">0 FCFA</span>
                                 </th>
@@ -190,7 +190,7 @@
                         <i class="fas fa-times me-1"></i>Annuler
                     </a>
                     <button type="submit" class="btn btn-danger btn-lg" id="submitBtn" disabled>
-                        <i class="fas fa-check-circle me-1"></i>Enregistrer le Déstockage
+                        <i class="fas fa-check-circle me-1"></i>Enregistrer le Règlement
                     </button>
                 </div>
             </div>
@@ -372,11 +372,11 @@
 
         if (total <= 0) {
             e.preventDefault();
-            alert('Le montant total à déstocker doit être supérieur à zéro.');
+            alert('Le montant total à règlement doit être supérieur à zéro.');
             return false;
         }
 
-        if (!confirm(`Êtes-vous sûr de vouloir créer ce déstockage pour un montant total de ${new Intl.NumberFormat('fr-FR').format(total)} FCFA ?`)) {
+        if (!confirm(`Êtes-vous sûr de vouloir créer ce règlement pour un montant total de ${new Intl.NumberFormat('fr-FR').format(total)} FCFA ?`)) {
             e.preventDefault();
             return false;
         }

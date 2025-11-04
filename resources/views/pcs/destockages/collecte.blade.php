@@ -26,16 +26,16 @@
                         </li>
                         <li>
                             <a class="dropdown-item" href="{{ route('pcs.destockages.pdf.etat-consolide', ['programme' => $programme, 'annee' => $annee]) }}">
-                                <i class="fas fa-chart-bar text-primary"></i> État Consolidé Déstockages {{ $annee }}
+                                <i class="fas fa-chart-bar text-primary"></i> État Consolidé Règlements {{ $annee }}
                             </a>
                         </li>
                     </ul>
                 </div>
                 <a href="{{ route('pcs.destockages.create', ['programme' => $programme, 'mois' => $mois, 'annee' => $annee]) }}" class="btn btn-danger btn-sm me-2">
-                    <i class="fas fa-plus me-1"></i>Nouveau Déstockage
+                    <i class="fas fa-plus me-1"></i>Nouveau Règlement
                 </a>
                 <a href="{{ route('pcs.destockages.index') }}" class="btn btn-secondary btn-sm">
-                    <i class="fas fa-list me-1"></i>Liste des Déstockages
+                    <i class="fas fa-list me-1"></i>Liste des Règlements
                 </a>
             </div>
         </div>
@@ -103,7 +103,7 @@
                         <tr>
                             <th><i class="fas fa-building"></i> Entité</th>
                             <th class="text-end"><i class="fas fa-arrow-up"></i> Montant Collecté</th>
-                            <th class="text-end"><i class="fas fa-arrow-down"></i> Déjà Déstocké</th>
+                            <th class="text-end"><i class="fas fa-arrow-down"></i> Déjà Règlement</th>
                             <th class="text-end"><i class="fas fa-balance-scale"></i> Solde Disponible</th>
                             <th class="text-center"><i class="fas fa-cogs"></i> Actions</th>
                         </tr>
@@ -141,7 +141,7 @@
                                         <a href="{{ route('pcs.destockages.create', ['programme' => $programme, 'mois' => $mois, 'annee' => $annee]) }}"
                                            class="btn btn-sm btn-outline-danger"
                                            data-bs-toggle="tooltip"
-                                           title="Créer un déstockage">
+                                           title="Créer un règlement">
                                             <i class="fas fa-cash-register"></i>
                                         </a>
                                     @else
