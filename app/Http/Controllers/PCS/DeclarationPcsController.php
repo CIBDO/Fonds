@@ -115,9 +115,8 @@ class DeclarationPcsController extends Controller
                     ->toArray();
             }
             
-            // Trouver les mois manquants et les mois déjà renseignés (de janvier jusqu'au mois actuel)
-            $moisActuel = (int)date('n');
-            for ($m = 1; $m <= $moisActuel; $m++) {
+            // Trouver les mois manquants et les mois déjà renseignés (tous les 12 mois de l'année)
+            for ($m = 1; $m <= 12; $m++) {
                 if (!in_array($m, $declarationsExistentes)) {
                     $moisManquants[$programme][] = $m;
                 } else {

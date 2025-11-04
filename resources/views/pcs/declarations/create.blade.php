@@ -23,17 +23,26 @@
 
     <!-- Alerte mois manquants -->
     @php
-        $tousMoisManquants = [];
+        // Mois manquants année courante (dédupliqués)
+        $moisManquantsAnnee = [];
         foreach ($moisManquants as $programme => $mois) {
-            $tousMoisManquants = array_merge($tousMoisManquants, $mois);
+            $moisManquantsAnnee = array_merge($moisManquantsAnnee, $mois);
         }
+        $moisManquantsAnnee = array_unique($moisManquantsAnnee);
+
+        // Mois manquants année précédente (dédupliqués)
+        $moisManquantsPrecedente = [];
         foreach ($moisManquantsAnneePrecedente as $programme => $mois) {
-            $tousMoisManquants = array_merge($tousMoisManquants, $mois);
+            $moisManquantsPrecedente = array_merge($moisManquantsPrecedente, $mois);
         }
+        $moisManquantsPrecedente = array_unique($moisManquantsPrecedente);
+
+        // Tous les mois manquants (pour savoir s'il y a des manquants)
+        $tousMoisManquants = array_merge($moisManquantsAnnee, $moisManquantsPrecedente);
         $tousMoisManquants = array_unique($tousMoisManquants);
         $aDesMoisManquants = !empty($tousMoisManquants);
 
-        // Créer un tableau des mois déjà renseignés (pour toutes les années et programmes)
+        // Créer un tableau des mois déjà renseignés (dédupliqués)
         $tousMoisRenseignes = [];
         foreach ($moisRenseignes as $programme => $mois) {
             $tousMoisRenseignes = array_merge($tousMoisRenseignes, $mois);
@@ -44,10 +53,10 @@
         $tousMoisRenseignes = array_unique($tousMoisRenseignes);
     @endphp
 
-    @if($aDesMoisManquants)
+    @if(count($moisManquantsAnnee) > 0)
     <div class="alert alert-warning alert-dismissible fade show mb-4" role="alert">
         <i class="fas fa-exclamation-triangle me-2"></i>
-        <strong>Attention !</strong> Vous avez <strong>{{ count($tousMoisManquants) }} mois non renseigné(s)</strong> pour {{ $annee }} ou {{ $anneePrecedente }}.
+        <strong>Attention !</strong> Vous avez <strong>{{ count($moisManquantsAnnee) }} mois non renseigné(s)</strong> pour {{ $annee }}.
         <br>
         <button type="button" class="btn btn-warning btn-sm mt-2" id="toggleRattrapage">
             <i class="fas fa-history me-1"></i>Utiliser le mode Rattrapage

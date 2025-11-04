@@ -10,7 +10,7 @@
                     <h3 class="page-title fw-bold text-primary">
                         <i class="fas fa-file-invoice-dollar me-2"></i>Nouvelle Demande de Fonds
                     </h3>
-                    <p class="text-muted mb-0">Saisie d'une demande de fonds pour salaires</p>
+                    {{-- <p class="text-muted mb-0">Saisie d'une demande de fonds pour salaires</p> --}}
                 </div>
             </div>
             <div class="col-auto">
