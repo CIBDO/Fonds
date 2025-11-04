@@ -93,7 +93,7 @@
         <div class="card-header bg-danger text-white">
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><i class="fas fa-list me-2"></i>Liste des Déclarations</h5>
-                <span class="badge bg-white text-danger">{{ $declarations->total() }} déclarations</span>
+                <span class="badge bg-white text-danger">{{ $declarations->total() }} période(s) · {{ $totalDeclarations ?? 0 }} déclarations</span>
             </div>
         </div>
 
@@ -105,46 +105,83 @@
                         <tr>
                             <th><i class="fas fa-calendar"></i> Période</th>
                             <th><i class="fas fa-building"></i> Entité</th>
-                            <th><i class="fas fa-globe"></i> Programme</th>
-                            <th><i class="fas fa-hashtag"></i> Référence</th>
-                            <th class="text-end"><i class="fas fa-arrow-up"></i> Recouvrement</th>
-                            <th class="text-end"><i class="fas fa-arrow-down"></i> Reversement</th>
+                            <th colspan="2" class="text-center bg-success text-white"><i class="fas fa-globe"></i> UEMOA</th>
+                            <th colspan="2" class="text-center bg-warning"><i class="fas fa-globe"></i> AES</th>
                             <th class="text-center"><i class="fas fa-flag"></i> Statut</th>
                             <th class="text-center"><i class="fas fa-user"></i> Saisi par</th>
                             <th class="text-center"><i class="fas fa-cogs"></i> Actions</th>
                         </tr>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th class="text-end small bg-success-subtle">Recouvrement</th>
+                            <th class="text-end small bg-success-subtle">Reversement</th>
+                            <th class="text-end small bg-warning-subtle">Recouvrement</th>
+                            <th class="text-end small bg-warning-subtle">Reversement</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
                     </thead>
                     <tbody>
-                        @foreach($declarations as $decl)
+                        @foreach($declarations as $groupe)
+                            @php
+                                $declUemoa = $groupe->firstWhere('programme', 'UEMOA');
+                                $declAes = $groupe->firstWhere('programme', 'AES');
+                                $premierDecl = $groupe->first();
+                            @endphp
                         <tr>
                             <td>
-                                <strong>{{ \Carbon\Carbon::create()->month($decl->mois)->locale('fr')->translatedFormat('F') }}</strong> {{ $decl->annee }}
+                                <strong>{{ \Carbon\Carbon::create()->month($premierDecl->mois)->locale('fr')->translatedFormat('F') }}</strong> {{ $premierDecl->annee }}
                             </td>
                             <td>
-                                @if($decl->poste_id)
-                                    <span class="badge bg-primary poste-badge">{{ $decl->poste->nom }}</span>
+                                @if($premierDecl->poste_id)
+                                    <span class="badge bg-primary">{{ $premierDecl->poste->nom }}</span>
                                 @else
-                                    <span class="badge bg-info bureau-badge">{{ $decl->bureauDouane->libelle }}</span>
+                                    <span class="badge bg-info">{{ $premierDecl->bureauDouane->libelle }}</span>
                                 @endif
                             </td>
-                            <td>
-                                <span class="badge bg-{{ $decl->programme == 'UEMOA' ? 'success' : 'warning' }} programme-badge">
-                                    {{ $decl->programme }}
-                                </span>
-                            </td>
-                            <td>
-                                @if($decl->reference)
-                                    <span class="badge bg-info text-dark">
-                                        <i class="fas fa-hashtag"></i> {{ $decl->reference }}
-                                    </span>
+
+                            {{-- UEMOA --}}
+                            <td class="text-end">
+                                @if($declUemoa)
+                                    <strong>{{ number_format($declUemoa->montant_recouvrement, 0, ',', ' ') }}</strong>
                                 @else
                                     <span class="text-muted">-</span>
                                 @endif
                             </td>
-                            <td class="text-end fw-bold">{{ number_format($decl->montant_recouvrement, 0, ',', ' ') }} FCFA</td>
-                            <td class="text-end fw-bold">{{ number_format($decl->montant_reversement, 0, ',', ' ') }} FCFA</td>
+                            <td class="text-end">
+                                @if($declUemoa)
+                                    <strong>{{ number_format($declUemoa->montant_reversement, 0, ',', ' ') }}</strong>
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
+                            </td>
+
+                            {{-- AES --}}
+                            <td class="text-end">
+                                @if($declAes)
+                                    <strong>{{ number_format($declAes->montant_recouvrement, 0, ',', ' ') }}</strong>
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
+                            </td>
+                            <td class="text-end">
+                                @if($declAes)
+                                    <strong>{{ number_format($declAes->montant_reversement, 0, ',', ' ') }}</strong>
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
+                            </td>
+
                             <td class="text-center">
-                                @switch($decl->statut)
+                                @php
+                                    $statuts = $groupe->pluck('statut')->unique();
+                                    $statutPrincipal = $statuts->contains('valide') ? 'valide' :
+                                                      ($statuts->contains('soumis') ? 'soumis' :
+                                                      ($statuts->contains('rejete') ? 'rejete' : 'brouillon'));
+                                @endphp
+                                @switch($statutPrincipal)
                                     @case('brouillon')
                                         <span class="badge bg-secondary"><i class="fas fa-pencil-alt"></i> Brouillon</span>
                                         @break
@@ -160,23 +197,24 @@
                                 @endswitch
                             </td>
                             <td class="text-center">
-                                <small class="text-muted">{{ $decl->saisiPar->name }}</small>
+                                <small class="text-muted">{{ $premierDecl->saisiPar->name }}</small>
                             </td>
                             <td class="text-center">
                                 <div class="btn-group btn-group-sm" role="group">
-                                    <a href="{{ route('pcs.declarations.show', $decl) }}"
-                                       class="btn btn-outline-info"
-                                       data-bs-toggle="tooltip"
-                                       title="Détails">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-
-                                    @if($decl->statut !== 'rejete' && $decl->saisi_par == auth()->id())
-                                        <a href="{{ route('pcs.declarations.edit', $decl) }}"
-                                           class="btn btn-outline-primary"
+                                    @if($declUemoa)
+                                        <a href="{{ route('pcs.declarations.show', $declUemoa) }}"
+                                           class="btn btn-outline-success btn-sm"
                                            data-bs-toggle="tooltip"
-                                           title="Modifier">
-                                            <i class="fas fa-edit"></i>
+                                           title="UEMOA">
+                                            <i class="fas fa-eye"></i> U
+                                        </a>
+                                    @endif
+                                    @if($declAes)
+                                        <a href="{{ route('pcs.declarations.show', $declAes) }}"
+                                           class="btn btn-outline-warning btn-sm"
+                                           data-bs-toggle="tooltip"
+                                           title="AES">
+                                            <i class="fas fa-eye"></i> A
                                         </a>
                                     @endif
                                 </div>
@@ -188,8 +226,50 @@
             </div>
 
             <!-- Pagination -->
-            <div class="d-flex justify-content-center mt-3">
-                {{ $declarations->links() }}
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <div class="text-muted">
+                    Affichage de <strong>{{ $declarations->firstItem() ?? 0 }}</strong> à <strong>{{ $declarations->lastItem() ?? 0 }}</strong>
+                    sur <strong>{{ $declarations->total() }}</strong> période(s)
+                    <span class="text-muted-light">({{ $totalDeclarations ?? 0 }} déclarations individuelles)</span>
+                </div>
+                <div>
+                    @if ($declarations->hasPages())
+                        <nav>
+                            <ul class="pagination mb-0">
+                                {{-- Bouton Précédent --}}
+                                @if ($declarations->onFirstPage())
+                                    <li class="page-item disabled">
+                                        <span class="page-link">« Précédent</span>
+                                    </li>
+                                @else
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $declarations->previousPageUrl() }}" rel="prev">« Précédent</a>
+                                    </li>
+                                @endif
+
+                                {{-- Numéros de page --}}
+                                @foreach ($declarations->getUrlRange(1, $declarations->lastPage()) as $page => $url)
+                                    @if ($page == $declarations->currentPage())
+                                        <li class="page-item active"><span class="page-link">{{ $page }}</span></li>
+                                    @else
+                                        <li class="page-item"><a class="page-link" href="{{ $url }}">{{ $page }}</a></li>
+                                    @endif
+                                @endforeach
+
+                                {{-- Bouton Suivant --}}
+                                @if ($declarations->hasMorePages())
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $declarations->nextPageUrl() }}" rel="next">Suivant »</a>
+                                    </li>
+                                @else
+                                    <li class="page-item disabled">
+                                        <span class="page-link">Suivant »</span>
+                                    </li>
+                                @endif
+                            </ul>
+                        </nav>
+                    @endif
+                </div>
             </div>
             @else
             <div class="alert alert-info text-center">

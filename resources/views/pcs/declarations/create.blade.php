@@ -647,9 +647,13 @@
         document.getElementById('toggleRattrapage').style.display = 'none';
         document.getElementById('toggleNormal').style.display = 'inline-block';
 
-        // Rendre le champ mois non requis en mode rattrapage
-        document.querySelector('#modeNormal select[name="mois"]').removeAttribute('required');
-        document.querySelector('#modeRattrapage select[name="annee"]').setAttribute('required', 'required');
+        // Désactiver les champs du mode normal pour qu'ils ne soient pas soumis
+        document.querySelectorAll('#modeNormal input, #modeNormal select').forEach(el => el.disabled = true);
+        document.querySelectorAll('#formulaireNormal input, #formulaireNormal select, #formulaireNormal textarea').forEach(el => el.disabled = true);
+
+        // Activer les champs du mode rattrapage
+        document.querySelectorAll('#modeRattrapage input, #modeRattrapage select').forEach(el => el.disabled = false);
+        document.querySelectorAll('#formulaireRattrapage input, #formulaireRattrapage select, #formulaireRattrapage textarea').forEach(el => el.disabled = false);
 
         // Générer les lignes du tableau
         genererLignesRattrapage();
@@ -664,9 +668,22 @@
         document.getElementById('toggleRattrapage').style.display = 'inline-block';
         document.getElementById('toggleNormal').style.display = 'none';
 
-        // Rétablir les requis
-        document.querySelector('#modeNormal select[name="mois"]').setAttribute('required', 'required');
-        document.querySelector('#modeRattrapage select[name="annee"]').removeAttribute('required');
+        // Activer les champs du mode normal
+        document.querySelectorAll('#modeNormal input, #modeNormal select').forEach(el => el.disabled = false);
+        document.querySelectorAll('#formulaireNormal input, #formulaireNormal select, #formulaireNormal textarea').forEach(el => el.disabled = false);
+
+        // Désactiver les champs du mode rattrapage
+        document.querySelectorAll('#modeRattrapage input, #modeRattrapage select').forEach(el => el.disabled = true);
+        document.querySelectorAll('#formulaireRattrapage input, #formulaireRattrapage select, #formulaireRattrapage textarea').forEach(el => el.disabled = true);
+    });
+
+    // Au chargement de la page, s'assurer que les champs du mode rattrapage sont désactivés
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!modeRattrapage) {
+            // Désactiver les champs du mode rattrapage par défaut
+            document.querySelectorAll('#modeRattrapage input, #modeRattrapage select').forEach(el => el.disabled = true);
+            document.querySelectorAll('#formulaireRattrapage input, #formulaireRattrapage select, #formulaireRattrapage textarea').forEach(el => el.disabled = true);
+        }
     });
     @endif
 

@@ -149,8 +149,49 @@
             </div>
 
             <!-- Pagination -->
-            <div class="d-flex justify-content-center mt-3">
-                {{ $demandes->links() }}
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <div class="text-muted">
+                    Affichage de <strong>{{ $demandes->firstItem() ?? 0 }}</strong> à <strong>{{ $demandes->lastItem() ?? 0 }}</strong>
+                    sur <strong>{{ $demandes->total() }}</strong> demande(s)
+                </div>
+                <div>
+                    @if ($demandes->hasPages())
+                        <nav>
+                            <ul class="pagination mb-0">
+                                {{-- Bouton Précédent --}}
+                                @if ($demandes->onFirstPage())
+                                    <li class="page-item disabled">
+                                        <span class="page-link">« Précédent</span>
+                                    </li>
+                                @else
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $demandes->previousPageUrl() }}" rel="prev">« Précédent</a>
+                                    </li>
+                                @endif
+
+                                {{-- Numéros de page --}}
+                                @foreach ($demandes->getUrlRange(1, $demandes->lastPage()) as $page => $url)
+                                    @if ($page == $demandes->currentPage())
+                                        <li class="page-item active"><span class="page-link">{{ $page }}</span></li>
+                                    @else
+                                        <li class="page-item"><a class="page-link" href="{{ $url }}">{{ $page }}</a></li>
+                                    @endif
+                                @endforeach
+
+                                {{-- Bouton Suivant --}}
+                                @if ($demandes->hasMorePages())
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $demandes->nextPageUrl() }}" rel="next">Suivant »</a>
+                                    </li>
+                                @else
+                                    <li class="page-item disabled">
+                                        <span class="page-link">Suivant »</span>
+                                    </li>
+                                @endif
+                            </ul>
+                        </nav>
+                    @endif
+                </div>
             </div>
             @else
             <div class="alert alert-info text-center">

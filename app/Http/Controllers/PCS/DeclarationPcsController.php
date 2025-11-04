@@ -61,9 +61,35 @@ class DeclarationPcsController extends Controller
             });
         }
 
-        $declarations = $query->paginate(20);
+        // Récupérer toutes les déclarations
+        $toutesDeclarations = $query->get();
 
-        return view('pcs.declarations.index', compact('declarations'));
+        // Grouper par période et entité
+        $groupes = $toutesDeclarations->groupBy(function($decl) {
+            $entite = $decl->poste_id ? 'P_'.$decl->poste_id : 'B_'.$decl->bureau_douane_id;
+            return $decl->annee . '_' . $decl->mois . '_' . $entite;
+        });
+
+        // Pagination manuelle des groupes
+        $page = $request->get('page', 1);
+        $perPage = 20;
+        $offset = ($page - 1) * $perPage;
+
+        $groupesPagines = $groupes->slice($offset, $perPage);
+
+        // Créer un paginator personnalisé
+        $declarations = new \Illuminate\Pagination\LengthAwarePaginator(
+            $groupesPagines,
+            $groupes->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        // Ajouter le total de déclarations pour info
+        $totalDeclarations = $toutesDeclarations->count();
+
+        return view('pcs.declarations.index', compact('declarations', 'totalDeclarations'));
     }
 
     /**
@@ -86,17 +112,17 @@ class DeclarationPcsController extends Controller
         $programmes = ['UEMOA', 'AES'];
         $mois = range(1, 12);
         $annee = date('Y');
-        
+
         // Détecter les mois manquants pour chaque programme
         $moisManquants = [];
         $moisRenseignes = []; // Nouveau : mois déjà renseignés
         $anneeCourante = $annee;
-        
+
         // Pour chaque programme, détecter les mois non renseignés et les mois déjà renseignés
         foreach ($programmes as $programme) {
             $moisManquants[$programme] = [];
             $moisRenseignes[$programme] = [];
-            
+
             // Récupérer les déclarations existantes pour ce poste et ce programme
             if ($poste->isRgd()) {
                 // Pour RGD, vérifier les déclarations propres (poste_id = poste->id, bureau_douane_id = null)
@@ -114,7 +140,7 @@ class DeclarationPcsController extends Controller
                     ->pluck('mois')
                     ->toArray();
             }
-            
+
             // Trouver les mois manquants et les mois déjà renseignés (tous les 12 mois de l'année)
             for ($m = 1; $m <= 12; $m++) {
                 if (!in_array($m, $declarationsExistentes)) {
@@ -124,16 +150,16 @@ class DeclarationPcsController extends Controller
                 }
             }
         }
-        
+
         // Vérifier aussi l'année précédente (derniers mois de l'année passée)
         $anneePrecedente = $anneeCourante - 1;
         $moisManquantsAnneePrecedente = [];
         $moisRenseignesAnneePrecedente = [];
-        
+
         foreach ($programmes as $programme) {
             $moisManquantsAnneePrecedente[$programme] = [];
             $moisRenseignesAnneePrecedente[$programme] = [];
-            
+
             if ($poste->isRgd()) {
                 $declarationsAnneePrecedente = DeclarationPcs::where('poste_id', $poste->id)
                     ->where('bureau_douane_id', null)
@@ -148,7 +174,7 @@ class DeclarationPcsController extends Controller
                     ->pluck('mois')
                     ->toArray();
             }
-            
+
             // Vérifier les mois de septembre à décembre de l'année précédente
             for ($m = 9; $m <= 12; $m++) {
                 if (!in_array($m, $declarationsAnneePrecedente)) {
@@ -160,10 +186,10 @@ class DeclarationPcsController extends Controller
         }
 
         return view('pcs.declarations.create', compact(
-            'poste', 
-            'bureaux', 
-            'programmes', 
-            'mois', 
+            'poste',
+            'bureaux',
+            'programmes',
+            'mois',
             'annee',
             'moisManquants',
             'moisRenseignes',
@@ -191,7 +217,7 @@ class DeclarationPcsController extends Controller
         try {
             // Vérifier si c'est un mode rattrapage (plusieurs mois)
             $moisSelectionnes = $request->input('mois_selectionnes', []);
-            
+
             if (!empty($moisSelectionnes) && is_array($moisSelectionnes)) {
                 // Mode rattrapage : traiter plusieurs mois
                 $this->storeRattrapageMultiple($request, $poste, $user, $moisSelectionnes);
@@ -228,7 +254,7 @@ class DeclarationPcsController extends Controller
     private function storeRattrapageMultiple(Request $request, $poste, $user, $moisSelectionnes)
     {
         $annee = $request->input('annee');
-        
+
         foreach ($moisSelectionnes as $mois) {
             // Pour chaque mois, traiter les déclarations
             if ($poste->isRgd()) {

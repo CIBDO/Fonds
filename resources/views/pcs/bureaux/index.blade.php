@@ -117,10 +117,30 @@
     $(document).ready(function() {
         $('#bureaux-table').DataTable({
             language: {
-                url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json'
+                processing: "Traitement en cours...",
+                search: "Rechercher&nbsp;:",
+                lengthMenu: "Afficher _MENU_ éléments",
+                info: "Affichage de _START_ à _END_ sur _TOTAL_ bureaux",
+                infoEmpty: "Affichage de 0 à 0 sur 0 bureau",
+                infoFiltered: "(filtré de _MAX_ bureaux au total)",
+                infoPostFix: "",
+                loadingRecords: "Chargement en cours...",
+                zeroRecords: "Aucun bureau à afficher",
+                emptyTable: "Aucune donnée disponible dans le tableau",
+                paginate: {
+                    first: "Premier",
+                    previous: "Précédent",
+                    next: "Suivant",
+                    last: "Dernier"
+                },
+                aria: {
+                    sortAscending: ": activer pour trier la colonne par ordre croissant",
+                    sortDescending: ": activer pour trier la colonne par ordre décroissant"
+                }
             },
             order: [[0, 'asc']],
-            pageLength: 25
+            pageLength: 25,
+            dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rt<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p">>'
         });
 
         // Initialiser les tooltips

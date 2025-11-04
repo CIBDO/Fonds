@@ -413,6 +413,30 @@ function acctSettings() {
     font-size: 0.75rem;
 }
 
+/* Réduction du vert - couleurs plus subtiles et neutres */
+.dgtcp-section-header {
+    background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%) !important;
+    color: white !important;
+}
+
+.dgtcp-btn.success {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+    opacity: 0.85;
+}
+
+.dgtcp-btn.success:hover {
+    opacity: 1;
+}
+
+.dgtcp-table thead {
+    background: linear-gradient(135deg, #E5E7EB 0%, #D1D5DB 100%) !important;
+}
+
+.dgtcp-table thead th {
+    color: #374151 !important;
+    font-weight: 600;
+}
+
 /* Responsive pour mobile */
 @media (max-width: 768px) {
     .dgtcp-stat-card {

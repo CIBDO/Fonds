@@ -210,8 +210,49 @@
             </div>
 
             <!-- Pagination -->
-            <div class="d-flex justify-content-center mt-4">
-                {{ $destockages->appends(request()->except('page'))->links() }}
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <div class="text-muted">
+                    Affichage de <strong>{{ $destockages->firstItem() ?? 0 }}</strong> à <strong>{{ $destockages->lastItem() ?? 0 }}</strong>
+                    sur <strong>{{ $destockages->total() }}</strong> déstockage(s)
+                </div>
+                <div>
+                    @if ($destockages->hasPages())
+                        <nav>
+                            <ul class="pagination mb-0">
+                                {{-- Bouton Précédent --}}
+                                @if ($destockages->onFirstPage())
+                                    <li class="page-item disabled">
+                                        <span class="page-link">« Précédent</span>
+                                    </li>
+                                @else
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $destockages->appends(request()->except('page'))->previousPageUrl() }}" rel="prev">« Précédent</a>
+                                    </li>
+                                @endif
+
+                                {{-- Numéros de page --}}
+                                @foreach ($destockages->appends(request()->except('page'))->getUrlRange(1, $destockages->lastPage()) as $page => $url)
+                                    @if ($page == $destockages->currentPage())
+                                        <li class="page-item active"><span class="page-link">{{ $page }}</span></li>
+                                    @else
+                                        <li class="page-item"><a class="page-link" href="{{ $url }}">{{ $page }}</a></li>
+                                    @endif
+                                @endforeach
+
+                                {{-- Bouton Suivant --}}
+                                @if ($destockages->hasMorePages())
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $destockages->appends(request()->except('page'))->nextPageUrl() }}" rel="next">Suivant »</a>
+                                    </li>
+                                @else
+                                    <li class="page-item disabled">
+                                        <span class="page-link">Suivant »</span>
+                                    </li>
+                                @endif
+                            </ul>
+                        </nav>
+                    @endif
+                </div>
             </div>
             @else
             <div class="alert alert-info text-center">

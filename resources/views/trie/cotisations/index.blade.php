@@ -127,7 +127,7 @@
                             </td>
                             <td class="text-center">
                                 <div class="btn-group" role="group">
-                                    <a href="{{ route('trie.cotisations.show', $cotisation) }}" 
+                                    <a href="{{ route('trie.cotisations.show', $cotisation) }}"
                                        class="btn btn-sm btn-outline-primary"
                                        title="Voir">
                                         <i class="fas fa-eye"></i>
@@ -137,7 +137,7 @@
                                         $peutModifier = in_array($user->role, ['admin', 'acct']) || $user->poste_id == $cotisation->poste_id;
                                     @endphp
                                     @if($peutModifier)
-                                        <a href="{{ route('trie.cotisations.edit', $cotisation) }}" 
+                                        <a href="{{ route('trie.cotisations.edit', $cotisation) }}"
                                            class="btn btn-sm btn-outline-warning"
                                            title="Modifier">
                                             <i class="fas fa-edit"></i>
@@ -161,8 +161,49 @@
             </div>
 
             <!-- Pagination -->
-            <div class="d-flex justify-content-center mt-4">
-                {{ $cotisations->appends(request()->except('page'))->links() }}
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <div class="text-muted">
+                    Affichage de <strong>{{ $cotisations->firstItem() ?? 0 }}</strong> à <strong>{{ $cotisations->lastItem() ?? 0 }}</strong>
+                    sur <strong>{{ $cotisations->total() }}</strong> cotisation(s)
+                </div>
+                <div>
+                    @if ($cotisations->hasPages())
+                        <nav>
+                            <ul class="pagination mb-0">
+                                {{-- Bouton Précédent --}}
+                                @if ($cotisations->onFirstPage())
+                                    <li class="page-item disabled">
+                                        <span class="page-link">« Précédent</span>
+                                    </li>
+                                @else
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $cotisations->appends(request()->except('page'))->previousPageUrl() }}" rel="prev">« Précédent</a>
+                                    </li>
+                                @endif
+
+                                {{-- Numéros de page --}}
+                                @foreach ($cotisations->appends(request()->except('page'))->getUrlRange(1, $cotisations->lastPage()) as $page => $url)
+                                    @if ($page == $cotisations->currentPage())
+                                        <li class="page-item active"><span class="page-link">{{ $page }}</span></li>
+                                    @else
+                                        <li class="page-item"><a class="page-link" href="{{ $url }}">{{ $page }}</a></li>
+                                    @endif
+                                @endforeach
+
+                                {{-- Bouton Suivant --}}
+                                @if ($cotisations->hasMorePages())
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $cotisations->appends(request()->except('page'))->nextPageUrl() }}" rel="next">Suivant »</a>
+                                    </li>
+                                @else
+                                    <li class="page-item disabled">
+                                        <span class="page-link">Suivant »</span>
+                                    </li>
+                                @endif
+                            </ul>
+                        </nav>
+                    @endif
+                </div>
             </div>
             @else
             <div class="alert alert-info text-center">
