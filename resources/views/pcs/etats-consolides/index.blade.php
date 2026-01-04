@@ -262,7 +262,7 @@
         </div>
 
         <!-- Section des statistiques et guide en bas -->
-        <div class="row">
+        {{-- <div class="row">
             <div class="col-xl-8 col-lg-7">
                 <!-- Guide d'utilisation -->
                 <div class="card">
@@ -318,7 +318,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
         <!-- Modal d'aperçu -->
         <div class="modal fade" id="apercuModal" tabindex="-1">
@@ -946,8 +946,7 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .card-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: linear-gradient(135deg, #eefdf5 0%, #edfdf4 100%);
     border-radius: 12px 12px 0 0 !important;
 }
 
