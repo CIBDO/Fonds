@@ -433,7 +433,7 @@ function acctSettings() {
 }
 
 .dgtcp-table thead th {
-    color: #374151 !important;
+    color: #f5f5f6 !important;
     font-weight: 600;
 }
 

@@ -471,7 +471,7 @@
     --dgtcp-black: #1F2937;
 
     /* Gradients officiels */
-    --primary-gradient: linear-gradient(135deg, var(--dgtcp-green) 0%, #16A34A 100%);
+    --primary-gradient: linear-gradient(135deg, var(--dgtcp-green) 0%, #272928 100%);
     --secondary-gradient: linear-gradient(135deg, var(--dgtcp-gold) 0%, #D97706 100%);
     --accent-gradient: linear-gradient(135deg, var(--dgtcp-red) 0%, #B91C1C 100%);
     --success-gradient: linear-gradient(135deg, var(--dgtcp-green) 0%, #15803D 100%);

@@ -121,7 +121,7 @@
                                 <i class="fas fa-calendar text-success me-2"></i>
                                 {{ $demande->created_at->format('d/m/Y') }}
                             </td>
-                            <td>
+                            {{-- <td>
                                 <div class="btn-group" role="group">
                                     <a href="{{ route('demandes-fonds.show', $demande->id) }}"
                                        class="dgtcp-btn outline sm" title="Voir">
@@ -134,7 +134,7 @@
                                         </a>
                                     @endif
                                 </div>
-                            </td>
+                            </td> --}}
                         </tr>
                     @endforeach
                 </tbody>
