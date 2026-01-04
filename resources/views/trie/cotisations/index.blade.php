@@ -132,11 +132,7 @@
                                        title="Voir">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    @php
-                                        $user = Auth::user();
-                                        $peutModifier = in_array($user->role, ['admin', 'acct']) || $user->poste_id == $cotisation->poste_id;
-                                    @endphp
-                                    @if($peutModifier)
+                                    @if($cotisation->saisi_par == auth()->id())
                                         <a href="{{ route('trie.cotisations.edit', $cotisation) }}"
                                            class="btn btn-sm btn-outline-warning"
                                            title="Modifier">
@@ -161,47 +157,116 @@
             </div>
 
             <!-- Pagination -->
-            <div class="d-flex justify-content-between align-items-center mt-4">
+            <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
                 <div class="text-muted">
                     Affichage de <strong>{{ $cotisations->firstItem() ?? 0 }}</strong> à <strong>{{ $cotisations->lastItem() ?? 0 }}</strong>
                     sur <strong>{{ $cotisations->total() }}</strong> cotisation(s)
                 </div>
                 <div>
                     @if ($cotisations->hasPages())
-                        <nav>
+                        <nav aria-label="Navigation des pages">
                             <ul class="pagination mb-0">
-                                {{-- Bouton Précédent --}}
+                                {{-- Bouton Première page --}}
                                 @if ($cotisations->onFirstPage())
                                     <li class="page-item disabled">
-                                        <span class="page-link">« Précédent</span>
+                                        <span class="page-link" aria-label="Première page">
+                                            <i class="fas fa-angle-double-left"></i>
+                                        </span>
                                     </li>
                                 @else
                                     <li class="page-item">
-                                        <a class="page-link" href="{{ $cotisations->appends(request()->except('page'))->previousPageUrl() }}" rel="prev">« Précédent</a>
+                                        <a class="page-link" href="{{ $cotisations->appends(request()->except('page'))->url(1) }}" aria-label="Première page">
+                                            <i class="fas fa-angle-double-left"></i>
+                                        </a>
                                     </li>
                                 @endif
 
-                                {{-- Numéros de page --}}
-                                @foreach ($cotisations->appends(request()->except('page'))->getUrlRange(1, $cotisations->lastPage()) as $page => $url)
-                                    @if ($page == $cotisations->currentPage())
-                                        <li class="page-item active"><span class="page-link">{{ $page }}</span></li>
+                                {{-- Bouton Précédent --}}
+                                @if ($cotisations->onFirstPage())
+                                    <li class="page-item disabled">
+                                        <span class="page-link" aria-label="Précédent">
+                                            <i class="fas fa-angle-left"></i>
+                                        </span>
+                                    </li>
+                                @else
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $cotisations->appends(request()->except('page'))->previousPageUrl() }}" rel="prev" aria-label="Précédent">
+                                            <i class="fas fa-angle-left"></i>
+                                        </a>
+                                    </li>
+                                @endif
+
+                                {{-- Numéros de page avec pagination intelligente --}}
+                                @php
+                                    $currentPage = $cotisations->currentPage();
+                                    $lastPage = $cotisations->lastPage();
+                                    $delta = 2; // Nombre de pages à afficher de chaque côté
+                                    $range = [];
+                                    
+                                    // Calculer la plage de pages à afficher
+                                    $start = max(1, $currentPage - $delta);
+                                    $end = min($lastPage, $currentPage + $delta);
+                                    
+                                    // Ajuster si on est près du début
+                                    if ($currentPage <= $delta + 1) {
+                                        $end = min($lastPage, 1 + ($delta * 2));
+                                    }
+                                    
+                                    // Ajuster si on est près de la fin
+                                    if ($currentPage >= $lastPage - $delta) {
+                                        $start = max(1, $lastPage - ($delta * 2));
+                                    }
+                                    
+                                    for ($i = $start; $i <= $end; $i++) {
+                                        $range[] = $i;
+                                    }
+                                @endphp
+
+                                @foreach ($range as $page)
+                                    @if ($page == $currentPage)
+                                        <li class="page-item active" aria-current="page">
+                                            <span class="page-link">{{ $page }}</span>
+                                        </li>
                                     @else
-                                        <li class="page-item"><a class="page-link" href="{{ $url }}">{{ $page }}</a></li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ $cotisations->appends(request()->except('page'))->url($page) }}">{{ $page }}</a>
+                                        </li>
                                     @endif
                                 @endforeach
 
                                 {{-- Bouton Suivant --}}
                                 @if ($cotisations->hasMorePages())
                                     <li class="page-item">
-                                        <a class="page-link" href="{{ $cotisations->appends(request()->except('page'))->nextPageUrl() }}" rel="next">Suivant »</a>
+                                        <a class="page-link" href="{{ $cotisations->appends(request()->except('page'))->nextPageUrl() }}" rel="next" aria-label="Suivant">
+                                            <i class="fas fa-angle-right"></i>
+                                        </a>
                                     </li>
                                 @else
                                     <li class="page-item disabled">
-                                        <span class="page-link">Suivant »</span>
+                                        <span class="page-link" aria-label="Suivant">
+                                            <i class="fas fa-angle-right"></i>
+                                        </span>
+                                    </li>
+                                @endif
+
+                                {{-- Bouton Dernière page --}}
+                                @if ($cotisations->hasMorePages())
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $cotisations->appends(request()->except('page'))->url($lastPage) }}" aria-label="Dernière page">
+                                            <i class="fas fa-angle-double-right"></i>
+                                        </a>
+                                    </li>
+                                @else
+                                    <li class="page-item disabled">
+                                        <span class="page-link" aria-label="Dernière page">
+                                            <i class="fas fa-angle-double-right"></i>
+                                        </span>
                                     </li>
                                 @endif
                             </ul>
                         </nav>
+                    @else
+                        <span class="text-muted small">Page 1 sur 1</span>
                     @endif
                 </div>
             </div>

@@ -72,7 +72,7 @@ class DeclarationPcsController extends Controller
 
         // Pagination manuelle des groupes
         $page = $request->get('page', 1);
-        $perPage = 20;
+        $perPage = 12;
         $offset = ($page - 1) * $perPage;
 
         $groupesPagines = $groupes->slice($offset, $perPage);
@@ -494,17 +494,13 @@ class DeclarationPcsController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        // Vérifier que c'est bien l'utilisateur qui a créé la déclaration
-        if ($declaration->saisi_par !== $user->id && !$user->peut_valider_pcs) {
-            Alert::error('Erreur', 'Vous ne pouvez pas modifier cette déclaration');
+        // Seul le créateur (poste émetteur) peut modifier la déclaration
+        if ($declaration->saisi_par !== $user->id) {
+            Alert::error('Erreur', 'Seuls les postes émetteurs peuvent modifier leurs déclarations');
             return redirect()->back();
         }
 
-        // Ne peut être modifiée que si non rejetée
-        if ($declaration->statut === 'rejete') {
-            Alert::error('Erreur', 'Les déclarations rejetées ne peuvent pas être modifiées');
-            return redirect()->back();
-        }
+        // Modification permise à tout moment (même si validée ou rejetée)
 
         return view('pcs.declarations.edit', compact('declaration'));
     }
@@ -517,17 +513,13 @@ class DeclarationPcsController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        // Vérifier les permissions
-        if ($declaration->saisi_par !== $user->id && !$user->peut_valider_pcs) {
-            Alert::error('Erreur', 'Vous ne pouvez pas modifier cette déclaration');
+        // Seul le créateur (poste émetteur) peut modifier la déclaration
+        if ($declaration->saisi_par !== $user->id) {
+            Alert::error('Erreur', 'Seuls les postes émetteurs peuvent modifier leurs déclarations');
             return redirect()->back();
         }
 
-        // Vérifier le statut - permettre la modification même si validée
-        if ($declaration->statut === 'rejete') {
-            Alert::error('Erreur', 'Les déclarations rejetées ne peuvent pas être modifiées');
-            return redirect()->back();
-        }
+        // Modification permise à tout moment (même si validée ou rejetée)
 
         // Validation
         $validated = $request->validate([

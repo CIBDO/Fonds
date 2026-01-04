@@ -26,7 +26,7 @@ class PcsDeclarationSoumise extends Notification
     {
         $nomEntite = $this->declaration->nom_entite;
         $programme = $this->declaration->programme;
-        $mois = \Carbon\Carbon::create()->month($this->declaration->mois)->translatedFormat('F');
+        $mois = \Carbon\Carbon::create()->month((int)$this->declaration->mois)->translatedFormat('F');
         $annee = $this->declaration->annee;
 
         return [

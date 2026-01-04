@@ -31,6 +31,8 @@ class DeclarationPcs extends Model
     ];
 
     protected $casts = [
+        'mois' => 'integer',
+        'annee' => 'integer',
         'montant_recouvrement' => 'decimal:2',
         'montant_reversement' => 'decimal:2',
         'date_saisie' => 'datetime',

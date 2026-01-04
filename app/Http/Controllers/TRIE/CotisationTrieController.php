@@ -330,12 +330,10 @@ class CotisationTrieController extends Controller
     {
         $user = Auth::user();
         
-        // Vérifier que l'utilisateur peut modifier cette cotisation
-        if (!in_array($user->role, ['admin', 'acct'])) {
-            if ($user->poste_id != $cotisation->poste_id) {
-                Alert::error('Erreur', 'Vous ne pouvez modifier que les cotisations de votre propre poste.');
-                return redirect()->route('trie.cotisations.show', $cotisation);
-            }
+        // Seul le créateur (poste émetteur) peut modifier la cotisation
+        if ($cotisation->saisi_par !== $user->id) {
+            Alert::error('Erreur', 'Seuls les postes émetteurs peuvent modifier leurs cotisations');
+            return redirect()->route('trie.cotisations.show', $cotisation);
         }
 
         $moisList = [
@@ -354,12 +352,10 @@ class CotisationTrieController extends Controller
     {
         $user = Auth::user();
         
-        // Vérifier que l'utilisateur peut modifier cette cotisation
-        if (!in_array($user->role, ['admin', 'acct'])) {
-            if ($user->poste_id != $cotisation->poste_id) {
-                Alert::error('Erreur', 'Vous ne pouvez modifier que les cotisations de votre propre poste.');
-                return redirect()->route('trie.cotisations.show', $cotisation);
-            }
+        // Seul le créateur (poste émetteur) peut modifier la cotisation
+        if ($cotisation->saisi_par !== $user->id) {
+            Alert::error('Erreur', 'Seuls les postes émetteurs peuvent modifier leurs cotisations');
+            return redirect()->route('trie.cotisations.show', $cotisation);
         }
 
         $validated = $request->validate([

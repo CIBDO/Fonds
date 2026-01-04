@@ -45,7 +45,7 @@ class AutreDemandeController extends Controller
             $query->where('poste_id', $user->poste_id);
         }
 
-        $demandes = $query->paginate(20);
+        $demandes = $query->paginate(12);
 
         return view('pcs.autres-demandes.index', compact('demandes'));
     }
@@ -209,15 +209,15 @@ class AutreDemandeController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        // Vérifier que c'est bien l'utilisateur qui a créé la demande
-        if ($demande->saisi_par !== $user->id && !$user->peut_valider_pcs) {
-            Alert::error('Erreur', 'Vous ne pouvez pas modifier cette demande');
+        // Seul le créateur (poste émetteur) peut modifier la demande
+        if ($demande->saisi_par !== $user->id) {
+            Alert::error('Erreur', 'Seuls les postes émetteurs peuvent modifier leurs demandes');
             return redirect()->back();
         }
 
-        // Ne peut être modifiée que si en brouillon ou rejetée
-        if (!in_array($demande->statut, ['brouillon', 'rejete'])) {
-            Alert::error('Erreur', 'Seules les demandes en brouillon ou rejetées peuvent être modifiées');
+        // Ne peut être modifiée que si en brouillon, soumise ou rejetée (pas si validée)
+        if (!in_array($demande->statut, ['brouillon', 'soumis', 'rejete'])) {
+            Alert::error('Erreur', 'Seules les demandes en brouillon, soumises ou rejetées peuvent être modifiées');
             return redirect()->back();
         }
 
@@ -229,6 +229,15 @@ class AutreDemandeController extends Controller
      */
     public function update(Request $request, AutreDemande $demande)
     {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        // Seul le créateur (poste émetteur) peut modifier la demande
+        if ($demande->saisi_par !== $user->id) {
+            Alert::error('Erreur', 'Seuls les postes émetteurs peuvent modifier leurs demandes');
+            return redirect()->back();
+        }
+
         $validated = $request->validate([
             'designation' => 'required|string|max:500',
             'montant' => 'required|numeric|min:0',

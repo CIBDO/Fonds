@@ -171,9 +171,9 @@
                             <a href="{{ route('pcs.autres-demandes.index') }}" class="btn btn-secondary btn-lg">
                                 <i class="fas fa-times me-1"></i>Annuler
                             </a>
-                            <button type="submit" name="action" value="brouillon" class="btn btn-outline-danger btn-lg">
+                           {{--  <button type="submit" name="action" value="brouillon" class="btn btn-outline-danger btn-lg">
                                 <i class="fas fa-save me-1"></i>Enregistrer en Brouillon
-                            </button>
+                            </button> --}}
                             <button type="submit" name="action" value="soumettre" class="btn btn-danger btn-lg">
                                 <i class="fas fa-paper-plane me-1"></i>Soumettre Tout
                             </button>

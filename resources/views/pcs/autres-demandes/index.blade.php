@@ -121,7 +121,7 @@
                                         <i class="fas fa-eye"></i>
                                     </a>
 
-                                    @if(in_array($demande->statut, ['brouillon', 'rejete']) && $demande->saisi_par == auth()->id())
+                                    @if(in_array($demande->statut, ['brouillon', 'soumis', 'rejete']) && $demande->saisi_par == auth()->id())
                                         <a href="{{ route('pcs.autres-demandes.edit', $demande) }}"
                                            class="btn btn-outline-primary"
                                            data-bs-toggle="tooltip"

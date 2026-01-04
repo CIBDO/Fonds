@@ -34,7 +34,7 @@
                         </td>
                         <td>
                             <span class="badge bg-info">
-                                {{ \Carbon\Carbon::create()->month($declaration->mois)->translatedFormat('F') }}
+                                {{ \Carbon\Carbon::create()->month((int)$declaration->mois)->translatedFormat('F') }}
                             </span>
                         </td>
                         <td>

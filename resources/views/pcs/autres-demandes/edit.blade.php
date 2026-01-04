@@ -25,6 +25,14 @@
                 </div>
 
                 <div class="card-body">
+                    @if($demande->statut == 'soumis')
+                    <div class="alert alert-warning mb-4">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Attention :</strong> Cette demande a déjà été soumise. Vous pouvez la modifier avant sa validation.
+                        Les modifications réinitialiseront le statut de la demande selon votre action (enregistrer en brouillon ou soumettre à nouveau).
+                    </div>
+                    @endif
+
                     <form action="{{ route('pcs.autres-demandes.update', $demande) }}" method="POST">
                         @csrf
                         @method('PUT')
@@ -81,9 +89,9 @@
                             <a href="{{ route('pcs.autres-demandes.index') }}" class="btn btn-secondary btn-lg">
                                 <i class="fas fa-times me-1"></i>Annuler
                             </a>
-                            <button type="submit" name="action" value="brouillon" class="btn btn-outline-danger btn-lg">
+                            {{-- <button type="submit" name="action" value="brouillon" class="btn btn-outline-danger btn-lg">
                                 <i class="fas fa-save me-1"></i>Enregistrer
-                            </button>
+                            </button> --}}
                             <button type="submit" name="action" value="soumettre" class="btn btn-danger btn-lg">
                                 <i class="fas fa-paper-plane me-1"></i>Soumettre
                             </button>

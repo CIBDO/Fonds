@@ -11,7 +11,7 @@
                         <i class="fas fa-file-alt me-2"></i>Détail de la Déclaration PCS
                     </h3>
                     {{-- <p class="text-muted mb-0">
-                        {{ $declaration->nom_entite }} - {{ \Carbon\Carbon::create()->month($declaration->mois)->locale('fr')->translatedFormat('F') }} {{ $declaration->annee }}
+                        {{ $declaration->nom_entite }} - {{ \Carbon\Carbon::create()->month((int)$declaration->mois)->locale('fr')->translatedFormat('F') }} {{ $declaration->annee }}
                     </p> --}}
                 </div>
             </div>
@@ -75,7 +75,7 @@
                         <div class="col-md-6 mb-3">
                             <label class="text-muted small">Période</label>
                             <div class="fw-bold">
-                                {{ \Carbon\Carbon::create()->month($declaration->mois)->locale('fr')->translatedFormat('F') }} {{ $declaration->annee }}
+                                {{ \Carbon\Carbon::create()->month((int)$declaration->mois)->locale('fr')->translatedFormat('F') }} {{ $declaration->annee }}
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
