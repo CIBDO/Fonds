@@ -28,7 +28,7 @@
                         <li><a class="dropdown-item" href="{{ route('pcs.declarations.pdf.recettes') }}?programme=AES&annee={{ date('Y') }}">
                             <i class="fas fa-file-pdf text-danger"></i> État AES
                         </a></li>
-                        @if(auth()->user()->poste_id)
+                        @if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct', 'admin']))
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalEtatConsolidePosteEmetteur">
                             <i class="fas fa-file-export text-success"></i> État Consolidé (Poste Émetteur)
@@ -501,7 +501,7 @@
     });
 </script>
 @endpush
-@if(auth()->user()->poste_id)
+@if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct']))
 <!-- Modal État Consolidé Poste Émetteur -->
 <div class="modal fade" id="modalEtatConsolidePosteEmetteur" tabindex="-1" aria-labelledby="modalEtatConsolidePosteEmetteurLabel" aria-hidden="true">
     <div class="modal-dialog">

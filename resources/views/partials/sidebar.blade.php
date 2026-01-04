@@ -188,8 +188,8 @@
                             <span class="menu-arrow fas fa-chevron-right"></span>
                         </a>
                         <ul class="submenu-list">
-                            <li><a href="{{ route('pcs.destockages.collecte') }}" class="{{ request()->routeIs('pcs.destockages.collecte') ? 'active' : '' }}">
-                                <i class="fas fa-coins"></i>Vue de Collecte</a></li>
+                            {{-- <li><a href="{{ route('pcs.destockages.collecte') }}" class="{{ request()->routeIs('pcs.destockages.collecte') ? 'active' : '' }}">
+                                <i class="fas fa-coins"></i>Vue de Collecte</a></li> --}}
                             <li><a href="{{ route('pcs.destockages.create') }}" class="{{ request()->routeIs('pcs.destockages.create') ? 'active' : '' }}">
                                 <i class="fas fa-plus-circle"></i>Nouveau Règlement</a></li>
                             <li><a href="{{ route('pcs.destockages.index') }}" class="{{ request()->routeIs('pcs.destockages.index') || request()->routeIs('pcs.destockages.show') ? 'active' : '' }}">

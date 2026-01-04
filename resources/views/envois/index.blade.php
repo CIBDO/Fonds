@@ -63,7 +63,7 @@
                             <tr>
                                 <!-- Assurez-vous que le nombre de <th> ici correspond au nombre de <td> dans chaque <tr> de <tbody> -->
                                 <th>Mois</th>
-                                <th>Date de réception</th>
+                                {{-- <th>Date de réception</th> --}}
                                 <th>Poste</th>
                                 <th>Montant</th>
                                 <th>Date de création</th>
@@ -75,7 +75,7 @@
                             @foreach($demandeFonds as $demande)
                             <tr>
                                 <td>{{ $demande->mois }}</td>
-                                <td>{{ $demande->date_reception }}</td>
+                                {{-- <td>{{ $demande->date_reception }}</td> --}}
                                 <td>{{ $demande->poste->nom }}</td>
                                 <td>{{ number_format($demande->total_courant, 0, ',', ' ') }}</td>
                                 <td>{{ $demande->created_at }}</td>
@@ -92,11 +92,11 @@
                                             <i class="feather-check"></i>
                                         </a>
                                         <a href="{{ route('demande-fonds.generate.pdf', $demande->id) }}" class="btn btn-sm bg-info-light">
-                                            <i class="feather-printer"></i> 
+                                            <i class="feather-printer"></i>
                                         </a>
                                     </div>
                                 </td>
-                                
+
                             </tr>
                             @endforeach
                         </tbody>
@@ -166,7 +166,7 @@
         // Modifier l'action du formulaire pour inclure l'ID dans l'URL
         var form = document.getElementById('statusForm');
         form.action = "/envois-fonds/" + demandeId + "/updateStatus";
-        
+
         // Mettre à jour le champ caché avec l'ID de la demande
         document.getElementById('demande-id').value = demandeId;
     });

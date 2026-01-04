@@ -17,7 +17,7 @@
                     <a href="{{ route('pcs.autres-demandes.create') }}" class="btn btn-danger btn-sm">
                         <i class="fas fa-plus me-1"></i>Nouvelle Demande
                     </a>
-                    @if(auth()->user()->poste_id)
+                    @if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct', 'admin']))
                     <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalEtatConsolideAutresDemandes">
                         <i class="fas fa-file-export me-1"></i>État Consolidé
                     </button>
@@ -298,7 +298,7 @@
 @endif
 @endforeach
 
-@if(auth()->user()->poste_id)
+@if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct']))
 <!-- Modal État Consolidé Poste Émetteur -->
 <div class="modal fade" id="modalEtatConsolideAutresDemandes" tabindex="-1" aria-labelledby="modalEtatConsolideAutresDemandesLabel" aria-hidden="true">
     <div class="modal-dialog">

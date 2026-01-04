@@ -67,12 +67,12 @@
             <div class="col-md-4">
                 <div class="dgtcp-form-group">
                     <label class="dgtcp-form-label">
-                        <i class="fas fa-check-double me-2"></i>Validation rapide
+                        <i class="fas fa-check-double me-2"></i> Validation rapide
                     </label>
-                    <button class="dgtcp-btn success w-100" onclick="validatePendingRequests()">
+                    <a href="{{ route('demandes-fonds.envois') }}" class="dgtcp-btn success w-100">
                         <i class="fas fa-check-circle"></i>
                         Valider les Demandes
-                    </button>
+                    </a>
                 </div>
             </div>
             <div class="col-md-4">
@@ -191,7 +191,7 @@
     </div>
 
     <!-- Tableau de bord de contrôle ACCT -->
-    <div class="row mt-4">
+   {{--  <div class="row mt-4">
         <div class="col-md-6">
             <div class="dgtcp-card">
                 <div class="dgtcp-card-header">
@@ -244,7 +244,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     <!-- Actions rapides ACCT -->
     {{-- <div class="row mt-4">
