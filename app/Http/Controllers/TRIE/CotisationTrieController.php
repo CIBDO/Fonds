@@ -56,8 +56,8 @@ class CotisationTrieController extends Controller
             $postes = Poste::orderBy('nom')->get();
         } else {
             // Les autres utilisateurs ne voient que leur propre poste
-            $postes = $user->poste_id 
-                ? Poste::where('id', $user->poste_id)->get() 
+            $postes = $user->poste_id
+                ? Poste::where('id', $user->poste_id)->get()
                 : collect();
         }
 
@@ -99,12 +99,12 @@ class CotisationTrieController extends Controller
 
         // Présélectionner le poste de l'utilisateur connecté par défaut
         $posteId = $request->get('poste_id');
-        
+
         // Si aucun poste n'est sélectionné et que l'utilisateur n'est pas admin/acct
         if (!$posteId && !in_array($user->role, ['acct', 'admin'])) {
             $posteId = $user->poste_id;
         }
-        
+
         $mois = $request->get('mois', date('n'));
         $annee = $request->get('annee', date('Y'));
 
@@ -163,10 +163,10 @@ class CotisationTrieController extends Controller
 
             DB::commit();
 
-            $message = $mode === 'rattrapage' 
+            $message = $mode === 'rattrapage'
                 ? 'Les cotisations ont été enregistrées pour tous les mois sélectionnés avec succès.'
                 : 'Les cotisations ont été enregistrées avec succès.';
-            
+
             Alert::success('Succès', $message);
             return redirect()->route('trie.cotisations.index');
 
@@ -329,7 +329,7 @@ class CotisationTrieController extends Controller
     public function edit(CotisationTrie $cotisation)
     {
         $user = Auth::user();
-        
+
         // Seul le créateur (poste émetteur) peut modifier la cotisation
         if ($cotisation->saisi_par !== $user->id) {
             Alert::error('Erreur', 'Seuls les postes émetteurs peuvent modifier leurs cotisations');
@@ -351,7 +351,7 @@ class CotisationTrieController extends Controller
     public function update(Request $request, CotisationTrie $cotisation)
     {
         $user = Auth::user();
-        
+
         // Seul le créateur (poste émetteur) peut modifier la cotisation
         if ($cotisation->saisi_par !== $user->id) {
             Alert::error('Erreur', 'Seuls les postes émetteurs peuvent modifier leurs cotisations');
@@ -380,7 +380,7 @@ class CotisationTrieController extends Controller
     public function destroy(CotisationTrie $cotisation)
     {
         $user = Auth::user();
-        
+
         // Vérifier que l'utilisateur peut supprimer cette cotisation
         if (!in_array($user->role, ['admin', 'acct'])) {
             if ($user->poste_id != $cotisation->poste_id) {

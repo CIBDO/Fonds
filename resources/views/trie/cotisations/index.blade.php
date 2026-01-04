@@ -202,21 +202,21 @@
                                     $lastPage = $cotisations->lastPage();
                                     $delta = 2; // Nombre de pages à afficher de chaque côté
                                     $range = [];
-                                    
+
                                     // Calculer la plage de pages à afficher
                                     $start = max(1, $currentPage - $delta);
                                     $end = min($lastPage, $currentPage + $delta);
-                                    
+
                                     // Ajuster si on est près du début
                                     if ($currentPage <= $delta + 1) {
                                         $end = min($lastPage, 1 + ($delta * 2));
                                     }
-                                    
+
                                     // Ajuster si on est près de la fin
                                     if ($currentPage >= $lastPage - $delta) {
                                         $start = max(1, $lastPage - ($delta * 2));
                                     }
-                                    
+
                                     for ($i = $start; $i <= $end; $i++) {
                                         $range[] = $i;
                                     }
