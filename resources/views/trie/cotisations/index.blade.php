@@ -19,7 +19,7 @@
                 {{-- <a href="{{ route('trie.etats.index') }}" class="btn btn-info btn-sm me-2">
                     <i class="fas fa-file-pdf me-1"></i>États
                 </a> --}}
-                @if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct']))
+                @if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct','admin']))
                 <button type="button" class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#modalEtatConsolideCotisations">
                     <i class="fas fa-file-export me-1"></i>État Consolidé
                 </button>

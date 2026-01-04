@@ -298,7 +298,7 @@
 @endif
 @endforeach
 
-@if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct']))
+@if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct','admin']))
 <!-- Modal État Consolidé Poste Émetteur -->
 <div class="modal fade" id="modalEtatConsolideAutresDemandes" tabindex="-1" aria-labelledby="modalEtatConsolideAutresDemandesLabel" aria-hidden="true">
     <div class="modal-dialog">

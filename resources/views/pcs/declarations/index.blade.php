@@ -501,7 +501,7 @@
     });
 </script>
 @endpush
-@if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct']))
+@if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct','admin']))
 <!-- Modal État Consolidé Poste Émetteur -->
 <div class="modal fade" id="modalEtatConsolidePosteEmetteur" tabindex="-1" aria-labelledby="modalEtatConsolidePosteEmetteurLabel" aria-hidden="true">
     <div class="modal-dialog">

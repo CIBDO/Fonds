@@ -6,7 +6,7 @@
 
     <div class="content">
         <!-- En-tête de page -->
-        <div class="page-header">
+        {{-- <div class="page-header">
             <div class="add-item d-flex">
                 <div class="page-title">
                     <h4>
@@ -16,7 +16,7 @@
                     <h6 class="text-muted">Générez vos états personnalisés en quelques clics</h6>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
         <div class="row">
             <!-- Carte de sélection du type d'état -->
