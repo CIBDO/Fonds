@@ -28,6 +28,12 @@
                         <li><a class="dropdown-item" href="{{ route('pcs.declarations.pdf.recettes') }}?programme=AES&annee={{ date('Y') }}">
                             <i class="fas fa-file-pdf text-danger"></i> État AES
                         </a></li>
+                        @if(auth()->user()->poste_id)
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalEtatConsolidePosteEmetteur">
+                            <i class="fas fa-file-export text-success"></i> État Consolidé (Poste Émetteur)
+                        </a></li>
+                        @endif
                     </ul>
                 </div>
             </div>
@@ -495,5 +501,57 @@
     });
 </script>
 @endpush
+@if(auth()->user()->poste_id)
+<!-- Modal État Consolidé Poste Émetteur -->
+<div class="modal fade" id="modalEtatConsolidePosteEmetteur" tabindex="-1" aria-labelledby="modalEtatConsolidePosteEmetteurLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="modalEtatConsolidePosteEmetteurLabel">
+                    <i class="fas fa-file-export me-2"></i>Générer État Consolidé
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <form method="GET" action="{{ route('pcs.declarations.etat-consolide.poste-emetteur') }}" target="_blank">
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Poste émetteur :</strong> {{ auth()->user()->poste->nom }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="programme_etat" class="form-label fw-bold">
+                            Programme <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" id="programme_etat" name="programme" required>
+                            <option value="">Sélectionner un programme</option>
+                            <option value="UEMOA" {{ old('programme', 'UEMOA') == 'UEMOA' ? 'selected' : '' }}>UEMOA</option>
+                            <option value="AES" {{ old('programme') == 'AES' ? 'selected' : '' }}>AES</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="annee_etat" class="form-label fw-bold">
+                            Année <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" id="annee_etat" name="annee" required>
+                            @for($i = date('Y'); $i >= date('Y') - 5; $i--)
+                                <option value="{{ $i }}" {{ $i == date('Y') ? 'selected' : '' }}>{{ $i }}</option>
+                            @endfor
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Annuler
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-file-pdf me-1"></i>Générer le PDF
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
+
 @endsection
 

@@ -746,5 +746,72 @@ class AutreDemandeController extends Controller
 
         return view('pcs.autres-demandes.apercu', compact('demandes'));
     }
+
+    /**
+     * Générer l'état consolidé des autres demandes pour un poste émetteur
+     */
+    public function etatConsolidePosteEmetteur(Request $request)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        if (!$user->poste_id) {
+            Alert::error('Erreur', 'Aucun poste assigné à votre compte');
+            return redirect()->route('pcs.autres-demandes.index');
+        }
+
+        $annee = $request->get('annee', date('Y'));
+        $poste = $user->poste;
+
+        // Récupérer les demandes du poste émetteur
+        $demandes = AutreDemande::where('poste_id', $poste->id)
+            ->whereYear('date_demande', $annee)
+            ->get();
+
+        // Organiser les données par mois
+        // Pour le poste émetteur : compter toutes les demandes créées pour le montant demandé
+        $demandesSoumisesParMois = array_fill(1, 12, 0);
+        $demandesValideesParMois = array_fill(1, 12, 0);
+        $totalDemandesSoumises = 0;
+        $totalDemandesValidees = 0;
+        $montantSoumisParMois = array_fill(1, 12, 0);
+        $montantValideParMois = array_fill(1, 12, 0);
+        $totalMontantSoumis = 0;
+        $totalMontantValide = 0;
+
+        foreach ($demandes as $demande) {
+            $mois = $demande->date_demande->month;
+
+            // Pour le poste émetteur : compter TOUTES les demandes créées (tous statuts) pour le montant demandé
+            // et le nombre de demandes
+            $demandesSoumisesParMois[$mois]++;
+            $totalDemandesSoumises++;
+            $montantSoumisParMois[$mois] += $demande->montant;
+            $totalMontantSoumis += $demande->montant;
+
+            // Montant accordé : seulement pour les demandes validées
+            if ($demande->statut === 'valide') {
+                $demandesValideesParMois[$mois]++;
+                $totalDemandesValidees++;
+                $montantValideParMois[$mois] += $demande->montant_accord ?? $demande->montant;
+                $totalMontantValide += $demande->montant_accord ?? $demande->montant;
+            }
+        }
+
+        $pdf = PDF::loadView('pcs.pdf.etat-autres-demandes-consolide-poste-emetteur', compact(
+            'demandesSoumisesParMois',
+            'demandesValideesParMois',
+            'totalDemandesSoumises',
+            'totalDemandesValidees',
+            'montantSoumisParMois',
+            'montantValideParMois',
+            'totalMontantSoumis',
+            'totalMontantValide',
+            'annee',
+            'poste'
+        ));
+
+        return $pdf->download("Etat_Autres_Demandes_PCS_{$poste->nom}_{$annee}.pdf");
+    }
 }
 

@@ -13,9 +13,16 @@
                 </div>
             </div>
             <div class="col-auto">
-                <a href="{{ route('pcs.autres-demandes.create') }}" class="btn btn-danger btn-sm">
-                    <i class="fas fa-plus me-1"></i>Nouvelle Demande
-                </a>
+                <div class="btn-group" role="group">
+                    <a href="{{ route('pcs.autres-demandes.create') }}" class="btn btn-danger btn-sm">
+                        <i class="fas fa-plus me-1"></i>Nouvelle Demande
+                    </a>
+                    @if(auth()->user()->poste_id)
+                    <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalEtatConsolideAutresDemandes">
+                        <i class="fas fa-file-export me-1"></i>État Consolidé
+                    </button>
+                    @endif
+                </div>
             </div>
         </div>
     </div>
@@ -290,6 +297,48 @@
 </div>
 @endif
 @endforeach
+
+@if(auth()->user()->poste_id)
+<!-- Modal État Consolidé Poste Émetteur -->
+<div class="modal fade" id="modalEtatConsolideAutresDemandes" tabindex="-1" aria-labelledby="modalEtatConsolideAutresDemandesLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="modalEtatConsolideAutresDemandesLabel">
+                    <i class="fas fa-file-export me-2"></i>Générer État Consolidé
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <form method="GET" action="{{ route('pcs.autres-demandes.etat-consolide.poste-emetteur') }}" target="_blank">
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Poste émetteur :</strong> {{ auth()->user()->poste->nom }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="annee_etat_ad" class="form-label fw-bold">
+                            Année <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" id="annee_etat_ad" name="annee" required>
+                            @for($i = date('Y'); $i >= date('Y') - 5; $i--)
+                                <option value="{{ $i }}" {{ $i == date('Y') ? 'selected' : '' }}>{{ $i }}</option>
+                            @endfor
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Annuler
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-file-pdf me-1"></i>Générer le PDF
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
 
 @push('scripts')
 <script>

@@ -946,5 +946,102 @@ class DeclarationPcsController extends Controller
 
         return view('pcs.declarations.apercu', compact('declarations'));
     }
+
+    /**
+     * Générer l'état consolidé pour un poste émetteur
+     */
+    public function etatConsolidePosteEmetteur(Request $request)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        if (!$user->poste_id) {
+            Alert::error('Erreur', 'Aucun poste assigné à votre compte');
+            return redirect()->route('pcs.declarations.index');
+        }
+
+        $annee = $request->get('annee', date('Y'));
+        $programme = $request->get('programme', 'UEMOA');
+        $poste = $user->poste;
+
+        // Récupérer les déclarations du poste émetteur
+        $query = DeclarationPcs::with(['poste', 'bureauDouane'])
+            ->where('annee', $annee)
+            ->where('programme', $programme);
+
+        // Pour RGD, récupérer aussi les déclarations des bureaux
+        if ($poste->isRgd()) {
+            $bureauxIds = \App\Models\BureauDouane::where('poste_rgd_id', $poste->id)
+                ->where('actif', true)
+                ->pluck('id');
+            $query->where(function($q) use ($poste, $bureauxIds) {
+                $q->where('poste_id', $poste->id)
+                  ->whereNull('bureau_douane_id')
+                  ->orWhereIn('bureau_douane_id', $bureauxIds);
+            });
+        } else {
+            $query->where('poste_id', $poste->id)
+                  ->whereNull('bureau_douane_id');
+        }
+
+        $declarations = $query->get();
+
+        // Organiser les données par entité (poste ou bureau) et par mois
+        $recouvrementsParEntite = [];
+        $reversementsParEntite = [];
+        $totalRecouvrementsMensuel = array_fill(1, 12, 0);
+        $totalReversementsMensuel = array_fill(1, 12, 0);
+        $totalRecouvrements = 0;
+        $totalReversements = 0;
+
+        foreach ($declarations as $declaration) {
+            $nomEntite = $declaration->poste_id && !$declaration->bureau_douane_id
+                ? $declaration->poste->nom
+                : $declaration->bureauDouane->libelle;
+            $mois = $declaration->mois;
+
+            // Recouvrements
+            if (!isset($recouvrementsParEntite[$nomEntite])) {
+                $recouvrementsParEntite[$nomEntite] = [
+                    'mois' => array_fill(1, 12, 0),
+                    'total' => 0
+                ];
+            }
+            $recouvrementsParEntite[$nomEntite]['mois'][$mois] += $declaration->montant_recouvrement;
+            $recouvrementsParEntite[$nomEntite]['total'] += $declaration->montant_recouvrement;
+            $totalRecouvrementsMensuel[$mois] += $declaration->montant_recouvrement;
+            $totalRecouvrements += $declaration->montant_recouvrement;
+
+            // Reversements
+            if (!isset($reversementsParEntite[$nomEntite])) {
+                $reversementsParEntite[$nomEntite] = [
+                    'mois' => array_fill(1, 12, 0),
+                    'total' => 0
+                ];
+            }
+            $reversementsParEntite[$nomEntite]['mois'][$mois] += $declaration->montant_reversement;
+            $reversementsParEntite[$nomEntite]['total'] += $declaration->montant_reversement;
+            $totalReversementsMensuel[$mois] += $declaration->montant_reversement;
+            $totalReversements += $declaration->montant_reversement;
+        }
+
+        // Trier par ordre alphabétique
+        ksort($recouvrementsParEntite);
+        ksort($reversementsParEntite);
+
+        $pdf = PDF::loadView('pcs.pdf.etat-reversements-consolide-poste-emetteur', compact(
+            'recouvrementsParEntite',
+            'reversementsParEntite',
+            'totalRecouvrementsMensuel',
+            'totalReversementsMensuel',
+            'totalRecouvrements',
+            'totalReversements',
+            'annee',
+            'programme',
+            'poste'
+        ));
+
+        return $pdf->download("Etat_Reversements_PCS_{$programme}_{$poste->nom}_{$annee}.pdf");
+    }
 }
 

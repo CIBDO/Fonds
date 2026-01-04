@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use RealRashid\SweetAlert\Facades\Alert;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class CotisationTrieController extends Controller
 {
@@ -393,5 +394,68 @@ class CotisationTrieController extends Controller
 
         Alert::success('Succès', 'La cotisation a été supprimée avec succès.');
         return redirect()->route('trie.cotisations.index');
+    }
+
+    /**
+     * Générer l'état consolidé des cotisations pour un poste émetteur
+     */
+    public function etatConsolidePosteEmetteur(Request $request)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        if (!$user->poste_id) {
+            Alert::error('Erreur', 'Aucun poste assigné à votre compte');
+            return redirect()->route('trie.cotisations.index');
+        }
+
+        $annee = $request->get('annee', date('Y'));
+        $poste = $user->poste;
+
+        // Récupérer les cotisations du poste émetteur
+        $cotisations = CotisationTrie::with(['bureauTrie'])
+            ->where('poste_id', $poste->id)
+            ->where('annee', $annee)
+            ->where('statut', 'valide')
+            ->get();
+
+        // Organiser les données par bureau et par mois
+        $donneesParBureau = [];
+        $totalMensuel = array_fill(1, 12, 0);
+        $totalGeneral = 0;
+
+        foreach ($cotisations as $cotisation) {
+            $bureauNom = $cotisation->bureauTrie->nom_bureau;
+            $mois = $cotisation->mois;
+
+            if (!isset($donneesParBureau[$bureauNom])) {
+                $donneesParBureau[$bureauNom] = [
+                    'nom' => $bureauNom,
+                    'code' => $cotisation->bureauTrie->code_bureau,
+                    'mois' => array_fill(1, 12, 0),
+                    'total' => 0
+                ];
+            }
+
+            $donneesParBureau[$bureauNom]['mois'][$mois] += $cotisation->montant_total;
+            $donneesParBureau[$bureauNom]['total'] += $cotisation->montant_total;
+            $totalMensuel[$mois] += $cotisation->montant_total;
+            $totalGeneral += $cotisation->montant_total;
+        }
+
+        // Trier par nom de bureau
+        ksort($donneesParBureau);
+
+        $pdf = PDF::loadView('trie.pdf.etat-consolide-poste-emetteur', compact(
+            'donneesParBureau',
+            'totalMensuel',
+            'totalGeneral',
+            'annee',
+            'poste'
+        ));
+
+        $pdf->setPaper('A4', 'landscape');
+
+        return $pdf->download("Situation_Cotisations_TRIE_{$poste->nom}_{$annee}.pdf");
     }
 }

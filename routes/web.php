@@ -251,6 +251,9 @@ Route::middleware(['auth'])->prefix('pcs')->name('pcs.')->group(function () {
             Route::get('stats-rapides', 'statsRapides')->name('declarations.stats-rapides');
             Route::get('apercu', 'apercu')->name('declarations.apercu');
         });
+
+        // États consolidés pour postes émetteurs
+        Route::get('etat-consolide/poste-emetteur', 'etatConsolidePosteEmetteur')->name('etat-consolide.poste-emetteur');
     });
 
     // ===== ÉTATS CONSOLIDÉS UNIFIÉS =====
@@ -300,6 +303,9 @@ Route::middleware(['auth'])->prefix('pcs')->name('pcs.')->group(function () {
             Route::get('apercu', 'apercu')->name('apercu');
         });
 
+        // États consolidés pour postes émetteurs
+        Route::get('etat-consolide/poste-emetteur', 'etatConsolidePosteEmetteur')->name('etat-consolide.poste-emetteur');
+
         // Statistiques
         Route::get('statistiques/index', 'statistiques')->name('statistiques');
     });
@@ -307,7 +313,7 @@ Route::middleware(['auth'])->prefix('pcs')->name('pcs.')->group(function () {
 
 // ===== MODULE TRIE - COTISATIONS CCIM =====
 Route::middleware(['auth'])->prefix('trie')->name('trie.')->group(function () {
-        
+
         // ===== BUREAUX TRIE =====
         Route::controller(BureauTrieController::class)->prefix('bureaux')->name('bureaux.')->group(function () {
             Route::get('/', 'index')->name('index');
@@ -316,7 +322,7 @@ Route::middleware(['auth'])->prefix('trie')->name('trie.')->group(function () {
             Route::put('{bureau}', 'update')->name('update');
             Route::patch('{bureau}/toggle-status', 'toggleStatus')->name('toggle-status');
             Route::delete('{bureau}', 'destroy')->name('destroy');
-            
+
             // API pour récupérer les bureaux d'un poste
             Route::get('api/{poste}/bureaux', 'getBureaux')->name('api.bureaux');
         });
@@ -330,12 +336,15 @@ Route::middleware(['auth'])->prefix('trie')->name('trie.')->group(function () {
         Route::get('{cotisation}/edit', 'edit')->name('edit');
         Route::put('{cotisation}', 'update')->name('update');
         Route::delete('{cotisation}', 'destroy')->name('destroy');
+
+        // États consolidés pour postes émetteurs
+        Route::get('etat-consolide/poste-emetteur', 'etatConsolidePosteEmetteur')->name('etat-consolide.poste-emetteur');
     });
 
     // ===== ÉTATS TRIE =====
     Route::controller(EtatTrieController::class)->prefix('etats')->name('etats.')->group(function () {
         Route::get('/', 'index')->name('index');
-        
+
         // Génération des PDF (ACCT/Admin uniquement)
         Route::middleware('role:admin,acct')->group(function () {
             Route::get('mensuel', 'etatMensuel')->name('mensuel');

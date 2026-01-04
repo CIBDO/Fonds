@@ -16,9 +16,14 @@
                 <a href="{{ route('trie.bureaux.index') }}" class="btn btn-secondary btn-sm me-2">
                     <i class="fas fa-building me-1"></i>Bureaux
                 </a>
-                <a href="{{ route('trie.etats.index') }}" class="btn btn-info btn-sm me-2">
+                {{-- <a href="{{ route('trie.etats.index') }}" class="btn btn-info btn-sm me-2">
                     <i class="fas fa-file-pdf me-1"></i>États
-                </a>
+                </a> --}}
+                @if(auth()->user()->poste_id)
+                <button type="button" class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#modalEtatConsolideCotisations">
+                    <i class="fas fa-file-export me-1"></i>État Consolidé
+                </button>
+                @endif
                 <a href="{{ route('trie.cotisations.create') }}" class="btn btn-primary btn-sm">
                     <i class="fas fa-plus me-1"></i>Nouvelle Cotisation
                 </a>
@@ -282,5 +287,48 @@
         </div>
     </div>
 </div>
+
+@if(auth()->user()->poste_id)
+<!-- Modal État Consolidé Poste Émetteur -->
+<div class="modal fade" id="modalEtatConsolideCotisations" tabindex="-1" aria-labelledby="modalEtatConsolideCotisationsLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalEtatConsolideCotisationsLabel">
+                    <i class="fas fa-file-export me-2"></i>Générer État Consolidé
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <form method="GET" action="{{ route('trie.cotisations.etat-consolide.poste-emetteur') }}" target="_blank">
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Poste émetteur :</strong> {{ auth()->user()->poste->nom }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="annee_etat_trie" class="form-label fw-bold">
+                            Année <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" id="annee_etat_trie" name="annee" required>
+                            @for($i = date('Y'); $i >= date('Y') - 5; $i--)
+                                <option value="{{ $i }}" {{ $i == date('Y') ? 'selected' : '' }}>{{ $i }}</option>
+                            @endfor
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Annuler
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-file-pdf me-1"></i>Générer le PDF
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
+
 @endsection
 
