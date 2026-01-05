@@ -47,7 +47,7 @@
                         <div class="message-meta text-end">
                             <div class="message-status mb-2">
                                 @if($message->status == 'unread')
-                                    <span class="badge" style="background: #e8f0fe; color: #1a73e8; font-size: 12px; padding: 4px 8px; border-radius: 8px; font-weight: 500;">
+                                    <span class="badge" style="background: #effdf5; color: #08a551; font-size: 12px; padding: 4px 8px; border-radius: 8px; font-weight: 500;">
                                         <svg class="me-1" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16z"/>
                                         </svg>
@@ -188,7 +188,7 @@
                 <div class="message-actions" style="padding: 20px; background: #f8f9fa; border-top: 1px solid #f1f3f4;">
                     <div class="d-flex flex-wrap justify-content-end gap-2">
                         <a href="{{ route('messages.reply', $message->id) }}"
-                           class="btn btn-reply" style="background: #1a73e8; color: white; border: none; border-radius: 12px; padding: 10px 20px; font-size: 14px; font-weight: 500;">
+                           class="btn btn-reply" style="background: #aeeaa6; color: white; border: none; border-radius: 12px; padding: 10px 20px; font-size: 14px; font-weight: 500;">
                             <svg class="me-2" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M10 9V7.41c0-.89-1.08-1.34-1.71-.71L3.7 11.29c-.39.39-.39 1.02 0 1.41l4.59 4.59c.63.63 1.71.18 1.71-.71V14.9c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"/>
                             </svg>

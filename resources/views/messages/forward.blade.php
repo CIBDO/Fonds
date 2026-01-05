@@ -8,7 +8,7 @@
         </div>
         <div class="col-12 col-md-9">
             <!-- Header violet simple pour le transfert -->
-            <div class="forward-header mb-4" style="background: linear-gradient(135deg, #8B7CF8 0%, #7C3AED 100%); padding: 20px 24px; border-radius: 16px; color: white;">
+            <div class="forward-header mb-4" style="background: linear-gradient(135deg, #effdf5 0%, #08a551 100%); padding: 20px 24px; border-radius: 16px; color: #0a0a0a;">
                 <div class="d-flex align-items-center">
                     <div class="header-icon me-3">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">

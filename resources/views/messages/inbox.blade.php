@@ -11,7 +11,7 @@
         <!-- Contenu principal : Boîte de réception épurée -->
         <div class="col-12 col-md-9">
             <!-- En-tête bleu simple -->
-            <div class="inbox-header mb-4" style="background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%); padding: 20px 24px; border-radius: 16px; color: white;">
+            <div class="inbox-header mb-4" style="background: linear-gradient(135deg, #effdf5 0%, #08a551 100%); padding: 20px 24px; border-radius: 16px; color: #0a0a0a;">
                 <div class="d-flex justify-content-between align-items-center flex-wrap">
                     <div class="d-flex align-items-center">
                         <div class="header-icon me-3">

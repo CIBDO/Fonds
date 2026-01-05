@@ -7,7 +7,7 @@
     <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
 
       <!-- En-tête bleu simple -->
-      <div class="modal-header border-0" style="background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%); color: white; padding: 20px 24px;">
+      <div class="modal-header border-0" style="background: linear-gradient(135deg, #effdf5 0%, #08a551 100%); padding: 20px 24px; border-radius: 16px; color: #0a0a0a;">
         <div class="d-flex align-items-center">
           <div class="modal-icon me-3">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -170,7 +170,7 @@
               Annuler
             </button>
             <button type="submit" class="btn btn-primary"
-                    style="background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%); border: none; border-radius: 12px; padding: 10px 24px; font-size: 14px; font-weight: 500;">
+                    style="background: linear-gradient(135deg, #267048 0%, #387755 100%); border: none; border-radius: 12px; padding: 10px 24px; font-size: 14px; font-weight: 500;">
               <svg class="me-2" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
               </svg>

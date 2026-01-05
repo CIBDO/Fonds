@@ -4,7 +4,7 @@
     <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
       <form action="{{ route('messages.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
-        <div class="modal-header border-0 text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.5rem;">
+        <div class="modal-header border-0 text-white" style="background: linear-gradient(135deg, #3c7657 0%, #397756 50%); padding: 1.5rem;">
           <h5 class="modal-title fw-bold fs-4" id="composeModalLabel">
             <i class="fas fa-pen-fancy me-2"></i> Nouveau message
           </h5>
@@ -24,31 +24,64 @@
             </div>
           @endif
 
-          <!-- Section Destinataires Ultra-Moderne -->
+          <!-- Section Destinataires avec Cases à Cocher -->
           <div class="mb-4">
-            <label for="receiver_ids" class="form-label fw-bold text-dark mb-3">
+            <label class="form-label fw-bold text-dark mb-3">
               <i class="fas fa-users text-primary me-2"></i> 👥 Destinataires
             </label>
-            <div class="position-relative">
-              <select name="receiver_ids[]" id="receiver_ids" class="form-select border-0 shadow-sm select2-modern" multiple required>
-                  @if(isset($users))
-                      @foreach($users as $user)
-                          <option value="{{ $user->id }}"
-                                  data-avatar="{{ $user->avatar ?? '' }}"
-                                  data-poste="{{ $user->poste->nom ?? 'Aucun poste' }}"
-                                  data-email="{{ $user->email ?? '' }}">
-                              {{ $user->name }}
-                          </option>
-                      @endforeach
-                  @endif
-              </select>
+
+            <!-- Barre de recherche -->
+            <div class="mb-3">
+              <input type="text" id="searchRecipients" class="form-control border-0 shadow-sm" placeholder="🔍 Rechercher un destinataire..." style="border-radius: 15px; padding: 12px; background: #f8f9ff;">
+            </div>
+
+            <!-- Liste des destinataires avec cases à cocher -->
+            <div class="recipients-list border-0 shadow-sm" style="border-radius: 15px; background: #f8f9ff; max-height: 300px; overflow-y: auto; padding: 15px;">
+              @if(isset($users) && $users->count() > 0)
+                <div class="mb-2">
+                  <button type="button" class="btn btn-sm btn-outline-primary" id="selectAllRecipients">
+                    <i class="fas fa-check-double me-1"></i> Tout sélectionner
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary" id="deselectAllRecipients">
+                    <i class="fas fa-times me-1"></i> Tout désélectionner
+                  </button>
+                </div>
+                <div class="recipients-checkboxes">
+                  @foreach($users as $user)
+                    <div class="recipient-item mb-2" data-name="{{ strtolower($user->name) }}" data-poste="{{ strtolower($user->poste->nom ?? '') }}" data-email="{{ strtolower($user->email ?? '') }}">
+                      <div class="form-check p-3 rounded" style="background: white; border: 2px solid #e0e0e0; transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.borderColor='#667eea'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.2)'" onmouseout="this.style.borderColor='#e0e0e0'; this.style.boxShadow='none'">
+                        <input class="form-check-input recipient-checkbox" type="checkbox" name="receiver_ids[]" value="{{ $user->id }}" id="user_{{ $user->id }}" style="width: 20px; height: 20px; cursor: pointer; margin-top: 5px;">
+                        <label class="form-check-label w-100" for="user_{{ $user->id }}" style="cursor: pointer; margin-left: 10px;">
+                          <div class="d-flex align-items-center">
+                            <div class="user-avatar me-3" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; flex-shrink: 0;">
+                              {{ strtoupper(substr($user->name, 0, 1)) }}
+                            </div>
+                            <div class="flex-grow-1">
+                              <div class="fw-bold text-dark">{{ $user->name }}</div>
+                              <div class="text-muted small">
+                                <i class="fas fa-briefcase me-1"></i>{{ $user->poste->nom ?? 'Aucun poste' }}
+                                @if($user->email)
+                                  <br><i class="fas fa-envelope me-1"></i>{{ $user->email }}
+                                @endif
+                              </div>
+                            </div>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+                  @endforeach
+                </div>
+              @else
+                <div class="text-center text-muted py-4">
+                  <i class="fas fa-users fa-3x mb-3"></i>
+                  <p>Aucun utilisateur disponible</p>
+                </div>
+              @endif
             </div>
             <small class="form-text text-muted mt-2 d-flex align-items-center">
-              <i class="fas fa-search me-1 text-primary"></i>
-              Tapez pour rechercher, cliquez pour sélectionner plusieurs destinataires
+              <i class="fas fa-info-circle me-1 text-primary"></i>
+              Cochez les destinataires souhaités. Au moins un destinataire est requis.
             </small>
-            <!-- Affichage des destinataires sélectionnés -->
-            <div id="selected-recipients" class="mt-3"></div>
           </div>
 
           <div class="mb-4">
@@ -75,7 +108,7 @@
 
         <div class="modal-footer border-0 p-4" style="background: #f8f9ff;">
           <div class="d-grid w-100">
-            <button type="submit" class="btn btn-lg fw-bold text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 15px; padding: 15px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);">
+            <button type="submit" class="btn btn-lg fw-bold text-white" style="background: linear-gradient(135deg, #3c7657 0%, #397756 50%); border: none; border-radius: 15px; padding: 15px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);">
               <i class="fas fa-paper-plane me-2"></i> Envoyer le message
             </button>
           </div>
@@ -253,169 +286,154 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    if (window.jQuery && $('#receiver_ids').length) {
-        // Fonction pour générer un avatar avec initiale
-        function generateAvatar(name) {
-            const initial = name.charAt(0).toUpperCase();
-            const colors = [
-                'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-                'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-                'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-                'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
-                'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)'
-            ];
-            const colorIndex = name.charCodeAt(0) % colors.length;
-            return {
-                initial: initial,
-                background: colors[colorIndex]
-            };
-        }
+    // Fonction de recherche dans les destinataires
+    const searchInput = document.getElementById('searchRecipients');
+    const recipientItems = document.querySelectorAll('.recipient-item');
 
-        // Fonction pour formater les options avec avatars
-        function formatUser(user) {
-            if (!user.id) return user.text;
+    if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase().trim();
 
-            const $user = $(user.element);
-            const name = user.text;
-            const poste = $user.data('poste') || 'Aucun poste';
-            const email = $user.data('email') || '';
-            const avatar = generateAvatar(name);
+            recipientItems.forEach(item => {
+                const name = item.getAttribute('data-name') || '';
+                const poste = item.getAttribute('data-poste') || '';
+                const email = item.getAttribute('data-email') || '';
 
-            return $(`
-                <div class="user-option">
-                    <div class="user-avatar" style="background: ${avatar.background}">
-                        ${avatar.initial}
-                    </div>
-                    <div class="user-info">
-                        <div class="user-name">${name}</div>
-                        <div class="user-details">
-                            <i class="fas fa-briefcase me-1"></i>${poste}
-                            ${email ? `<br><i class="fas fa-envelope me-1"></i>${email}` : ''}
-                        </div>
-                    </div>
-                </div>
-            `);
-        }
-
-        // Fonction pour formater les sélections
-        function formatSelection(user) {
-            if (!user.id) return user.text;
-
-            const $user = $(user.element);
-            const name = user.text;
-            const avatar = generateAvatar(name);
-
-            return $(`
-                <span style="display: flex; align-items: center; gap: 8px;">
-                    <span class="chip-avatar" style="
-                        width: 20px;
-                        height: 20px;
-                        border-radius: 50%;
-                        background: ${avatar.background};
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-size: 11px;
-                        font-weight: bold;
-                        color: white;
-                    ">
-                        ${avatar.initial}
-                    </span>
-                    ${name}
-                </span>
-            `);
-        }
-
-        // Initialisation du Select2 ultra-moderne
-        $('#receiver_ids').select2({
-            width: '100%',
-            placeholder: '🔍 Rechercher et sélectionner des destinataires...',
-            allowClear: true,
-            closeOnSelect: false,
-            templateResult: formatUser,
-            templateSelection: formatSelection,
-            escapeMarkup: function(markup) {
-                return markup;
-            },
-            language: {
-                noResults: function() {
-                    return '<div style="padding: 20px; text-align: center; color: #666;"><i class="fas fa-search-minus fa-2x mb-2"></i><br>Aucun utilisateur trouvé</div>';
-                },
-                searching: function() {
-                    return '<div style="padding: 20px; text-align: center; color: #667eea;"><i class="fas fa-spinner fa-spin fa-2x mb-2"></i><br>Recherche en cours...</div>';
-                },
-                inputTooShort: function() {
-                    return '<div style="padding: 20px; text-align: center; color: #999;"><i class="fas fa-keyboard fa-2x mb-2"></i><br>Tapez pour rechercher</div>';
+                if (name.includes(searchTerm) || poste.includes(searchTerm) || email.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
                 }
+            });
+        });
+    }
+
+    // Bouton "Tout sélectionner"
+    const selectAllBtn = document.getElementById('selectAllRecipients');
+    if (selectAllBtn) {
+        selectAllBtn.addEventListener('click', function() {
+            const checkboxes = document.querySelectorAll('.recipient-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = true;
+            });
+            updateSelectedCount();
+        });
+    }
+
+    // Bouton "Tout désélectionner"
+    const deselectAllBtn = document.getElementById('deselectAllRecipients');
+    if (deselectAllBtn) {
+        deselectAllBtn.addEventListener('click', function() {
+            const checkboxes = document.querySelectorAll('.recipient-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            updateSelectedCount();
+        });
+    }
+
+    // Mettre à jour le compteur de sélection
+    function updateSelectedCount() {
+        const checked = document.querySelectorAll('.recipient-checkbox:checked').length;
+        const total = document.querySelectorAll('.recipient-checkbox').length;
+
+        // Mettre à jour le texte des boutons si nécessaire
+        if (selectAllBtn && deselectAllBtn) {
+            if (checked === total) {
+                selectAllBtn.disabled = true;
+                deselectAllBtn.disabled = false;
+            } else if (checked === 0) {
+                selectAllBtn.disabled = false;
+                deselectAllBtn.disabled = true;
+            } else {
+                selectAllBtn.disabled = false;
+                deselectAllBtn.disabled = false;
+            }
+        }
+    }
+
+    // Écouter les changements sur les checkboxes
+    document.querySelectorAll('.recipient-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            updateSelectedCount();
+
+            // Animation visuelle
+            const parent = this.closest('.form-check');
+            if (this.checked) {
+                parent.style.borderColor = '#667eea';
+                parent.style.background = 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)';
+            } else {
+                parent.style.borderColor = '#e0e0e0';
+                parent.style.background = 'white';
             }
         });
+    });
 
-        // Animation d'ouverture du dropdown
-        $('#receiver_ids').on('select2:open', function() {
-            $('.select2-dropdown').hide().slideDown(200);
-        });
-
-        // Effet sonore et visuel lors de la sélection (optionnel)
-        $('#receiver_ids').on('select2:select', function(e) {
-            const selectedData = e.params.data;
-
-            // Animation de succès
-            $(this).next('.select2-container').addClass('pulse-success');
-            setTimeout(() => {
-                $(this).next('.select2-container').removeClass('pulse-success');
-            }, 600);
-
-            // Notification toast (optionnel)
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'success',
-                    title: `${selectedData.text} ajouté(e)`,
-                    showConfirmButton: false,
-                    timer: 1500,
-                    timerProgressBar: true
-                });
-            }
-        });
-
-        // Animation lors de la suppression
-        $('#receiver_ids').on('select2:unselect', function(e) {
-            const unselectedData = e.params.data;
-
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'info',
-                    title: `${unselectedData.text} retiré(e)`,
-                    showConfirmButton: false,
-                    timer: 1000
-                });
+    // Validation du formulaire
+    const form = document.querySelector('#composeModal form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const checked = document.querySelectorAll('.recipient-checkbox:checked').length;
+            if (checked === 0) {
+                e.preventDefault();
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Destinataire requis',
+                        text: 'Veuillez sélectionner au moins un destinataire.',
+                        confirmButtonColor: '#667eea'
+                    });
+                } else {
+                    alert('Veuillez sélectionner au moins un destinataire.');
+                }
+                return false;
             }
         });
     }
+
+    // Initialiser le compteur
+    updateSelectedCount();
 });
 
-// CSS pour l'animation de succès
-const style = document.createElement('style');
-style.textContent = `
-    .pulse-success {
-        animation: pulseSuccess 0.6s ease-in-out;
+// Styles supplémentaires pour les cases à cocher
+const checkboxStyle = document.createElement('style');
+checkboxStyle.textContent = `
+    .recipients-list::-webkit-scrollbar {
+        width: 8px;
     }
 
-    @keyframes pulseSuccess {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(67, 233, 123, 0.5); }
-        100% { transform: scale(1); }
+    .recipients-list::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    .recipients-list::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 10px;
+    }
+
+    .recipients-list::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #5568d3 0%, #653a8f 100%);
+    }
+
+    .form-check-input:checked {
+        background-color: #667eea;
+        border-color: #667eea;
+    }
+
+    .form-check-input:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+    }
+
+    .recipient-item {
+        transition: all 0.3s ease;
+    }
+
+    .recipient-item:hover {
+        transform: translateX(5px);
     }
 `;
-document.head.appendChild(style);
+document.head.appendChild(checkboxStyle);
 </script>
-
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
