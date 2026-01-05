@@ -246,8 +246,9 @@
                             <div class="col-md-6">
                                 <label for="anneeUemoaAes" class="form-label fw-bold">Année</label>
                                 <select class="form-select" id="anneeUemoaAes" onchange="chargerEtatUemoaAes()">
-                                    <option value="2025">2025</option>
-                                    <option value="2024">2024</option>
+                                    @for($i = date('Y'); $i >= date('Y') - 5; $i--)
+                                        <option value="{{ $i }}" {{ $i == date('Y') ? 'selected' : '' }}>{{ $i }}</option>
+                                    @endfor
                                 </select>
                             </div>
                         </div>
@@ -543,7 +544,12 @@ function chargerStatistiques() {
                 `;
             }
 
-            document.getElementById('statsContainer').innerHTML = statsHTML;
+            const statsContainer = document.getElementById('statsContainer');
+            if (statsContainer) {
+                statsContainer.innerHTML = statsHTML;
+            } else {
+                console.log('statsContainer n\'existe pas dans le DOM, les statistiques ne seront pas affichées');
+            }
         })
         .catch(error => {
             console.error('Erreur stats:', error);
@@ -639,21 +645,6 @@ function genererAffichageEtat(donnees) {
     // Générer le HTML des états avec les données reçues du backend
     let html = `
         <div class="etat-container">
-            <div class="etat-header text-center mb-4">
-                <h4 class="fw-bold">MINISTÈRE DE L'ÉCONOMIE ET DES FINANCES</h4>
-                <h5 class="fw-bold">DIRECTION GÉNÉRALE DU TRÉSOR ET DE LA COMPTABILITÉ PUBLIQUE</h5>
-                <h6 class="fw-bold">AGENCE CENTRALE DE COMPTABILITÉ DU TRÉSOR</h6>
-                <hr>
-                <h4 class="fw-bold text-primary">${donnees.titre}</h4>
-                <p class="text-muted">Période du 1er Janvier ${donnees.annee} au ${new Date().toLocaleDateString('fr-FR')}</p>
-                <p class="text-muted">Bamako, le ${new Date().toLocaleDateString('fr-FR')}</p>
-                <hr>
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i>
-                    <strong>Note:</strong> Les montants sont exprimés en <strong>millions de francs CFA</strong>
-                </div>
-            </div>
-
             <div class="row">
                 <div class="col-12 mb-4">
                     <h5 class="fw-bold text-success">ÉTAT CONSOLIDÉ ${donnees.annee}</h5>
@@ -787,6 +778,14 @@ function genererTableauComplet(recouvrements, reversements) {
 
 // Fonction pour afficher les statistiques UEMOA/AES
 function afficherStatistiquesUemoaAes(totalRecouvrements, totalReversements, totalResteAReverser) {
+    const statsContainer = document.getElementById('statsContainer');
+
+    // Vérifier si l'élément existe avant de le modifier
+    if (!statsContainer) {
+        console.log('statsContainer n\'existe pas dans le DOM, les statistiques ne seront pas affichées');
+        return;
+    }
+
     const statsHTML = `
         <div class="stat-item text-center">
             <h4 class="text-success">${totalRecouvrements.toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</h4>
@@ -804,7 +803,7 @@ function afficherStatistiquesUemoaAes(totalRecouvrements, totalReversements, tot
         </div>
     `;
 
-    document.getElementById('statsContainer').innerHTML = statsHTML;
+    statsContainer.innerHTML = statsHTML;
 }
 
 // Fonction pour générer le PDF UEMOA/AES consolidé

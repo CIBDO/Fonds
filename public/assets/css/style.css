@@ -1046,12 +1046,12 @@ table.table td h2 span {
 }
 
 .bg-primary {
-    background-color: #fff5d9 !important
+    background-color: #edfdf4 !important
 }
 
 .pro-bg-primary,
 .badge-primary {
-    background-color: #fdbb38 !important
+    background-color: #eefdf5 !important
 }
 
 .bg-light {
@@ -1067,7 +1067,7 @@ button.bg-primary:hover {
 
 .bg-success,
 .badge-success {
-    background-color: #7bb13c !important
+    background-color: #edfdf4 !important
 }
 
 a.bg-success:focus,
@@ -1079,7 +1079,7 @@ button.bg-success:hover {
 
 .bg-info,
 .badge-info {
-    background-color: #009efb !important
+    background-color: #eefdf5 !important
 }
 
 .pro-bg-info,
