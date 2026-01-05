@@ -47,7 +47,7 @@
                 <!-- Message original simple -->
                 <div class="original-message p-4" style="background: #F8FAFC; border-bottom: 1px solid #E2E8F0;">
                     <div class="message-info mb-3">
-                        <h6 class="fw-semibold mb-2" style="color: #6B46C1; font-size: 14px;">
+                        <h6 class="fw-semibold mb-2" style="color: #4ecf6e; font-size: 14px;">
                             <svg class="me-2" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
                             </svg>
@@ -155,7 +155,7 @@
 
                         <div class="d-grid gap-3 d-md-flex justify-content-md-end">
                             <button type="submit" class="btn btn-lg fw-bold text-white"
-                                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 15px; padding: 15px 30px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);">
+                                    style="background: linear-gradient(135deg, #97e991 0%, #80e17f 100%); border: none; border-radius: 15px; padding: 15px 30px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);">
                                 <i class="fas fa-paper-plane me-2"></i> 🚀 Transférer le message
                             </button>
                             <a href="{{ url()->previous() }}" class="btn btn-lg btn-outline-secondary fw-bold"

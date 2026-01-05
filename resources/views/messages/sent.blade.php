@@ -63,13 +63,19 @@
                                 <div class="message-avatar me-3 flex-shrink-0">
                                     @php
                                         $firstRecipient = $message->recipients->first();
-                                        $avatar = $firstRecipient->avatar ?? null;
-                                        $initial = strtoupper(substr($firstRecipient->name ?? 'U', 0, 1));
-                                        $colors = ['#3B82F6', '#1D4ED8', '#2563EB', '#1E40AF', '#1E3A8A', '#312E81'];
-                                        $colorIndex = ($firstRecipient->id ?? 0) % count($colors);
-                                        $avatarColor = $colors[$colorIndex];
+                                        if ($firstRecipient) {
+                                            $avatar = $firstRecipient->avatar ?? null;
+                                            $initial = strtoupper(substr($firstRecipient->name ?? 'U', 0, 1));
+                                            $colors = ['#3B82F6', '#1D4ED8', '#2563EB', '#1E40AF', '#1E3A8A', '#312E81'];
+                                            $colorIndex = ($firstRecipient->id ?? 0) % count($colors);
+                                            $avatarColor = $colors[$colorIndex];
+                                        } else {
+                                            $avatar = null;
+                                            $initial = '?';
+                                            $avatarColor = '#9CA3AF';
+                                        }
                                     @endphp
-                                    @if($avatar)
+                                    @if($firstRecipient && $avatar)
                                         <img src="{{ asset('assets/img/profiles/' . $avatar) }}"
                                              style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%; border: 1px solid #E5E7EB;">
                                     @else
@@ -88,14 +94,18 @@
                                         </div>
                                         <div style="color: #6B7280; font-size: 12px; margin-right: 8px;">→</div>
                                         <div class="message-recipients d-flex align-items-center">
-                                            @foreach($message->recipients->take(2) as $recipient)
-                                                <span style="color: #6B7280; font-size: 13px;">
-                                                    {{ Str::limit($recipient->name, 15) }}
-                                                    @if(!$loop->last && $message->recipients->count() > 2), @endif
-                                                </span>
-                                            @endforeach
-                                            @if($message->recipients->count() > 2)
-                                                <span style="color: #6B7280; font-size: 12px;">+{{ $message->recipients->count() - 2 }}</span>
+                                            @if($message->recipients->count() > 0)
+                                                @foreach($message->recipients->take(2) as $recipient)
+                                                    <span style="color: #6B7280; font-size: 13px;">
+                                                        {{ Str::limit($recipient->name, 15) }}
+                                                        @if(!$loop->last && $message->recipients->count() > 2), @endif
+                                                    </span>
+                                                @endforeach
+                                                @if($message->recipients->count() > 2)
+                                                    <span style="color: #6B7280; font-size: 12px;">+{{ $message->recipients->count() - 2 }}</span>
+                                                @endif
+                                            @else
+                                                <span style="color: #9CA3AF; font-size: 13px; font-style: italic;">Aucun destinataire</span>
                                             @endif
                                         </div>
                                         <div class="message-time text-muted ms-auto" style="font-size: 12px; color: #6B7280;">

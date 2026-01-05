@@ -39,7 +39,10 @@ class MessageController extends Controller
     // Afficher la boîte d'envoi
     public function sent()
     {
-        $messages = Message::where('sender_id', Auth::id())->orderBy('created_at', 'desc')->paginate(8);
+        $messages = Message::with(['recipients', 'attachments'])
+            ->where('sender_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->paginate(8);
 
         // Compteurs pour la sidebar
         $inboxCount = Message::whereHas('recipients', function ($query) {
