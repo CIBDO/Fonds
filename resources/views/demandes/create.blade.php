@@ -216,12 +216,11 @@
                     <i class="fas fa-exclamation-triangle fa-2x text-warning"></i>
                 </div>
                 <div class="flex-grow-1 ms-3">
-                    <h5 class="alert-heading mb-2">
+                   {{--  <h5 class="alert-heading mb-2"> --}}
                         <i class="fas fa-shield-alt me-1"></i>Attention - Vérification Obligatoire
                     </h5>
                     <p class="mb-0">
                         Veuillez vérifier <strong>minutieusement</strong> toutes les informations saisies avant de soumettre cette demande.
-                        Une fois soumise, <strong class="text-danger">la demande ne pourra plus être modifiée</strong> et devra passer par le processus de validation.
                     </p>
                 </div>
             </div>
