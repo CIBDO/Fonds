@@ -22,12 +22,12 @@
                         <span class="visually-hidden">Toggle Dropdown</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="{{ route('pcs.declarations.pdf.recettes') }}?programme=UEMOA&annee={{ date('Y') }}">
+                        {{-- <li><a class="dropdown-item" href="{{ route('pcs.declarations.pdf.recettes') }}?programme=UEMOA&annee={{ date('Y') }}">
                             <i class="fas fa-file-pdf text-danger"></i> État UEMOA
                         </a></li>
                         <li><a class="dropdown-item" href="{{ route('pcs.declarations.pdf.recettes') }}?programme=AES&annee={{ date('Y') }}">
                             <i class="fas fa-file-pdf text-danger"></i> État AES
-                        </a></li>
+                        </a></li> --}}
                         @if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct', 'admin']))
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalEtatConsolidePosteEmetteur">
@@ -117,7 +117,7 @@
                         <tr>
                             <th><i class="fas fa-calendar"></i> Période</th>
                             <th><i class="fas fa-building"></i> Entité</th>
-                            <th colspan="2" class="text-center bg-success text-white"><i class="fas fa-globe"></i> UEMOA</th>
+                            <th colspan="2" class="text-center bg-success text-black"><i class="fas fa-globe"></i> UEMOA</th>
                             <th colspan="2" class="text-center bg-warning"><i class="fas fa-globe"></i> AES</th>
                             <th class="text-center"><i class="fas fa-flag"></i> Statut</th>
                             {{-- <th class="text-center"><i class="fas fa-user"></i> Saisi par</th> --}}
