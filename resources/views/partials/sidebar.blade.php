@@ -190,13 +190,7 @@
                         </ul>
                     </li>
 
-                    <!-- États Consolidés - Interface Dynamique Unique -->
-                    <li class="{{ request()->routeIs('pcs.etats-consolides.*') ? 'active' : '' }}">
-                        <a href="{{ route('pcs.etats-consolides.index') }}">
-                            <i class="fas fa-chart-line"></i>
-                            <span>États Consolidés</span>
-                        </a>
-                    </li>
+
 
                     <!-- Règlements PCS -->
                     <li class="submenu {{ request()->routeIs('pcs.destockages.*') ? 'active' : '' }}">
@@ -262,7 +256,7 @@
                         <span class="menu-arrow fas fa-chevron-right"></span>
                     </a>
                     <ul class="submenu-list">
-                        @if (Auth::user()->poste_id)
+                        @if (Auth::user()->poste_id && !Auth::user()->hasRole('acct'))
                             <li><a href="{{ route('trie.cotisations.create') }}" class="{{ request()->routeIs('trie.cotisations.create') ? 'active' : '' }}">
                                 <i class="fas fa-plus-circle"></i>Nouvelle Cotisation</a></li>
                         @endif
@@ -272,15 +266,24 @@
                 </li>
 
                 <!-- États TRIE (ACCT uniquement) -->
-                @if (Auth::user()->hasAnyRole(['admin', 'acct']))
+                {{-- @if (Auth::user()->hasAnyRole(['admin', 'acct']))
                     <li class="{{ request()->routeIs('trie.etats.*') ? 'active' : '' }}">
                         <a href="{{ route('trie.etats.index') }}">
                             <i class="fas fa-chart-line"></i>
                             <span>États et Rapports</span>
                         </a>
                     </li>
-                @endif
-
+                @endif --}}
+                <li class="menu-title">
+                    <span> Etats et Rapports</span>
+                </li>
+                <!-- États Consolidés - Interface Dynamique Unique -->
+                <li class="{{ request()->routeIs('pcs.etats-consolides.*') ? 'active' : '' }}">
+                    <a href="{{ route('pcs.etats-consolides.index') }}">
+                        <i class="fas fa-chart-line"></i>
+                        <span>États Consolidés</span>
+                    </a>
+                </li>
                 <li class="menu-title">
                     <span>Management</span>
                 </li>

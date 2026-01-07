@@ -78,6 +78,18 @@
                                     </label>
                                 </div>
                             </div>
+                            <div class="col-lg-4 col-md-6">
+                                <div class="form-check card-type-selector" onclick="selectTypeEtat('trie')">
+                                    <input class="form-check-input" type="radio" name="type_etat" id="type_trie" value="trie">
+                                    <label class="form-check-label" for="type_trie">
+                                        <div class="type-card">
+                                            <i class="fas fa-coins fa-3x text-primary mb-3"></i>
+                                            <h5>États TRIE</h5>
+                                            <p class="text-muted">États et rapports TRIE/CCIM</p>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -218,6 +230,177 @@
                                 </div>
                             </div>
                         </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section des états TRIE -->
+        <div class="row" id="trieSection" style="display: none;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-coins text-primary me-2"></i>
+                            États et Rapports TRIE - CCIM
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Carte État Mensuel -->
+                            <div class="col-md-6 mb-4">
+                                <div class="card shadow-sm border-0 h-100">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-calendar-alt me-2"></i>État Mensuel des Paiements
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="text-center mb-3">
+                                            <i class="fas fa-receipt fa-4x text-primary mb-3"></i>
+                                            <p class="text-muted">
+                                                Générer l'état des paiements TRIE/CCIM pour un mois donné.
+                                                <br>Regroupe les données par <strong>POSTE</strong> avec le détail des paiements.
+                                            </p>
+                                        </div>
+                                        <form method="GET" action="{{ route('trie.etats.mensuel') }}" target="_blank" id="formEtatMensuelTrie">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Mois <span class="text-danger">*</span></label>
+                                                <select name="mois" class="form-select" id="moisTrieMensuel" required>
+                                                    @php
+                                                        $moisList = [
+                                                            1 => 'Janvier', 2 => 'Février', 3 => 'Mars', 4 => 'Avril',
+                                                            5 => 'Mai', 6 => 'Juin', 7 => 'Juillet', 8 => 'Août',
+                                                            9 => 'Septembre', 10 => 'Octobre', 11 => 'Novembre', 12 => 'Décembre'
+                                                        ];
+                                                    @endphp
+                                                    @foreach($moisList as $num => $nom)
+                                                        <option value="{{ $num }}" {{ $num == date('n') ? 'selected' : '' }}>
+                                                            {{ $nom }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Année <span class="text-danger">*</span></label>
+                                                <select name="annee" class="form-select" id="anneeTrieMensuel" required>
+                                                    @for($i = date('Y'); $i >= date('Y') - 5; $i--)
+                                                        <option value="{{ $i }}" {{ $i == date('Y') ? 'selected' : '' }}>
+                                                            {{ $i }}
+                                                        </option>
+                                                    @endfor
+                                                </select>
+                                            </div>
+                                            <div class="d-grid">
+                                                <button type="submit" class="btn btn-primary btn-lg">
+                                                    <i class="fas fa-download me-1"></i>Générer l'État Mensuel
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Carte État Consolidé Annuel -->
+                            <div class="col-md-6 mb-4">
+                                <div class="card shadow-sm border-0 h-100">
+                                    <div class="card-header bg-success text-white">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-chart-bar me-2"></i>État Consolidé Annuel
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="text-center mb-3">
+                                            <i class="fas fa-table fa-4x text-success mb-3"></i>
+                                            <p class="text-muted">
+                                                Générer l'état consolidé des cotisations par poste et bureau
+                                                pour une année complète.
+                                                <br>Affiche le détail <strong>mensuel par BUREAU</strong> + récapitulatif bi-annuel.
+                                            </p>
+                                        </div>
+                                        <form method="GET" action="{{ route('trie.etats.consolide') }}" target="_blank" id="formEtatConsolideTrie">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Année <span class="text-danger">*</span></label>
+                                                <select name="annee" class="form-select" id="anneeTrieConsolide" required>
+                                                    @for($i = date('Y'); $i >= date('Y') - 5; $i--)
+                                                        <option value="{{ $i }}" {{ $i == date('Y') ? 'selected' : '' }}>
+                                                            {{ $i }}
+                                                        </option>
+                                                    @endfor
+                                                </select>
+                                            </div>
+                                            <div class="d-grid">
+                                                <button type="submit" class="btn btn-success btn-lg">
+                                                    <i class="fas fa-download me-1"></i>Générer l'État Consolidé
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Statistiques Rapides TRIE -->
+                        <div class="card shadow-sm border-0 mt-4">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-chart-pie me-2"></i>Statistiques Rapides TRIE
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3" id="statsTrieContainer">
+                                    @php
+                                        $anneeActuelle = date('Y');
+                                        $totalAnnee = \App\Models\CotisationTrie::where('annee', $anneeActuelle)
+                                            ->where('statut', 'valide')
+                                            ->sum('montant_total');
+
+                                        $moisActuel = date('n');
+                                        $totalMois = \App\Models\CotisationTrie::where('annee', $anneeActuelle)
+                                            ->where('mois', $moisActuel)
+                                            ->where('statut', 'valide')
+                                            ->sum('montant_total');
+
+                                        $totalApurement = \App\Models\CotisationTrie::where('annee', $anneeActuelle)
+                                            ->where('statut', 'valide')
+                                            ->sum('montant_apurement');
+                                    @endphp
+                                    <div class="col-md-4">
+                                        <div class="card border-primary">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-coins fa-2x text-primary mb-2"></i>
+                                                <h6>Total Cotisations {{ $anneeActuelle }}</h6>
+                                                <h4 class="fw-bold text-primary">
+                                                    {{ number_format($totalAnnee, 0, ',', ' ') }} FCFA
+                                                </h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card border-success">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-calendar-check fa-2x text-success mb-2"></i>
+                                                <h6>Cotisations du Mois</h6>
+                                                <h4 class="fw-bold text-success">
+                                                    {{ number_format($totalMois, 0, ',', ' ') }} FCFA
+                                                </h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card border-warning">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-undo fa-2x text-warning mb-2"></i>
+                                                <h6>Total Apurements {{ $anneeActuelle }}</h6>
+                                                <h4 class="fw-bold text-warning">
+                                                    {{ number_format($totalApurement, 0, ',', ' ') }} FCFA
+                                                </h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -380,6 +563,7 @@ function selectTypeEtat(type) {
         document.getElementById('programmeField').style.display = 'none';
         document.getElementById('statutField').style.display = 'block';
         document.getElementById('uemoaAesSection').style.display = 'none';
+        document.getElementById('trieSection').style.display = 'none';
         document.getElementById('filtresCard').style.display = 'block';
         // Charger les statistiques normales
         chargerStatistiques();
@@ -388,12 +572,22 @@ function selectTypeEtat(type) {
         document.getElementById('statutField').style.display = 'none';
         document.getElementById('filtresCard').style.display = 'none';
         document.getElementById('uemoaAesSection').style.display = 'block';
+        document.getElementById('trieSection').style.display = 'none';
         // Charger l'état UEMOA/AES (les statistiques seront chargées automatiquement)
         chargerEtatUemoaAes();
+    } else if (type === 'trie') {
+        document.getElementById('programmeField').style.display = 'none';
+        document.getElementById('statutField').style.display = 'none';
+        document.getElementById('filtresCard').style.display = 'none';
+        document.getElementById('uemoaAesSection').style.display = 'none';
+        document.getElementById('trieSection').style.display = 'block';
+        // Charger les statistiques TRIE
+        chargerStatistiquesTrie();
     } else {
         document.getElementById('programmeField').style.display = 'block';
         document.getElementById('statutField').style.display = 'none';
         document.getElementById('uemoaAesSection').style.display = 'none';
+        document.getElementById('trieSection').style.display = 'none';
         document.getElementById('filtresCard').style.display = 'block';
         // Charger les statistiques normales
         chargerStatistiques();
@@ -402,6 +596,8 @@ function selectTypeEtat(type) {
     // Scroll vers la section appropriée
     if (type === 'uemoa-aes') {
         document.getElementById('uemoaAesSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if (type === 'trie') {
+        document.getElementById('trieSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else {
         document.getElementById('filtresCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -826,6 +1022,13 @@ function genererPDFUemoaAes() {
     window.open(url, '_blank');
 }
 
+// Fonction pour charger les statistiques TRIE (pour l'instant, les stats sont statiques)
+function chargerStatistiquesTrie() {
+    // Les statistiques sont calculées côté serveur dans la vue
+    // Cette fonction peut être étendue plus tard pour charger des stats dynamiques
+    console.log('Statistiques TRIE chargées');
+}
+
 // Charger les stats quand les filtres changent
 document.addEventListener('DOMContentLoaded', function() {
     ['annee', 'date_debut', 'date_fin', 'poste_id', 'programme', 'mois', 'statut'].forEach(id => {
@@ -834,6 +1037,7 @@ document.addEventListener('DOMContentLoaded', function() {
             element.addEventListener('change', chargerStatistiques);
         }
     });
+
 });
 </script>
 
