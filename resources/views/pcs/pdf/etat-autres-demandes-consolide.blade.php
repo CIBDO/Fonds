@@ -209,9 +209,9 @@
                     <th style="width: 8%;">DATE</th>
                     <th style="width: 15%;">POSTE</th>
                     <th style="width: 30%;">DÉSIGNATION</th>
-                    <th style="width: 12%;">DEMANDÉ (Millions FCFA)</th>
-                    <th style="width: 12%;">ACCORDÉ (Millions FCFA)</th>
-                    <th style="width: 12%;">ÉCART (Millions FCFA)</th>
+                    <th style="width: 12%;">DEMANDÉ (FCFA)</th>
+                    <th style="width: 12%;">ACCORDÉ (FCFA)</th>
+                    <th style="width: 12%;">ÉCART (FCFA)</th>
                     <th style="width: 11%;">% ACCORDÉ</th>
                 </tr>
             </thead>
@@ -222,8 +222,8 @@
                 @endphp
                 @foreach($autresDemandes as $demande)
                 @php
-                    $montantDemande = $demande->montant / 1000000;
-                    $montantAccorde = ($demande->montant_accord ?? $demande->montant) / 1000000;
+                    $montantDemande = $demande->montant;
+                    $montantAccorde = $demande->montant_accord ?? $demande->montant;
                     $ecart = $montantAccorde - $montantDemande;
                     $pourcentage = $demande->montant > 0 ? round(($demande->montant_accord ?? $demande->montant) / $demande->montant * 100, 1) : 0;
 
@@ -234,10 +234,10 @@
                     <td class="text-center">{{ \Carbon\Carbon::parse($demande->date_demande)->format('d/m/Y') }}</td>
                     <td class="text-left"><strong>{{ $demande->poste->nom }}</strong></td>
                     <td class="text-left">{{ $demande->designation }}</td>
-                    <td class="text-right">{{ number_format($montantDemande, 3, ',', ' ') }}</td>
-                    <td class="text-right">{{ number_format($montantAccorde, 3, ',', ' ') }}</td>
+                    <td class="text-right">{{ number_format($montantDemande, 0, ',', ' ') }}</td>
+                    <td class="text-right">{{ number_format($montantAccorde, 0, ',', ' ') }}</td>
                     <td class="text-right {{ $ecart > 0 ? 'positive' : ($ecart < 0 ? 'negative' : '') }}">
-                        {{ number_format($ecart, 3, ',', ' ') }}
+                        {{ number_format($ecart, 0, ',', ' ') }}
                     </td>
                     <td class="text-center">{{ $pourcentage }}%</td>
                 </tr>
@@ -246,10 +246,10 @@
             <tfoot>
                 <tr class="total-row">
                     <td colspan="3" class="text-left"><strong>TOTAL GÉNÉRAL</strong></td>
-                    <td class="text-right"><strong>{{ number_format($totalDemande / 1000000, 3, ',', ' ') }}</strong></td>
-                    <td class="text-right"><strong>{{ number_format($totalAccorde / 1000000, 3, ',', ' ') }}</strong></td>
+                    <td class="text-right"><strong>{{ number_format($totalDemande, 0, ',', ' ') }}</strong></td>
+                    <td class="text-right"><strong>{{ number_format($totalAccorde, 0, ',', ' ') }}</strong></td>
                     <td class="text-right {{ ($totalAccorde - $totalDemande) > 0 ? 'positive' : (($totalAccorde - $totalDemande) < 0 ? 'negative' : '') }}">
-                        <strong>{{ number_format(($totalAccorde - $totalDemande) / 1000000, 3, ',', ' ') }}</strong>
+                        <strong>{{ number_format(($totalAccorde - $totalDemande), 0, ',', ' ') }}</strong>
                     </td>
                     <td class="text-center"><strong>{{ $totalDemande > 0 ? round(($totalAccorde / $totalDemande) * 100, 1) : 0 }}%</strong></td>
                 </tr>

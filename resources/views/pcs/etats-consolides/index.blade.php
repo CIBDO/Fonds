@@ -108,9 +108,9 @@
                         <form id="filtreForm" method="GET" target="_blank">
                             @csrf
 
-                            <!-- Filtres communs -->
+                            <!-- Filtres principaux (en haut) -->
                             <div class="row mb-4">
-                                <div class="col-xl-3 col-lg-4 col-md-6">
+                                <div class="col-xl-4 col-lg-4 col-md-6">
                                     <label for="annee" class="form-label fw-bold">
                                         <i class="fas fa-calendar-year text-warning me-1"></i>
                                         Année de référence <span class="text-danger">*</span>
@@ -124,7 +124,7 @@
                                            max="{{ date('Y') + 1 }}"
                                            required>
                                 </div>
-                                <div class="col-xl-3 col-lg-4 col-md-6" id="programmeField">
+                                <div class="col-xl-4 col-lg-4 col-md-6" id="programmeField">
                                     <label for="programme" class="form-label fw-bold">
                                         <i class="fas fa-globe text-info me-1"></i>
                                         Programme <span class="text-danger">*</span>
@@ -135,33 +135,7 @@
                                         <option value="AES">AES</option>
                                     </select>
                                 </div>
-                                <div class="col-xl-3 col-lg-4 col-md-6">
-                                    <label for="date_debut" class="form-label fw-bold">
-                                        <i class="fas fa-calendar-plus text-success me-1"></i>
-                                        Date de début
-                                    </label>
-                                    <input type="date"
-                                           class="form-control"
-                                           id="date_debut"
-                                           name="date_debut"
-                                           value="{{ date('Y-01-01') }}">
-                                </div>
-                                <div class="col-xl-3 col-lg-4 col-md-6">
-                                    <label for="date_fin" class="form-label fw-bold">
-                                        <i class="fas fa-calendar-minus text-danger me-1"></i>
-                                        Date de fin
-                                    </label>
-                                    <input type="date"
-                                           class="form-control"
-                                           id="date_fin"
-                                           name="date_fin"
-                                           value="{{ date('Y-m-d') }}">
-                                </div>
-                            </div>
-
-                            <!-- Filtres supplémentaires -->
-                            <div class="row mb-4">
-                                <div class="col-xl-3 col-lg-4 col-md-6">
+                                <div class="col-xl-4 col-lg-4 col-md-6">
                                     <label for="poste_id" class="form-label fw-bold">
                                         <i class="fas fa-map-marker-alt text-info me-1"></i>
                                         Filtrer par poste
@@ -173,20 +147,11 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-xl-3 col-lg-4 col-md-6" id="statutField">
-                                    <label for="statut" class="form-label fw-bold">
-                                        <i class="fas fa-tags text-secondary me-1"></i>
-                                        Filtrer par statut
-                                    </label>
-                                    <select class="form-select" id="statut" name="statut">
-                                        <option value="">Tous les statuts</option>
-                                        <option value="brouillon">Brouillon</option>
-                                        <option value="soumis">Soumis</option>
-                                        <option value="valide">Validé</option>
-                                        <option value="rejete">Rejeté</option>
-                                    </select>
-                                </div>
-                                <div class="col-xl-3 col-lg-4 col-md-6">
+                            </div>
+
+                            <!-- Filtres supplémentaires -->
+                            <div class="row mb-4">
+                                <div class="col-xl-4 col-lg-4 col-md-6">
                                     <label for="mois" class="form-label fw-bold">
                                         <i class="fas fa-calendar-day text-primary me-1"></i>
                                         Filtrer par mois
@@ -198,7 +163,7 @@
                                         @endfor
                                     </select>
                                 </div>
-                                <div class="col-xl-3 col-lg-4 col-md-6">
+                                <div class="col-xl-4 col-lg-4 col-md-6">
                                     <label for="format" class="form-label fw-bold">
                                         <i class="fas fa-file-export text-primary me-1"></i>
                                         Format d'export
@@ -206,6 +171,19 @@
                                     <select class="form-select" id="format" name="format">
                                         <option value="pdf">PDF</option>
                                         <option value="excel">Excel</option>
+                                    </select>
+                                </div>
+                                <div class="col-xl-4 col-lg-4 col-md-6" id="statutField" style="display: none;">
+                                    <label for="statut" class="form-label fw-bold">
+                                        <i class="fas fa-tags text-secondary me-1"></i>
+                                        Filtrer par statut
+                                    </label>
+                                    <select class="form-select" id="statut" name="statut">
+                                        <option value="">Tous les statuts</option>
+                                        <option value="brouillon">Brouillon</option>
+                                        <option value="soumis">Soumis</option>
+                                        <option value="valide">Validé</option>
+                                        <option value="rejete">Rejeté</option>
                                     </select>
                                 </div>
                             </div>
@@ -613,21 +591,34 @@ function genererEtat() {
         return;
     }
 
+    const anneeEl = document.getElementById('annee');
+    const dateDebutEl = document.getElementById('date_debut');
+    const dateFinEl = document.getElementById('date_fin');
+    const posteIdEl = document.getElementById('poste_id');
+    const moisEl = document.getElementById('mois');
+    const formatEl = document.getElementById('format');
+
     const params = new URLSearchParams({
         type: typeEtatSelectionne,
-        annee: document.getElementById('annee').value,
-        date_debut: document.getElementById('date_debut').value,
-        date_fin: document.getElementById('date_fin').value,
-        poste_id: document.getElementById('poste_id').value,
-        mois: document.getElementById('mois').value,
-        format: document.getElementById('format').value,
+        annee: anneeEl ? anneeEl.value : '',
+        date_debut: dateDebutEl ? dateDebutEl.value : '',
+        date_fin: dateFinEl ? dateFinEl.value : '',
+        poste_id: posteIdEl ? posteIdEl.value : '',
+        mois: moisEl ? moisEl.value : '',
+        format: formatEl ? formatEl.value : 'pdf',
         _token: '{{ csrf_token() }}'
     });
 
     if (typeEtatSelectionne !== 'autres-demandes') {
-        params.append('programme', document.getElementById('programme').value);
+        const programmeEl = document.getElementById('programme');
+        if (programmeEl) {
+            params.append('programme', programmeEl.value);
+        }
     } else {
-        params.append('statut', document.getElementById('statut').value);
+        const statutEl = document.getElementById('statut');
+        if (statutEl) {
+            params.append('statut', statutEl.value);
+        }
     }
 
     const url = '{{ route("pcs.etats-consolides.generer") }}?' + params.toString();
@@ -647,21 +638,33 @@ function afficherApercu() {
     const modal = new bootstrap.Modal(document.getElementById('apercuModal'));
     modal.show();
 
+    const anneeEl = document.getElementById('annee');
+    const dateDebutEl = document.getElementById('date_debut');
+    const dateFinEl = document.getElementById('date_fin');
+    const posteIdEl = document.getElementById('poste_id');
+    const moisEl = document.getElementById('mois');
+
     const params = new URLSearchParams({
         type: typeEtatSelectionne,
-        annee: document.getElementById('annee').value,
-        date_debut: document.getElementById('date_debut').value,
-        date_fin: document.getElementById('date_fin').value,
-        poste_id: document.getElementById('poste_id').value,
-        mois: document.getElementById('mois').value,
+        annee: anneeEl ? anneeEl.value : '',
+        date_debut: dateDebutEl ? dateDebutEl.value : '',
+        date_fin: dateFinEl ? dateFinEl.value : '',
+        poste_id: posteIdEl ? posteIdEl.value : '',
+        mois: moisEl ? moisEl.value : '',
         apercu: '1',
         _token: '{{ csrf_token() }}'
     });
 
     if (typeEtatSelectionne !== 'autres-demandes') {
-        params.append('programme', document.getElementById('programme').value);
+        const programmeEl = document.getElementById('programme');
+        if (programmeEl) {
+            params.append('programme', programmeEl.value);
+        }
     } else {
-        params.append('statut', document.getElementById('statut').value);
+        const statutEl = document.getElementById('statut');
+        if (statutEl) {
+            params.append('statut', statutEl.value);
+        }
     }
 
     fetch('{{ route("pcs.etats-consolides.apercu") }}?' + params.toString())
@@ -682,21 +685,32 @@ function afficherApercu() {
 function chargerStatistiques() {
     if (!typeEtatSelectionne) return;
 
-    // Ne pas charger les statistiques pour UEMOA/AES (elles sont chargées séparément)
-    if (typeEtatSelectionne === 'uemoa-aes') return;
+    // Ne pas charger les statistiques pour UEMOA/AES et TRIE (elles sont chargées séparément)
+    if (typeEtatSelectionne === 'uemoa-aes' || typeEtatSelectionne === 'trie') return;
+
+    const anneeEl = document.getElementById('annee');
+    const dateDebutEl = document.getElementById('date_debut');
+    const dateFinEl = document.getElementById('date_fin');
+    const posteIdEl = document.getElementById('poste_id');
+    const moisEl = document.getElementById('mois');
+
+    if (!anneeEl) return; // Si l'élément n'existe pas, ne pas continuer
 
     const params = new URLSearchParams({
         type: typeEtatSelectionne,
-        annee: document.getElementById('annee').value,
-        date_debut: document.getElementById('date_debut').value,
-        date_fin: document.getElementById('date_fin').value,
-        poste_id: document.getElementById('poste_id').value,
-        mois: document.getElementById('mois').value,
+        annee: anneeEl.value,
+        date_debut: dateDebutEl ? dateDebutEl.value : '',
+        date_fin: dateFinEl ? dateFinEl.value : '',
+        poste_id: posteIdEl ? posteIdEl.value : '',
+        mois: moisEl ? moisEl.value : '',
         _token: '{{ csrf_token() }}'
     });
 
     if (typeEtatSelectionne !== 'autres-demandes') {
-        params.append('programme', document.getElementById('programme').value);
+        const programmeEl = document.getElementById('programme');
+        if (programmeEl) {
+            params.append('programme', programmeEl.value);
+        }
     }
 
     fetch('{{ route("pcs.etats-consolides.stats") }}?' + params.toString())
@@ -753,10 +767,26 @@ function chargerStatistiques() {
 }
 
 function resetForm() {
-    document.getElementById('filtreForm').reset();
-    document.getElementById('annee').value = '{{ date("Y") }}';
-    document.getElementById('date_debut').value = '{{ date("Y-01-01") }}';
-    document.getElementById('date_fin').value = '{{ date("Y-m-d") }}';
+    const filtreForm = document.getElementById('filtreForm');
+    if (filtreForm) {
+        filtreForm.reset();
+    }
+
+    const anneeEl = document.getElementById('annee');
+    if (anneeEl) {
+        anneeEl.value = '{{ date("Y") }}';
+    }
+
+    const dateDebutEl = document.getElementById('date_debut');
+    if (dateDebutEl) {
+        dateDebutEl.value = '{{ date("Y-01-01") }}';
+    }
+
+    const dateFinEl = document.getElementById('date_fin');
+    if (dateFinEl) {
+        dateFinEl.value = '{{ date("Y-m-d") }}';
+    }
+
     chargerStatistiques();
 }
 
