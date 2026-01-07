@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use RealRashid\SweetAlert\Facades\Alert;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use App\Notifications\PcsDeclarationValidee;
+use App\Notifications\PcsDeclarationSoumise;
 
 class DeclarationPcsController extends Controller
 {
@@ -232,9 +233,9 @@ class DeclarationPcsController extends Controller
 
             DB::commit();
 
-            // Envoyer notification à l'ACCT si soumission (déclaration validée)
+            // Envoyer notification à l'ACCT si soumission
             if ($request->input('action') === 'soumettre') {
-                $this->envoyerNotificationValidation($poste, $request);
+                $this->envoyerNotificationSoumission($poste, $request);
             }
 
             $nbMois = !empty($moisSelectionnes) ? count($moisSelectionnes) : 1;
@@ -545,13 +546,30 @@ class DeclarationPcsController extends Controller
             'valide_par' => $request->input('action') === 'soumettre' ? $user->id : $declaration->valide_par,
         ]);
 
-        // Envoyer notification à l'ACCT si soumission (déclaration validée)
+        // Envoyer notification à l'ACCT si soumission
         if ($request->input('action') === 'soumettre') {
-            $this->envoyerNotificationValidationUnique($declaration);
+            $this->envoyerNotificationSoumissionUnique($declaration);
         }
 
         Alert::success('Succès', 'Déclaration modifiée avec succès');
         return redirect()->route('pcs.declarations.index');
+    }
+
+    /**
+     * Envoyer notification de soumission à l'ACCT pour une seule déclaration
+     */
+    private function envoyerNotificationSoumissionUnique($declaration)
+    {
+        // Charger les relations nécessaires pour la notification
+        $declaration->load(['poste', 'bureauDouane']);
+
+        // Récupérer tous les utilisateurs ACCT pour les notifier
+        $acctUsers = User::whereIn('role', ['acct', 'admin'])->get();
+
+        // Envoyer notification à chaque utilisateur ACCT
+        foreach ($acctUsers as $acctUser) {
+            $acctUser->notify(new PcsDeclarationSoumise($declaration));
+        }
     }
 
     /**
@@ -638,6 +656,32 @@ class DeclarationPcsController extends Controller
         }
 
         return $donnees;
+    }
+
+    /**
+     * Envoyer notification de soumission à l'ACCT pour les déclarations créées
+     */
+    private function envoyerNotificationSoumission($poste, $request)
+    {
+        // Récupérer tous les utilisateurs ACCT pour les notifier
+        $acctUsers = User::whereIn('role', ['acct', 'admin'])->get();
+
+        // Récupérer les déclarations créées pour cette soumission
+        // On utilise une plage de temps pour récupérer les déclarations créées pendant la transaction
+        $declarations = DeclarationPcs::where('saisi_par', Auth::id())
+            ->where('date_soumission', '>=', now()->subMinutes(1)->format('Y-m-d H:i:s'))
+            ->where('statut', 'valide')
+            ->get();
+
+        // Envoyer notification pour chaque déclaration à chaque utilisateur ACCT
+        foreach ($declarations as $declaration) {
+            // Charger les relations nécessaires pour la notification
+            $declaration->load(['poste', 'bureauDouane']);
+
+            foreach ($acctUsers as $acctUser) {
+                $acctUser->notify(new PcsDeclarationSoumise($declaration));
+            }
+        }
     }
 
     /**

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CotisationTrie;
 use App\Models\BureauTrie;
 use App\Models\Poste;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 use RealRashid\SweetAlert\Facades\Alert;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
+use App\Notifications\TrieCotisationSoumise;
 
 class CotisationTrieController extends Controller
 {
@@ -282,7 +284,7 @@ class CotisationTrieController extends Controller
             }
 
             // Créer la cotisation directement validée
-            CotisationTrie::create([
+            $cotisation = CotisationTrie::create([
                 'poste_id' => $posteId,
                 'bureau_trie_id' => $bureauData['bureau_trie_id'],
                 'mois' => $mois,
@@ -300,6 +302,12 @@ class CotisationTrieController extends Controller
                 'saisi_par' => $user->id,
                 'valide_par' => $user->id,
             ]);
+
+            // Charger les relations pour la notification
+            $cotisation->load(['poste', 'bureauTrie']);
+
+            // Envoyer notification à l'ACCT
+            $this->envoyerNotificationACCT($cotisation);
         }
     }
 
@@ -347,7 +355,7 @@ class CotisationTrieController extends Controller
                     }
 
                     // Créer la cotisation directement validée
-                    CotisationTrie::create([
+                    $cotisation = CotisationTrie::create([
                         'poste_id' => $posteId,
                         'bureau_trie_id' => $bureau->id,
                         'mois' => $mois,
@@ -366,6 +374,12 @@ class CotisationTrieController extends Controller
                         'valide_par' => $user->id,
                     ]);
 
+                    // Charger les relations pour la notification
+                    $cotisation->load(['poste', 'bureauTrie']);
+
+                    // Envoyer notification à l'ACCT
+                    $this->envoyerNotificationACCT($cotisation);
+
                     $nbCotisations++;
                 }
             }
@@ -373,6 +387,20 @@ class CotisationTrieController extends Controller
 
         if ($nbCotisations === 0) {
             throw new \Exception('Aucune cotisation à enregistrer. Veuillez saisir au moins un montant.');
+        }
+    }
+
+    /**
+     * Envoyer notification à l'ACCT pour une cotisation
+     */
+    private function envoyerNotificationACCT($cotisation)
+    {
+        // Récupérer tous les utilisateurs ACCT pour les notifier
+        $acctUsers = User::whereIn('role', ['acct', 'admin'])->get();
+
+        // Envoyer notification à chaque utilisateur ACCT
+        foreach ($acctUsers as $acctUser) {
+            $acctUser->notify(new TrieCotisationSoumise($cotisation));
         }
     }
 

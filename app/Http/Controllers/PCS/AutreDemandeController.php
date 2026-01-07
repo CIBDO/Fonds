@@ -341,6 +341,9 @@ class AutreDemandeController extends Controller
 
         $demande->rejeter($user->id, $request->motif_rejet);
 
+        // Recharger la demande avec les relations pour la notification
+        $demande->load(['poste', 'saisiPar']);
+
         // Notifier le demandeur
         if ($demande->saisiPar) {
             $demande->saisiPar->notify(new PcsAutreDemandeRejetee($demande));
@@ -369,16 +372,16 @@ class AutreDemandeController extends Controller
     }
 
     /**
-     * Envoyer notification de soumission aux validateurs
+     * Envoyer notification de soumission aux validateurs (ACCT)
      */
     private function envoyerNotificationSoumission($demande)
     {
-        // Récupérer tous les utilisateurs qui peuvent valider les demandes PCS
-        $validateurs = User::where('peut_valider_pcs', true)->get();
+        // Récupérer tous les utilisateurs ACCT pour les notifier
+        $acctUsers = User::whereIn('role', ['acct', 'admin'])->get();
 
-        // Envoyer notification à chaque validateur
-        foreach ($validateurs as $validateur) {
-            $validateur->notify(new PcsAutreDemandeSoumise($demande));
+        // Envoyer notification à chaque utilisateur ACCT
+        foreach ($acctUsers as $acctUser) {
+            $acctUser->notify(new PcsAutreDemandeSoumise($demande));
         }
     }
 

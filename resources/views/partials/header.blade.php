@@ -89,6 +89,12 @@
                                                 <i class="fas fa-check-circle text-success"></i>
                                             @elseif($notification->type === 'App\Notifications\PcsAutreDemandeRejetee')
                                                 <i class="fas fa-times-circle text-danger"></i>
+                                            @elseif($notification->type === 'App\Notifications\TrieCotisationSoumise')
+                                                <i class="fas fa-coins text-info"></i>
+                                            @elseif($notification->type === 'App\Notifications\TrieCotisationValidee')
+                                                <i class="fas fa-check-circle text-success"></i>
+                                            @elseif($notification->type === 'App\Notifications\TrieCotisationRejetee')
+                                                <i class="fas fa-times-circle text-danger"></i>
                                             @else
                                                 <i class="fas fa-bell text-primary"></i>
                                             @endif
@@ -121,6 +127,15 @@
                                                 <div class="dgtcp-notification-title">{{ $notification->data['title'] }}</div>
                                                 <div class="dgtcp-notification-message">{{ $notification->data['message'] }}</div>
                                             @elseif($notification->type === 'App\Notifications\PcsAutreDemandeRejetee')
+                                                <div class="dgtcp-notification-title">{{ $notification->data['title'] }}</div>
+                                                <div class="dgtcp-notification-message">{{ $notification->data['message'] }}</div>
+                                            @elseif($notification->type === 'App\Notifications\TrieCotisationSoumise')
+                                                <div class="dgtcp-notification-title">{{ $notification->data['title'] }}</div>
+                                                <div class="dgtcp-notification-message">{{ $notification->data['message'] }}</div>
+                                            @elseif($notification->type === 'App\Notifications\TrieCotisationValidee')
+                                                <div class="dgtcp-notification-title">{{ $notification->data['title'] }}</div>
+                                                <div class="dgtcp-notification-message">{{ $notification->data['message'] }}</div>
+                                            @elseif($notification->type === 'App\Notifications\TrieCotisationRejetee')
                                                 <div class="dgtcp-notification-title">{{ $notification->data['title'] }}</div>
                                                 <div class="dgtcp-notification-message">{{ $notification->data['message'] }}</div>
                                             @else
