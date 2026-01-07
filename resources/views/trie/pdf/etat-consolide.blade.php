@@ -197,7 +197,7 @@
     </table>
 
     <!-- Tableau récapitulatif 2 années -->
-    <table class="summary-table">
+   {{--  <table class="summary-table">
         <thead>
             <tr>
                 <th style="width: 40%;">DESIGNATION</th>
@@ -244,7 +244,7 @@
                 <td class="text-right">{{ number_format($totalAnneePrecedente + $totalAnneeActuelle, 0, ',', ' ') }}</td>
             </tr>
         </tbody>
-    </table>
+    </table> --}}
 </body>
 </html>
 

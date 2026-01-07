@@ -141,7 +141,7 @@
 
     <!-- Titre principal -->
     <div class="main-title">
-        ÉTAT DES RECOUVREMENTS DU PCS-{{ $programme }} AU TITRE DE L'EXERCICE {{ $annee }}
+        ÉTAT DES RECOUVREMENTS DU PCS-{{ $programme ? $programme : 'TOUS LES PROGRAMMES' }} AU TITRE DE L'EXERCICE {{ $annee }}
     </div>
 
         {{-- <div class="subtitle-period">
@@ -153,6 +153,7 @@
     </div>
 
     <!-- Tableau RECOUVREMENTS -->
+    @if(count($recouvrementsParPoste) > 0)
     <table>
         <thead>
             <tr>
@@ -193,6 +194,11 @@
             </tr>
         </tfoot>
     </table>
+    @else
+    <div style="text-align: center; padding: 40px; font-size: 12px; color: #666;">
+        <p>Aucune donnée de recouvrement trouvée pour les critères sélectionnés.</p>
+    </div>
+    @endif
 
     <!-- Signature -->
     <div class="signature">

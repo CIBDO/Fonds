@@ -149,7 +149,7 @@
 
     <!-- Titre principal -->
     <div class="main-title">
-        ÉTAT DES REVERSEMENTS DU PCS-{{ $programme }} AU TITRE DE L'EXERCICE {{ $annee }}
+        ÉTAT DES REVERSEMENTS DU PCS-{{ $programme ? $programme : 'TOUS LES PROGRAMMES' }} AU TITRE DE L'EXERCICE {{ $annee }}
     </div>
 
    {{--  <div class="subtitle-period">
@@ -161,6 +161,7 @@
     </div>
 
     <!-- Tableau REVERSEMENTS -->
+    @if(count($reversementsParPoste) > 0)
     <table>
         <thead>
             <tr>
@@ -201,6 +202,11 @@
             </tr>
         </tfoot>
     </table>
+    @else
+    <div style="text-align: center; padding: 40px; font-size: 12px; color: #666;">
+        <p>Aucune donnée de reversement trouvée pour les critères sélectionnés.</p>
+    </div>
+    @endif
 
     <!-- Signature -->
     <div class="signature">

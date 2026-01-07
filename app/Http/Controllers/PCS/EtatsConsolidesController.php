@@ -57,8 +57,12 @@ class EtatsConsolidesController extends Controller
 
         $query = DeclarationPcs::with(['poste', 'bureauDouane'])
             ->where('annee', $annee)
-            ->where('programme', $programme)
             ->where('statut', 'valide'); // Uniquement les déclarations validées
+
+        // Filtrer par programme seulement si spécifié
+        if ($programme && $programme !== '') {
+            $query->where('programme', $programme);
+        }
 
         if ($dateDebut && $dateFin) {
             $query->whereBetween('created_at', [$dateDebut . ' 00:00:00', $dateFin . ' 23:59:59']);
@@ -74,11 +78,19 @@ class EtatsConsolidesController extends Controller
         $totalRecouvrements = 0;
 
         foreach ($declarations as $declaration) {
-            $nomPoste = $declaration->poste_id ? $declaration->poste->nom : $declaration->bureauDouane->libelle;
+            // Déterminer le nom du poste
+            if ($declaration->poste_id && $declaration->poste) {
+                $nomPoste = $declaration->poste->nom;
+            } elseif ($declaration->bureauDouane) {
+                $nomPoste = $declaration->bureauDouane->libelle;
+            } else {
+                $nomPoste = 'Non défini';
+            }
+
             $moisDeclaration = $declaration->mois;
 
             // Montant en FCFA (sans conversion)
-            $montantRecouvrement = $declaration->montant_recouvrement;
+            $montantRecouvrement = $declaration->montant_recouvrement ?? 0;
 
             if (!isset($recouvrementsParPoste[$nomPoste])) {
                 $recouvrementsParPoste[$nomPoste] = [
@@ -94,6 +106,9 @@ class EtatsConsolidesController extends Controller
 
         ksort($recouvrementsParPoste);
 
+        // Utiliser "TOUS" si aucun programme spécifique
+        $programmeLabel = ($programme && $programme !== '') ? $programme : 'TOUS';
+
         $pdf = PDF::loadView('pcs.pdf.etat-recouvrements', compact(
             'recouvrementsParPoste',
             'totalRecouvrementsMensuel',
@@ -102,7 +117,7 @@ class EtatsConsolidesController extends Controller
             'programme'
         ));
 
-        return $pdf->download("Etat_Recouvrements_PCS_{$programme}_{$annee}.pdf");
+        return $pdf->download("Etat_Recouvrements_PCS_{$programmeLabel}_{$annee}.pdf");
     }
 
     /**
@@ -119,8 +134,12 @@ class EtatsConsolidesController extends Controller
 
         $query = DeclarationPcs::with(['poste', 'bureauDouane'])
             ->where('annee', $annee)
-            ->where('programme', $programme)
             ->where('statut', 'valide'); // Uniquement les déclarations validées
+
+        // Filtrer par programme seulement si spécifié
+        if ($programme && $programme !== '') {
+            $query->where('programme', $programme);
+        }
 
         if ($dateDebut && $dateFin) {
             $query->whereBetween('created_at', [$dateDebut . ' 00:00:00', $dateFin . ' 23:59:59']);
@@ -130,35 +149,27 @@ class EtatsConsolidesController extends Controller
 
         $declarations = $query->get();
 
-        // Organiser les données
-        $recouvrementsParPoste = [];
+        // Organiser les données pour les reversements uniquement
         $reversementsParPoste = [];
-        $totalRecouvrementsMensuel = array_fill(1, 12, 0);
         $totalReversementsMensuel = array_fill(1, 12, 0);
-        $totalRecouvrements = 0;
         $totalReversements = 0;
 
         foreach ($declarations as $declaration) {
-            $nomPoste = $declaration->poste_id ? $declaration->poste->nom : $declaration->bureauDouane->libelle;
+            // Déterminer le nom du poste
+            if ($declaration->poste_id && $declaration->poste) {
+                $nomPoste = $declaration->poste->nom;
+            } elseif ($declaration->bureauDouane) {
+                $nomPoste = $declaration->bureauDouane->libelle;
+            } else {
+                $nomPoste = 'Non défini';
+            }
+
             $moisDeclaration = $declaration->mois;
 
-            // Montants en FCFA (sans conversion)
-            $montantRecouvrement = $declaration->montant_recouvrement;
-            $montantReversement = $declaration->montant_reversement;
+            // Montant en FCFA (sans conversion)
+            $montantReversement = $declaration->montant_reversement ?? 0;
 
-            // Recouvrements
-            if (!isset($recouvrementsParPoste[$nomPoste])) {
-                $recouvrementsParPoste[$nomPoste] = [
-                    'mois' => array_fill(1, 12, 0),
-                    'total' => 0
-                ];
-            }
-            $recouvrementsParPoste[$nomPoste]['mois'][$moisDeclaration] += $montantRecouvrement;
-            $recouvrementsParPoste[$nomPoste]['total'] += $montantRecouvrement;
-            $totalRecouvrementsMensuel[$moisDeclaration] += $montantRecouvrement;
-            $totalRecouvrements += $montantRecouvrement;
-
-            // Reversements
+            // Reversements uniquement
             if (!isset($reversementsParPoste[$nomPoste])) {
                 $reversementsParPoste[$nomPoste] = [
                     'mois' => array_fill(1, 12, 0),
@@ -173,6 +184,9 @@ class EtatsConsolidesController extends Controller
 
         ksort($reversementsParPoste);
 
+        // Utiliser "TOUS" si aucun programme spécifique
+        $programmeLabel = ($programme && $programme !== '') ? $programme : 'TOUS';
+
         $pdf = PDF::loadView('pcs.pdf.etat-reversements', compact(
             'reversementsParPoste',
             'totalReversementsMensuel',
@@ -181,7 +195,7 @@ class EtatsConsolidesController extends Controller
             'programme'
         ));
 
-        return $pdf->download("Etat_Reversements_PCS_{$programme}_{$annee}.pdf");
+        return $pdf->download("Etat_Reversements_PCS_{$programmeLabel}_{$annee}.pdf");
     }
 
     /**
@@ -198,8 +212,12 @@ class EtatsConsolidesController extends Controller
 
         $query = DeclarationPcs::with(['poste', 'bureauDouane'])
             ->where('annee', $annee)
-            ->where('programme', $programme)
             ->where('statut', 'valide'); // Uniquement les déclarations validées
+
+        // Filtrer par programme seulement si spécifié
+        if ($programme && $programme !== '') {
+            $query->where('programme', $programme);
+        }
 
         if ($dateDebut && $dateFin) {
             $query->whereBetween('created_at', [$dateDebut . ' 00:00:00', $dateFin . ' 23:59:59']);

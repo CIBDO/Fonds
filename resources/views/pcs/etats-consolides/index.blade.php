@@ -154,7 +154,7 @@
                                 <div class="col-xl-4 col-lg-4 col-md-6">
                                     <label for="mois" class="form-label fw-bold">
                                         <i class="fas fa-calendar-day text-primary me-1"></i>
-                                        Filtrer par mois
+                                        Filtrer par mois <span id="moisRequired" class="text-danger" style="display: none;">*</span>
                                     </label>
                                     <select class="form-select" id="mois" name="mois">
                                         <option value="">Tous les mois</option>
@@ -184,6 +184,16 @@
                                         <option value="soumis">Soumis</option>
                                         <option value="valide">Validé</option>
                                         <option value="rejete">Rejeté</option>
+                                    </select>
+                                </div>
+                                <div class="col-xl-4 col-lg-4 col-md-6" id="typeEtatTrieField" style="display: none;">
+                                    <label for="type_etat_trie" class="form-label fw-bold">
+                                        <i class="fas fa-file-alt text-primary me-1"></i>
+                                        Type d'état TRIE <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" id="type_etat_trie" name="type_etat_trie">
+                                        <option value="mensuel">État Mensuel</option>
+                                        <option value="consolide">État Consolidé</option>
                                     </select>
                                 </div>
                             </div>
@@ -516,6 +526,8 @@
 @endsection
 
 @section('add-js')
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 let typeEtatSelectionne = null;
 
@@ -556,14 +568,18 @@ function selectTypeEtat(type) {
     } else if (type === 'trie') {
         document.getElementById('programmeField').style.display = 'none';
         document.getElementById('statutField').style.display = 'none';
-        document.getElementById('filtresCard').style.display = 'none';
+        document.getElementById('typeEtatTrieField').style.display = 'block';
         document.getElementById('uemoaAesSection').style.display = 'none';
-        document.getElementById('trieSection').style.display = 'block';
+        document.getElementById('trieSection').style.display = 'none';
+        document.getElementById('filtresCard').style.display = 'block';
+        // Gérer l'affichage du champ mois requis
+        gererChampMoisTrie();
         // Charger les statistiques TRIE
         chargerStatistiquesTrie();
     } else {
         document.getElementById('programmeField').style.display = 'block';
         document.getElementById('statutField').style.display = 'none';
+        document.getElementById('typeEtatTrieField').style.display = 'none';
         document.getElementById('uemoaAesSection').style.display = 'none';
         document.getElementById('trieSection').style.display = 'none';
         document.getElementById('filtresCard').style.display = 'block';
@@ -574,20 +590,56 @@ function selectTypeEtat(type) {
     // Scroll vers la section appropriée
     if (type === 'uemoa-aes') {
         document.getElementById('uemoaAesSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else if (type === 'trie') {
-        document.getElementById('trieSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else {
         document.getElementById('filtresCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 }
 
+// Fonction helper pour afficher des alertes
+function showAlert(icon, title, text) {
+    if (typeof Swal !== 'undefined' && Swal.fire) {
+        Swal.fire({
+            icon: icon,
+            title: title,
+            text: text,
+        });
+    } else {
+        alert(title + ': ' + text);
+    }
+}
+
 function genererEtat() {
     if (!typeEtatSelectionne) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Type d\'état non sélectionné',
-            text: 'Veuillez sélectionner un type d\'état à générer',
-        });
+        showAlert('warning', 'Type d\'état non sélectionné', 'Veuillez sélectionner un type d\'état à générer');
+        return;
+    }
+
+    // Pour les états TRIE, utiliser les routes spécifiques
+    if (typeEtatSelectionne === 'trie') {
+        const typeEtatTrieEl = document.getElementById('type_etat_trie');
+        const anneeEl = document.getElementById('annee');
+        const moisEl = document.getElementById('mois');
+
+        if (!typeEtatTrieEl || !anneeEl) {
+            showAlert('error', 'Erreur', 'Veuillez remplir tous les champs requis');
+            return;
+        }
+
+        const typeEtatTrie = typeEtatTrieEl.value;
+        const annee = anneeEl.value;
+        const mois = moisEl ? moisEl.value : '';
+
+        if (typeEtatTrie === 'mensuel') {
+            if (!mois) {
+                showAlert('warning', 'Mois requis', 'Veuillez sélectionner un mois pour l\'état mensuel');
+                return;
+            }
+            const url = '{{ route("trie.etats.mensuel") }}?mois=' + mois + '&annee=' + annee;
+            window.open(url, '_blank');
+        } else if (typeEtatTrie === 'consolide') {
+            const url = '{{ route("trie.etats.consolide") }}?annee=' + annee;
+            window.open(url, '_blank');
+        }
         return;
     }
 
@@ -627,11 +679,7 @@ function genererEtat() {
 
 function afficherApercu() {
     if (!typeEtatSelectionne) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Type d\'état non sélectionné',
-            text: 'Veuillez sélectionner un type d\'état pour l\'aperçu',
-        });
+        showAlert('warning', 'Type d\'état non sélectionné', 'Veuillez sélectionner un type d\'état pour l\'aperçu');
         return;
     }
 
@@ -1059,6 +1107,28 @@ function chargerStatistiquesTrie() {
     console.log('Statistiques TRIE chargées');
 }
 
+// Fonction pour gérer l'affichage du champ mois selon le type d'état TRIE
+function gererChampMoisTrie() {
+    const typeEtatTrieEl = document.getElementById('type_etat_trie');
+    const moisRequiredEl = document.getElementById('moisRequired');
+    const moisEl = document.getElementById('mois');
+
+    if (typeEtatTrieEl && moisRequiredEl && moisEl) {
+        const updateMoisRequired = () => {
+            if (typeEtatTrieEl.value === 'mensuel') {
+                moisRequiredEl.style.display = 'inline';
+                moisEl.setAttribute('required', 'required');
+            } else {
+                moisRequiredEl.style.display = 'none';
+                moisEl.removeAttribute('required');
+            }
+        };
+
+        updateMoisRequired();
+        typeEtatTrieEl.addEventListener('change', updateMoisRequired);
+    }
+}
+
 // Charger les stats quand les filtres changent
 document.addEventListener('DOMContentLoaded', function() {
     ['annee', 'date_debut', 'date_fin', 'poste_id', 'programme', 'mois', 'statut'].forEach(id => {
@@ -1068,6 +1138,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Gérer le champ mois pour TRIE
+    const typeEtatTrieEl = document.getElementById('type_etat_trie');
+    if (typeEtatTrieEl) {
+        typeEtatTrieEl.addEventListener('change', gererChampMoisTrie);
+    }
 });
 </script>
 
