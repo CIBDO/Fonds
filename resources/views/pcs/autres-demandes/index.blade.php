@@ -14,9 +14,11 @@
             </div>
             <div class="col-auto">
                 <div class="btn-group" role="group">
+                    @if(!auth()->user()->hasRole('acct'))
                     <a href="{{ route('pcs.autres-demandes.create') }}" class="btn btn-danger btn-sm">
                         <i class="fas fa-plus me-1"></i>Nouvelle Demande
                     </a>
+                    @endif
                     @if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct', 'admin']))
                     <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalEtatConsolideAutresDemandes">
                         <i class="fas fa-file-export me-1"></i>État Consolidé

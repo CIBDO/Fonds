@@ -14,6 +14,7 @@
                 </div>
             </div>
             <div class="col-auto">
+                @if(!auth()->user()->hasRole('acct'))
                 <div class="btn-group" role="group">
                     <a href="{{ route('pcs.declarations.create') }}" class="btn btn-danger btn-sm">
                         <i class="fas fa-plus me-1"></i>Nouvelle Déclaration
@@ -36,6 +37,7 @@
                         @endif
                     </ul>
                 </div>
+                @endif
             </div>
         </div>
     </div>

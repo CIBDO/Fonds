@@ -159,11 +159,11 @@
                 <!-- MODULE PCS - SECTION ACCT (Validation & États Consolidés) -->
                 @if (Auth::user()->peut_valider_pcs || Auth::user()->hasRole('acct'))
                     <li class="menu-title">
-                        <span>PCS - ACCT</span>
+                        <span>PCS - Demandes</span>
                     </li>
 
                     <!-- Validation PCS -->
-                    <li class="submenu {{ request()->routeIs('pcs.declarations.*') || request()->routeIs('pcs.autres-demandes.index') || request()->routeIs('pcs.autres-demandes.show') || request()->routeIs('pcs.autres-demandes.statistiques') ? 'active' : '' }}">
+                    <li class="submenu {{ request()->routeIs('pcs.declarations.*') ? 'active' : '' }}">
                         <a href="#" class="submenu-toggle">
                             <i class="fas fa-check-double"></i>
                             <span>Validation PCS</span>
@@ -172,8 +172,19 @@
                         <ul class="submenu-list">
                             <li><a href="{{ route('pcs.declarations.index') }}" class="{{ request()->routeIs('pcs.declarations.index') || request()->routeIs('pcs.declarations.show') ? 'active' : '' }}">
                                 <i class="fas fa-file-invoice-dollar"></i>Déclarations PCS</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Autres Demandes PCS - ACCT -->
+                    <li class="submenu {{ request()->routeIs('pcs.autres-demandes.*') ? 'active' : '' }}">
+                        <a href="#" class="submenu-toggle">
+                            <i class="fas fa-folder-open"></i>
+                            <span>Autres Demandes</span>
+                            <span class="menu-arrow fas fa-chevron-right"></span>
+                        </a>
+                        <ul class="submenu-list">
                             <li><a href="{{ route('pcs.autres-demandes.index') }}" class="{{ request()->routeIs('pcs.autres-demandes.index') || request()->routeIs('pcs.autres-demandes.show') ? 'active' : '' }}">
-                                <i class="fas fa-folder-open"></i>Autres Demandes</a></li>
+                                <i class="fas fa-folder-open"></i>Demandes</a></li>
                             <li><a href="{{ route('pcs.autres-demandes.statistiques') }}" class="{{ request()->routeIs('pcs.autres-demandes.statistiques') ? 'active' : '' }}">
                                 <i class="fas fa-chart-pie"></i>Statistiques</a></li>
                         </ul>

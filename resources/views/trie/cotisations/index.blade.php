@@ -24,9 +24,11 @@
                     <i class="fas fa-file-export me-1"></i>État Consolidé
                 </button>
                 @endif
+                @if(!auth()->user()->hasRole('acct'))
                 <a href="{{ route('trie.cotisations.create') }}" class="btn btn-primary btn-sm">
                     <i class="fas fa-plus me-1"></i>Nouvelle Cotisation
                 </a>
+                @endif
             </div>
         </div>
     </div>
