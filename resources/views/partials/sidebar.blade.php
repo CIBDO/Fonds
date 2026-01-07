@@ -130,12 +130,19 @@
                                 <i class="fas fa-list"></i>Mes Déclarations</a></li>
                         </ul>
                     </li>
+                @endif
+
+                <!-- MODULE AUTRES DEMANDES PCS - SECTION POSTES (Saisie uniquement) -->
+                @if ((Auth::user()->peut_saisir_pcs || Auth::user()->poste_id) && !Auth::user()->peut_valider_pcs && !Auth::user()->hasRole('acct'))
+                    <li class="menu-title">
+                        <span>Autres Demandes </span>
+                    </li>
 
                     <!-- Autres Demandes -->
                     <li class="submenu {{ request()->routeIs('pcs.autres-demandes.*') ? 'active' : '' }}">
                         <a href="#" class="submenu-toggle">
                             <i class="fas fa-folder-open"></i>
-                            <span>Autres Demandes</span>
+                            <span>Demandes</span>
                             <span class="menu-arrow fas fa-chevron-right"></span>
                         </a>
                         <ul class="submenu-list">

@@ -337,6 +337,9 @@ Route::middleware(['auth'])->prefix('trie')->name('trie.')->group(function () {
         Route::put('{cotisation}', 'update')->name('update');
         Route::delete('{cotisation}', 'destroy')->name('destroy');
 
+        // API pour récupérer les mois renseignés
+        Route::get('mois-renseignes', 'getMoisRenseignes')->name('mois-renseignes');
+
         // États consolidés pour postes émetteurs
         Route::get('etat-consolide/poste-emetteur', 'etatConsolidePosteEmetteur')->name('etat-consolide.poste-emetteur');
     });

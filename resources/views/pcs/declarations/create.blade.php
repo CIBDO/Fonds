@@ -30,7 +30,7 @@
         }
         $moisManquantsAnnee = array_unique($moisManquantsAnnee);
 
-        // Mois manquants année précédente (dédupliqués)
+        // Mois manquants année précédente (dédupliqués) - seulement septembre à décembre
         $moisManquantsPrecedente = [];
         foreach ($moisManquantsAnneePrecedente as $programme => $mois) {
             $moisManquantsPrecedente = array_merge($moisManquantsPrecedente, $mois);
@@ -42,21 +42,24 @@
         $tousMoisManquants = array_unique($tousMoisManquants);
         $aDesMoisManquants = !empty($tousMoisManquants);
 
-        // Créer un tableau des mois déjà renseignés (dédupliqués)
-        $tousMoisRenseignes = [];
+        // Créer un tableau des mois déjà renseignés par année (dédupliqués)
+        $moisRenseignesAnneeCourante = [];
         foreach ($moisRenseignes as $programme => $mois) {
-            $tousMoisRenseignes = array_merge($tousMoisRenseignes, $mois);
+            $moisRenseignesAnneeCourante = array_merge($moisRenseignesAnneeCourante, $mois);
         }
+        $moisRenseignesAnneeCourante = array_unique($moisRenseignesAnneeCourante);
+
+        $moisRenseignesAnneePrecedente = [];
         foreach ($moisRenseignesAnneePrecedente as $programme => $mois) {
-            $tousMoisRenseignes = array_merge($tousMoisRenseignes, $mois);
+            $moisRenseignesAnneePrecedente = array_merge($moisRenseignesAnneePrecedente, $mois);
         }
-        $tousMoisRenseignes = array_unique($tousMoisRenseignes);
+        $moisRenseignesAnneePrecedente = array_unique($moisRenseignesAnneePrecedente);
     @endphp
 
     @if(count($moisManquantsAnnee) > 0)
     <div class="alert alert-warning alert-dismissible fade show mb-4" role="alert">
         <i class="fas fa-exclamation-triangle me-2"></i>
-        <strong>Attention !</strong> Vous avez <strong>{{ count($moisManquantsAnnee) }} mois non renseigné(s)</strong> pour {{ $annee }}.
+        <strong>Attention !</strong> Vous avez <strong>{{ count($moisManquantsAnnee) }} mois restant (s)</strong> pour {{ $annee }}.
         <br>
         <button type="button" class="btn btn-warning btn-sm mt-2" id="toggleRattrapage">
             <i class="fas fa-history me-1"></i>Utiliser le mode Rattrapage
@@ -123,31 +126,35 @@
                         </div>
                         <div class="col-md-12 mt-3">
                             <label class="form-label fw-bold">Mois à renseigner <span class="text-danger">*</span></label>
-                            <div class="row">
+                            <div class="row" id="moisContainer">
                                 @for($i = 1; $i <= 12; $i++)
                                     @php
                                         $moisLibelle = \Carbon\Carbon::create()->month($i)->locale('fr')->translatedFormat('F');
-                                        $isManquant = in_array($i, $tousMoisManquants);
-                                        $isRenseigne = in_array($i, $tousMoisRenseignes);
+                                        // Pour l'année courante
+                                        $isManquantAnneeCourante = in_array($i, $moisManquantsAnnee);
+                                        $isRenseigneAnneeCourante = in_array($i, $moisRenseignesAnneeCourante);
+                                        // Pour l'année précédente (seulement septembre à décembre)
+                                        $isManquantAnneePrecedente = ($i >= 9 && $i <= 12) && in_array($i, $moisManquantsPrecedente);
+                                        $isRenseigneAnneePrecedente = ($i >= 9 && $i <= 12) && in_array($i, $moisRenseignesAnneePrecedente);
                                     @endphp
-                                    <div class="col-md-3 mb-2">
+                                    <div class="col-md-3 mb-2 mois-item"
+                                         data-mois="{{ $i }}"
+                                         data-manquant-annee-courante="{{ $isManquantAnneeCourante ? '1' : '0' }}"
+                                         data-renseigne-annee-courante="{{ $isRenseigneAnneeCourante ? '1' : '0' }}"
+                                         data-manquant-annee-precedente="{{ $isManquantAnneePrecedente ? '1' : '0' }}"
+                                         data-renseigne-annee-precedente="{{ $isRenseigneAnneePrecedente ? '1' : '0' }}">
                                         <div class="form-check">
                                             <input class="form-check-input mois-checkbox"
                                                    type="checkbox"
                                                    name="mois_selectionnes[]"
                                                    value="{{ $i }}"
                                                    id="mois_{{ $i }}"
-                                                   {{ $isManquant ? 'checked' : '' }}
-                                                   {{ $isRenseigne ? 'disabled' : '' }}>
-                                            <label class="form-check-label {{ $isRenseigne ? 'text-muted' : '' }}"
+                                                   data-mois="{{ $i }}">
+                                            <label class="form-check-label"
                                                    for="mois_{{ $i }}"
-                                                   style="{{ $isRenseigne ? 'opacity: 0.6; cursor: not-allowed;' : '' }}">
+                                                   id="label_mois_{{ $i }}">
                                                 {{ $moisLibelle }}
-                                                @if($isManquant && !$isRenseigne)
-                                                    <span class="badge bg-warning text-dark ms-1">Manquant</span>
-                                                @elseif($isRenseigne)
-                                                    <span class="badge bg-success ms-1">Déjà renseigné</span>
-                                                @endif
+                                                <span class="badge-container ms-1"></span>
                                             </label>
                                         </div>
                                     </div>
@@ -611,11 +618,25 @@
         opacity: 0.6;
         cursor: not-allowed;
         text-decoration: none;
+        user-select: none;
+        pointer-events: none;
     }
 
     .form-check-input:disabled {
         cursor: not-allowed;
         opacity: 0.5;
+        pointer-events: none;
+    }
+
+    /* Empêcher le clic sur le conteneur si la checkbox est désactivée */
+    .mois-item:has(.mois-checkbox:disabled) {
+        pointer-events: none;
+        opacity: 0.6;
+    }
+
+    .mois-item:has(.mois-checkbox:disabled) .form-check-label {
+        cursor: not-allowed;
+        user-select: none;
     }
 
     .mois-renseigne {
@@ -635,6 +656,138 @@
     let modeRattrapage = false;
     const isRgd = {{ $poste->isRgd() ? 'true' : 'false' }};
     const bureaux = @json($poste->isRgd() ? $bureaux->map(fn($b) => $b->id)->toArray() : []);
+    const anneeCourante = {{ $annee }};
+    const anneePrecedente = {{ $anneePrecedente }};
+
+    // Fonction pour mettre à jour les mois selon l'année sélectionnée
+    function mettreAJourMoisSelonAnnee() {
+        const anneeSelect = document.getElementById('anneeRattrapage');
+        if (!anneeSelect) return;
+
+        const anneeSelectionnee = parseInt(anneeSelect.value);
+        const isAnneeCourante = anneeSelectionnee === anneeCourante;
+        const isAnneePrecedente = anneeSelectionnee === anneePrecedente;
+
+        // Parcourir tous les mois
+        document.querySelectorAll('.mois-item').forEach(item => {
+            const mois = parseInt(item.dataset.mois);
+            const checkbox = item.querySelector('.mois-checkbox');
+            const label = item.querySelector('label');
+            const badgeContainer = item.querySelector('.badge-container');
+
+            let isManquant = false;
+            let isRenseigne = false;
+
+            if (isAnneeCourante) {
+                // Pour l'année courante, vérifier tous les mois (1-12)
+                isManquant = item.dataset.manquantAnneeCourante === '1';
+                isRenseigne = item.dataset.renseigneAnneeCourante === '1';
+            } else if (isAnneePrecedente) {
+                // Pour l'année précédente, seulement septembre à décembre
+                if (mois >= 9 && mois <= 12) {
+                    isManquant = item.dataset.manquantAnneePrecedente === '1';
+                    isRenseigne = item.dataset.renseigneAnneePrecedente === '1';
+                } else {
+                    // Les mois 1-8 de l'année précédente ne sont pas disponibles
+                    isRenseigne = false;
+                    isManquant = false;
+                }
+            } else {
+                // Pour une autre année, tous les mois sont disponibles (non renseignés)
+                isManquant = true;
+                isRenseigne = false;
+            }
+
+            // Mettre à jour la checkbox
+            checkbox.disabled = isRenseigne;
+            checkbox.checked = isManquant && !isRenseigne;
+
+            // Mettre à jour le label
+            if (isRenseigne) {
+                label.classList.add('text-muted');
+                label.style.opacity = '0.6';
+                label.style.cursor = 'not-allowed';
+            } else {
+                label.classList.remove('text-muted');
+                label.style.opacity = '';
+                label.style.cursor = '';
+            }
+
+            // Mettre à jour le badge
+            badgeContainer.innerHTML = '';
+            if (isManquant && !isRenseigne) {
+                badgeContainer.innerHTML = '<span class="badge bg-warning text-dark">Manquant</span>';
+            } else if (isRenseigne) {
+                badgeContainer.innerHTML = '<span class="badge bg-success">Déjà renseigné</span>';
+            }
+
+            // Si c'est l'année précédente et le mois est < 9, désactiver
+            if (isAnneePrecedente && mois < 9) {
+                checkbox.disabled = true;
+                checkbox.checked = false;
+                label.classList.add('text-muted');
+                label.style.opacity = '0.4';
+                label.style.cursor = 'not-allowed';
+                badgeContainer.innerHTML = '<span class="badge bg-secondary">Non disponible</span>';
+            }
+        });
+
+        // Régénérer les lignes du tableau si on est en mode rattrapage
+        if (modeRattrapage) {
+            genererLignesRattrapage();
+        }
+    }
+
+    // Empêcher la sélection des mois déjà renseignés
+    function prevenirSelectionMoisRenseignes() {
+        document.querySelectorAll('.mois-checkbox').forEach(checkbox => {
+            // Empêcher le clic sur les checkboxes désactivées
+            checkbox.addEventListener('click', function(e) {
+                if (this.disabled) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            });
+
+            // Empêcher le changement d'état si désactivé
+            checkbox.addEventListener('change', function(e) {
+                if (this.disabled) {
+                    this.checked = false;
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            });
+
+            // Empêcher la manipulation via le clavier
+            checkbox.addEventListener('keydown', function(e) {
+                if (this.disabled) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            });
+        });
+    }
+
+    // Écouter les changements d'année dans le formulaire de rattrapage
+    @if($aDesMoisManquants)
+    document.addEventListener('DOMContentLoaded', function() {
+        const anneeSelect = document.getElementById('anneeRattrapage');
+        if (anneeSelect) {
+            anneeSelect.addEventListener('change', function() {
+                mettreAJourMoisSelonAnnee();
+                // Réappliquer les protections après la mise à jour
+                setTimeout(prevenirSelectionMoisRenseignes, 100);
+            });
+            // Initialiser l'affichage au chargement
+            mettreAJourMoisSelonAnnee();
+            // Appliquer les protections au chargement
+            setTimeout(prevenirSelectionMoisRenseignes, 100);
+        }
+    });
+    @endif
 
     // Toggle entre modes normal et rattrapage
     @if($aDesMoisManquants)
@@ -689,8 +842,17 @@
 
     // Générer les lignes du tableau de rattrapage
     function genererLignesRattrapage() {
-        // Ne récupérer que les checkboxes cochées et non désactivées
-        const moisSelectionnes = Array.from(document.querySelectorAll('.mois-checkbox:checked:not(:disabled)')).map(cb => parseInt(cb.value));
+        // Ne récupérer que les checkboxes cochées ET non désactivées
+        const moisSelectionnes = [];
+        document.querySelectorAll('.mois-checkbox').forEach(cb => {
+            // Vérifier explicitement que la checkbox n'est pas désactivée
+            if (cb.checked && !cb.disabled) {
+                const mois = parseInt(cb.value);
+                if (!isNaN(mois)) {
+                    moisSelectionnes.push(mois);
+                }
+            }
+        });
 
         if (moisSelectionnes.length === 0) {
             // Afficher un message si aucun mois n'est sélectionné
@@ -837,9 +999,38 @@
         if (modeRattrapage) {
             // Ne compter que les checkboxes cochées et non désactivées
             const moisSelectionnes = Array.from(document.querySelectorAll('.mois-checkbox:checked:not(:disabled)'));
+
+            // Vérification supplémentaire : s'assurer qu'aucun mois désactivé n'est inclus
+            const moisDesactivesCoches = Array.from(document.querySelectorAll('.mois-checkbox:checked:disabled'));
+            if (moisDesactivesCoches.length > 0) {
+                e.preventDefault();
+                alert('Erreur : Certains mois déjà renseignés sont sélectionnés. Veuillez les désélectionner.');
+                // Décocher automatiquement les mois désactivés
+                moisDesactivesCoches.forEach(cb => cb.checked = false);
+                return;
+            }
+
             if (moisSelectionnes.length === 0) {
                 e.preventDefault();
                 alert('Veuillez sélectionner au moins un mois à renseigner (les mois déjà renseignés ne peuvent pas être sélectionnés).');
+                return;
+            }
+
+            // Vérification finale : s'assurer que tous les mois sélectionnés sont valides
+            const moisInvalides = [];
+            moisSelectionnes.forEach(checkbox => {
+                if (checkbox.disabled) {
+                    moisInvalides.push(checkbox.value);
+                }
+            });
+
+            if (moisInvalides.length > 0) {
+                e.preventDefault();
+                alert('Erreur : Certains mois sélectionnés sont déjà renseignés et ne peuvent pas être inclus.');
+                moisInvalides.forEach(mois => {
+                    const cb = document.getElementById(`mois_${mois}`);
+                    if (cb) cb.checked = false;
+                });
                 return;
             }
         }

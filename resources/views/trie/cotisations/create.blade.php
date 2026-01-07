@@ -98,13 +98,23 @@
                             <strong>Mode Rattrapage :</strong> Sélectionnez tous les mois que vous souhaitez saisir en une seule fois.
                         </div>
                     </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Année <span class="text-danger">*</span></label>
+                        <select name="annee" class="form-select" id="anneeRattrapageTrie" required>
+                            @foreach($annees as $anneeOption)
+                                <option value="{{ $anneeOption }}" {{ $annee == $anneeOption ? 'selected' : '' }}>
+                                    {{ $anneeOption }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                     <div class="col-md-12">
                         <label class="form-label fw-bold">Sélection des Mois à Rattraper</label>
-                        <div class="row">
+                        <div class="row" id="moisContainerTrie">
                             @for($i = 1; $i <= 12; $i++)
                                 @php
                                     $moisLibelle = $moisList[$i];
-                                    // Vérifier si le mois est déjà renseigné pour au moins un bureau
+                                    // Vérifier si le mois est déjà renseigné pour au moins un bureau pour l'année actuelle
                                     $moisRenseigne = false;
                                     foreach($bureaux as $bureau) {
                                         $existe = \App\Models\CotisationTrie::where('bureau_trie_id', $bureau->id)
@@ -117,19 +127,26 @@
                                         }
                                     }
                                 @endphp
-                                <div class="col-md-3 mb-2">
+                                <div class="col-md-3 mb-2 mois-item-trie"
+                                     data-mois="{{ $i }}"
+                                     data-renseigne-{{ $annee }}="{{ $moisRenseigne ? '1' : '0' }}">
                                     <div class="form-check">
                                         <input class="form-check-input mois-checkbox"
                                                type="checkbox"
                                                name="mois_rattrapage[]"
                                                value="{{ $i }}"
-                                               id="mois_{{ $i }}"
+                                               id="mois_trie_{{ $i }}"
+                                               data-mois="{{ $i }}"
                                                {{ $moisRenseigne ? 'disabled' : '' }}>
-                                        <label class="form-check-label {{ $moisRenseigne ? 'text-muted' : '' }}" for="mois_{{ $i }}">
+                                        <label class="form-check-label {{ $moisRenseigne ? 'text-muted' : '' }}"
+                                               for="mois_trie_{{ $i }}"
+                                               id="label_mois_trie_{{ $i }}">
                                             {{ $moisLibelle }}
-                                            @if($moisRenseigne)
-                                                <span class="badge bg-success ms-1">Déjà saisi</span>
-                                            @endif
+                                            <span class="badge-container-trie ms-1">
+                                                @if($moisRenseigne)
+                                                    <span class="badge bg-success">Déjà saisi</span>
+                                                @endif
+                                            </span>
                                         </label>
                                     </div>
                                 </div>
@@ -404,7 +421,7 @@
         @csrf
         <input type="hidden" name="mode" value="rattrapage">
         <input type="hidden" name="poste_id" value="{{ $posteId }}">
-        <input type="hidden" name="annee" value="{{ $annee }}">
+        <input type="hidden" name="annee" id="anneeRattrapageHidden" value="{{ $annee }}">
 
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-header bg-warning text-black">
@@ -452,6 +469,33 @@
 </div>
 
 @push('scripts')
+<style>
+    /* Style pour les mois déjà renseignés - Empêcher toute interaction */
+    .form-check-input:disabled + .form-check-label {
+        opacity: 0.6;
+        cursor: not-allowed;
+        text-decoration: none;
+        user-select: none;
+        pointer-events: none;
+    }
+
+    .form-check-input:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    /* Empêcher le clic sur le conteneur si la checkbox est désactivée */
+    .mois-item-trie:has(.mois-checkbox:disabled) {
+        pointer-events: none;
+        opacity: 0.6;
+    }
+
+    .mois-item-trie:has(.mois-checkbox:disabled) .form-check-label {
+        cursor: not-allowed;
+        user-select: none;
+    }
+</style>
 <script>
     const moisNoms = {
         1: 'Janvier', 2: 'Février', 3: 'Mars', 4: 'Avril',
@@ -468,6 +512,134 @@
     }));
 
     let modeRattrapage = false;
+    const posteId = {{ $posteId ?? 'null' }};
+    const bureauxIds = @json($bureaux->pluck('id')->toArray());
+
+    // Fonction pour mettre à jour les mois selon l'année sélectionnée
+    async function mettreAJourMoisSelonAnneeTrie() {
+        const anneeSelect = document.getElementById('anneeRattrapageTrie');
+        if (!anneeSelect || !posteId || bureauxIds.length === 0) return;
+
+        const anneeSelectionnee = parseInt(anneeSelect.value);
+
+        // Faire une requête AJAX pour obtenir les mois renseignés pour cette année
+        try {
+            const response = await fetch(`/trie/cotisations/mois-renseignes?poste_id=${posteId}&annee=${anneeSelectionnee}`, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Erreur lors de la récupération des données');
+            }
+
+            const data = await response.json();
+            const moisRenseignes = data.mois_renseignes || [];
+
+            // Mettre à jour chaque mois
+            document.querySelectorAll('.mois-item-trie').forEach(item => {
+                const mois = parseInt(item.dataset.mois);
+                const checkbox = item.querySelector('.mois-checkbox');
+                const label = item.querySelector('label');
+                const badgeContainer = item.querySelector('.badge-container-trie');
+
+                const isRenseigne = moisRenseignes.includes(mois);
+
+                // Mettre à jour la checkbox
+                checkbox.disabled = isRenseigne;
+                checkbox.checked = !isRenseigne;
+
+                // Mettre à jour le label
+                if (isRenseigne) {
+                    label.classList.add('text-muted');
+                    label.style.opacity = '0.6';
+                    label.style.cursor = 'not-allowed';
+                } else {
+                    label.classList.remove('text-muted');
+                    label.style.opacity = '';
+                    label.style.cursor = '';
+                }
+
+                // Mettre à jour le badge
+                badgeContainer.innerHTML = '';
+                if (isRenseigne) {
+                    badgeContainer.innerHTML = '<span class="badge bg-success">Déjà saisi</span>';
+                }
+            });
+
+            // Mettre à jour le champ caché de l'année dans le formulaire
+            const anneeHidden = document.getElementById('anneeRattrapageHidden');
+            if (anneeHidden) {
+                anneeHidden.value = anneeSelectionnee;
+            }
+
+            // Régénérer le tableau si on est en mode rattrapage
+            if (modeRattrapage) {
+                genererTableauRattrapage();
+            }
+
+            // Réappliquer les protections après la mise à jour
+            setTimeout(prevenirSelectionMoisRenseignesTrie, 100);
+        } catch (error) {
+            console.error('Erreur:', error);
+            // En cas d'erreur, désactiver tous les mois pour éviter les erreurs
+            document.querySelectorAll('.mois-checkbox').forEach(cb => {
+                cb.disabled = true;
+            });
+        }
+    }
+
+    // Empêcher la sélection des mois déjà renseignés (TRIE)
+    function prevenirSelectionMoisRenseignesTrie() {
+        document.querySelectorAll('.mois-checkbox').forEach(checkbox => {
+            // Empêcher le clic sur les checkboxes désactivées
+            checkbox.addEventListener('click', function(e) {
+                if (this.disabled) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            });
+
+            // Empêcher le changement d'état si désactivé
+            checkbox.addEventListener('change', function(e) {
+                if (this.disabled) {
+                    this.checked = false;
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            });
+
+            // Empêcher la manipulation via le clavier
+            checkbox.addEventListener('keydown', function(e) {
+                if (this.disabled) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            });
+        });
+    }
+
+    // Écouter les changements d'année dans le formulaire de rattrapage
+    document.addEventListener('DOMContentLoaded', function() {
+        const anneeSelect = document.getElementById('anneeRattrapageTrie');
+        if (anneeSelect) {
+            anneeSelect.addEventListener('change', function() {
+                mettreAJourMoisSelonAnneeTrie().then(() => {
+                    if (modeRattrapage) {
+                        genererTableauRattrapage();
+                    }
+                });
+            });
+            // Appliquer les protections au chargement
+            setTimeout(prevenirSelectionMoisRenseignesTrie, 100);
+        }
+    });
 
     // =============== GESTION DES MODES ===============
     document.getElementById('toggleRattrapage')?.addEventListener('click', function() {
@@ -481,7 +653,17 @@
         document.getElementById('toggleNormal').classList.remove('btn-light');
         document.getElementById('toggleNormal').classList.add('btn-warning');
 
-        genererTableauRattrapage();
+        // Mettre à jour le champ caché de l'année
+        const anneeSelect = document.getElementById('anneeRattrapageTrie');
+        const anneeHidden = document.getElementById('anneeRattrapageHidden');
+        if (anneeSelect && anneeHidden) {
+            anneeHidden.value = anneeSelect.value;
+        }
+
+        // Mettre à jour les mois selon l'année sélectionnée puis générer le tableau
+        mettreAJourMoisSelonAnneeTrie().then(() => {
+            genererTableauRattrapage();
+        });
     });
 
     document.getElementById('toggleNormal')?.addEventListener('click', function() {
@@ -499,8 +681,15 @@
     // =============== GÉNÉRATION DU TABLEAU RATTRAPAGE ===============
     function genererTableauRattrapage() {
         const moisSelectionnes = [];
-        document.querySelectorAll('.mois-checkbox:checked:not(:disabled)').forEach(cb => {
-            moisSelectionnes.push(parseInt(cb.value));
+        // Ne récupérer que les checkboxes cochées ET non désactivées
+        document.querySelectorAll('.mois-checkbox').forEach(cb => {
+            // Vérifier explicitement que la checkbox n'est pas désactivée
+            if (cb.checked && !cb.disabled) {
+                const mois = parseInt(cb.value);
+                if (!isNaN(mois)) {
+                    moisSelectionnes.push(mois);
+                }
+            }
         });
 
         if (moisSelectionnes.length === 0) {
@@ -721,6 +910,46 @@
 
         document.getElementById('submitBtn').disabled = !isValid;
     }
+
+    // Validation du formulaire mode rattrapage
+    document.getElementById('cotisationFormRattrapage')?.addEventListener('submit', function(e) {
+        // Vérifier qu'au moins un mois est sélectionné
+        const moisSelectionnes = Array.from(document.querySelectorAll('.mois-checkbox:checked:not(:disabled)'));
+
+        // Vérification supplémentaire : s'assurer qu'aucun mois désactivé n'est inclus
+        const moisDesactivesCoches = Array.from(document.querySelectorAll('.mois-checkbox:checked:disabled'));
+        if (moisDesactivesCoches.length > 0) {
+            e.preventDefault();
+            alert('Erreur : Certains mois déjà renseignés sont sélectionnés. Veuillez les désélectionner.');
+            // Décocher automatiquement les mois désactivés
+            moisDesactivesCoches.forEach(cb => cb.checked = false);
+            return false;
+        }
+
+        if (moisSelectionnes.length === 0) {
+            e.preventDefault();
+            alert('Veuillez sélectionner au moins un mois à renseigner (les mois déjà renseignés ne peuvent pas être sélectionnés).');
+            return false;
+        }
+
+        // Vérification finale : s'assurer que tous les mois sélectionnés sont valides
+        const moisInvalides = [];
+        moisSelectionnes.forEach(checkbox => {
+            if (checkbox.disabled) {
+                moisInvalides.push(checkbox.value);
+            }
+        });
+
+        if (moisInvalides.length > 0) {
+            e.preventDefault();
+            alert('Erreur : Certains mois sélectionnés sont déjà renseignés et ne peuvent pas être inclus.');
+            moisInvalides.forEach(mois => {
+                const cb = document.getElementById(`mois_trie_${mois}`);
+                if (cb) cb.checked = false;
+            });
+            return false;
+        }
+    });
 
     // Validation du formulaire mode normal
     document.getElementById('cotisationFormNormal')?.addEventListener('submit', function(e) {

@@ -144,6 +144,40 @@ class CotisationTrieController extends Controller
     }
 
     /**
+     * API: Récupérer les mois déjà renseignés pour un poste et une année
+     */
+    public function getMoisRenseignes(Request $request)
+    {
+        $posteId = $request->get('poste_id');
+        $annee = $request->get('annee');
+
+        if (!$posteId || !$annee) {
+            return response()->json(['mois_renseignes' => []], 400);
+        }
+
+        // Récupérer tous les bureaux actifs du poste
+        $bureaux = BureauTrie::where('poste_id', $posteId)
+            ->where('actif', true)
+            ->pluck('id')
+            ->toArray();
+
+        if (empty($bureaux)) {
+            return response()->json(['mois_renseignes' => []], 200);
+        }
+
+        // Récupérer les mois qui ont au moins une cotisation pour cette année
+        $moisRenseignes = CotisationTrie::whereIn('bureau_trie_id', $bureaux)
+            ->where('annee', $annee)
+            ->distinct()
+            ->pluck('mois')
+            ->toArray();
+
+        return response()->json([
+            'mois_renseignes' => $moisRenseignes
+        ], 200);
+    }
+
+    /**
      * Enregistrer les cotisations
      */
     public function store(Request $request)
