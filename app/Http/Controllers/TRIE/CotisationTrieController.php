@@ -9,6 +9,7 @@ use App\Models\Poste;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use RealRashid\SweetAlert\Facades\Alert;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
@@ -148,33 +149,66 @@ class CotisationTrieController extends Controller
      */
     public function getMoisRenseignes(Request $request)
     {
-        $posteId = $request->get('poste_id');
-        $annee = $request->get('annee');
+        try {
+            $posteId = $request->get('poste_id');
+            $annee = $request->get('annee');
 
-        if (!$posteId || !$annee) {
-            return response()->json(['mois_renseignes' => []], 400);
+            if (!$posteId || !$annee) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Paramètres manquants',
+                    'mois_renseignes' => []
+                ], 400);
+            }
+
+            // Vérifier que le poste existe
+            $poste = Poste::find($posteId);
+            if (!$poste) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Poste introuvable',
+                    'mois_renseignes' => []
+                ], 404);
+            }
+
+            // Récupérer tous les bureaux actifs du poste
+            $bureaux = BureauTrie::where('poste_id', $posteId)
+                ->where('actif', true)
+                ->pluck('id')
+                ->toArray();
+
+            // Si aucun bureau, retourner un tableau vide (pas d'erreur)
+            if (empty($bureaux)) {
+                return response()->json([
+                    'success' => true,
+                    'mois_renseignes' => []
+                ], 200);
+            }
+
+            // Récupérer les mois qui ont au moins une cotisation pour cette année
+            $moisRenseignes = CotisationTrie::whereIn('bureau_trie_id', $bureaux)
+                ->where('annee', $annee)
+                ->distinct()
+                ->pluck('mois')
+                ->toArray();
+
+            return response()->json([
+                'success' => true,
+                'mois_renseignes' => $moisRenseignes
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error('Erreur dans getMoisRenseignes: ' . $e->getMessage(), [
+                'poste_id' => $request->get('poste_id'),
+                'annee' => $request->get('annee'),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur serveur lors de la récupération des données',
+                'mois_renseignes' => []
+            ], 500);
         }
-
-        // Récupérer tous les bureaux actifs du poste
-        $bureaux = BureauTrie::where('poste_id', $posteId)
-            ->where('actif', true)
-            ->pluck('id')
-            ->toArray();
-
-        if (empty($bureaux)) {
-            return response()->json(['mois_renseignes' => []], 200);
-        }
-
-        // Récupérer les mois qui ont au moins une cotisation pour cette année
-        $moisRenseignes = CotisationTrie::whereIn('bureau_trie_id', $bureaux)
-            ->where('annee', $annee)
-            ->distinct()
-            ->pluck('mois')
-            ->toArray();
-
-        return response()->json([
-            'mois_renseignes' => $moisRenseignes
-        ], 200);
     }
 
     /**

@@ -160,9 +160,9 @@
         ÉTAT DE COLLECTE DES FONDS PCS-{{ $programme }} AU TITRE DE L'EXERCICE {{ $annee }}
     </div>
 
-    <div class="subtitle-period">
+    {{-- <div class="subtitle-period">
         PÉRIODE DU 01/01/{{ $annee }} AU {{ \Carbon\Carbon::now()->format('d/m/Y') }}
-    </div>
+    </div> --}}
 
     <div class="note-montants">
         (Montants en francs CFA)

@@ -332,13 +332,14 @@ Route::middleware(['auth'])->prefix('trie')->name('trie.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('create', 'create')->name('create');
         Route::post('/', 'store')->name('store');
+        
+        // API pour récupérer les mois renseignés (doit être avant les routes avec paramètres)
+        Route::get('mois-renseignes', 'getMoisRenseignes')->name('mois-renseignes');
+        
         Route::get('{cotisation}', 'show')->name('show');
         Route::get('{cotisation}/edit', 'edit')->name('edit');
         Route::put('{cotisation}', 'update')->name('update');
         Route::delete('{cotisation}', 'destroy')->name('destroy');
-
-        // API pour récupérer les mois renseignés
-        Route::get('mois-renseignes', 'getMoisRenseignes')->name('mois-renseignes');
 
         // États consolidés pour postes émetteurs
         Route::get('etat-consolide/poste-emetteur', 'etatConsolidePosteEmetteur')->name('etat-consolide.poste-emetteur');

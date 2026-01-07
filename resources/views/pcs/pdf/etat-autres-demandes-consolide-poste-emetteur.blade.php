@@ -168,9 +168,9 @@
         POSTE ÉMETTEUR : {{ strtoupper($poste->nom) }}
     </div>
 
-    <div class="subtitle-period">
+    {{-- <div class="subtitle-period">
         PÉRIODE DU 01/01/{{ $annee }} AU {{ \Carbon\Carbon::now()->format('d/m/Y') }}
-    </div>
+    </div> --}}
 
     <div style="text-align: center; font-size: 9px; font-style: italic; margin-bottom: 15px; color: #666;">
         (Montants en francs CFA)

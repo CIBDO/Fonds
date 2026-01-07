@@ -518,26 +518,47 @@
     // Fonction pour mettre à jour les mois selon l'année sélectionnée
     async function mettreAJourMoisSelonAnneeTrie() {
         const anneeSelect = document.getElementById('anneeRattrapageTrie');
-        if (!anneeSelect || !posteId || bureauxIds.length === 0) return;
+        if (!anneeSelect || !posteId) {
+            console.warn('Impossible de mettre à jour les mois : posteId ou anneeSelect manquant');
+            return;
+        }
 
         const anneeSelectionnee = parseInt(anneeSelect.value);
+        if (isNaN(anneeSelectionnee)) {
+            console.error('Année invalide:', anneeSelect.value);
+            return;
+        }
 
         // Faire une requête AJAX pour obtenir les mois renseignés pour cette année
         try {
-            const response = await fetch(`/trie/cotisations/mois-renseignes?poste_id=${posteId}&annee=${anneeSelectionnee}`, {
+            const url = `/trie/cotisations/mois-renseignes?poste_id=${posteId}&annee=${anneeSelectionnee}`;
+            const response = await fetch(url, {
                 method: 'GET',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json'
-                }
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'same-origin'
             });
 
             if (!response.ok) {
-                throw new Error('Erreur lors de la récupération des données');
+                const errorText = await response.text();
+                console.error('Erreur HTTP:', response.status, errorText);
+                throw new Error(`Erreur HTTP ${response.status}: ${errorText.substring(0, 100)}`);
             }
 
             const data = await response.json();
-            const moisRenseignes = data.mois_renseignes || [];
+            if (!data || typeof data !== 'object') {
+                throw new Error('Réponse invalide du serveur');
+            }
+
+            // Vérifier si la requête a réussi
+            if (data.success === false) {
+                throw new Error(data.message || 'Erreur lors de la récupération des données');
+            }
+
+            const moisRenseignes = Array.isArray(data.mois_renseignes) ? data.mois_renseignes : [];
 
             // Mettre à jour chaque mois
             document.querySelectorAll('.mois-item-trie').forEach(item => {
@@ -584,11 +605,28 @@
             // Réappliquer les protections après la mise à jour
             setTimeout(prevenirSelectionMoisRenseignesTrie, 100);
         } catch (error) {
-            console.error('Erreur:', error);
-            // En cas d'erreur, désactiver tous les mois pour éviter les erreurs
-            document.querySelectorAll('.mois-checkbox').forEach(cb => {
-                cb.disabled = true;
-            });
+            console.error('Erreur lors de la récupération des mois renseignés:', error);
+
+            // Afficher un message d'erreur à l'utilisateur
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+            alertDiv.innerHTML = `
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Erreur :</strong> Impossible de récupérer les mois renseignés. Veuillez rafraîchir la page.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+
+            const modeRattrapageDiv = document.getElementById('modeRattrapage');
+            if (modeRattrapageDiv) {
+                const existingAlert = modeRattrapageDiv.querySelector('.alert-danger');
+                if (existingAlert) {
+                    existingAlert.remove();
+                }
+                modeRattrapageDiv.insertBefore(alertDiv, modeRattrapageDiv.firstChild);
+            }
+
+            // Ne pas désactiver tous les mois, mais utiliser les données initiales du serveur
+            // Les mois seront mis à jour lors du prochain changement d'année
         }
     }
 
