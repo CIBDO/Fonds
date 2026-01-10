@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
 <title>Gestion des Fonds</title>
 
 <link rel="shortcut icon" href="assets/img/favicon.png">
@@ -24,6 +24,11 @@
         box-sizing: border-box;
     }
 
+    html {
+        overflow-x: hidden;
+        width: 100%;
+    }
+
     body {
         font-family: 'JetBrains Mono', monospace, sans-serif !important;
         min-height: 100vh;
@@ -33,6 +38,9 @@
         background: #f5f7fa;
         position: relative;
         overflow-x: hidden;
+        padding: 10px;
+        width: 100%;
+        max-width: 100vw;
     }
 
     /* Arrière-plan adouci */
@@ -56,6 +64,7 @@
         padding: 40px 20px;
         position: relative;
         z-index: 1;
+        box-sizing: border-box;
     }
 
     /* Carte de connexion */
@@ -71,6 +80,9 @@
         min-height: 480px;
         position: relative;
         animation: cardFadeIn 0.8s ease-out;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
     }
 
     @keyframes cardFadeIn {
@@ -94,6 +106,8 @@
         justify-content: space-between;
         position: relative;
         overflow: hidden;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     /* Motif de fond subtil */
@@ -187,18 +201,23 @@
     .info-features {
         position: relative;
         z-index: 2;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
     }
 
     .feature-item {
         display: flex;
         align-items: flex-start;
-        margin-bottom: 18px;
+        margin-bottom: 0;
         padding: 16px;
         background: rgba(255, 255, 255, 0.08);
         border-radius: 16px;
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.1);
         transition: all 0.3s ease;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .feature-item:hover {
@@ -253,11 +272,14 @@
         align-items: center;
         justify-content: center;
         background: #ffffff;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .form-container {
         width: 100%;
         max-width: 450px;
+        box-sizing: border-box;
     }
 
     .form-header {
@@ -563,60 +585,234 @@
     }
 
     /* Responsive */
-    @media (max-width: 1200px) {
+    /* Tablettes et écrans moyens */
+    @media (max-width: 992px) {
+        body {
+            padding: 15px;
+        }
+
         .login-card {
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr !important;
+            min-height: auto;
         }
 
         .login-info-section {
-            min-height: 350px;
+            min-height: auto;
+            padding: 30px 25px;
+            order: 1;
+        }
+
+        .login-form-section {
+            padding: 30px 25px;
+            order: 2;
         }
 
         .info-features {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 20px;
         }
 
         .feature-item {
             margin-bottom: 0;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            min-width: 0;
+        }
+
+        .feature-icon {
+            margin-right: 0;
+            margin-bottom: 10px;
+        }
+
+        .feature-content {
+            width: 100%;
+        }
+
+        .feature-content h4 {
+            font-size: 12px;
+        }
+
+        .feature-content p {
+            font-size: 10px;
+        }
+
+        .institution-logo {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+        }
+
+        .institution-title {
+            font-size: 22px;
+        }
+
+        .institution-subtitle {
+            font-size: 13px;
+        }
+
+        .form-title {
+            font-size: 26px;
+        }
+
+        .form-subtitle {
+            font-size: 14px;
         }
     }
 
     @media (max-width: 768px) {
+        body {
+            padding: 10px;
+        }
+
         .login-wrapper {
-            padding: 20px 15px;
+            padding: 15px 10px;
+            max-width: 100%;
+        }
+
+        .login-card {
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
         }
 
         .login-info-section {
-            padding: 40px 30px;
-            min-height: 300px;
+            padding: 25px 20px;
+            min-height: auto;
         }
 
         .login-form-section {
-            padding: 40px 30px;
+            padding: 25px 20px;
+        }
+
+        .institution-header {
+            margin-bottom: 20px;
+        }
+
+        .institution-logo {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 12px;
         }
 
         .institution-title {
-            font-size: 26px;
+            font-size: 20px;
+            margin-bottom: 6px;
         }
 
-        .form-title {
-            font-size: 28px;
+        .institution-subtitle {
+            font-size: 12px;
         }
 
         .info-features {
-            grid-template-columns: 1fr;
+            display: flex !important;
+            flex-direction: column !important;
+            grid-template-columns: 1fr !important;
+            gap: 12px;
+            margin-top: 15px;
         }
 
         .feature-item {
-            padding: 16px;
+            padding: 12px;
+            margin-bottom: 0;
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            width: 100%;
+        }
+
+        .feature-icon {
+            width: 35px;
+            height: 35px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .feature-icon i {
+            font-size: 16px;
+        }
+
+        .feature-content h4 {
+            font-size: 13px;
+        }
+
+        .feature-content p {
+            font-size: 11px;
+        }
+
+        .info-footer {
+            padding-top: 15px;
+            font-size: 10px;
+            margin-top: 15px;
+        }
+
+        .form-header {
+            margin-bottom: 25px;
+        }
+
+        .form-title {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .form-subtitle {
+            font-size: 13px;
+        }
+
+        .security-badge {
+            padding: 6px 12px;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            height: 48px;
+            padding: 0 50px;
+            font-size: 14px;
+        }
+
+        .input-icon {
+            left: 15px;
+            font-size: 16px;
+        }
+
+        .toggle-password {
+            right: 15px;
+            font-size: 16px;
+            padding: 6px;
         }
 
         .form-options {
             flex-direction: column;
             align-items: flex-start;
-            gap: 12px;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .btn-login {
+            height: 48px;
+            font-size: 14px;
+        }
+
+        .help-text {
+            margin-top: 25px;
+            padding-top: 20px;
+        }
+
+        .help-text p {
+            font-size: 12px;
         }
 
         .page-footer {
@@ -624,27 +820,240 @@
             bottom: auto;
             right: auto;
             text-align: center;
-            margin-top: 30px;
-            padding: 20px;
+            margin-top: 20px;
+            padding: 15px;
+            font-size: 10px;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            font-size: 13px;
+            margin-bottom: 20px;
         }
     }
 
     @media (max-width: 480px) {
+        body {
+            padding: 5px;
+        }
+
+        .login-wrapper {
+            padding: 10px 5px;
+        }
+
+        .login-card {
+            border-radius: 12px;
+        }
+
         .login-info-section {
-            padding: 30px 20px;
+            padding: 20px 15px;
         }
 
         .login-form-section {
-            padding: 30px 20px;
+            padding: 20px 15px;
         }
 
-        .form-container {
-            max-width: 100%;
+        .institution-logo {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 10px;
+        }
+
+        .institution-title {
+            font-size: 18px;
+        }
+
+        .institution-subtitle {
+            font-size: 11px;
+        }
+
+        .info-features {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .feature-item {
+            padding: 10px;
+            flex-direction: row;
+            align-items: flex-start;
+            width: 100%;
+        }
+
+        .feature-icon {
+            width: 32px;
+            height: 32px;
+            margin-right: 10px;
+            margin-bottom: 0;
+            flex-shrink: 0;
+        }
+
+        .feature-content h4 {
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+
+        .feature-content p {
+            font-size: 10px;
+            line-height: 1.3;
+        }
+
+        .info-footer {
+            font-size: 9px;
+            padding-top: 12px;
+        }
+
+        .form-header {
+            margin-bottom: 20px;
+        }
+
+        .form-title {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        .form-subtitle {
+            font-size: 12px;
+        }
+
+        .security-badge {
+            padding: 5px 10px;
+            font-size: 11px;
+            gap: 6px;
+        }
+
+        .security-badge i {
+            font-size: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            height: 46px;
+            padding: 0 45px;
+            font-size: 14px;
+            border-radius: 10px;
+        }
+
+        .input-icon {
+            left: 12px;
+            font-size: 15px;
+        }
+
+        .toggle-password {
+            right: 12px;
+            font-size: 15px;
+            padding: 5px;
+        }
+
+        .btn-login {
+            height: 46px;
+            font-size: 14px;
+            border-radius: 10px;
+        }
+
+        .help-text {
+            margin-top: 20px;
+            padding-top: 15px;
+        }
+
+        .help-text p {
+            font-size: 11px;
+        }
+
+        .page-footer {
+            font-size: 9px;
+            padding: 12px;
+        }
+
+        .alert {
+            padding: 10px 14px;
+            font-size: 12px;
+            border-radius: 10px;
+        }
+
+        .alert ul {
+            padding-left: 18px;
+        }
+
+        .alert li {
+            font-size: 11px;
+            margin: 3px 0;
+        }
+    }
+
+    @media (max-width: 360px) {
+        .login-wrapper {
+            padding: 5px;
+        }
+
+        .login-card {
+            border-radius: 10px;
+        }
+
+        .login-info-section,
+        .login-form-section {
+            padding: 15px 12px;
+        }
+
+        .institution-logo {
+            width: 50px;
+            height: 50px;
+        }
+
+        .institution-title {
+            font-size: 16px;
+        }
+
+        .form-title {
+            font-size: 20px;
         }
 
         .form-control,
         .btn-login {
-            height: 50px;
+            height: 44px;
+            font-size: 13px;
+        }
+    }
+
+    /* Orientation landscape sur mobile */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .login-wrapper {
+            padding: 10px;
+        }
+
+        .login-card {
+            min-height: auto;
+        }
+
+        .login-info-section {
+            min-height: auto;
+            padding: 20px 15px;
+        }
+
+        .info-features {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .feature-item {
+            padding: 8px;
+        }
+
+        .feature-content h4 {
+            font-size: 11px;
+        }
+
+        .feature-content p {
+            font-size: 9px;
         }
     }
 </style>

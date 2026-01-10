@@ -18,12 +18,12 @@ class UserController extends Controller
     }
 }
 
-    public function index()
+    public function index(Request $request)
     {
         $this->authorizeRole(['admin','tresorier']);
-        $name = request('name');
-        $email = request('email');
-        $nom = request('nom');
+        $name = $request->input('name');
+        $email = $request->input('email');
+        $nom = $request->input('nom');
         // On récupère tous les utilisateurs
         $users = User::where(function ($query) use ($name, $email, $nom) {
             if ($name) {
@@ -38,7 +38,7 @@ class UserController extends Controller
                 });
             }
 
-        })->paginate(10);
+        })->paginate(10)->appends($request->only(['name', 'email', 'nom']));
         $postes = Poste::all();
         return view('users.index', compact('users', 'postes', 'name', 'email', 'nom'));
     }

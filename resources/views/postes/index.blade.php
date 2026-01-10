@@ -308,11 +308,11 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="text-muted">
-                    Affichage de {{ $postes->firstItem() }} à {{ $postes->lastItem() }} sur {{ $postes->total() }} résultats
+                    Affichage de {{ $postes->firstItem() ?? 0 }} à {{ $postes->lastItem() ?? 0 }} sur {{ $postes->total() }} résultats
                 </div>
                 <nav aria-label="Page navigation">
                     <div class="pagination-wrapper">
-                        {{ $postes->links('pagination::bootstrap-4') }}
+                        {{ $postes->links('custom.pagination') }}
                     </div>
                 </nav>
             </div>
@@ -377,8 +377,6 @@
                 searching: true,
                 ordering: true,
                 responsive: true,
-                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Tous"]],
-                pageLength: 10,
                 drawCallback: function() {
                     // Animation pour les nouvelles lignes
                     $('.table-modern tbody tr').addClass('fade-in');

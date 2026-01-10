@@ -16,11 +16,11 @@ class PosteController extends Controller
 }
 
     // Afficher la liste des postes
-    public function index()
+    public function index(Request $request)
     {
         $this->authorizeRole(['admin']);
-        $postes = Poste::paginate(10);
-        $nom = request('nom');
+        $nom = $request->input('nom');
+        $postes = Poste::paginate(10)->appends($request->only(['nom']));
         return view('postes.index', compact('postes', 'nom'));
     }
 

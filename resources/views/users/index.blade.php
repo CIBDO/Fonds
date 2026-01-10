@@ -318,7 +318,7 @@
                                 sur {{ $users->total() }} utilisateurs
                             </div>
                             <div>
-                                {{ $users->links('pagination::bootstrap-4') }}
+                                {{ $users->links('custom.pagination') }}
                             </div>
                         </div>
                     </div>
@@ -516,8 +516,9 @@
             // Configuration DataTables
             var table = $('#usersDataTable').DataTable({
                 responsive: true,
-                pageLength: 10,
-                lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Tous"]],
+                paging: false, // Désactiver la pagination DataTables pour utiliser celle de Laravel
+                searching: true,
+                ordering: true,
                 order: [[1, 'asc']],
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json'
