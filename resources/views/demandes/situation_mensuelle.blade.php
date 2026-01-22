@@ -79,12 +79,23 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @php
+                                    $totalSalaireDemandeAjuste = 0;
+                                @endphp
                                 @forelse($demandesParPoste as $demande)
+                                @php
+                                    // Si REALISATION RECETTES DOUANIERES > SALAIRE BRUT, alors SALAIRE DEMANDÉ = 0
+                                    // Sinon, afficher la différence entre Salaire brut et Recette douanière
+                                    $montantDisponible = $demande['montant_disponible'] ?? 0;
+                                    $salaireBrut = $demande['salaire_brut'] ?? 0;
+                                    $salaireDemandeAffiche = ($montantDisponible > $salaireBrut) ? 0 : max(0, $salaireBrut - $montantDisponible);
+                                    $totalSalaireDemandeAjuste += $salaireDemandeAffiche;
+                                @endphp
                                 <tr>
                                     <td><strong>{{ $demande['poste'] }}</strong></td>
                                     <td class="text-end">{{ number_format($demande['salaire_brut'], 0, ',', ' ') }}</td>
                                     <td class="text-end">{{ ($demande['montant_disponible'] > 0) ? number_format($demande['montant_disponible'], 0, ',', ' ') : '-' }}</td>
-                                    <td class="text-end">{{ number_format($demande['salaire_demande'], 0, ',', ' ') }}</td>
+                                    <td class="text-end">{{ number_format($salaireDemandeAffiche, 0, ',', ' ') }}</td>
                                     <td class="text-end">{{ $demande['montant'] !== null ? number_format($demande['montant'], 0, ',', ' ') : '-' }}</td>
                                     <td>-</td>
                                 </tr>
@@ -100,7 +111,7 @@
                                     <th><strong>TOTAL GÉNÉRAL</strong></th>
                                     <th class="text-end"><strong>{{ number_format($totalGeneral['salaire_brut'], 0, ',', ' ') }}</strong></th>
                                     <th class="text-end"><strong>{{ number_format($totalGeneral['montant_disponible'] ?? 0, 0, ',', ' ') }}</strong></th>
-                                    <th class="text-end"><strong>{{ number_format($totalGeneral['salaire_demande'], 0, ',', ' ') }}</strong></th>
+                                    <th class="text-end"><strong>{{ number_format($totalSalaireDemandeAjuste, 0, ',', ' ') }}</strong></th>
                                     <th class="text-end"><strong>{{ number_format($totalGeneral['montant'] ?? 0, 0, ',', ' ') }}</strong></th>
                                     <th>-</th>
                                 </tr>
