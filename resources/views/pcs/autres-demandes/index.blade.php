@@ -144,9 +144,15 @@
                                                 class="btn btn-outline-success"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#validationModal{{ $demande->id }}"
-                                                data-bs-toggle="tooltip"
                                                 title="Valider avec montant">
                                             <i class="fas fa-check"></i>
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-outline-danger"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#rejeterModal{{ $demande->id }}"
+                                                title="Rejeter la demande">
+                                            <i class="fas fa-times"></i>
                                         </button>
                                     @endif
                                 </div>
@@ -291,6 +297,42 @@
                     </button>
                     <button type="submit" class="btn btn-success">
                         <i class="fas fa-check me-1"></i>Valider avec ce Montant
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Rejeter -->
+<div class="modal fade" id="rejeterModal{{ $demande->id }}" tabindex="-1" aria-labelledby="rejeterModalLabel{{ $demande->id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="rejeterModalLabel{{ $demande->id }}">
+                    <i class="fas fa-times-circle me-2"></i>Rejeter la Demande
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <form action="{{ route('pcs.autres-demandes.rejeter', $demande) }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <p class="mb-3">
+                        <strong>Poste :</strong> {{ $demande->poste->nom }} —
+                        <strong>Montant :</strong> {{ number_format($demande->montant, 0, ',', ' ') }} FCFA
+                    </p>
+                    <div class="mb-0">
+                        <label class="form-label fw-bold">Motif du rejet <span class="text-danger">*</span></label>
+                        <textarea name="motif_rejet" class="form-control" rows="4" required
+                                  placeholder="Expliquez la raison du rejet (minimum 10 caractères)..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Annuler
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-times-circle me-1"></i>Confirmer le Rejet
                     </button>
                 </div>
             </form>
