@@ -161,7 +161,7 @@
 
     <!-- Titre principal -->
     <div class="main-title">
-        SITUATION CONSOLIDÉE DES AUTRES DEMANDES FINANCIÈRES PCS AU TITRE DE L'EXERCICE {{ $annee }}
+        SITUATION CONSOLIDÉE DES AUTRES DEMANDES FINANCIÈRES  AU TITRE DE L'EXERCICE {{ $annee }}
     </div>
 
     <div class="poste-info">

@@ -166,7 +166,7 @@
                     <li class="submenu {{ request()->routeIs('pcs.declarations.*') ? 'active' : '' }}">
                         <a href="#" class="submenu-toggle">
                             <i class="fas fa-check-double"></i>
-                            <span>Validation PCS</span>
+                            <span>Consultations PCS</span>
                             <span class="menu-arrow fas fa-chevron-right"></span>
                         </a>
                         <ul class="submenu-list">
