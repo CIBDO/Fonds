@@ -51,8 +51,9 @@ class DeclarationPcsController extends Controller
             $query->where('statut', $request->statut);
         }
 
-        // Si l'utilisateur n'est pas valideur, voir uniquement ses déclarations
-        if (!$user->peut_valider_pcs) {
+        // ACCT et admin voient toutes les déclarations ; les autres voient uniquement leur poste
+        $estValideurOuAcct = $user->peut_valider_pcs || $user->hasRole('acct') || $user->hasRole('admin');
+        if (!$estValideurOuAcct) {
             $posteId = $user->poste_id;
             $query->where(function ($q) use ($posteId) {
                 $q->where('poste_id', $posteId)

@@ -40,8 +40,9 @@ class AutreDemandeController extends Controller
             $query->where('statut', $request->statut);
         }
 
-        // Si l'utilisateur n'est pas valideur, voir uniquement ses demandes
-        if (!$user->peut_valider_pcs) {
+        // ACCT et admin voient toutes les demandes ; les autres voient uniquement leur poste
+        $estValideurOuAcct = $user->peut_valider_pcs || $user->hasRole('acct') || $user->hasRole('admin');
+        if (!$estValideurOuAcct) {
             $query->where('poste_id', $user->poste_id);
         }
 
