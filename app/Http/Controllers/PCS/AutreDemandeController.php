@@ -268,8 +268,9 @@ class AutreDemandeController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        // Seul le créateur ou un valideur peut supprimer
-        if ($demande->saisi_par !== $user->id && !$user->peut_valider_pcs) {
+        // Seul le créateur ou un valideur (ACCT/admin) peut supprimer
+        $estValideurOuAcct = $user->peut_valider_pcs || $user->hasRole('acct') || $user->hasRole('admin');
+        if ($demande->saisi_par !== $user->id && !$estValideurOuAcct) {
             Alert::error('Erreur', 'Vous ne pouvez pas supprimer cette demande');
             return redirect()->back();
         }
@@ -294,7 +295,8 @@ class AutreDemandeController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        if (!$user->peut_valider_pcs) {
+        $estValideurOuAcct = $user->peut_valider_pcs || $user->hasRole('acct') || $user->hasRole('admin');
+        if (!$estValideurOuAcct) {
             Alert::error('Erreur', 'Vous n\'avez pas l\'autorisation de valider');
             return redirect()->back();
         }
@@ -335,7 +337,8 @@ class AutreDemandeController extends Controller
             'motif_rejet' => 'required|string|min:10',
         ]);
 
-        if (!$user->peut_valider_pcs) {
+        $estValideurOuAcct = $user->peut_valider_pcs || $user->hasRole('acct') || $user->hasRole('admin');
+        if (!$estValideurOuAcct) {
             Alert::error('Erreur', 'Vous n\'avez pas l\'autorisation de rejeter');
             return redirect()->back();
         }

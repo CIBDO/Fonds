@@ -109,7 +109,7 @@
                 </li>
 
                 <!-- MODULE PCS - SECTION POSTES (Saisie uniquement) -->
-                @if ((Auth::user()->peut_saisir_pcs || Auth::user()->poste_id) && !Auth::user()->peut_valider_pcs && !Auth::user()->hasRole('acct'))
+                @if ((Auth::user()->peut_saisir_pcs || Auth::user()->poste_id) && !Auth::user()->peut_valider_pcs && !Auth::user()->hasRole('acct') && !Auth::user()->hasRole('admin'))
                     <li class="menu-title">
                         <span>PCS (UEMOA/AES)</span>
                     </li>
@@ -133,7 +133,7 @@
                 @endif
 
                 <!-- MODULE AUTRES DEMANDES PCS - SECTION POSTES (Saisie uniquement) -->
-                @if ((Auth::user()->peut_saisir_pcs || Auth::user()->poste_id) && !Auth::user()->peut_valider_pcs && !Auth::user()->hasRole('acct'))
+                @if ((Auth::user()->peut_saisir_pcs || Auth::user()->poste_id) && !Auth::user()->peut_valider_pcs && !Auth::user()->hasRole('acct') && !Auth::user()->hasRole('admin'))
                     <li class="menu-title">
                         <span>Autres Demandes </span>
                     </li>
@@ -156,8 +156,8 @@
                     </li>
                 @endif
 
-                <!-- MODULE PCS - SECTION ACCT (Validation & États Consolidés) -->
-                @if (Auth::user()->peut_valider_pcs || Auth::user()->hasRole('acct'))
+                <!-- MODULE PCS - SECTION ACCT/ADMIN (Validation, Statistiques & États Consolidés) -->
+                @if (Auth::user()->peut_valider_pcs || Auth::user()->hasRole('acct') || Auth::user()->hasRole('admin'))
                     <li class="menu-title">
                         <span>PCS - Demandes</span>
                     </li>

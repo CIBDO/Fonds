@@ -139,7 +139,7 @@
                                         </a>
                                     @endif
 
-                                    @if(auth()->user()->peut_valider_pcs && $demande->statut == 'soumis')
+                                    @if((auth()->user()->peut_valider_pcs || auth()->user()->hasRole('acct') || auth()->user()->hasRole('admin')) && $demande->statut == 'soumis')
                                         <button type="button"
                                                 class="btn btn-outline-success"
                                                 data-bs-toggle="modal"

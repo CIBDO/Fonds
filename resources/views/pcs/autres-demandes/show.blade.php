@@ -110,7 +110,7 @@
                 </div>
             </div>
 
-            @if(auth()->user()->peut_valider_pcs && $demande->statut == 'soumis')
+            @if((auth()->user()->peut_valider_pcs || auth()->user()->hasRole('acct') || auth()->user()->hasRole('admin')) && $demande->statut == 'soumis')
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-warning text-dark">
                     <h5 class="mb-0"><i class="fas fa-tasks me-2"></i>Actions de Validation</h5>
