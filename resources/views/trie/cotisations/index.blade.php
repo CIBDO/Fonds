@@ -13,24 +13,65 @@
                 </div>
             </div>
             <div class="col-auto">
-                <a href="{{ route('trie.bureaux.index') }}" class="btn btn-secondary btn-sm me-2">
-                    <i class="fas fa-building me-1"></i>Bureaux
-                </a>
-                {{-- <a href="{{ route('trie.etats.index') }}" class="btn btn-info btn-sm me-2">
-                    <i class="fas fa-file-pdf me-1"></i>États
-                </a> --}}
-                @if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct','admin']))
-                <button type="button" class="btn btn-outline-info btn-sm me-2" data-bs-toggle="modal" data-bs-target="#modalEtatReferences">
-                    <i class="fas fa-hashtag me-1"></i>État des références
-                </button>
-                <button type="button" class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#modalEtatConsolideCotisations">
-                    <i class="fas fa-file-export me-1"></i>État Consolidé
-                </button>
-                @endif
                 @if(!auth()->user()->hasRole('acct'))
-                <a href="{{ route('trie.cotisations.create') }}" class="btn btn-primary btn-sm">
-                    <i class="fas fa-plus me-1"></i>Nouvelle Cotisation
-                </a>
+                <div class="btn-group">
+                    <a href="{{ route('trie.cotisations.create') }}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus me-1"></i>Nouvelle Cotisation
+                    </a>
+                    <button type="button" class="btn btn-primary btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="visually-hidden">Ouvrir le menu</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a class="dropdown-item" href="{{ route('trie.bureaux.index') }}">
+                                <i class="fas fa-building me-2"></i>Bureaux
+                            </a>
+                        </li>
+                        @if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct','admin']))
+                        <li>
+                            <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalEtatReferences">
+                                <i class="fas fa-hashtag me-2"></i>État des références
+                            </button>
+                        </li>
+                        <li>
+                            <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalEtatConsolideCotisations">
+                                <i class="fas fa-file-export me-2"></i>État Consolidé
+                            </button>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        @endif
+                        <li>
+                            <a class="dropdown-item" href="{{ route('trie.cotisations.create') }}">
+                                <i class="fas fa-plus me-2"></i>Créer une cotisation
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                @else
+                <div class="dropdown">
+                    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-bars me-1"></i>Actions
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a class="dropdown-item" href="{{ route('trie.bureaux.index') }}">
+                                <i class="fas fa-building me-2"></i>Bureaux
+                            </a>
+                        </li>
+                        @if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct','admin']))
+                        <li>
+                            <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalEtatReferences">
+                                <i class="fas fa-hashtag me-2"></i>État des références
+                            </button>
+                        </li>
+                        <li>
+                            <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalEtatConsolideCotisations">
+                                <i class="fas fa-file-export me-2"></i>État Consolidé
+                            </button>
+                        </li>
+                        @endif
+                    </ul>
+                </div>
                 @endif
             </div>
         </div>
