@@ -129,7 +129,15 @@
                                        title="Détails">
                                         <i class="fas fa-eye"></i>
                                     </a>
-
+                                    @if($demande->preuve_paiement)
+                                        <a href="{{ route('pcs.autres-demandes.preuve', $demande) }}"
+                                           class="btn btn-outline-secondary"
+                                           data-bs-toggle="tooltip"
+                                           title="Télécharger la preuve de paiement"
+                                           target="_blank">
+                                            <i class="fas fa-paperclip"></i>
+                                        </a>
+                                    @endif
                                     @if(in_array($demande->statut, ['brouillon', 'soumis', 'rejete']) && $demande->saisi_par == auth()->id())
                                         <a href="{{ route('pcs.autres-demandes.edit', $demande) }}"
                                            class="btn btn-outline-primary"

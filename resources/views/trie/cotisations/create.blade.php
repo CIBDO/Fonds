@@ -179,7 +179,7 @@
     @endphp
 
     <!-- FORMULAIRE MODE NORMAL -->
-    <form action="{{ route('trie.cotisations.store') }}" method="POST" id="cotisationFormNormal">
+    <form action="{{ route('trie.cotisations.store') }}" method="POST" id="cotisationFormNormal" enctype="multipart/form-data">
         @csrf
         <input type="hidden" name="mode" value="normal">
         <input type="hidden" name="poste_id" value="{{ $posteId }}">
@@ -218,6 +218,7 @@
                                 <th><i class="fas fa-comment"></i> Détail Apurement</th>
                                 <th><i class="fas fa-credit-card"></i> Mode Paiement</th>
                                 <th><i class="fas fa-receipt"></i> Référence</th>
+                                <th><i class="fas fa-paperclip"></i> Preuve</th>
                                 <th><i class="fas fa-calendar-day"></i> Date</th>
                             </tr>
                         </thead>
@@ -287,6 +288,13 @@
                                            disabled>
                                 </td>
                                 <td>
+                                    <input type="file"
+                                           name="bureaux[{{ $index }}][preuve_paiement]"
+                                           class="form-control form-control-sm preuve-input"
+                                           accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                                           disabled>
+                                </td>
+                                <td>
                                     <input type="date"
                                            name="bureaux[{{ $index }}][date_paiement]"
                                            class="form-control form-control-sm date-input"
@@ -331,6 +339,13 @@
                                     <small>{{ $bureau->cotisation_existante->reference_paiement ?? '-' }}</small>
                                 </td>
                                 <td class="text-center">
+                                    @if($bureau->cotisation_existante->preuve_paiement ?? null)
+                                        <a href="{{ route('trie.cotisations.preuve', $bureau->cotisation_existante) }}" class="btn btn-sm btn-outline-secondary" target="_blank" title="Télécharger la preuve"><i class="fas fa-paperclip"></i></a>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
                                     <small>{{ $bureau->cotisation_existante->date_paiement?->format('d/m/Y') ?? '-' }}</small>
                                 </td>
                             </tr>
@@ -347,7 +362,7 @@
                                 <th class="text-end">
                                     <span class="fw-bold text-success">{{ number_format($totalApurementExistant, 0, ',', ' ') }} FCFA</span>
                                 </th>
-                                <th colspan="4" class="text-end">
+                                <th colspan="5" class="text-end">
                                     <strong>TOTAL: </strong>
                                     <span class="fw-bold text-success fs-5">{{ number_format($totalExistant, 0, ',', ' ') }} FCFA</span>
                                 </th>
@@ -362,7 +377,7 @@
                                 <th class="text-end">
                                     <span id="totalApurement" class="fw-bold text-warning">0 FCFA</span>
                                 </th>
-                                <th colspan="4" class="text-end">
+                                <th colspan="5" class="text-end">
                                     <strong>TOTAL: </strong>
                                     <span id="totalGeneral" class="fw-bold text-primary fs-5">0 FCFA</span>
                                 </th>
@@ -375,7 +390,7 @@
                                 <th class="text-end">
                                     <span id="totalApurementGlobal" class="fw-bold text-dark">{{ number_format($totalApurementExistant, 0, ',', ' ') }} FCFA</span>
                                 </th>
-                                <th colspan="4" class="text-end">
+                                <th colspan="5" class="text-end">
                                     <strong>TOTAL: </strong>
                                     <span id="grandTotal" class="fw-bold text-dark fs-4">{{ number_format($totalExistant, 0, ',', ' ') }} FCFA</span>
                                 </th>
@@ -389,7 +404,7 @@
                                 <th class="text-end">
                                     <span class="fw-bold text-success">{{ number_format($totalApurementExistant, 0, ',', ' ') }} FCFA</span>
                                 </th>
-                                <th colspan="4" class="text-end">
+                                <th colspan="5" class="text-end">
                                     <strong>TOTAL: </strong>
                                     <span class="fw-bold text-success fs-5">{{ number_format($totalExistant, 0, ',', ' ') }} FCFA</span>
                                 </th>
@@ -417,7 +432,7 @@
     </form>
 
     <!-- FORMULAIRE MODE RATTRAPAGE -->
-    <form action="{{ route('trie.cotisations.store') }}" method="POST" id="cotisationFormRattrapage" style="display:none;">
+    <form action="{{ route('trie.cotisations.store') }}" method="POST" id="cotisationFormRattrapage" style="display:none;" enctype="multipart/form-data">
         @csrf
         <input type="hidden" name="mode" value="rattrapage">
         <input type="hidden" name="poste_id" value="{{ $posteId }}">
@@ -783,7 +798,7 @@
 
         // En-têtes des bureaux
         bureaux.forEach(bureau => {
-            html += `<th colspan="4" class="text-center bg-primary text-black">${bureau.code} - ${bureau.nom}</th>`;
+            html += `<th colspan="5" class="text-center bg-primary text-black">${bureau.code} - ${bureau.nom}</th>`;
         });
 
         html += `</tr><tr>`;
@@ -794,6 +809,7 @@
                 <th class="text-end" style="min-width:120px;">Cotisation</th>
                 <th class="text-end" style="min-width:120px;">Apurement</th>
                 <th style="min-width:150px;">Réf. Paiement</th>
+                <th style="min-width:100px;">Preuve</th>
                 <th style="min-width:130px;">Date</th>
             `;
         });
@@ -821,6 +837,10 @@
                               name="cotisation_${mois}_${bureau.id}_reference"
                               class="form-control form-control-sm"
                               placeholder="Ex: CHQ n°123"></td>
+                    <td><input type="file"
+                              name="cotisation_${mois}_${bureau.id}_preuve_paiement"
+                              class="form-control form-control-sm"
+                              accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"></td>
                     <td><input type="date"
                               name="cotisation_${mois}_${bureau.id}_date_paiement"
                               class="form-control form-control-sm"

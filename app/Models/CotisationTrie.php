@@ -22,6 +22,7 @@ class CotisationTrie extends Model
         'montant_total',
         'mode_paiement',
         'reference_paiement',
+        'preuve_paiement',
         'date_paiement',
         'detail_apurement',
         'observation',

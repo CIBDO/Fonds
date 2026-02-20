@@ -35,7 +35,7 @@
                 </div>
 
                 <div class="card-body">
-                    <form action="{{ route('pcs.autres-demandes.store') }}" method="POST" id="formDemandes">
+                    <form action="{{ route('pcs.autres-demandes.store') }}" method="POST" id="formDemandes" enctype="multipart/form-data">
                         @csrf
 
                         <!-- Paramètres globaux -->
@@ -128,6 +128,19 @@
                                                   class="form-control"
                                                   rows="3"
                                                   placeholder="Détails complémentaires..."></textarea>
+                                    </div>
+
+                                    <!-- Preuve de paiement (fichier) -->
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-label fw-bold">
+                                            <i class="fas fa-paperclip me-1"></i>Preuve de paiement (fichier)
+                                        </label>
+                                        <input type="file"
+                                               class="form-control"
+                                               name="demandes[0][preuve_paiement]"
+                                               accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                                               id="preuve_0">
+                                        <small class="text-muted">PDF, images ou Word. Optionnel.</small>
                                     </div>
                                 </div>
                             </div>
@@ -261,10 +274,15 @@
                 const name = input.getAttribute('name');
                 if (name) {
                     input.setAttribute('name', name.replace(/\[\d+\]/, '[' + ligneIndex + ']'));
-                    input.value = '';
+                    if (input.type !== 'file') input.value = '';
                 }
                 input.removeAttribute('data-montant-init');
+                if (input.type === 'file') input.value = '';
             });
+            var preuveInput = nouvelleLigne.querySelector('input[type="file"][name*="preuve_paiement"]');
+            if (preuveInput) {
+                preuveInput.id = 'preuve_' + ligneIndex;
+            }
 
             const btnSupprimer = nouvelleLigne.querySelector('.supprimer-ligne');
             if (btnSupprimer) btnSupprimer.style.display = 'inline-block';

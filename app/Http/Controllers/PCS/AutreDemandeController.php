@@ -7,6 +7,7 @@ use App\Models\AutreDemande;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use RealRashid\SweetAlert\Facades\Alert;
 use App\Notifications\PcsAutreDemandeSoumise;
 use App\Notifications\PcsAutreDemandeValidee;
@@ -130,6 +131,7 @@ class AutreDemandeController extends Controller
             'demandes.*.designation' => 'required|string|max:500',
             'demandes.*.montant' => 'required|numeric|min:0',
             'demandes.*.observation' => 'nullable|string',
+            'demandes.*.preuve_paiement' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx|max:10240',
         ], [
             'annee_globale.required' => 'L\'année est obligatoire',
             'date_globale.required' => 'La date est obligatoire',
@@ -157,6 +159,13 @@ class AutreDemandeController extends Controller
                     'statut' => $statut,
                     'saisi_par' => $user->id,
                 ]);
+
+                // Joindre la preuve de paiement si un fichier est fourni
+                if ($request->hasFile("demandes.{$index}.preuve_paiement")) {
+                    $file = $request->file("demandes.{$index}.preuve_paiement");
+                    $path = $file->store("preuves-pcs/autres-demandes/{$demande->id}", 'public');
+                    $demande->update(['preuve_paiement' => $path]);
+                }
 
                 $demandesCreees[] = $demande;
 
@@ -191,6 +200,18 @@ class AutreDemandeController extends Controller
         }
 
         return redirect()->route('pcs.autres-demandes.index');
+    }
+
+    /**
+     * Télécharger la preuve de paiement d'une demande
+     */
+    public function preuve(AutreDemande $demande)
+    {
+        if (!$demande->preuve_paiement || !Storage::disk('public')->exists($demande->preuve_paiement)) {
+            abort(404, 'Fichier introuvable.');
+        }
+        $nomOriginal = basename($demande->preuve_paiement);
+        return Storage::disk('public')->download($demande->preuve_paiement, $nomOriginal);
     }
 
     /**

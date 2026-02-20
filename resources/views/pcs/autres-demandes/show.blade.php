@@ -99,6 +99,19 @@
                     </div>
                     @endif
 
+                    @if($demande->preuve_paiement)
+                    <div class="mt-3">
+                        <label class="text-muted small">Preuve de paiement</label>
+                        <div>
+                            <a href="{{ route('pcs.autres-demandes.preuve', $demande) }}"
+                               class="btn btn-outline-primary btn-sm"
+                               target="_blank">
+                                <i class="fas fa-paperclip me-1"></i>Télécharger le fichier
+                            </a>
+                        </div>
+                    </div>
+                    @endif
+
                     @if($demande->motif_rejet)
                     <div class="mt-3">
                         <div class="alert alert-danger">

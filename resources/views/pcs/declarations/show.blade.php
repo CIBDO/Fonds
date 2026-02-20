@@ -72,6 +72,16 @@
                                 @endif
                             </div>
                         </div>
+                        @if($declaration->preuve_paiement)
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Preuve de paiement</label>
+                            <div>
+                                <a href="{{ route('pcs.declarations.preuve', $declaration) }}" class="btn btn-outline-primary btn-sm" target="_blank">
+                                    <i class="fas fa-paperclip me-1"></i>Télécharger le fichier
+                                </a>
+                            </div>
+                        </div>
+                        @endif
                         <div class="col-md-6 mb-3">
                             <label class="text-muted small">Période</label>
                             <div class="fw-bold">

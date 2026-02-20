@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use RealRashid\SweetAlert\Facades\Alert;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
@@ -266,13 +267,14 @@ class CotisationTrieController extends Controller
             'bureaux.*.reference_paiement' => 'nullable|string',
             'bureaux.*.date_paiement' => 'nullable|date',
             'bureaux.*.observation' => 'nullable|string',
+            'bureaux.*.preuve_paiement' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx|max:10240',
         ]);
 
         $posteId = $validated['poste_id'];
         $mois = $validated['mois'];
         $annee = $validated['annee'];
 
-        foreach ($validated['bureaux'] as $bureauData) {
+        foreach ($validated['bureaux'] as $index => $bureauData) {
             // Vérifier si une cotisation existe déjà
             $existante = CotisationTrie::where('bureau_trie_id', $bureauData['bureau_trie_id'])
                 ->where('mois', $mois)
@@ -302,6 +304,13 @@ class CotisationTrieController extends Controller
                 'saisi_par' => $user->id,
                 'valide_par' => $user->id,
             ]);
+
+            // Joindre la preuve de paiement si un fichier est fourni
+            if ($request->hasFile("bureaux.{$index}.preuve_paiement")) {
+                $file = $request->file("bureaux.{$index}.preuve_paiement");
+                $path = $file->store("preuves-trie/cotisations/{$cotisation->id}", 'public');
+                $cotisation->update(['preuve_paiement' => $path]);
+            }
 
             // Charger les relations pour la notification
             $cotisation->load(['poste', 'bureauTrie']);
@@ -374,6 +383,13 @@ class CotisationTrieController extends Controller
                         'valide_par' => $user->id,
                     ]);
 
+                    // Joindre la preuve de paiement si un fichier est fourni
+                    if ($request->hasFile("cotisation_{$mois}_{$bureau->id}_preuve_paiement")) {
+                        $file = $request->file("cotisation_{$mois}_{$bureau->id}_preuve_paiement");
+                        $path = $file->store("preuves-trie/cotisations/{$cotisation->id}", 'public');
+                        $cotisation->update(['preuve_paiement' => $path]);
+                    }
+
                     // Charger les relations pour la notification
                     $cotisation->load(['poste', 'bureauTrie']);
 
@@ -410,6 +426,18 @@ class CotisationTrieController extends Controller
         5 => 'Mai', 6 => 'Juin', 7 => 'Juillet', 8 => 'Août',
         9 => 'Septembre', 10 => 'Octobre', 11 => 'Novembre', 12 => 'Décembre'
     ];
+
+    /**
+     * Télécharger la preuve de paiement d'une cotisation
+     */
+    public function preuve(CotisationTrie $cotisation)
+    {
+        if (!$cotisation->preuve_paiement || !Storage::disk('public')->exists($cotisation->preuve_paiement)) {
+            abort(404, 'Fichier introuvable.');
+        }
+        $nomOriginal = basename($cotisation->preuve_paiement);
+        return Storage::disk('public')->download($cotisation->preuve_paiement, $nomOriginal);
+    }
 
     /**
      * Afficher une cotisation

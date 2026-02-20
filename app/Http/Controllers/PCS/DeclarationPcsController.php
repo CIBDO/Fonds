@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use RealRashid\SweetAlert\Facades\Alert;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use App\Notifications\PcsDeclarationValidee;
@@ -279,7 +280,7 @@ class DeclarationPcsController extends Controller
             $reversementRgd = $request->input("mois_{$mois}_rgd_{$programme}_reversement");
 
             if ($recouvrementRgd || $reversementRgd || $request->input("mois_{$mois}_rgd_{$programme}_reference")) {
-                DeclarationPcs::updateOrCreate(
+                $declaration = DeclarationPcs::updateOrCreate(
                     [
                         'poste_id' => $poste->id,
                         'bureau_douane_id' => null,
@@ -300,6 +301,10 @@ class DeclarationPcsController extends Controller
                         'saisi_par' => $user->id,
                     ]
                 );
+                if ($request->hasFile("mois_{$mois}_rgd_{$programme}_preuve_paiement")) {
+                    $path = $request->file("mois_{$mois}_rgd_{$programme}_preuve_paiement")->store("preuves-pcs/declarations/{$declaration->id}", 'public');
+                    $declaration->update(['preuve_paiement' => $path]);
+                }
             }
 
             // Déclarations des bureaux
@@ -309,7 +314,7 @@ class DeclarationPcsController extends Controller
                 $reversementBureau = $request->input("mois_{$mois}_bureau_{$bureau->id}_{$programme}_reversement");
 
                 if ($recouvrementBureau || $reversementBureau || $request->input("mois_{$mois}_bureau_{$bureau->id}_{$programme}_reference")) {
-                    DeclarationPcs::updateOrCreate(
+                    $declaration = DeclarationPcs::updateOrCreate(
                         [
                             'poste_id' => null,
                             'bureau_douane_id' => $bureau->id,
@@ -330,6 +335,10 @@ class DeclarationPcsController extends Controller
                             'saisi_par' => $user->id,
                         ]
                     );
+                    if ($request->hasFile("mois_{$mois}_bureau_{$bureau->id}_{$programme}_preuve_paiement")) {
+                        $path = $request->file("mois_{$mois}_bureau_{$bureau->id}_{$programme}_preuve_paiement")->store("preuves-pcs/declarations/{$declaration->id}", 'public');
+                        $declaration->update(['preuve_paiement' => $path]);
+                    }
                 }
             }
         }
@@ -345,7 +354,7 @@ class DeclarationPcsController extends Controller
             $reversement = $request->input("mois_{$mois}_{$programme}_reversement");
 
             if ($recouvrement || $reversement || $request->input("mois_{$mois}_{$programme}_reference")) {
-                DeclarationPcs::updateOrCreate(
+                $declaration = DeclarationPcs::updateOrCreate(
                     [
                         'poste_id' => $poste->id,
                         'bureau_douane_id' => null,
@@ -366,6 +375,10 @@ class DeclarationPcsController extends Controller
                         'saisi_par' => $user->id,
                     ]
                 );
+                if ($request->hasFile("mois_{$mois}_{$programme}_preuve_paiement")) {
+                    $path = $request->file("mois_{$mois}_{$programme}_preuve_paiement")->store("preuves-pcs/declarations/{$declaration->id}", 'public');
+                    $declaration->update(['preuve_paiement' => $path]);
+                }
             }
         }
     }
@@ -385,7 +398,7 @@ class DeclarationPcsController extends Controller
             $reversementRgd = $request->input("rgd_{$programme}_reversement");
 
             if ($recouvrementRgd || $reversementRgd) {
-                DeclarationPcs::updateOrCreate(
+                $declaration = DeclarationPcs::updateOrCreate(
                     [
                         'poste_id' => $poste->id,
                         'bureau_douane_id' => null,
@@ -406,6 +419,10 @@ class DeclarationPcsController extends Controller
                         'saisi_par' => $user->id,
                     ]
                 );
+                if ($request->hasFile("rgd_{$programme}_preuve_paiement")) {
+                    $path = $request->file("rgd_{$programme}_preuve_paiement")->store("preuves-pcs/declarations/{$declaration->id}", 'public');
+                    $declaration->update(['preuve_paiement' => $path]);
+                }
             }
 
             // Déclarations des bureaux
@@ -415,7 +432,7 @@ class DeclarationPcsController extends Controller
                 $reversementBureau = $request->input("bureau_{$bureau->id}_{$programme}_reversement");
 
                 if ($recouvrementBureau || $reversementBureau) {
-                    DeclarationPcs::updateOrCreate(
+                    $declaration = DeclarationPcs::updateOrCreate(
                         [
                             'poste_id' => null,
                             'bureau_douane_id' => $bureau->id,
@@ -434,6 +451,10 @@ class DeclarationPcsController extends Controller
                             'saisi_par' => $user->id,
                         ]
                     );
+                    if ($request->hasFile("bureau_{$bureau->id}_{$programme}_preuve_paiement")) {
+                        $path = $request->file("bureau_{$bureau->id}_{$programme}_preuve_paiement")->store("preuves-pcs/declarations/{$declaration->id}", 'public');
+                        $declaration->update(['preuve_paiement' => $path]);
+                    }
                 }
             }
         }
@@ -458,7 +479,7 @@ class DeclarationPcsController extends Controller
             $reversement = $request->input("{$programme}_reversement");
 
             if ($recouvrement || $reversement) {
-                DeclarationPcs::create([
+                $declaration = DeclarationPcs::create([
                     'poste_id' => $poste->id,
                     'bureau_douane_id' => null,
                     'programme' => $programme,
@@ -475,6 +496,10 @@ class DeclarationPcsController extends Controller
                     'valide_par' => $request->input('action') === 'soumettre' ? $user->id : null,
                     'saisi_par' => $user->id,
                 ]);
+                if ($request->hasFile("{$programme}_preuve_paiement")) {
+                    $path = $request->file("{$programme}_preuve_paiement")->store("preuves-pcs/declarations/{$declaration->id}", 'public');
+                    $declaration->update(['preuve_paiement' => $path]);
+                }
             }
         }
     }
@@ -482,6 +507,18 @@ class DeclarationPcsController extends Controller
     /**
      * Détail d'une déclaration
      */
+    /**
+     * Télécharger la preuve de paiement d'une déclaration
+     */
+    public function preuve(DeclarationPcs $declaration)
+    {
+        if (!$declaration->preuve_paiement || !Storage::disk('public')->exists($declaration->preuve_paiement)) {
+            abort(404, 'Fichier introuvable.');
+        }
+        $nomOriginal = basename($declaration->preuve_paiement);
+        return Storage::disk('public')->download($declaration->preuve_paiement, $nomOriginal);
+    }
+
     public function show(DeclarationPcs $declaration)
     {
         $declaration->load(['poste', 'bureauDouane', 'saisiPar', 'validePar', 'piecesJointes', 'historiqueStatuts.utilisateur']);

@@ -17,6 +17,7 @@ class AutreDemande extends Model
         'montant',
         'montant_accord',
         'observation',
+        'preuve_paiement',
         'date_demande',
         'annee',
         'statut',

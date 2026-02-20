@@ -70,7 +70,7 @@
     </div>
     @endif
 
-    <form action="{{ route('pcs.declarations.store') }}" method="POST" id="declarationForm">
+    <form action="{{ route('pcs.declarations.store') }}" method="POST" id="declarationForm" enctype="multipart/form-data">
         @csrf
 
         <!-- Mode Normal -->
@@ -191,9 +191,11 @@
                                         <th>UEMOA - Recouvré</th>
                                         <th>UEMOA - Reversé</th>
                                         <th>UEMOA - Référence</th>
+                                        <th>UEMOA - Preuve</th>
                                         <th>AES - Recouvré</th>
                                         <th>AES - Reversé</th>
                                         <th>AES - Référence</th>
+                                        <th>AES - Preuve</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -229,9 +231,11 @@
                                             <th>UEMOA - Recouvré</th>
                                             <th>UEMOA - Reversé</th>
                                             <th>UEMOA - Référence</th>
+                                            <th>UEMOA - Preuve</th>
                                             <th>AES - Recouvré</th>
                                             <th>AES - Reversé</th>
                                             <th>AES - Référence</th>
+                                            <th>AES - Preuve</th>
                                         </tr>
                                     </thead>
                                     <tbody data-bureau="{{ $bureau->id }}">
@@ -259,9 +263,11 @@
                                         <th>UEMOA - Recouvré</th>
                                         <th>UEMOA - Reversé</th>
                                         <th>UEMOA - Référence</th>
+                                        <th>UEMOA - Preuve</th>
                                         <th>AES - Recouvré</th>
                                         <th>AES - Reversé</th>
                                         <th>AES - Référence</th>
+                                        <th>AES - Preuve</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -328,6 +334,10 @@
                                            value="{{ old('rgd_UEMOA_reference') }}"
                                            placeholder="Référence...">
                                 </div>
+                                <div class="mb-3">
+                                    <label class="form-label"><i class="fas fa-paperclip me-1"></i>Preuve de paiement</label>
+                                    <input type="file" name="rgd_UEMOA_preuve_paiement" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                                </div>
                                 <div>
                                     <label class="form-label">Observation</label>
                                     <textarea name="rgd_UEMOA_observation"
@@ -370,6 +380,10 @@
                                        class="form-control"
                                        value="{{ old('rgd_AES_reference') }}"
                                        placeholder="Référence...">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label"><i class="fas fa-paperclip me-1"></i>Preuve de paiement</label>
+                                <input type="file" name="rgd_AES_preuve_paiement" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
                             </div>
                             <div>
                                 <label class="form-label">Observation</label>
@@ -430,6 +444,10 @@
                                                value="{{ old('bureau_'.$bureau->id.'_UEMOA_reference') }}"
                                                placeholder="Référence...">
                                     </div>
+                                    <div class="mb-2">
+                                        <label class="form-label small"><i class="fas fa-paperclip"></i> Preuve</label>
+                                        <input type="file" name="bureau_{{ $bureau->id }}_UEMOA_preuve_paiement" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                                    </div>
                                     <div>
                                         <label class="form-label small">Observation</label>
                                         <textarea name="bureau_{{ $bureau->id }}_UEMOA_observation"
@@ -472,6 +490,10 @@
                                            class="form-control form-control-sm"
                                            value="{{ old('bureau_'.$bureau->id.'_AES_reference') }}"
                                            placeholder="Référence...">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small"><i class="fas fa-paperclip"></i> Preuve</label>
+                                    <input type="file" name="bureau_{{ $bureau->id }}_AES_preuve_paiement" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
                                 </div>
                                 <div>
                                     <label class="form-label small">Observation</label>
@@ -532,6 +554,10 @@
                                            value="{{ old('UEMOA_reference') }}"
                                            placeholder="Référence...">
                                 </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold"><i class="fas fa-paperclip me-1"></i>Preuve de paiement</label>
+                                    <input type="file" name="UEMOA_preuve_paiement" class="form-control" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                                </div>
                                 <div>
                                     <label class="form-label fw-bold">Observation</label>
                                     <textarea name="UEMOA_observation"
@@ -576,6 +602,10 @@
                                        class="form-control form-control-lg"
                                        value="{{ old('AES_reference') }}"
                                        placeholder="Référence...">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold"><i class="fas fa-paperclip me-1"></i>Preuve de paiement</label>
+                                <input type="file" name="AES_preuve_paiement" class="form-control" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
                             </div>
                             <div>
                                 <label class="form-label fw-bold">Observation</label>
@@ -894,8 +924,8 @@
             // Afficher un message si aucun mois n'est sélectionné
             const tbodyRgd = document.getElementById('tbodyRattrapageRgd');
             const tbodyPoste = document.getElementById('tbodyRattrapagePoste');
-            if (tbodyRgd) tbodyRgd.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Aucun mois sélectionné</td></tr>';
-            if (tbodyPoste) tbodyPoste.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Aucun mois sélectionné</td></tr>';
+            if (tbodyRgd) tbodyRgd.innerHTML = '<tr><td colspan="10" class="text-center text-muted">Aucun mois sélectionné</td></tr>';
+            if (tbodyPoste) tbodyPoste.innerHTML = '<tr><td colspan="10" class="text-center text-muted">Aucun mois sélectionné</td></tr>';
             return;
         }
 
@@ -920,9 +950,11 @@
                 <td><input type="text" name="mois_${mois}_rgd_UEMOA_recouvrement" class="form-control form-control-sm montant-input" inputmode="decimal" data-min="0" placeholder="0"></td>
                 <td><input type="text" name="mois_${mois}_rgd_UEMOA_reversement" class="form-control form-control-sm montant-input" inputmode="decimal" data-min="0" placeholder="0"></td>
                 <td><input type="text" name="mois_${mois}_rgd_UEMOA_reference" class="form-control form-control-sm" placeholder="Réf."></td>
+                <td><input type="file" name="mois_${mois}_rgd_UEMOA_preuve_paiement" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"></td>
                 <td><input type="text" name="mois_${mois}_rgd_AES_recouvrement" class="form-control form-control-sm montant-input" inputmode="decimal" data-min="0" placeholder="0"></td>
                 <td><input type="text" name="mois_${mois}_rgd_AES_reversement" class="form-control form-control-sm montant-input" inputmode="decimal" data-min="0" placeholder="0"></td>
                 <td><input type="text" name="mois_${mois}_rgd_AES_reference" class="form-control form-control-sm" placeholder="Réf."></td>
+                <td><input type="file" name="mois_${mois}_rgd_AES_preuve_paiement" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"></td>
                 <td>
                     ${index > 0 ? `<button type="button" class="btn btn-sm btn-outline-secondary copier-ligne" data-index="${index}">
                         <i class="fas fa-copy"></i>
@@ -947,9 +979,11 @@
                     <td><input type="text" name="mois_${mois}_bureau_${bureauId}_UEMOA_recouvrement" class="form-control form-control-sm montant-input" inputmode="decimal" data-min="0" placeholder="0"></td>
                     <td><input type="text" name="mois_${mois}_bureau_${bureauId}_UEMOA_reversement" class="form-control form-control-sm montant-input" inputmode="decimal" data-min="0" placeholder="0"></td>
                     <td><input type="text" name="mois_${mois}_bureau_${bureauId}_UEMOA_reference" class="form-control form-control-sm" placeholder="Réf."></td>
+                    <td><input type="file" name="mois_${mois}_bureau_${bureauId}_UEMOA_preuve_paiement" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"></td>
                     <td><input type="text" name="mois_${mois}_bureau_${bureauId}_AES_recouvrement" class="form-control form-control-sm montant-input" inputmode="decimal" data-min="0" placeholder="0"></td>
                     <td><input type="text" name="mois_${mois}_bureau_${bureauId}_AES_reversement" class="form-control form-control-sm montant-input" inputmode="decimal" data-min="0" placeholder="0"></td>
                     <td><input type="text" name="mois_${mois}_bureau_${bureauId}_AES_reference" class="form-control form-control-sm" placeholder="Réf."></td>
+                    <td><input type="file" name="mois_${mois}_bureau_${bureauId}_AES_preuve_paiement" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"></td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -968,9 +1002,11 @@
                 <td><input type="text" name="mois_${mois}_UEMOA_recouvrement" class="form-control form-control-sm montant-input" inputmode="decimal" data-min="0" placeholder="0"></td>
                 <td><input type="text" name="mois_${mois}_UEMOA_reversement" class="form-control form-control-sm montant-input" inputmode="decimal" data-min="0" placeholder="0"></td>
                 <td><input type="text" name="mois_${mois}_UEMOA_reference" class="form-control form-control-sm" placeholder="Réf."></td>
+                <td><input type="file" name="mois_${mois}_UEMOA_preuve_paiement" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"></td>
                 <td><input type="text" name="mois_${mois}_AES_recouvrement" class="form-control form-control-sm montant-input" inputmode="decimal" data-min="0" placeholder="0"></td>
                 <td><input type="text" name="mois_${mois}_AES_reversement" class="form-control form-control-sm montant-input" inputmode="decimal" data-min="0" placeholder="0"></td>
                 <td><input type="text" name="mois_${mois}_AES_reference" class="form-control form-control-sm" placeholder="Réf."></td>
+                <td><input type="file" name="mois_${mois}_AES_preuve_paiement" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"></td>
                 <td>
                     ${index > 0 ? `<button type="button" class="btn btn-sm btn-outline-secondary copier-ligne" data-index="${index}">
                         <i class="fas fa-copy"></i>

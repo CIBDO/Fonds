@@ -143,6 +143,18 @@
                     <p>{{ $cotisation->date_paiement?->format('d/m/Y') ?? '-' }}</p>
                 </div>
             </div>
+            @if($cotisation->preuve_paiement)
+            <div class="row mt-3">
+                <div class="col-12">
+                    <label class="fw-bold text-muted">Preuve de paiement:</label>
+                    <p>
+                        <a href="{{ route('trie.cotisations.preuve', $cotisation) }}" class="btn btn-outline-primary btn-sm" target="_blank">
+                            <i class="fas fa-paperclip me-1"></i>Télécharger le fichier
+                        </a>
+                    </p>
+                </div>
+            </div>
+            @endif
             @if($cotisation->observation)
             <div class="row mt-3">
                 <div class="col-12">

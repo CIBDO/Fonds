@@ -226,6 +226,7 @@ Route::middleware(['auth'])->prefix('pcs')->name('pcs.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('create', 'create')->name('create');
         Route::post('/', 'store')->name('store');
+        Route::get('{declaration}/preuve', 'preuve')->name('preuve');
         Route::get('{declaration}', 'show')->name('show');
         Route::get('{declaration}/edit', 'edit')->name('edit');
         Route::put('{declaration}', 'update')->name('update');
@@ -285,6 +286,7 @@ Route::middleware(['auth'])->prefix('pcs')->name('pcs.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('create', 'create')->name('create');
         Route::post('/', 'store')->name('store');
+        Route::get('{demande}/preuve', 'preuve')->name('preuve');
         Route::get('{demande}', 'show')->name('show');
         Route::get('{demande}/edit', 'edit')->name('edit');
         Route::put('{demande}', 'update')->name('update');
@@ -338,6 +340,7 @@ Route::middleware(['auth'])->prefix('trie')->name('trie.')->group(function () {
         // API pour récupérer les mois renseignés (doit être avant les routes avec paramètres)
         Route::get('mois-renseignes', 'getMoisRenseignes')->name('mois-renseignes');
 
+        Route::get('{cotisation}/preuve', 'preuve')->name('preuve');
         Route::get('{cotisation}', 'show')->name('show');
         Route::get('{cotisation}/edit', 'edit')->name('edit');
         Route::put('{cotisation}', 'update')->name('update');

@@ -236,6 +236,13 @@
                                            title="Voir UEMOA">
                                             <i class="fas fa-eye"></i> U
                                         </a>
+                                        @if($declUemoa->preuve_paiement)
+                                            <a href="{{ route('pcs.declarations.preuve', $declUemoa) }}"
+                                               class="btn btn-outline-secondary btn-sm"
+                                               data-bs-toggle="tooltip"
+                                               title="Preuve de paiement UEMOA"
+                                               target="_blank"><i class="fas fa-paperclip"></i></a>
+                                        @endif
                                         @if($declUemoa->saisi_par == auth()->id())
                                             <a href="{{ route('pcs.declarations.edit', $declUemoa) }}"
                                                class="btn btn-outline-primary btn-sm"
@@ -252,6 +259,13 @@
                                            title="Voir AES">
                                             <i class="fas fa-eye"></i> A
                                         </a>
+                                        @if($declAes->preuve_paiement)
+                                            <a href="{{ route('pcs.declarations.preuve', $declAes) }}"
+                                               class="btn btn-outline-secondary btn-sm"
+                                               data-bs-toggle="tooltip"
+                                               title="Preuve de paiement AES"
+                                               target="_blank"><i class="fas fa-paperclip"></i></a>
+                                        @endif
                                         @if($declAes->saisi_par == auth()->id())
                                             <a href="{{ route('pcs.declarations.edit', $declAes) }}"
                                                class="btn btn-outline-primary btn-sm"
@@ -340,6 +354,12 @@
                                                                            title="Voir">
                                                                             <i class="fas fa-eye"></i>
                                                                         </a>
+                                                                        @if($decl->preuve_paiement)
+                                                                            <a href="{{ route('pcs.declarations.preuve', $decl) }}"
+                                                                               class="btn btn-sm btn-outline-secondary"
+                                                                               title="Preuve de paiement"
+                                                                               target="_blank"><i class="fas fa-paperclip"></i></a>
+                                                                        @endif
                                                                         @if($decl->saisi_par == auth()->id())
                                                                             <a href="{{ route('pcs.declarations.edit', $decl) }}"
                                                                                class="btn btn-sm btn-outline-primary"
