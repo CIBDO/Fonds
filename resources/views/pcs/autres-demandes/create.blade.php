@@ -28,7 +28,7 @@
                 <div class="card-header bg-danger text-white">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i>Informations des Demandes</h5>
-                        <button type="button" class="btn btn-light btn-sm" id="ajouterLigne">
+                        <button type="button" class="btn btn-danger btn-sm" id="ajouterLigne">
                             <i class="fas fa-plus me-1"></i>Ajouter une ligne
                         </button>
                     </div>
@@ -112,11 +112,11 @@
                                         <label class="form-label fw-bold">
                                             Montant (FCFA) <span class="text-danger">*</span>
                                         </label>
-                                        <input type="number"
-                                               class="form-control form-control-lg montant-ligne"
+                                        <input type="text"
+                                               class="form-control form-control-lg montant-ligne montant-input"
                                                name="demandes[0][montant]"
-                                               step="0.01"
-                                               min="0"
+                                               inputmode="decimal"
+                                               data-min="0"
                                                placeholder="0"
                                                required>
                                     </div>
@@ -175,7 +175,7 @@
                                 <i class="fas fa-save me-1"></i>Enregistrer en Brouillon
                             </button> --}}
                             <button type="submit" name="action" value="soumettre" class="btn btn-danger btn-lg">
-                                <i class="fas fa-paper-plane me-1"></i>Soumettre Tout
+                                <i class="fas fa-paper-plane me-1"></i>Soumettre
                             </button>
                         </div>
                     </form>
@@ -191,7 +191,35 @@
 (function() {
     'use strict';
 
-    console.log('Script chargé - initialisation...');
+    // --- Formatage des montants (séparateur de milliers : espace, décimal : virgule) ---
+    function parseMontant(str) {
+        if (str === '' || str == null) return '';
+        const s = String(str).replace(/\s/g, '').replace(',', '.');
+        const num = parseFloat(s);
+        return isNaN(num) ? '' : String(num);
+    }
+    function formatMontant(str) {
+        const parsed = parseMontant(str);
+        if (parsed === '') return '';
+        const parts = parsed.split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+        return parts.length > 1 ? parts[0] + ',' + parts[1] : parts[0];
+    }
+    function initMontantInputs(container) {
+        const scope = container || document;
+        scope.querySelectorAll('.montant-input').forEach(function(input) {
+            if (input.dataset.montantInit) return;
+            input.dataset.montantInit = '1';
+            input.addEventListener('blur', function() {
+                const v = this.value.trim();
+                if (v) this.value = formatMontant(v);
+            });
+            input.addEventListener('focus', function() {
+                const v = this.value.trim();
+                if (v) this.value = parseMontant(v).replace('.', ',');
+            });
+        });
+    }
 
     // Attendre que le DOM soit complètement chargé
     if (document.readyState === 'loading') {
@@ -201,74 +229,54 @@
     }
 
     function init() {
-        console.log('DOM prêt - démarrage de l\'initialisation');
-
         let ligneIndex = 1; // Commence à 1 car on a déjà la ligne 0
+
+        // Initialiser le formatage des montants et formater les valeurs existantes
+        initMontantInputs();
+        document.querySelectorAll('.montant-input').forEach(function(input) {
+            if (input.value && input.value.trim()) input.value = formatMontant(input.value);
+        });
 
         // Bouton d'ajout de ligne
         const btnAjouter = document.getElementById('ajouterLigne');
-        if (!btnAjouter) {
-            console.error('Bouton ajouterLigne non trouvé !');
-            return;
-        }
+        if (!btnAjouter) return;
 
-        console.log('Bouton trouvé, ajout du listener...');
+        const container = document.getElementById('lignes-demandes');
+        if (!container) return;
 
         btnAjouter.addEventListener('click', function(e) {
             e.preventDefault();
-            console.log('Clic sur ajouter ligne, index actuel:', ligneIndex);
-
-            const container = document.getElementById('lignes-demandes');
-            if (!container) {
-                console.error('Container lignes-demandes non trouvé !');
-                return;
-            }
 
             const template = container.querySelector('.ligne-demande');
-            if (!template) {
-                console.error('Template ligne-demande non trouvé !');
-                return;
-            }
+            if (!template) return;
 
             const nouvelleLigne = template.cloneNode(true);
 
-            // Mettre à jour l'index
             nouvelleLigne.setAttribute('data-index', ligneIndex);
 
             const numeroLigne = nouvelleLigne.querySelector('.numero-ligne');
-            if (numeroLigne) {
-                numeroLigne.textContent = ligneIndex + 1;
-            }
+            if (numeroLigne) numeroLigne.textContent = ligneIndex + 1;
 
-            // Mettre à jour les noms des champs
             nouvelleLigne.querySelectorAll('input, textarea').forEach(function(input) {
                 const name = input.getAttribute('name');
                 if (name) {
-                    const newName = name.replace(/\[\d+\]/, '[' + ligneIndex + ']');
-                    input.setAttribute('name', newName);
-                    input.value = ''; // Vider les valeurs
-                    console.log('Champ renommé:', name, '->', newName);
+                    input.setAttribute('name', name.replace(/\[\d+\]/, '[' + ligneIndex + ']'));
+                    input.value = '';
                 }
+                input.removeAttribute('data-montant-init');
             });
 
-            // Afficher le bouton supprimer
             const btnSupprimer = nouvelleLigne.querySelector('.supprimer-ligne');
-            if (btnSupprimer) {
-                btnSupprimer.style.display = 'inline-block';
-            }
+            if (btnSupprimer) btnSupprimer.style.display = 'inline-block';
 
-            // Ajouter au container
             container.appendChild(nouvelleLigne);
-
-            console.log('Nouvelle ligne ajoutée avec index:', ligneIndex);
+            initMontantInputs(nouvelleLigne);
 
             ligneIndex++;
             mettreAJourBoutonSupprimer();
             calculerTotal();
         });
 
-        // Délégation d'événement pour la suppression
-        const container = document.getElementById('lignes-demandes');
         if (container) {
             container.addEventListener('click', function(e) {
                 if (e.target.closest('.supprimer-ligne')) {
@@ -276,7 +284,6 @@
                     const ligne = e.target.closest('.ligne-demande');
                     if (ligne) {
                         ligne.remove();
-                        console.log('Ligne supprimée');
                         mettreAJourNumeros();
                         mettreAJourBoutonSupprimer();
                         calculerTotal();
@@ -284,13 +291,24 @@
                 }
             });
 
-            // Calculer le total à chaque modification de montant
             container.addEventListener('input', function(e) {
-                if (e.target.classList.contains('montant-ligne')) {
-                    calculerTotal();
-                }
+                if (e.target.classList.contains('montant-ligne')) calculerTotal();
             });
         }
+
+        // Empêcher la soumission du formulaire par la touche Entrée (sauf dans les textarea)
+        document.getElementById('formDemandes').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+            }
+        });
+
+        // À la soumission : envoyer les montants sans séparateurs (format numérique)
+        document.getElementById('formDemandes').addEventListener('submit', function() {
+            document.querySelectorAll('.montant-input').forEach(function(input) {
+                if (input.value && input.value.trim()) input.value = parseMontant(input.value);
+            });
+        });
 
         // Fonction pour mettre à jour les numéros de ligne
         function mettreAJourNumeros() {
@@ -317,12 +335,12 @@
             });
         }
 
-        // Fonction pour calculer le total
+        // Fonction pour calculer le total (prend en compte le format avec séparateurs)
         function calculerTotal() {
             let total = 0;
 
             document.querySelectorAll('.montant-ligne').forEach(function(input) {
-                const valeur = parseFloat(input.value) || 0;
+                const valeur = parseFloat(parseMontant(input.value)) || 0;
                 total += valeur;
             });
 
@@ -342,9 +360,7 @@
             }
         }
 
-        // Initialiser le calcul
         calculerTotal();
-        console.log('Initialisation terminée avec succès');
     }
 })();
 </script>

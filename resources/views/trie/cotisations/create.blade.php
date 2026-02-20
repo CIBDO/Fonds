@@ -238,22 +238,22 @@
                                 </td>
                                 <td>
                                     <input type="hidden" name="bureaux[{{ $index }}][bureau_trie_id]" value="{{ $bureau->id }}" class="bureau-id-input" disabled>
-                                    <input type="number"
+                                    <input type="text"
                                            name="bureaux[{{ $index }}][montant_cotisation_courante]"
-                                           class="form-control form-control-sm text-end montant-cotisation-input"
-                                           step="0.01"
-                                           min="0"
+                                           class="form-control form-control-sm text-end montant-cotisation-input montant-input"
+                                           inputmode="decimal"
+                                           data-min="0"
                                            value="{{ old('bureaux.' . $index . '.montant_cotisation_courante', 0) }}"
                                            data-index="{{ $index }}"
                                            placeholder="0"
                                            disabled>
                                 </td>
                                 <td>
-                                    <input type="number"
+                                    <input type="text"
                                            name="bureaux[{{ $index }}][montant_apurement]"
-                                           class="form-control form-control-sm text-end montant-apurement-input"
-                                           step="0.01"
-                                           min="0"
+                                           class="form-control form-control-sm text-end montant-apurement-input montant-input"
+                                           inputmode="decimal"
+                                           data-min="0"
                                            value="{{ old('bureaux.' . $index . '.montant_apurement', 0) }}"
                                            data-index="{{ $index }}"
                                            placeholder="0"
@@ -497,6 +497,36 @@
     }
 </style>
 <script>
+    // --- Formatage des montants (séparateur de milliers : espace, décimal : virgule) ---
+    function parseMontant(str) {
+        if (str === '' || str == null) return '';
+        const s = String(str).replace(/\s/g, '').replace(',', '.');
+        const num = parseFloat(s);
+        return isNaN(num) ? '' : String(num);
+    }
+    function formatMontant(str) {
+        const parsed = parseMontant(str);
+        if (parsed === '') return '';
+        const parts = parsed.split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+        return parts.length > 1 ? parts[0] + ',' + parts[1] : parts[0];
+    }
+    function initMontantInputs(container) {
+        const scope = container || document;
+        scope.querySelectorAll('.montant-input').forEach(input => {
+            if (input.dataset.montantInit) return;
+            input.dataset.montantInit = '1';
+            input.addEventListener('blur', function() {
+                const v = this.value.trim();
+                if (v) this.value = formatMontant(v);
+            });
+            input.addEventListener('focus', function() {
+                const v = this.value.trim();
+                if (v) this.value = parseMontant(v).replace('.', ',');
+            });
+        });
+    }
+
     const moisNoms = {
         1: 'Janvier', 2: 'Février', 3: 'Mars', 4: 'Avril',
         5: 'Mai', 6: 'Juin', 7: 'Juillet', 8: 'Août',
@@ -779,14 +809,14 @@
 
             bureaux.forEach(bureau => {
                 html += `
-                    <td><input type="number"
+                    <td><input type="text"
                               name="cotisation_${mois}_${bureau.id}_montant_cotisation"
-                              class="form-control form-control-sm text-end montant-rattrapage-input"
-                              step="0.01" min="0" value="0" placeholder="0"></td>
-                    <td><input type="number"
+                              class="form-control form-control-sm text-end montant-rattrapage-input montant-input"
+                              inputmode="decimal" data-min="0" value="0" placeholder="0"></td>
+                    <td><input type="text"
                               name="cotisation_${mois}_${bureau.id}_montant_apurement"
-                              class="form-control form-control-sm text-end"
-                              step="0.01" min="0" value="0" placeholder="0"></td>
+                              class="form-control form-control-sm text-end montant-input"
+                              inputmode="decimal" data-min="0" value="0" placeholder="0"></td>
                     <td><input type="text"
                               name="cotisation_${mois}_${bureau.id}_reference"
                               class="form-control form-control-sm"
@@ -805,10 +835,10 @@
 
         document.getElementById('tableauRattrapageContainer').innerHTML = html;
 
-        // Activer le bouton submit
+        initMontantInputs(document.getElementById('tableauRattrapageContainer'));
+
         document.getElementById('submitBtnRattrapage').disabled = false;
 
-        // Ajouter les écouteurs pour validation
         document.querySelectorAll('.montant-rattrapage-input').forEach(input => {
             input.addEventListener('input', validateRattrapageForm);
         });
@@ -826,9 +856,7 @@
     function validateRattrapageForm() {
         let hasValue = false;
         document.querySelectorAll('.montant-rattrapage-input').forEach(input => {
-            if (parseFloat(input.value) > 0) {
-                hasValue = true;
-            }
+            if (parseFloat(parseMontant(input.value)) > 0) hasValue = true;
         });
         document.getElementById('submitBtnRattrapage').disabled = !hasValue;
     }
@@ -886,10 +914,10 @@
             const apurementInput = document.querySelector(`.montant-apurement-input[data-index="${index}"]`);
 
             if (cotisationInput && !cotisationInput.disabled) {
-                totalCotisation += parseFloat(cotisationInput.value) || 0;
+                totalCotisation += parseFloat(parseMontant(cotisationInput.value)) || 0;
             }
             if (apurementInput && !apurementInput.disabled) {
-                totalApurement += parseFloat(apurementInput.value) || 0;
+                totalApurement += parseFloat(parseMontant(apurementInput.value)) || 0;
             }
         });
 
@@ -939,19 +967,28 @@
             checkedBoxes.forEach(checkbox => {
                 const index = checkbox.dataset.index;
                 const cotisationInput = document.querySelector(`.montant-cotisation-input[data-index="${index}"]`);
-                const value = parseFloat(cotisationInput.value) || 0;
-                if (value <= 0) {
-                    isValid = false;
-                }
+                const value = parseFloat(parseMontant(cotisationInput?.value || '')) || 0;
+                if (value <= 0) isValid = false;
             });
         }
 
         document.getElementById('submitBtn').disabled = !isValid;
     }
 
+    // Empêcher la soumission par la touche Entrée (sauf dans les textarea)
+    [document.getElementById('cotisationFormNormal'), document.getElementById('cotisationFormRattrapage')].forEach(form => {
+        if (form) form.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') e.preventDefault();
+        });
+    });
+
     // Validation du formulaire mode rattrapage
     document.getElementById('cotisationFormRattrapage')?.addEventListener('submit', function(e) {
-        // Vérifier qu'au moins un mois est sélectionné
+        const form = e.target;
+        form.querySelectorAll('.montant-input').forEach(input => {
+            if (input.value && input.value.trim()) input.value = parseMontant(input.value);
+        });
+
         const moisSelectionnes = Array.from(document.querySelectorAll('.mois-checkbox:checked:not(:disabled)'));
 
         // Vérification supplémentaire : s'assurer qu'aucun mois désactivé n'est inclus
@@ -991,6 +1028,11 @@
 
     // Validation du formulaire mode normal
     document.getElementById('cotisationFormNormal')?.addEventListener('submit', function(e) {
+        const form = e.target;
+        form.querySelectorAll('.montant-input').forEach(input => {
+            if (input.value && input.value.trim()) input.value = parseMontant(input.value);
+        });
+
         const checkedBoxes = document.querySelectorAll('.bureau-checkbox:checked');
 
         if (checkedBoxes.length === 0) {
@@ -1005,8 +1047,8 @@
             const cotisationInput = document.querySelector(`.montant-cotisation-input[data-index="${index}"]`);
             const apurementInput = document.querySelector(`.montant-apurement-input[data-index="${index}"]`);
 
-            const cotisation = parseFloat(cotisationInput.value) || 0;
-            const apurement = parseFloat(apurementInput.value) || 0;
+            const cotisation = parseFloat(cotisationInput?.value || '') || 0;
+            const apurement = parseFloat(apurementInput?.value || '') || 0;
             totalGeneral += cotisation + apurement;
 
             if (cotisation <= 0) {
@@ -1022,8 +1064,12 @@
         }
     });
 
-    // Initialiser les totaux au chargement de la page
+    // Initialiser le formatage des montants et les totaux au chargement
     document.addEventListener('DOMContentLoaded', function() {
+        initMontantInputs();
+        document.querySelectorAll('.montant-input').forEach(input => {
+            if (input.value && input.value.trim()) input.value = formatMontant(input.value);
+        });
         updateTotals();
     });
 </script>

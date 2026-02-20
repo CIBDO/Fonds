@@ -302,21 +302,21 @@
                                 </h6>
                                 <div class="mb-3">
                                     <label class="form-label">Montant Recouvré (FCFA)</label>
-                                    <input type="number"
+                                    <input type="text"
                                            name="rgd_UEMOA_recouvrement"
-                                           class="form-control"
-                                           step="0.01"
-                                           min="0"
+                                           class="form-control montant-input"
+                                           inputmode="decimal"
+                                           data-min="0"
                                            value="{{ old('rgd_UEMOA_recouvrement') }}"
                                            placeholder="0">
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Montant Reversé (FCFA)</label>
-                                    <input type="number"
+                                    <input type="text"
                                            name="rgd_UEMOA_reversement"
-                                           class="form-control"
-                                           step="0.01"
-                                           min="0"
+                                           class="form-control montant-input"
+                                           inputmode="decimal"
+                                           data-min="0"
                                            value="{{ old('rgd_UEMOA_reversement') }}"
                                            placeholder="0">
                                 </div>
@@ -345,21 +345,21 @@
                             </h6>
                             <div class="mb-3">
                                 <label class="form-label">Montant Recouvré (FCFA)</label>
-                                <input type="number"
+                                <input type="text"
                                        name="rgd_AES_recouvrement"
-                                       class="form-control"
-                                       step="0.01"
-                                       min="0"
+                                       class="form-control montant-input"
+                                       inputmode="decimal"
+                                       data-min="0"
                                        value="{{ old('rgd_AES_recouvrement') }}"
                                        placeholder="0">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Montant Reversé (FCFA)</label>
-                                <input type="number"
+                                <input type="text"
                                        name="rgd_AES_reversement"
-                                       class="form-control"
-                                       step="0.01"
-                                       min="0"
+                                       class="form-control montant-input"
+                                       inputmode="decimal"
+                                       data-min="0"
                                        value="{{ old('rgd_AES_reversement') }}"
                                        placeholder="0">
                             </div>
@@ -404,21 +404,21 @@
                                     </p>
                                     <div class="mb-2">
                                         <label class="form-label small">Recouvré (FCFA)</label>
-                                        <input type="number"
+                                        <input type="text"
                                                name="bureau_{{ $bureau->id }}_UEMOA_recouvrement"
-                                               class="form-control form-control-sm"
-                                               step="0.01"
-                                               min="0"
+                                               class="form-control form-control-sm montant-input"
+                                               inputmode="decimal"
+                                               data-min="0"
                                                value="{{ old('bureau_'.$bureau->id.'_UEMOA_recouvrement') }}"
                                                placeholder="0">
                                     </div>
                                     <div class="mb-2">
                                         <label class="form-label small">Reversé (FCFA)</label>
-                                        <input type="number"
+                                        <input type="text"
                                                name="bureau_{{ $bureau->id }}_UEMOA_reversement"
-                                               class="form-control form-control-sm"
-                                               step="0.01"
-                                               min="0"
+                                               class="form-control form-control-sm montant-input"
+                                               inputmode="decimal"
+                                               data-min="0"
                                                value="{{ old('bureau_'.$bureau->id.'_UEMOA_reversement') }}"
                                                placeholder="0">
                                     </div>
@@ -447,21 +447,21 @@
                                 </p>
                                 <div class="mb-2">
                                     <label class="form-label small">Recouvré (FCFA)</label>
-                                    <input type="number"
+                                    <input type="text"
                                            name="bureau_{{ $bureau->id }}_AES_recouvrement"
-                                           class="form-control form-control-sm"
-                                           step="0.01"
-                                           min="0"
+                                           class="form-control form-control-sm montant-input"
+                                           inputmode="decimal"
+                                           data-min="0"
                                            value="{{ old('bureau_'.$bureau->id.'_AES_recouvrement') }}"
                                            placeholder="0">
                                 </div>
                                 <div class="mb-2">
                                     <label class="form-label small">Reversé (FCFA)</label>
-                                    <input type="number"
+                                    <input type="text"
                                            name="bureau_{{ $bureau->id }}_AES_reversement"
-                                           class="form-control form-control-sm"
-                                           step="0.01"
-                                           min="0"
+                                           class="form-control form-control-sm montant-input"
+                                           inputmode="decimal"
+                                           data-min="0"
                                            value="{{ old('bureau_'.$bureau->id.'_AES_reversement') }}"
                                            placeholder="0">
                                 </div>
@@ -504,22 +504,22 @@
                                 </h5>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Montant Recouvré (FCFA)</label>
-                                    <input type="number"
+                                    <input type="text"
                                            name="UEMOA_recouvrement"
-                                           class="form-control form-control-lg"
-                                           step="0.01"
-                                           min="0"
+                                           class="form-control form-control-lg montant-input"
+                                           inputmode="decimal"
+                                           data-min="0"
                                            value="{{ old('UEMOA_recouvrement') }}"
                                            placeholder="0">
                                     <small class="text-muted">Recettes perçues ce mois</small>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Montant Reversé (FCFA)</label>
-                                    <input type="number"
+                                    <input type="text"
                                            name="UEMOA_reversement"
-                                           class="form-control form-control-lg"
-                                           step="0.01"
-                                           min="0"
+                                           class="form-control form-control-lg montant-input"
+                                           inputmode="decimal"
+                                           data-min="0"
                                            value="{{ old('UEMOA_reversement') }}"
                                            placeholder="0">
                                     <small class="text-muted">Montant reversé </small>
@@ -549,22 +549,22 @@
                             </h5>
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Montant Recouvré (FCFA)</label>
-                                <input type="number"
+                                <input type="text"
                                        name="AES_recouvrement"
-                                       class="form-control form-control-lg"
-                                       step="0.01"
-                                       min="0"
+                                       class="form-control form-control-lg montant-input"
+                                       inputmode="decimal"
+                                       data-min="0"
                                        value="{{ old('AES_recouvrement') }}"
                                        placeholder="0">
                                 <small class="text-muted">Recettes perçues ce mois</small>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Montant Reversé (FCFA)</label>
-                                <input type="number"
+                                <input type="text"
                                        name="AES_reversement"
-                                       class="form-control form-control-lg"
-                                       step="0.01"
-                                       min="0"
+                                       class="form-control form-control-lg montant-input"
+                                       inputmode="decimal"
+                                       data-min="0"
                                        value="{{ old('AES_reversement') }}"
                                        placeholder="0">
                                 <small class="text-muted">Montant reversé </small>
@@ -646,6 +646,42 @@
     }
 </style>
 <script>
+    // --- Formatage des montants (séparateur de milliers : espace, décimal : virgule) ---
+    function parseMontant(str) {
+        if (str === '' || str == null) return '';
+        const s = String(str).replace(/\s/g, '').replace(',', '.');
+        const num = parseFloat(s);
+        return isNaN(num) ? '' : String(num);
+    }
+    function formatMontant(str) {
+        const parsed = parseMontant(str);
+        if (parsed === '') return '';
+        const parts = parsed.split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+        return parts.length > 1 ? parts[0] + ',' + parts[1] : parts[0];
+    }
+    function initMontantInputs(container) {
+        const scope = container || document;
+        scope.querySelectorAll('.montant-input').forEach(input => {
+            if (input.dataset.montantInit) return;
+            input.dataset.montantInit = '1';
+            input.addEventListener('blur', function() {
+                const v = this.value.trim();
+                if (v) this.value = formatMontant(v);
+            });
+            input.addEventListener('focus', function() {
+                const v = this.value.trim();
+                if (v) this.value = parseMontant(v).replace('.', ',');
+            });
+        });
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        initMontantInputs();
+        document.querySelectorAll('.montant-input').forEach(input => {
+            if (input.value && input.value.trim()) input.value = formatMontant(input.value);
+        });
+    });
+
     // Noms des mois en français
     const moisNoms = {
         1: 'Janvier', 2: 'Février', 3: 'Mars', 4: 'Avril',
@@ -869,6 +905,7 @@
         } else {
             genererLignesPoste(moisSelectionnes);
         }
+        initMontantInputs(document.getElementById('formulaireRattrapage'));
     }
 
     // Générer lignes pour RGD
@@ -880,11 +917,11 @@
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td><strong>${moisNoms[mois]}</strong><input type="hidden" name="mois_selectionnes[]" value="${mois}"></td>
-                <td><input type="number" name="mois_${mois}_rgd_UEMOA_recouvrement" class="form-control form-control-sm" step="0.01" min="0" placeholder="0"></td>
-                <td><input type="number" name="mois_${mois}_rgd_UEMOA_reversement" class="form-control form-control-sm" step="0.01" min="0" placeholder="0"></td>
+                <td><input type="text" name="mois_${mois}_rgd_UEMOA_recouvrement" class="form-control form-control-sm montant-input" inputmode="decimal" data-min="0" placeholder="0"></td>
+                <td><input type="text" name="mois_${mois}_rgd_UEMOA_reversement" class="form-control form-control-sm montant-input" inputmode="decimal" data-min="0" placeholder="0"></td>
                 <td><input type="text" name="mois_${mois}_rgd_UEMOA_reference" class="form-control form-control-sm" placeholder="Réf."></td>
-                <td><input type="number" name="mois_${mois}_rgd_AES_recouvrement" class="form-control form-control-sm" step="0.01" min="0" placeholder="0"></td>
-                <td><input type="number" name="mois_${mois}_rgd_AES_reversement" class="form-control form-control-sm" step="0.01" min="0" placeholder="0"></td>
+                <td><input type="text" name="mois_${mois}_rgd_AES_recouvrement" class="form-control form-control-sm montant-input" inputmode="decimal" data-min="0" placeholder="0"></td>
+                <td><input type="text" name="mois_${mois}_rgd_AES_reversement" class="form-control form-control-sm montant-input" inputmode="decimal" data-min="0" placeholder="0"></td>
                 <td><input type="text" name="mois_${mois}_rgd_AES_reference" class="form-control form-control-sm" placeholder="Réf."></td>
                 <td>
                     ${index > 0 ? `<button type="button" class="btn btn-sm btn-outline-secondary copier-ligne" data-index="${index}">
@@ -907,11 +944,11 @@
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><strong>${moisNoms[mois]}</strong></td>
-                    <td><input type="number" name="mois_${mois}_bureau_${bureauId}_UEMOA_recouvrement" class="form-control form-control-sm" step="0.01" min="0" placeholder="0"></td>
-                    <td><input type="number" name="mois_${mois}_bureau_${bureauId}_UEMOA_reversement" class="form-control form-control-sm" step="0.01" min="0" placeholder="0"></td>
+                    <td><input type="text" name="mois_${mois}_bureau_${bureauId}_UEMOA_recouvrement" class="form-control form-control-sm montant-input" inputmode="decimal" data-min="0" placeholder="0"></td>
+                    <td><input type="text" name="mois_${mois}_bureau_${bureauId}_UEMOA_reversement" class="form-control form-control-sm montant-input" inputmode="decimal" data-min="0" placeholder="0"></td>
                     <td><input type="text" name="mois_${mois}_bureau_${bureauId}_UEMOA_reference" class="form-control form-control-sm" placeholder="Réf."></td>
-                    <td><input type="number" name="mois_${mois}_bureau_${bureauId}_AES_recouvrement" class="form-control form-control-sm" step="0.01" min="0" placeholder="0"></td>
-                    <td><input type="number" name="mois_${mois}_bureau_${bureauId}_AES_reversement" class="form-control form-control-sm" step="0.01" min="0" placeholder="0"></td>
+                    <td><input type="text" name="mois_${mois}_bureau_${bureauId}_AES_recouvrement" class="form-control form-control-sm montant-input" inputmode="decimal" data-min="0" placeholder="0"></td>
+                    <td><input type="text" name="mois_${mois}_bureau_${bureauId}_AES_reversement" class="form-control form-control-sm montant-input" inputmode="decimal" data-min="0" placeholder="0"></td>
                     <td><input type="text" name="mois_${mois}_bureau_${bureauId}_AES_reference" class="form-control form-control-sm" placeholder="Réf."></td>
                 `;
                 tbody.appendChild(tr);
@@ -928,11 +965,11 @@
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td><strong>${moisNoms[mois]}</strong><input type="hidden" name="mois_selectionnes[]" value="${mois}"></td>
-                <td><input type="number" name="mois_${mois}_UEMOA_recouvrement" class="form-control form-control-sm" step="0.01" min="0" placeholder="0"></td>
-                <td><input type="number" name="mois_${mois}_UEMOA_reversement" class="form-control form-control-sm" step="0.01" min="0" placeholder="0"></td>
+                <td><input type="text" name="mois_${mois}_UEMOA_recouvrement" class="form-control form-control-sm montant-input" inputmode="decimal" data-min="0" placeholder="0"></td>
+                <td><input type="text" name="mois_${mois}_UEMOA_reversement" class="form-control form-control-sm montant-input" inputmode="decimal" data-min="0" placeholder="0"></td>
                 <td><input type="text" name="mois_${mois}_UEMOA_reference" class="form-control form-control-sm" placeholder="Réf."></td>
-                <td><input type="number" name="mois_${mois}_AES_recouvrement" class="form-control form-control-sm" step="0.01" min="0" placeholder="0"></td>
-                <td><input type="number" name="mois_${mois}_AES_reversement" class="form-control form-control-sm" step="0.01" min="0" placeholder="0"></td>
+                <td><input type="text" name="mois_${mois}_AES_recouvrement" class="form-control form-control-sm montant-input" inputmode="decimal" data-min="0" placeholder="0"></td>
+                <td><input type="text" name="mois_${mois}_AES_reversement" class="form-control form-control-sm montant-input" inputmode="decimal" data-min="0" placeholder="0"></td>
                 <td><input type="text" name="mois_${mois}_AES_reference" class="form-control form-control-sm" placeholder="Réf."></td>
                 <td>
                     ${index > 0 ? `<button type="button" class="btn btn-sm btn-outline-secondary copier-ligne" data-index="${index}">
@@ -959,16 +996,10 @@
     document.getElementById('copierPremierMoisRgd')?.addEventListener('click', function() {
         const firstRow = document.querySelector('#tbodyRattrapageRgd tr:first-child');
         if (!firstRow) return;
-
-        const inputs = firstRow.querySelectorAll('input[type="number"], input[type="text"]');
-        const rows = document.querySelectorAll('#tbodyRattrapageRgd tr:not(:first-child)');
-
-        rows.forEach(row => {
-            const rowInputs = row.querySelectorAll('input[type="number"], input[type="text"]');
-            inputs.forEach((input, index) => {
-                if (rowInputs[index]) {
-                    rowInputs[index].value = input.value;
-                }
+        const inputs = firstRow.querySelectorAll('input:not([type="hidden"])');
+        document.querySelectorAll('#tbodyRattrapageRgd tr:not(:first-child)').forEach(row => {
+            row.querySelectorAll('input:not([type="hidden"])').forEach((rowInput, index) => {
+                if (inputs[index]) rowInput.value = inputs[index].value;
             });
         });
     });
@@ -977,17 +1008,23 @@
     document.getElementById('copierPremierMoisPoste')?.addEventListener('click', function() {
         const firstRow = document.querySelector('#tbodyRattrapagePoste tr:first-child');
         if (!firstRow) return;
-
-        const inputs = firstRow.querySelectorAll('input[type="number"], input[type="text"]');
-        const rows = document.querySelectorAll('#tbodyRattrapagePoste tr:not(:first-child)');
-
-        rows.forEach(row => {
-            const rowInputs = row.querySelectorAll('input[type="number"], input[type="text"]');
-            inputs.forEach((input, index) => {
-                if (rowInputs[index]) {
-                    rowInputs[index].value = input.value;
-                }
+        const inputs = firstRow.querySelectorAll('input:not([type="hidden"])');
+        document.querySelectorAll('#tbodyRattrapagePoste tr:not(:first-child)').forEach(row => {
+            row.querySelectorAll('input:not([type="hidden"])').forEach((rowInput, index) => {
+                if (inputs[index]) rowInput.value = inputs[index].value;
             });
+        });
+    });
+
+    // Empêcher la soumission du formulaire par la touche Entrée (sauf dans les textarea)
+    document.getElementById('declarationForm').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') e.preventDefault();
+    });
+
+    // À la soumission : envoyer les montants sans séparateurs (format numérique)
+    document.getElementById('declarationForm').addEventListener('submit', function(e) {
+        document.querySelectorAll('.montant-input').forEach(input => {
+            if (input.value && input.value.trim()) input.value = parseMontant(input.value);
         });
     });
 

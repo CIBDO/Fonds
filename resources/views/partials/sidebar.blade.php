@@ -111,7 +111,7 @@
                 <!-- MODULE PCS - SECTION POSTES (Saisie uniquement) -->
                 @if ((Auth::user()->peut_saisir_pcs || Auth::user()->poste_id) && !Auth::user()->peut_valider_pcs && !Auth::user()->hasRole('acct') && !Auth::user()->hasRole('admin'))
                     <li class="menu-title">
-                        <span>PCS (UEMOA/AES)</span>
+                        <span>PCS-UEMOA/PC-AES)</span>
                     </li>
 
                     <!-- Déclarations PCS -->
