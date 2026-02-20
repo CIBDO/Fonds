@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\QueryException;
+use Illuminate\Validation\ValidationException;
 use RealRashid\SweetAlert\Facades\Alert;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
@@ -242,6 +244,18 @@ class CotisationTrieController extends Controller
             Alert::success('Succès', $message);
             return redirect()->route('trie.cotisations.index');
 
+        } catch (ValidationException $e) {
+            DB::rollBack();
+            throw $e;
+        } catch (QueryException $e) {
+            DB::rollBack();
+            $isDuplicate = $e->getCode() === '23000' || (isset($e->errorInfo[1]) && (int) $e->errorInfo[1] === 1062);
+            if ($isDuplicate) {
+                Alert::error('Doublon', 'Une cotisation existe déjà pour ce bureau et cette période (mois/année). Un seul enregistrement par bureau et par mois est autorisé.');
+                return redirect()->back()->withInput();
+            }
+            Alert::error('Erreur', 'Une erreur est survenue lors de l\'enregistrement : ' . $e->getMessage());
+            return redirect()->back()->withInput();
         } catch (\Exception $e) {
             DB::rollBack();
             Alert::error('Erreur', 'Une erreur est survenue lors de l\'enregistrement : ' . $e->getMessage());
@@ -274,17 +288,22 @@ class CotisationTrieController extends Controller
         $mois = $validated['mois'];
         $annee = $validated['annee'];
 
+        // Vérification en amont : aucun doublon (bureau + mois + année)
+        $bureauIds = array_column($validated['bureaux'], 'bureau_trie_id');
+        $existantes = CotisationTrie::with('bureauTrie')
+            ->whereIn('bureau_trie_id', $bureauIds)
+            ->where('mois', $mois)
+            ->where('annee', $annee)
+            ->get();
+
+        if ($existantes->isNotEmpty()) {
+            $noms = $existantes->map(fn ($c) => $c->bureauTrie->code_bureau ?? $c->bureau_trie_id)->join(', ');
+            throw ValidationException::withMessages([
+                'bureaux' => ["Une cotisation existe déjà pour cette période (mois {$mois}/{$annee}) pour le(s) bureau(x) : {$noms}. Un seul enregistrement par bureau et par mois est autorisé."],
+            ]);
+        }
+
         foreach ($validated['bureaux'] as $index => $bureauData) {
-            // Vérifier si une cotisation existe déjà
-            $existante = CotisationTrie::where('bureau_trie_id', $bureauData['bureau_trie_id'])
-                ->where('mois', $mois)
-                ->where('annee', $annee)
-                ->first();
-
-            if ($existante) {
-                throw new \Exception('Une cotisation existe déjà pour ce bureau et cette période.');
-            }
-
             // Créer la cotisation directement validée
             $cotisation = CotisationTrie::create([
                 'poste_id' => $posteId,
@@ -341,6 +360,29 @@ class CotisationTrieController extends Controller
             ->where('actif', true)
             ->get();
 
+        // Vérification en amont : collecter les (bureau, mois) à créer et détecter les doublons
+        $doublons = [];
+        foreach ($moisSelectionnes as $mois) {
+            foreach ($bureaux as $bureau) {
+                $montantCotisation = $request->input("cotisation_{$mois}_{$bureau->id}_montant_cotisation", 0);
+                $montantApurement = $request->input("cotisation_{$mois}_{$bureau->id}_montant_apurement", 0);
+                if ($montantCotisation > 0 || $montantApurement > 0) {
+                    $existante = CotisationTrie::where('bureau_trie_id', $bureau->id)
+                        ->where('mois', $mois)
+                        ->where('annee', $annee)
+                        ->first();
+                    if ($existante) {
+                        $doublons[] = "{$bureau->nom_bureau} – {$this->moisNoms[$mois]} {$annee}";
+                    }
+                }
+            }
+        }
+        if (!empty($doublons)) {
+            throw ValidationException::withMessages([
+                'mois_selectionnes' => ['Une cotisation existe déjà pour la période suivante : ' . implode(', ', array_slice($doublons, 0, 5)) . (count($doublons) > 5 ? '…' : '') . '. Un seul enregistrement par bureau et par mois est autorisé.'],
+            ]);
+        }
+
         $nbCotisations = 0;
 
         foreach ($moisSelectionnes as $mois) {
@@ -353,16 +395,6 @@ class CotisationTrieController extends Controller
 
                 // Ne créer que si au moins un montant est renseigné
                 if ($montantCotisation > 0 || $montantApurement > 0) {
-                    // Vérifier si une cotisation existe déjà
-                    $existante = CotisationTrie::where('bureau_trie_id', $bureau->id)
-                        ->where('mois', $mois)
-                        ->where('annee', $annee)
-                        ->first();
-
-                    if ($existante) {
-                        throw new \Exception("Une cotisation existe déjà pour le bureau {$bureau->nom_bureau} en {$this->moisNoms[$mois]} {$annee}.");
-                    }
-
                     // Créer la cotisation directement validée
                     $cotisation = CotisationTrie::create([
                         'poste_id' => $posteId,

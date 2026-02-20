@@ -21,6 +21,8 @@ use App\Policies\UserPolicy;
 use Illuminate\Routing\Controller as BaseController; // Ajoutez cette ligne
 use App\Http\Middleware\Rolemiddleware;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Database\QueryException;
+use Illuminate\Validation\ValidationException;
 
 class DemandeFondsController extends Controller
 {
@@ -195,15 +197,16 @@ class DemandeFondsController extends Controller
         $annee = $request->annee;
         $posteId = $request->poste_id;
 
-        // Vérifier si une demande existe déjà
+        // Vérifier si une demande existe déjà (un seul enregistrement par poste et par mois)
         $demandeExistante = DemandeFonds::where('poste_id', $posteId)
             ->where('mois', $mois)
             ->where('annee', $annee)
             ->exists();
 
         if ($demandeExistante) {
-            session()->flash('message_erreur', 'Vous avez déjà fait une demande pour ce mois.');
-            return redirect()->back();
+            throw ValidationException::withMessages([
+                'mois' => ['Une demande de fonds existe déjà pour ce poste et cette période (mois/année). Un seul enregistrement par mois est autorisé.'],
+            ]);
         }
 
         // Calcul des totaux avec les valeurs nettoyées
@@ -261,7 +264,17 @@ class DemandeFondsController extends Controller
         ]);
 
         // Créer la demande avec les données nettoyées
-        $demandeFonds = DemandeFonds::create($request->all());
+        try {
+            $demandeFonds = DemandeFonds::create($request->all());
+        } catch (QueryException $e) {
+            $isDuplicate = $e->getCode() === '23000' || (isset($e->errorInfo[1]) && (int) $e->errorInfo[1] === 1062);
+            if ($isDuplicate) {
+                throw ValidationException::withMessages([
+                    'mois' => ['Une demande de fonds existe déjà pour ce poste et cette période (mois/année). Un seul enregistrement par mois est autorisé.'],
+                ]);
+            }
+            throw $e;
+        }
 
         // Notifications
         $acctUsers = User::whereIn('role', ['acct'])->get();

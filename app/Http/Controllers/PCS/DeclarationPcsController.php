@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\QueryException;
 use RealRashid\SweetAlert\Facades\Alert;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use App\Notifications\PcsDeclarationValidee;
@@ -244,6 +245,15 @@ class DeclarationPcsController extends Controller
             Alert::success('Succès', $nbMois . ' déclaration(s) enregistrée(s) avec succès');
             return redirect()->route('pcs.declarations.index');
 
+        } catch (QueryException $e) {
+            DB::rollBack();
+            $isDuplicate = $e->getCode() === '23000' || (isset($e->errorInfo[1]) && (int) $e->errorInfo[1] === 1062);
+            if ($isDuplicate) {
+                Alert::error('Doublon', 'Une déclaration existe déjà pour ce poste/bureau, programme et cette période (mois/année). Un seul enregistrement par période est autorisé.');
+                return redirect()->back()->withInput();
+            }
+            Alert::error('Erreur', 'Erreur lors de l\'enregistrement: ' . $e->getMessage());
+            return redirect()->back()->withInput();
         } catch (\Exception $e) {
             DB::rollBack();
             Alert::error('Erreur', 'Erreur lors de l\'enregistrement: ' . $e->getMessage());
@@ -479,23 +489,27 @@ class DeclarationPcsController extends Controller
             $reversement = $request->input("{$programme}_reversement");
 
             if ($recouvrement || $reversement) {
-                $declaration = DeclarationPcs::create([
-                    'poste_id' => $poste->id,
-                    'bureau_douane_id' => null,
-                    'programme' => $programme,
-                    'mois' => $request->mois,
-                    'annee' => $request->annee,
-                    'montant_recouvrement' => $recouvrement ?? 0,
-                    'montant_reversement' => $reversement ?? 0,
-                    'reference' => $request->input("{$programme}_reference"),
-                    'observation' => $request->input("{$programme}_observation"),
-                    'statut' => $request->input('action') === 'soumettre' ? 'valide' : 'brouillon',
-                    'date_saisie' => now(),
-                    'date_soumission' => $request->input('action') === 'soumettre' ? now() : null,
-                    'date_validation' => $request->input('action') === 'soumettre' ? now() : null,
-                    'valide_par' => $request->input('action') === 'soumettre' ? $user->id : null,
-                    'saisi_par' => $user->id,
-                ]);
+                $declaration = DeclarationPcs::updateOrCreate(
+                    [
+                        'poste_id' => $poste->id,
+                        'bureau_douane_id' => null,
+                        'programme' => $programme,
+                        'mois' => $request->mois,
+                        'annee' => $request->annee,
+                    ],
+                    [
+                        'montant_recouvrement' => $recouvrement ?? 0,
+                        'montant_reversement' => $reversement ?? 0,
+                        'reference' => $request->input("{$programme}_reference"),
+                        'observation' => $request->input("{$programme}_observation"),
+                        'statut' => $request->input('action') === 'soumettre' ? 'valide' : 'brouillon',
+                        'date_saisie' => now(),
+                        'date_soumission' => $request->input('action') === 'soumettre' ? now() : null,
+                        'date_validation' => $request->input('action') === 'soumettre' ? now() : null,
+                        'valide_par' => $request->input('action') === 'soumettre' ? $user->id : null,
+                        'saisi_par' => $user->id,
+                    ]
+                );
                 if ($request->hasFile("{$programme}_preuve_paiement")) {
                     $path = $request->file("{$programme}_preuve_paiement")->store("preuves-pcs/declarations/{$declaration->id}", 'public');
                     $declaration->update(['preuve_paiement' => $path]);

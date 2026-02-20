@@ -382,7 +382,7 @@
                                        placeholder="Référence...">
                             </div>
                             <div class="mb-3">
-                                <label class="form-label"><i class="fas fa-paperclip me-1"></i>Preuve de paiement</label>
+                                <label class="form-label"><i class="fas fa-paperclip me-1"></i>Justificatif</label>
                                 <input type="file" name="rgd_AES_preuve_paiement" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
                             </div>
                             <div>
@@ -555,7 +555,7 @@
                                            placeholder="Référence...">
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold"><i class="fas fa-paperclip me-1"></i>Preuve de paiement</label>
+                                    <label class="form-label fw-bold"><i class="fas fa-paperclip me-1"></i>Justificatif</label>
                                     <input type="file" name="UEMOA_preuve_paiement" class="form-control" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
                                 </div>
                                 <div>
@@ -604,7 +604,7 @@
                                        placeholder="Référence...">
                             </div>
                             <div class="mb-3">
-                                <label class="form-label fw-bold"><i class="fas fa-paperclip me-1"></i>Preuve de paiement</label>
+                                <label class="form-label fw-bold"><i class="fas fa-paperclip me-1"></i>Justificatif</label>
                                 <input type="file" name="AES_preuve_paiement" class="form-control" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
                             </div>
                             <div>
