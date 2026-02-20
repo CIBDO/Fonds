@@ -335,7 +335,7 @@
                                            placeholder="Référence...">
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label"><i class="fas fa-paperclip me-1"></i>Preuve de paiement</label>
+                                    <label class="form-label"><i class="fas fa-paperclip me-1"></i>Justificatif</label>
                                     <input type="file" name="rgd_UEMOA_preuve_paiement" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
                                 </div>
                                 <div>

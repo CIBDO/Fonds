@@ -133,7 +133,7 @@
                                     <!-- Preuve de paiement (fichier) -->
                                     <div class="col-md-12 mb-3">
                                         <label class="form-label fw-bold">
-                                            <i class="fas fa-paperclip me-1"></i>Preuve de paiement (fichier)
+                                            <i class="fas fa-paperclip me-1"></i>Justificatif(fichier)
                                         </label>
                                         <input type="file"
                                                class="form-control"
