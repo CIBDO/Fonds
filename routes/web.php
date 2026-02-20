@@ -21,6 +21,7 @@ use App\Http\Controllers\PCS\{
     BureauDouaneController,
     DeclarationPcsController,
     AutreDemandeController,
+    EtatReferencesController,
 };
 
 // Contrôleurs TRIE
@@ -258,6 +259,10 @@ Route::middleware(['auth'])->prefix('pcs')->name('pcs.')->group(function () {
         // États consolidés pour postes émetteurs
         Route::get('etat-consolide/poste-emetteur', 'etatConsolidePosteEmetteur')->name('etat-consolide.poste-emetteur');
     });
+
+    // État des références (déclarations + cotisations) – poste émetteur
+    Route::get('etat-references/poste-emetteur', [EtatReferencesController::class, 'posteEmetteur'])
+        ->name('etat-references.poste-emetteur');
 
     // ===== ÉTATS CONSOLIDÉS UNIFIÉS =====
     Route::middleware('role:admin,acct')->controller(\App\Http\Controllers\PCS\EtatsConsolidesController::class)->prefix('etats-consolides')->name('etats-consolides.')->group(function () {

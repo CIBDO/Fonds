@@ -20,6 +20,9 @@
                     <i class="fas fa-file-pdf me-1"></i>États
                 </a> --}}
                 @if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct','admin']))
+                <button type="button" class="btn btn-outline-info btn-sm me-2" data-bs-toggle="modal" data-bs-target="#modalEtatReferences">
+                    <i class="fas fa-hashtag me-1"></i>État des références
+                </button>
                 <button type="button" class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#modalEtatConsolideCotisations">
                     <i class="fas fa-file-export me-1"></i>État Consolidé
                 </button>
@@ -291,7 +294,43 @@
 </div>
 
 @if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct', 'admin']))
-<!-- Modal État Consolidé Poste Émetteur -->
+<!-- Modal État des références (Déclarations + Cotisations) -->
+<div class="modal fade" id="modalEtatReferences" tabindex="-1" aria-labelledby="modalEtatReferencesLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="modalEtatReferencesLabel">
+                    <i class="fas fa-hashtag me-2"></i>Générer État des références
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <form method="GET" action="{{ route('pcs.etat-references.poste-emetteur') }}" target="_blank">
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Affiche les <strong>références</strong> des déclarations PCS et des cotisations TRIE pour votre poste.
+                    </div>
+                    <div class="mb-3">
+                        <label for="annee_ref_trie" class="form-label fw-bold">Année <span class="text-danger">*</span></label>
+                        <select class="form-select" id="annee_ref_trie" name="annee" required>
+                            @for($i = date('Y'); $i >= date('Y') - 5; $i--)
+                                <option value="{{ $i }}" {{ $i == date('Y') ? 'selected' : '' }}>{{ $i }}</option>
+                            @endfor
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Annuler
+                    </button>
+                    <button type="submit" class="btn btn-info">
+                        <i class="fas fa-file-pdf me-1"></i>Générer le PDF
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="modalEtatConsolideCotisations" tabindex="-1" aria-labelledby="modalEtatConsolideCotisationsLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
