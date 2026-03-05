@@ -223,21 +223,24 @@
                 @foreach($autresDemandes as $demande)
                 @php
                     $montantDemande = $demande->montant;
-                    $montantAccorde = $demande->montant_accord ?? $demande->montant;
+                    // N'afficher le montant accordé que s'il a été réellement renseigné (validation ACCT)
+                    $montantAccorde = $demande->montant_accord !== null ? (float) $demande->montant_accord : 0;
                     $ecart = $montantAccorde - $montantDemande;
-                    $pourcentage = $demande->montant > 0 ? round(($demande->montant_accord ?? $demande->montant) / $demande->montant * 100, 1) : 0;
+                    $pourcentage = $demande->montant > 0 && $demande->montant_accord !== null
+                        ? round($demande->montant_accord / $demande->montant * 100, 1)
+                        : 0;
 
                     $totalDemande += $demande->montant;
-                    $totalAccorde += ($demande->montant_accord ?? $demande->montant);
+                    $totalAccorde += $montantAccorde;
                 @endphp
                 <tr>
                     <td class="text-center">{{ \Carbon\Carbon::parse($demande->date_demande)->format('d/m/Y') }}</td>
                     <td class="text-left"><strong>{{ $demande->poste->nom }}</strong></td>
                     <td class="text-left">{{ $demande->designation }}</td>
                     <td class="text-right">{{ number_format($montantDemande, 0, ',', ' ') }}</td>
-                    <td class="text-right">{{ number_format($montantAccorde, 0, ',', ' ') }}</td>
+                    <td class="text-right">{{ $montantAccorde > 0 ? number_format($montantAccorde, 0, ',', ' ') : '-' }}</td>
                     <td class="text-right {{ $ecart > 0 ? 'positive' : ($ecart < 0 ? 'negative' : '') }}">
-                        {{ number_format($ecart, 0, ',', ' ') }}
+                        {{ $ecart != 0 ? number_format($ecart, 0, ',', ' ') : '-' }}
                     </td>
                     <td class="text-center">{{ $pourcentage }}%</td>
                 </tr>
