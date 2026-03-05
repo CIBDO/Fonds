@@ -294,18 +294,24 @@ class EtatsConsolidesController extends Controller
         $dateDebut = $request->get('date_debut');
         $dateFin = $request->get('date_fin');
         $posteId = $request->get('poste_id');
+        $statut = $request->get('statut');
 
-        // Ne récupérer que les demandes validées
+        // Récupérer les demandes : filtrer par statut si choisi, sinon toutes (pour éviter un état vierge)
         $query = AutreDemande::with('poste')
-            ->where('annee', $annee)
-            ->where('statut', 'valide');
+            ->where('annee', $annee);
+
+        if ($statut && $statut !== '') {
+            $query->where('statut', $statut);
+        }
 
         if ($dateDebut && $dateFin) {
             $query->whereBetween('date_demande', [$dateDebut, $dateFin]);
         }
-        if ($posteId) $query->where('poste_id', $posteId);
+        if ($posteId) {
+            $query->where('poste_id', $posteId);
+        }
 
-        $autresDemandes = $query->get();
+        $autresDemandes = $query->orderBy('date_demande')->get();
 
         // Organiser les données
         $demandesSoumisesParPoste = [];
