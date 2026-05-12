@@ -385,6 +385,11 @@ class DemandeFondsController extends Controller
             $query->where('mois', 'like', '%' . $request->mois . '%');
         }
 
+        // Filtrer par année (demandes d'une année civile antérieure ou actuelle)
+        if ($request->filled('annee')) {
+            $query->where('annee', (int) $request->annee);
+        }
+
         // Filtrer par plage de dates (date d'envoi des demandes de fonds)
         if ($request->filled('date_debut') && $request->filled('date_fin')) {
             $query->whereBetween('date_envois', [$request->date_debut, $request->date_fin]);

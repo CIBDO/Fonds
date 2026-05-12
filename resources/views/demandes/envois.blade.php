@@ -64,37 +64,39 @@
             </div>
         </div> --}}
         <div class="dgtcp-card-body">
-            {{-- <form action="{{ route('demandes-fonds.envois') }}" method="GET" class="dgtcp-filter-form mb-4">
-                <div class="row">
-                    <div class="col-lg-2 col-md-6">
-                        <div class="form-group">
-                            <input type="text" name="poste" class="dgtcp-form-control" placeholder="Rechercher par poste ..." value="{{ request('poste') }}">
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-6">
-                        <div class="form-group">
-                            <input type="text" name="mois" class="dgtcp-form-control" placeholder="Rechercher par mois ..." value="{{ request('mois') }}">
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-6">
-                        <div class="form-group">
-                            <input type="date" name="date_debut" class="dgtcp-form-control" placeholder="Date de début" value="{{ request('date_debut') }}">
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-6">
-                        <div class="form-group">
-                            <input type="date" name="date_fin" class="dgtcp-form-control" placeholder="Date de fin" value="{{ request('date_fin') }}">
-                        </div>
-                    </div>
-                    <div class="col-lg-2">
-                        <button type="submit" class="dgtcp-btn primary">
-                            <i class="fas fa-search"></i>
-                            <span>Rechercher</span>
-                        </button>
-                    </div>
+            <form action="{{ route('demandes-fonds.envois') }}" method="GET" class="row g-3 align-items-end mb-4 dgtcp-filter-form">
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small text-muted mb-0">Poste</label>
+                    <input type="text" name="poste" class="form-control form-control-sm" placeholder="Nom du poste" value="{{ request('poste') }}">
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small text-muted mb-0">Mois</label>
+                    <input type="text" name="mois" class="form-control form-control-sm" placeholder="ex. Juin, Avril" value="{{ request('mois') }}">
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small text-muted mb-0">Année</label>
+                    <select name="annee" class="form-select form-select-sm">
+                        <option value="">Toutes les années</option>
+                        @for($y = (int) date('Y'); $y >= 2020; $y--)
+                            <option value="{{ $y }}" {{ (string) request('annee') === (string) $y ? 'selected' : '' }}>{{ $y }}</option>
+                        @endfor
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small text-muted mb-0">Date envoi du</label>
+                    <input type="date" name="date_debut" class="form-control form-control-sm" value="{{ request('date_debut') }}">
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small text-muted mb-0">Date envoi au</label>
+                    <input type="date" name="date_fin" class="form-control form-control-sm" value="{{ request('date_fin') }}">
+                </div>
+                <div class="col-lg-auto col-md-12 d-flex flex-wrap gap-2">
+                    <button type="submit" class="btn btn-sm btn-primary">
+                        <i class="fas fa-search"></i> Afficher
+                    </button>
+                    <a href="{{ route('demandes-fonds.envois') }}" class="btn btn-sm btn-outline-secondary">Réinitialiser</a>
                 </div>
             </form>
- --}}
             <div class="dgtcp-table-container">
                 <table id="demandes-table" class="dgtcp-table">
                     <thead>
