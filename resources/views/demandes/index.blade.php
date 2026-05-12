@@ -111,12 +111,13 @@
                                     @elseif($demande->status === 'en_attente')
                                         <span class="dgtcp-status warning">
                                             <i class="fas fa-clock"></i>
-                                            <span>En Attente</span>
+                                            <span>En attente</span>
                                         </span>
                                     @else
+                                        {{-- Valeur de statut inattendue ou null : même libellé métier que en_attente --}}
                                         <span class="dgtcp-status warning">
                                             <i class="fas fa-clock"></i>
-                                            <span>En Attente</span>
+                                            <span>En attente</span>
                                         </span>
                                     @endif
                                 </div>
@@ -127,10 +128,12 @@
                                        class="dgtcp-action-btn success" title="Voir les détails">
                                         <i class="fas fa-eye"></i>
                                     </a>
+                                    @if(auth()->user()->role === 'admin' || (auth()->user()->role === 'tresorier' && ((int) $demande->user_id === (int) auth()->id() || (auth()->user()->poste_id && $demande->poste_id && (int) $demande->poste_id === (int) auth()->user()->poste_id))))
                                     <a href="{{ route('demandes-fonds.edit', $demande->id) }}"
-                                       class="dgtcp-action-btn warning" title="Modifier">
+                                       class="dgtcp-action-btn warning" title="Modifier (avant validation ACCT)">
                                         <i class="fas fa-edit"></i>
                                     </a>
+                                    @endif
                                     <a href="{{ route('demande-fonds.generate.pdf', $demande->id) }}"
                                        class="dgtcp-action-btn info" title="Générer PDF">
                                         <i class="fas fa-file-pdf"></i>

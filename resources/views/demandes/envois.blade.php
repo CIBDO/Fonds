@@ -179,7 +179,13 @@
                                 </div>
                             </td>
                         </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
 
+            {{-- Modales hors du <tbody> : des <div> dans le tbody cassent DataTables (recherche / colonnes) --}}
+            @foreach($demandeFonds as $demande)
                         <!-- Modal pour approuver la demande -->
                         <div class="modal fade" id="approveModal-{{ $demande->id }}" tabindex="-1" aria-labelledby="approveModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
@@ -253,10 +259,7 @@
                                 </div>
                             </div>
                         </div>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+            @endforeach
         </div>
     </div>
 </div>
@@ -810,10 +813,13 @@ $(document).ready(function() {
                 targets: [3], // Colonne montant
                 type: 'num-fmt',
                 render: function(data, type, row) {
+                    if (data == null || data === '') {
+                        return '';
+                    }
                     if (type === 'display' || type === 'type') {
                         return data;
                     }
-                    return data.replace(/[^\d]/g, '');
+                    return String(data).replace(/[^\d]/g, '');
                 }
             },
             {
@@ -837,7 +843,7 @@ $(document).ready(function() {
 
     // Fonction pour réinitialiser les filtres
     window.resetFilters = function() {
-        $('.dgtcp-filter-form')[0].reset();
+        $('.dgtcp-filter-form').length && $('.dgtcp-filter-form')[0].reset();
         table.search('').columns().search('').draw();
     };
 

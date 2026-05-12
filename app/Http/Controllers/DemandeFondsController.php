@@ -35,6 +35,24 @@ class DemandeFondsController extends Controller
         }
     }
 
+    /**
+     * Un trésorier peut agir sur une demande s'il en est l'auteur ou s'il est rattaché au même poste (poste_id).
+     */
+    private function tresorierPeutGererDemandeDuPoste(User $user, DemandeFonds $demande): bool
+    {
+        if ($user->role !== 'tresorier') {
+            return false;
+        }
+        if ((int) $demande->user_id === (int) $user->id) {
+            return true;
+        }
+        if ($user->poste_id && $demande->poste_id && (int) $demande->poste_id === (int) $user->poste_id) {
+            return true;
+        }
+
+        return false;
+    }
+
 
     public function index(Request $request)
     {
@@ -45,7 +63,12 @@ class DemandeFondsController extends Controller
         $query->whereIn('status', ['en_attente', 'rejete']);
 
         if ($user->role === 'tresorier') {
-            $query->where('user_id', $user->id);
+            // Tous les comptes trésoriers du même poste voient les demandes en attente / rejetées du poste
+            if (! empty($user->poste_id)) {
+                $query->where('poste_id', $user->poste_id);
+            } else {
+                $query->where('user_id', $user->id);
+            }
         }
         if ($request->filled('poste')) {
             $query->whereHas('poste', function ($q) use ($request) {
@@ -292,9 +315,8 @@ class DemandeFondsController extends Controller
         $this->authorizeRole(['tresorier', 'admin']);
         $demande = DemandeFonds::findOrFail($id);
 
-        // Vérifier si l'utilisateur est admin ou propriétaire de la demande
         $user = Auth::user();
-        if ($user->role !== 'admin' && $demande->user_id !== $user->id) {
+        if ($user->role !== 'admin' && ! $this->tresorierPeutGererDemandeDuPoste($user, $demande)) {
             return redirect()->back()->withErrors(['error' => 'Vous n\'avez pas la permission de modifier cette demande.']);
         }
 
@@ -975,8 +997,7 @@ class DemandeFondsController extends Controller
         $user = Auth::user();
         $demandeFonds = DemandeFonds::findOrFail($id);
 
-        // Vérifier si l'utilisateur est admin ou propriétaire de la demande
-        if ($user->role !== 'admin' && $demandeFonds->user_id !== $user->id) {
+        if ($user->role !== 'admin' && ! $this->tresorierPeutGererDemandeDuPoste($user, $demandeFonds)) {
             return redirect()->back()->withErrors(['error' => 'Vous n\'avez pas la permission de modifier cette demande.']);
         }
 
@@ -1080,6 +1101,11 @@ class DemandeFondsController extends Controller
         // Récupération de la demande de fonds par ID
         $demandeFonds = DemandeFonds::with('poste')->findOrFail($id);
 
+        $user = Auth::user();
+        if ($user->role === 'tresorier' && ! $this->tresorierPeutGererDemandeDuPoste($user, $demandeFonds)) {
+            abort(403, 'Vous n\'avez pas accès à cette demande.');
+        }
+
         // Calcul des totaux et des écarts
         $demandeFonds->total_net = $demandeFonds->fonctionnaires_bcs_net +
             $demandeFonds->collectivite_sante_net +
@@ -1126,6 +1152,11 @@ class DemandeFondsController extends Controller
         $this->authorizeRole(['tresorier', 'admin', 'acct', 'superviseur']);
         // Récupérer la demande de fonds par son ID
         $demandeFonds = DemandeFonds::findOrFail($id);
+
+        $user = Auth::user();
+        if ($user->role === 'tresorier' && ! $this->tresorierPeutGererDemandeDuPoste($user, $demandeFonds)) {
+            abort(403, 'Vous n\'avez pas accès à cette demande.');
+        }
 
         // Générer le PDF avec la vue et passer la variable
         $pdf = FacadePdf::loadView('pdf.demande_fonds', compact('demandeFonds'))->setPaper('a4', 'landscape');
