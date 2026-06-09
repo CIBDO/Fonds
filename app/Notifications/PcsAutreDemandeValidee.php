@@ -27,9 +27,18 @@ class PcsAutreDemandeValidee extends Notification
         $montantAccorde = number_format($this->demande->montant_accord, 0, ',', ' ');
         $montantDemande = number_format($this->demande->montant, 0, ',', ' ');
 
-        $message = $this->demande->montant_accord == $this->demande->montant
-            ? "Votre demande '{$this->demande->designation}' a été validée avec le montant complet ({$montantAccorde} FCFA)"
-            : "Votre demande '{$this->demande->designation}' a été validée avec un montant de {$montantAccorde} FCFA (demandé: {$montantDemande} FCFA)";
+        $montantVerse = number_format($this->demande->montant_verse, 0, ',', ' ');
+
+        if ($this->demande->statut === 'valide') {
+            $message = "Votre demande '{$this->demande->designation}' est entièrement validée ({$montantAccorde} FCFA versés)";
+        } elseif ($this->demande->montant_verse > 0) {
+            $reste = number_format($this->demande->montant_restant_accord, 0, ',', ' ');
+            $message = "Versement de {$montantVerse} FCFA enregistré pour '{$this->demande->designation}'. Reste à verser : {$reste} FCFA";
+        } elseif ($this->demande->montant_accord == $this->demande->montant) {
+            $message = "Votre demande '{$this->demande->designation}' a été validée avec le montant complet ({$montantAccorde} FCFA)";
+        } else {
+            $message = "Votre demande '{$this->demande->designation}' a été validée avec un montant de {$montantAccorde} FCFA (demandé: {$montantDemande} FCFA)";
+        }
 
         return [
             'demande_id' => $this->demande->id,

@@ -29,7 +29,7 @@ class AutreDemandeController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        $query = AutreDemande::with(['poste', 'saisiPar', 'validePar'])
+        $query = AutreDemande::with(['poste', 'saisiPar', 'validePar', 'echelons'])
             ->orderBy('date_demande', 'desc');
 
         // Filtres
@@ -219,7 +219,7 @@ class AutreDemandeController extends Controller
      */
     public function show(AutreDemande $demande)
     {
-        $demande->load(['poste', 'saisiPar', 'validePar']);
+        $demande->load(['poste', 'saisiPar', 'validePar', 'echelons']);
         return view('pcs.autres-demandes.show', compact('demande'));
     }
 
@@ -322,24 +322,54 @@ class AutreDemandeController extends Controller
             return redirect()->back();
         }
 
+        if (! $demande->peutRecevoirVersement()) {
+            Alert::error('Erreur', 'Cette demande est déjà entièrement validée.');
+            return redirect()->back();
+        }
+
         $request->validate([
-            'montant_accord' => 'required|numeric|min:0',
+            'montant_plafond' => 'required|numeric|min:0.01',
+            'montant_versement' => 'required|numeric|min:0.01',
+            'date_versement' => 'required|date',
         ], [
-            'montant_accord.required' => 'Le montant accordé est obligatoire',
-            'montant_accord.numeric' => 'Le montant accordé doit être un nombre',
-            'montant_accord.min' => 'Le montant accordé ne peut pas être négatif',
+            'montant_plafond.required' => 'Le montant total à accorder est obligatoire',
+            'montant_versement.required' => 'Le montant du versement est obligatoire',
+            'date_versement.required' => 'La date du versement est obligatoire',
         ]);
 
-        $demande->valider($user->id, $request->montant_accord);
+        $montantPlafond = $demande->montant_accord !== null
+            ? (float) $demande->montant_accord
+            : (float) $request->montant_plafond;
 
-        // Notifier le demandeur
+        $montantVersement = (float) $request->montant_versement;
+        $montantRestant = $demande->montant_restant_accord;
+
+        if ($montantVersement > $montantRestant + 0.01) {
+            Alert::error(
+                'Erreur',
+                'Le versement (' . number_format($montantVersement, 0, ',', ' ') . ' FCFA) dépasse le montant restant (' . number_format($montantRestant, 0, ',', ' ') . ' FCFA).'
+            );
+            return redirect()->back()->withInput();
+        }
+
+        $demande->ajouterVersement(
+            $user->id,
+            $montantPlafond,
+            $montantVersement,
+            $request->date_versement
+        );
+
+        $demande->load('echelons');
+
         if ($demande->saisiPar) {
             $demande->saisiPar->notify(new PcsAutreDemandeValidee($demande));
         }
 
-        $message = $request->montant_accord == $demande->montant
-            ? 'Demande validée avec le montant complet'
-            : "Demande validée avec un montant de " . number_format($request->montant_accord, 0, ',', ' ') . " FCFA (demandé: " . number_format($demande->montant, 0, ',', ' ') . " FCFA)";
+        if ($demande->statut === 'valide') {
+            $message = 'Demande entièrement validée. Total accordé : ' . number_format($demande->montant_accord, 0, ',', ' ') . ' FCFA';
+        } else {
+            $message = 'Versement de ' . number_format($montantVersement, 0, ',', ' ') . ' FCFA enregistré. Reste à verser : ' . number_format($demande->montant_restant_accord, 0, ',', ' ') . ' FCFA';
+        }
 
         Alert::success('Succès', $message);
 

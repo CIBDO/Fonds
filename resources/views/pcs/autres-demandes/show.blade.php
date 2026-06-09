@@ -37,7 +37,11 @@
                                         <span class="badge bg-secondary fs-6">Brouillon</span>
                                         @break
                                     @case('soumis')
-                                        <span class="badge bg-primary fs-6">Soumis</span>
+                                        @if($demande->estPartiellementValidee())
+                                            <span class="badge bg-warning text-dark fs-6">Partiellement validé</span>
+                                        @else
+                                            <span class="badge bg-primary fs-6">Soumis</span>
+                                        @endif
                                         @break
                                     @case('valide')
                                         <span class="badge bg-success fs-6">Validé</span>
@@ -56,19 +60,18 @@
                             <div class="fs-4 fw-bold text-primary">
                                 {{ number_format($demande->montant, 0, ',', ' ') }} FCFA
                             </div>
-                            @if($demande->montant_accord !== null)
-                                <label class="text-muted small mt-2">Montant Accordé</label>
+                            @if($demande->montant_accord !== null || $demande->montant_verse > 0)
+                                <label class="text-muted small mt-2">Montant versé / accordé</label>
                                 <div class="fs-4 fw-bold text-success">
-                                    {{ number_format($demande->montant_accord, 0, ',', ' ') }} FCFA
+                                    {{ number_format($demande->montant_verse, 0, ',', ' ') }}
+                                    / {{ number_format($demande->montant_accord ?? $demande->montant, 0, ',', ' ') }} FCFA
                                 </div>
-                                @if($demande->montant_accord != $demande->montant)
-                                    <div class="mt-1">
-                                        <span class="badge {{ $demande->montant_accord > $demande->montant ? 'bg-warning' : 'bg-info' }}">
-                                            {{ $demande->montant_accord > $demande->montant ? '+' : '' }}{{ number_format($demande->difference_montant, 0, ',', ' ') }} FCFA
-                                            ({{ $demande->pourcentage_accorde }}%)
-                                        </span>
-                                    </div>
+                                @if($demande->montant_restant_accord > 0 && $demande->statut !== 'valide')
+                                    <div class="small text-warning mt-1">Reste à verser : {{ number_format($demande->montant_restant_accord, 0, ',', ' ') }} FCFA</div>
                                 @endif
+                                <div class="mt-1">
+                                    <span class="badge bg-info">{{ $demande->pourcentage_accorde }}% du montant demandé</span>
+                                </div>
                             @endif
                         </div>
                         <div class="col-md-6">
@@ -123,19 +126,26 @@
                 </div>
             </div>
 
-            @if((auth()->user()->peut_valider_pcs || auth()->user()->hasRole('acct') || auth()->user()->hasRole('admin')) && $demande->statut == 'soumis')
+            @include('pcs.autres-demandes.partials.echelons-liste', ['demande' => $demande])
+
+            @if((auth()->user()->peut_valider_pcs || auth()->user()->hasRole('acct') || auth()->user()->hasRole('admin')) && ($demande->peutRecevoirVersement() || $demande->statut == 'soumis'))
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-warning text-dark">
                     <h5 class="mb-0"><i class="fas fa-tasks me-2"></i>Actions de Validation</h5>
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        @if($demande->peutRecevoirVersement())
                         <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#validationModal">
-                            <i class="fas fa-check-circle me-1"></i>Valider avec Montant
+                            <i class="fas fa-check-circle me-1"></i>
+                            {{ $demande->estPartiellementValidee() ? 'Enregistrer un versement' : 'Valider la demande' }}
                         </button>
+                        @endif
+                        @if($demande->statut == 'soumis')
                         <button type="button" class="btn btn-danger btn-lg" data-bs-toggle="modal" data-bs-target="#rejeterModal">
                             <i class="fas fa-times-circle me-1"></i>Rejeter
                         </button>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -173,89 +183,9 @@
     </div>
 </div>
 
-<!-- Modal Validation -->
-<div class="modal fade" id="validationModal" tabindex="-1" aria-labelledby="validationModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title" id="validationModalLabel">
-                    <i class="fas fa-check-circle me-2"></i>Valider la Demande
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-
-            <form action="{{ route('pcs.autres-demandes.valider', $demande) }}" method="POST">
-                @csrf
-                <div class="modal-body">
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <strong>Poste :</strong> {{ $demande->poste->nom }}
-                        </div>
-                        <div class="col-md-6">
-                            <strong>Date :</strong> {{ $demande->date_demande->format('d/m/Y') }}
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <strong>Désignation :</strong>
-                        <p class="text-muted">{{ $demande->designation }}</p>
-                    </div>
-
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <div class="card bg-light">
-                                <div class="card-body text-center">
-                                    <h6 class="card-title text-primary">Montant Demandé</h6>
-                                    <h4 class="text-primary">{{ number_format($demande->montant, 0, ',', ' ') }} FCFA</h4>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card bg-success text-white">
-                                <div class="card-body text-center">
-                                    <h6 class="card-title">Montant à Accorder</h6>
-                                    <div class="input-group">
-                                        <input type="number"
-                                               class="form-control form-control-lg text-center"
-                                               name="montant_accord"
-                                               id="montant_accord"
-                                               value="{{ $demande->montant }}"
-                                               step="0.01"
-                                               min="0"
-                                               max="{{ $demande->montant * 2 }}"
-                                               required>
-                                        <span class="input-group-text">FCFA</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    @if($demande->observation)
-                    <div class="mb-3">
-                        <strong>Observation :</strong>
-                        <p class="text-muted">{{ $demande->observation }}</p>
-                    </div>
-                    @endif
-
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <strong>Note :</strong> Vous pouvez accorder un montant différent de celui demandé selon les disponibilités budgétaires.
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-1"></i>Annuler
-                    </button>
-                    <button type="submit" class="btn btn-success">
-                        <i class="fas fa-check me-1"></i>Valider avec ce Montant
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+@if($demande->peutRecevoirVersement())
+@include('pcs.autres-demandes.partials.modal-validation', ['demande' => $demande, 'modalId' => 'validationModal'])
+@endif
 
 <!-- Modal Rejeter -->
 <div class="modal fade" id="rejeterModal" tabindex="-1">
@@ -284,6 +214,10 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+@include('pcs.autres-demandes.partials.scripts-echelons-validation')
+@endpush
 @endsection
 
 

@@ -59,6 +59,53 @@ class AutreDemande extends Model
     }
 
     /**
+     * Échéances de paiement (paiement échelonné)
+     */
+    public function echelons()
+    {
+        return $this->hasMany(AutreDemandeEchelon::class, 'autre_demande_id')->orderBy('ordre');
+    }
+
+    public function getMontantVerseAttribute(): float
+    {
+        if ($this->relationLoaded('echelons')) {
+            return (float) $this->echelons->sum('montant');
+        }
+
+        return (float) $this->echelons()->sum('montant');
+    }
+
+    public function getMontantRestantAccordAttribute(): float
+    {
+        $plafond = $this->montant_accord !== null ? (float) $this->montant_accord : (float) $this->montant;
+
+        return max(0, $plafond - $this->montant_verse);
+    }
+
+    public function estPartiellementValidee(): bool
+    {
+        return $this->statut === 'soumis' && $this->montant_verse > 0;
+    }
+
+    public function estValidationComplete(): bool
+    {
+        if ($this->statut === 'valide') {
+            return true;
+        }
+
+        if ($this->montant_accord === null) {
+            return false;
+        }
+
+        return $this->montant_verse >= (float) $this->montant_accord - 0.01;
+    }
+
+    public function peutRecevoirVersement(): bool
+    {
+        return $this->statut === 'soumis' && ! $this->estValidationComplete();
+    }
+
+    /**
      * Scope : Par année
      */
     public function scopeAnnee($query, $annee)
@@ -108,16 +155,29 @@ class AutreDemande extends Model
     }
 
     /**
-     * Méthode : Valider la demande
+     * Enregistre un versement (avance ou solde). Valide définitivement quand le total versé atteint le plafond.
      */
-    public function valider($valideurId, $montantAccord = null)
+    public function ajouterVersement(int $valideurId, float $montantPlafond, float $montantVersement, string $dateVersement): void
     {
-        $this->statut = 'valide';
-        $this->date_validation = now();
-        $this->valide_par = $valideurId;
-        if ($montantAccord !== null) {
-            $this->montant_accord = $montantAccord;
+        if ($this->montant_accord === null) {
+            $this->montant_accord = $montantPlafond;
         }
+
+        $ordre = $this->echelons()->count() + 1;
+        $this->echelons()->create([
+            'ordre' => $ordre,
+            'date_echeance' => $dateVersement,
+            'montant' => $montantVersement,
+        ]);
+
+        $this->valide_par = $valideurId;
+
+        $totalVerse = (float) $this->echelons()->sum('montant');
+        if ($totalVerse >= (float) $this->montant_accord - 0.01) {
+            $this->statut = 'valide';
+            $this->date_validation = now();
+        }
+
         $this->save();
     }
 
@@ -148,9 +208,12 @@ class AutreDemande extends Model
      */
     public function getPourcentageAccordeAttribute()
     {
-        if ($this->montant_accord !== null && $this->montant > 0) {
-            return round(($this->montant_accord / $this->montant) * 100, 2);
+        if ($this->montant > 0) {
+            $verse = $this->montant_verse > 0 ? $this->montant_verse : (float) ($this->montant_accord ?? 0);
+
+            return round(($verse / $this->montant) * 100, 2);
         }
+
         return 0;
     }
 
