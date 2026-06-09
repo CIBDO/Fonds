@@ -111,14 +111,14 @@
                 <!-- MODULE PCS - SECTION POSTES (Saisie uniquement) -->
                 @if ((Auth::user()->peut_saisir_pcs || Auth::user()->poste_id) && !Auth::user()->peut_valider_pcs && !Auth::user()->hasRole('acct') && !Auth::user()->hasRole('admin'))
                     <li class="menu-title">
-                        <span>PCS-UEMOA/PC-AES)</span>
+                        <span>PC-UEMOA/PC-AES)</span>
                     </li>
 
                     <!-- Déclarations PCS -->
                     <li class="submenu {{ request()->routeIs('pcs.declarations.*') ? 'active' : '' }}">
                         <a href="#" class="submenu-toggle">
                             <i class="fas fa-file-invoice-dollar"></i>
-                            <span>Déclarations PCS</span>
+                            <span>Déclarations PC</span>
                             <span class="menu-arrow fas fa-chevron-right"></span>
                         </a>
                         <ul class="submenu-list">
@@ -159,19 +159,19 @@
                 <!-- MODULE PCS - SECTION ACCT/ADMIN (Validation, Statistiques & États Consolidés) -->
                 @if (Auth::user()->peut_valider_pcs || Auth::user()->hasRole('acct') || Auth::user()->hasRole('admin'))
                     <li class="menu-title">
-                        <span>PCS - Demandes</span>
+                        <span>PC - Demandes</span>
                     </li>
 
                     <!-- Validation PCS -->
                     <li class="submenu {{ request()->routeIs('pcs.declarations.*') ? 'active' : '' }}">
                         <a href="#" class="submenu-toggle">
                             <i class="fas fa-check-double"></i>
-                            <span>Consultations PCS</span>
+                            <span>Consultations PC</span>
                             <span class="menu-arrow fas fa-chevron-right"></span>
                         </a>
                         <ul class="submenu-list">
                             <li><a href="{{ route('pcs.declarations.index') }}" class="{{ request()->routeIs('pcs.declarations.index') || request()->routeIs('pcs.declarations.show') ? 'active' : '' }}">
-                                <i class="fas fa-file-invoice-dollar"></i>Déclarations PCS</a></li>
+                                <i class="fas fa-file-invoice-dollar"></i>Déclarations PC</a></li>
                         </ul>
                     </li>
 
