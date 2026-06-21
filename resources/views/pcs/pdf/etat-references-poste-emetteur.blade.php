@@ -6,7 +6,7 @@
     <style>
         @page {
             size: A4 landscape;
-            margin: 15mm;
+            margin: 10mm;
         }
 
         body {
@@ -159,7 +159,7 @@
 
     <!-- Titre principal -->
     <div class="main-title">
-        ÉTAT DES RÉFÉRENCES – DÉCLARATIONS PCS ET COTISATIONS TRIE – EXERCICE {{ $annee }}
+        ÉTAT DES RÉFÉRENCES – DÉCLARATIONS PC ET COTISATIONS TRIE – EXERCICE {{ $annee }}
     </div>
 
     <div class="poste-info">
@@ -172,7 +172,7 @@
 
     <!-- Tableau 1 : Déclarations PCS (référence en évidence) -->
     <div class="table-section">
-        <div class="table-title">DÉCLARATIONS PCS – RÉFÉRENCES</div>
+        <div class="table-title">DÉCLARATIONS PC – RÉFÉRENCES</div>
         <table>
             <thead>
                 <tr>

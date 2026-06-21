@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Situation des Reversements PCS - {{ $programme }} {{ $annee }}</title>
+    <title>Situation des Reversements PC - {{ $programme }} {{ $annee }}</title>
     <style>
         @page {
             size: A4 landscape;
@@ -164,7 +164,7 @@
 
     <!-- Titre principal -->
     <div class="main-title">
-        SITUATION CONSOLIDÉE DES RECOUVREMENTS ET REVERSEMENTS DU PCS-{{ $programme }} AU TITRE DE L'EXERCICE {{ $annee }}
+        SITUATION CONSOLIDÉE DES RECOUVREMENTS ET REVERSEMENTS DU PC-{{ $programme }} AU TITRE DE L'EXERCICE {{ $annee }}
     </div>
 
     {{-- <div class="subtitle-period">

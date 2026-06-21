@@ -2,11 +2,11 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>État de Collecte PCS - {{ $programme }} {{ $annee }}</title>
+    <title>État de Collecte PC - {{ $programme }} {{ $annee }}</title>
     <style>
         @page {
             size: A4 landscape;
-            margin: 15mm;
+            margin: 10mm;
         }
 
         body {
@@ -157,7 +157,7 @@
 
     <!-- Titre principal -->
     <div class="main-title">
-        ÉTAT DE COLLECTE DES FONDS PCS-{{ $programme }} AU TITRE DE L'EXERCICE {{ $annee }}
+        ÉTAT DE COLLECTE DES FONDS PC-{{ $programme }} AU TITRE DE L'EXERCICE {{ $annee }}
     </div>
 
     {{-- <div class="subtitle-period">

@@ -2,11 +2,11 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>État des Reversements PCS - {{ $programme }} {{ $annee }}</title>
+    <title>État des Reversements PC - {{ $programme }} {{ $annee }}</title>
     <style>
         @page {
             size: A4 landscape;
-            margin: 15mm;
+            margin: 10mm;
         }
 
         body {
@@ -149,7 +149,7 @@
 
     <!-- Titre principal -->
     <div class="main-title">
-        ÉTAT DES REVERSEMENTS DU PCS-{{ $programme ? $programme : 'TOUS LES PROGRAMMES' }} AU TITRE DE L'EXERCICE {{ $annee }}
+        ÉTAT DES REVERSEMENTS DU PC-{{ $programme ? $programme : 'TOUS LES PROGRAMMES' }} AU TITRE DE L'EXERCICE {{ $annee }}
     </div>
 
    {{--  <div class="subtitle-period">

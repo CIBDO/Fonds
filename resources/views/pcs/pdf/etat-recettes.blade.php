@@ -119,7 +119,7 @@
 
         <!-- Titre -->
         <h1>ÉTAT DES RECETTES {{ $programme }}</h1>
-        <h2>Programme de Consolidation des Statistiques (PCS)</h2>
+        <h2>Programme de Consolidation des Statistiques (PC)</h2>
         <h2>ANNÉE {{ $annee }}</h2>
 
         <!-- Tableau des recettes -->

@@ -6,7 +6,7 @@
     <style>
         @page {
             size: A4 portrait;
-            margin: 15mm;
+            margin: 10mm;
         }
 
         body {
@@ -205,7 +205,7 @@
 
         <!-- Titre principal -->
         <div class="main-title">
-            BORDEREAU DE DÉSTOCKAGE DES FONDS PCS-{{ $destockage->programme }}
+            BORDEREAU DE DÉSTOCKAGE DES FONDS PC-{{ $destockage->programme }}
         </div>
 
         <div class="subtitle-period">

@@ -6,7 +6,7 @@
     <style>
         @page {
             size: A4 landscape;
-            margin: 15mm;
+            margin: 10mm;
         }
 
         body {
@@ -188,7 +188,7 @@
 
     <!-- Titre principal -->
     <div class="main-title">
-        ÉTAT CONSOLIDÉ DES DÉSTOCKAGES PCS-{{ $programme }} AU TITRE DE L'EXERCICE {{ $annee }}
+        ÉTAT CONSOLIDÉ DES DÉSTOCKAGES PC-{{ $programme }} AU TITRE DE L'EXERCICE {{ $annee }}
     </div>
 
     {{-- <div class="subtitle-period">
