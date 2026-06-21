@@ -108,7 +108,7 @@
         .signature {
             margin-right: 80px;
             text-align: right;
-            margin-top: 15px;
+            margin-top: 10px;
         }
 
         .date-signature {
