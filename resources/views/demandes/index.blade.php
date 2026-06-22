@@ -86,7 +86,7 @@
                             </td>
                             <td>
                                 <div class="dgtcp-cell-content">
-                                    <span class="dgtcp-amount">{{ number_format($demande->solde, 0, ',', ' ') }}</span>
+                                    <span class="dgtcp-amount">{{ number_format(abs($demande->solde), 0, ',', ' ') }}</span>
                                     {{-- <small class="dgtcp-currency">F CFA</small> --}}
                                 </div>
                             </td>

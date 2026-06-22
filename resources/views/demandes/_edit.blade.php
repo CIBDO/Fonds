@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function calculateSolde() {
         const montantDisponible = unformatNumber(montantDisponibleField.value);
         const totalCourant = unformatNumber(totalCourantField.value);
-        const solde = montantDisponible - totalCourant;
+        const solde = totalCourant - montantDisponible;
         soldeField.value = formatNumber(solde);
     }
 

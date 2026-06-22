@@ -69,13 +69,13 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="montant_disponible">Recettes Douanières :</label>
-                    <input type="text" id="montant_disponible" name="montant_disponible" class="form-control" value="0" required>
+                    <input type="text" id="montant_disponible" name="montant_disponible" class="form-control" value="{{ number_format($demande->montant_disponible ?? 0, 0, ',', ' ') }}" required>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="solde">Solde :</label>
-                    <input type="text" id="solde" name="solde" class="form-control" value="0" readonly>
+                    <input type="text" id="solde" name="solde" class="form-control" value="{{ number_format($demande->solde ?? 0, 0, ',', ' ') }}" readonly>
                 </div>
             </div>
             <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">

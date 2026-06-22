@@ -1086,6 +1086,57 @@ class DemandeFondsController extends Controller
             'date' => 'required|date'
         ]);
 
+        // Recalculer les totaux et le solde côté serveur (comme à la création)
+        $total_net =
+            floatval($validatedData['fonctionnaires_bcs_net'] ?? 0) +
+            floatval($validatedData['collectivite_sante_net'] ?? 0) +
+            floatval($validatedData['collectivite_education_net'] ?? 0) +
+            floatval($validatedData['personnels_saisonniers_net'] ?? 0) +
+            floatval($validatedData['epn_net'] ?? 0) +
+            floatval($validatedData['ced_net'] ?? 0) +
+            floatval($validatedData['ecom_net'] ?? 0) +
+            floatval($validatedData['cfp_cpam_net'] ?? 0);
+
+        $total_revers =
+            floatval($validatedData['fonctionnaires_bcs_revers'] ?? 0) +
+            floatval($validatedData['collectivite_sante_revers'] ?? 0) +
+            floatval($validatedData['collectivite_education_revers'] ?? 0) +
+            floatval($validatedData['personnels_saisonniers_revers'] ?? 0) +
+            floatval($validatedData['epn_revers'] ?? 0) +
+            floatval($validatedData['ced_revers'] ?? 0) +
+            floatval($validatedData['ecom_revers'] ?? 0) +
+            floatval($validatedData['cfp_cpam_revers'] ?? 0);
+
+        $total_courant =
+            floatval($validatedData['fonctionnaires_bcs_total_courant'] ?? 0) +
+            floatval($validatedData['collectivite_sante_total_courant'] ?? 0) +
+            floatval($validatedData['collectivite_education_total_courant'] ?? 0) +
+            floatval($validatedData['personnels_saisonniers_total_courant'] ?? 0) +
+            floatval($validatedData['epn_total_courant'] ?? 0) +
+            floatval($validatedData['ced_total_courant'] ?? 0) +
+            floatval($validatedData['ecom_total_courant'] ?? 0) +
+            floatval($validatedData['cfp_cpam_total_courant'] ?? 0);
+
+        $total_ancien =
+            floatval($validatedData['fonctionnaires_bcs_salaire_ancien'] ?? 0) +
+            floatval($validatedData['collectivite_sante_salaire_ancien'] ?? 0) +
+            floatval($validatedData['collectivite_education_salaire_ancien'] ?? 0) +
+            floatval($validatedData['personnels_saisonniers_salaire_ancien'] ?? 0) +
+            floatval($validatedData['epn_salaire_ancien'] ?? 0) +
+            floatval($validatedData['ced_salaire_ancien'] ?? 0) +
+            floatval($validatedData['ecom_salaire_ancien'] ?? 0) +
+            floatval($validatedData['cfp_cpam_salaire_ancien'] ?? 0);
+
+        $montant_disponible = floatval($validatedData['montant_disponible']);
+        $solde = $total_courant - $montant_disponible;
+
+        $validatedData['total_net'] = $total_net;
+        $validatedData['total_revers'] = $total_revers;
+        $validatedData['total_courant'] = $total_courant;
+        $validatedData['total_salaire_ancien'] = $total_ancien;
+        $validatedData['montant_disponible'] = $montant_disponible;
+        $validatedData['solde'] = $solde;
+
         $demandeFonds->update($validatedData);
         Alert::success('Success', 'Demande de fonds mise à jour avec succès.');
         return redirect()->route('demandes-fonds.index');
