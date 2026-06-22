@@ -370,9 +370,7 @@
                         text: '<i class="fas fa-print"></i> Imprimer'
                     }
                 ],
-                language: {
-                    url: "//cdn.datatables.net/plug-ins/1.11.5/i18n/fr-FR.json"
-                },
+                language: window.DGTCP_DATATABLES_FR,
                 paging: false, // Désactiver la pagination DataTables pour utiliser celle de Laravel
                 searching: true,
                 ordering: true,

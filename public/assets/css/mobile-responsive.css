@@ -1,0 +1,466 @@
+/**
+ * DGTCP Fonds — Responsive mobile & tablette
+ * Chargé en dernier pour corriger les styles desktop forcés (!important)
+ */
+
+/* ===== Base ===== */
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+body {
+    overflow-x: hidden;
+    max-width: 100vw;
+}
+
+img,
+video,
+canvas,
+svg {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ===== Layout principal (sidebar + contenu) — mobile-first + classe JS ===== */
+html.mobile-layout .page-wrapper {
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+}
+
+html.mobile-layout .page-wrapper > .content {
+    padding: 1rem 0.75rem 0 !important;
+}
+
+html.mobile-layout .main-wrapper {
+    width: 100% !important;
+    max-width: 100vw !important;
+    overflow-x: hidden;
+}
+
+html.mobile-layout:not(.nav-open) #sidebar.sidebar {
+    position: fixed !important;
+    top: 60px !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    margin-left: 0 !important;
+    width: min(300px, 88vw) !important;
+    max-width: 300px !important;
+    transform: translate3d(-100%, 0, 0) !important;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    z-index: 1042 !important;
+    box-shadow: none !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+html.mobile-layout.nav-open #sidebar.sidebar,
+html.mobile-layout .slide-nav #sidebar.sidebar,
+html.mobile-layout #sidebar.sidebar.opened {
+    transform: translate3d(0, 0, 0) !important;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.18) !important;
+}
+
+html.mobile-layout #mobile_btn,
+html.mobile-layout .dgtcp-mobile-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 1199.98px) {
+    .page-wrapper {
+        margin-left: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+
+    .page-wrapper > .content {
+        padding: 1rem 0.75rem 0 !important;
+    }
+
+    .main-wrapper {
+        width: 100% !important;
+        max-width: 100vw !important;
+        overflow-x: hidden;
+    }
+
+    #sidebar.sidebar,
+    .sidebar {
+        position: fixed !important;
+        top: 60px !important;
+        left: 0 !important;
+        bottom: 0 !important;
+        margin-left: 0 !important;
+        width: min(300px, 88vw) !important;
+        max-width: 300px !important;
+        transform: translate3d(-100%, 0, 0) !important;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        z-index: 1042 !important;
+        box-shadow: none !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .slide-nav .sidebar,
+    .sidebar.opened {
+        transform: translate3d(0, 0, 0) !important;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.18) !important;
+    }
+
+    /* Bouton fermer dans la sidebar */
+    .sidebar-close-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        width: 2.25rem;
+        height: 2.25rem;
+        border: none;
+        border-radius: 50%;
+        background: rgba(0, 151, 57, 0.1);
+        color: #009739;
+        font-size: 1.1rem;
+        cursor: pointer;
+        z-index: 5;
+        transition: background 0.2s ease;
+    }
+
+    .sidebar-close-btn:hover {
+        background: rgba(0, 151, 57, 0.2);
+    }
+
+    .sidebar-inner {
+        padding-top: 2.5rem !important;
+        height: auto !important;
+        min-height: 100% !important;
+    }
+
+    .sidebar-overlay {
+        display: none;
+        top: 60px !important;
+        height: calc(100% - 60px) !important;
+        z-index: 1041 !important;
+    }
+
+    .sidebar-overlay.opened {
+        display: block !important;
+    }
+
+    /* Bouton menu hamburger visible à gauche */
+    .dgtcp-mobile-btn,
+    #mobile_btn,
+    .mobile_btn {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        margin-right: 0.5rem;
+        padding: 0 !important;
+        border-radius: 8px;
+        background: rgba(0, 151, 57, 0.1);
+        color: #009739 !important;
+        font-size: 1.25rem !important;
+        text-decoration: none;
+        flex-shrink: 0;
+        border: none;
+        cursor: pointer;
+    }
+
+    .dgtcp-mobile-btn:hover,
+    #mobile_btn:hover {
+        background: rgba(0, 151, 57, 0.18);
+        color: #007a2e !important;
+    }
+
+    .dgtcp-header-left {
+        display: flex;
+        align-items: center;
+        flex: 1;
+        min-width: 0;
+    }
+
+    /* Éviter les animations transform sur les items du menu */
+    .sidebar-menu > ul > li {
+        animation: none !important;
+        transform: none !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .sidebar-close-btn {
+        display: none !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .page-wrapper {
+        margin-top: 60px !important;
+    }
+
+    .page-wrapper > .content {
+        padding: 0.75rem 0.5rem 0 !important;
+    }
+}
+
+/* ===== En-tête ===== */
+@media (max-width: 1199.98px) {
+    .dgtcp-header-main {
+        padding: 0.5rem 0.75rem !important;
+        min-height: 60px !important;
+        gap: 0.5rem;
+        flex-wrap: nowrap;
+    }
+
+    .dgtcp-search-container {
+        display: none !important;
+    }
+
+    .dgtcp-logo-container {
+        display: none !important;
+    }
+
+    .dgtcp-logo-small {
+        display: flex !important;
+    }
+
+    .dgtcp-logo-text,
+    .dgtcp-user-details,
+    .dgtcp-dropdown-arrow {
+        display: none !important;
+    }
+
+    .dgtcp-nav-menu {
+        gap: 0.15rem;
+        flex-shrink: 0;
+    }
+
+    .dgtcp-nav-link {
+        padding: 0.5rem !important;
+    }
+
+    .dgtcp-dropdown-menu {
+        position: fixed !important;
+        top: 60px !important;
+        left: 0.75rem !important;
+        right: 0.75rem !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: calc(100vw - 1.5rem) !important;
+    }
+}
+
+/* ===== Sections & cartes DGTCP ===== */
+@media (max-width: 767.98px) {
+    .dgtcp-section {
+        padding: 0.75rem !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    .dgtcp-card,
+    .dgtcp-card-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.75rem;
+    }
+
+    .dgtcp-card-actions,
+    .dgtcp-card-header .dgtcp-card-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .dgtcp-header h1,
+    .page-title {
+        font-size: 1.35rem !important;
+        word-break: break-word;
+    }
+
+    .dgtcp-header-actions,
+    .dgtcp-btn-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        width: 100%;
+    }
+
+    .dgtcp-btn,
+    .btn {
+        white-space: normal;
+        text-align: center;
+    }
+
+    .dgtcp-stat-card {
+        min-height: auto !important;
+    }
+
+    .row > [class*="col-"] {
+        margin-bottom: 0.75rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .dgtcp-section {
+        padding: 0.5rem !important;
+        border-radius: 0.5rem !important;
+    }
+
+    .dgtcp-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .dgtcp-btn-group .dgtcp-btn {
+        flex: 1 1 100%;
+    }
+}
+
+/* ===== Tableaux & DataTables ===== */
+.table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 991.98px) {
+    .dataTables_wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter {
+        float: none !important;
+        text-align: left !important;
+        width: 100% !important;
+        margin-bottom: 0.75rem;
+    }
+
+    .dataTables_wrapper .dataTables_filter input {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+    }
+
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+        float: none !important;
+        text-align: center !important;
+        width: 100% !important;
+        margin-top: 0.75rem;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 0.35rem 0.6rem !important;
+        margin: 0.15rem !important;
+    }
+
+    table.dataTable {
+        width: 100% !important;
+    }
+
+    .dgtcp-table thead th,
+    .dgtcp-table tbody td {
+        padding: 0.5rem 0.4rem !important;
+        font-size: 0.8rem !important;
+        white-space: nowrap;
+    }
+}
+
+/* ===== Formulaires ===== */
+@media (max-width: 767.98px) {
+    .form-row,
+    .row.g-3,
+    .row.g-2 {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .input-group {
+        flex-wrap: wrap;
+    }
+
+    .form-control,
+    .form-select,
+    .select2-container {
+        max-width: 100% !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+}
+
+/* ===== Modales ===== */
+@media (max-width: 575.98px) {
+    .modal-dialog {
+        margin: 0.5rem !important;
+        max-width: calc(100vw - 1rem) !important;
+    }
+
+    .modal-body {
+        padding: 0.75rem !important;
+    }
+
+    .modal-footer {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .modal-footer .btn {
+        width: 100%;
+        margin: 0 !important;
+    }
+}
+
+/* ===== Filtres & barres d'outils ===== */
+@media (max-width: 767.98px) {
+    .dgtcp-filters,
+    .filter-bar,
+    .card-tools,
+    .page-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+
+    .dgtcp-filters .form-group,
+    .dgtcp-filters .col-md-3,
+    .dgtcp-filters .col-md-4 {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}
+
+/* ===== Pagination ===== */
+@media (max-width: 575.98px) {
+    .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.25rem;
+    }
+
+    .pagination .page-link {
+        min-width: 2rem;
+        padding: 0.35rem 0.5rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* ===== Page de connexion (si style.css chargé ailleurs) ===== */
+body.login-page .login-wrapper,
+.login-page .login-wrapper {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100% !important;
+}

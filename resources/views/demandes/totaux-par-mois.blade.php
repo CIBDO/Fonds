@@ -81,9 +81,7 @@
 <script>
     $(document).ready(function() {
         let table = $('#totaux-table').DataTable({
-            language: {
-                url: "//cdn.datatables.net/plug-ins/1.11.5/i18n/French.json"
-            },
+            language: window.DGTCP_DATATABLES_FR,
             dom: 'Bfrtip',
             buttons: [
                 { extend: 'excelHtml5', text: '📊 Excel', className: 'btn btn-success' },

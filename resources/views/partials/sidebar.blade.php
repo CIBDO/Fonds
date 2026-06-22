@@ -1,4 +1,7 @@
 <div class="sidebar" id="sidebar">
+    <button type="button" class="sidebar-close-btn" id="sidebar_close_btn" aria-label="Fermer le menu">
+        <i class="fas fa-times"></i>
+    </button>
     <div class="sidebar-inner slimscroll">
         <div id="sidebar-menu" class="sidebar-menu">
             <ul class="menu-list">
@@ -359,11 +362,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (submenuList && !submenu.classList.contains('active')) {
                     submenuList.classList.remove('show');
+                    submenuList.removeAttribute('style');
                 }
                 if (arrow && !submenu.classList.contains('active')) {
                     arrow.style.transform = 'rotate(0deg)';
                 }
             });
+
+            // Nettoyer les résidus du script legacy (script.js)
+            document.querySelectorAll('#sidebar-menu a.subdrop').forEach(link => {
+                link.classList.remove('subdrop');
+            });
+            if (window.jQuery) {
+                window.jQuery('#sidebar-menu a').off('click');
+                window.jQuery('#sidebar-menu ul').each(function () {
+                    window.jQuery(this).stop(true, true).removeAttr('style');
+                });
+            }
         }
 
         /**

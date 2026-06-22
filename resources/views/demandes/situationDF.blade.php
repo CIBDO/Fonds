@@ -917,16 +917,7 @@
                 }
             }
             ],
-            language: {
-            url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json",
-            buttons: {
-                copy: 'Copier',
-                csv: 'CSV',
-                excel: 'Excel',
-                pdf: 'PDF',
-                print: 'Imprimer'
-            }
-            },
+            language: window.DGTCP_DATATABLES_FR,
             responsive: true,
         pageLength: 15,
         lengthMenu: [[10, 15, 25, 50, -1], [10, 15, 25, 50, "Tout"]],

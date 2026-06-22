@@ -1,5 +1,8 @@
 <div class="dgtcp-header-main">
     <div class="dgtcp-header-left">
+        <a class="dgtcp-mobile-btn" id="mobile_btn" href="javascript:void(0);" aria-label="Ouvrir le menu">
+            <i class="fas fa-bars"></i>
+        </a>
         <a href="{{ route('login') }}" class="dgtcp-logo-container">
             <img src="{{ asset('assets/img/logo.png') }}" alt="Logo DGTCP" class="dgtcp-logo-img">
             <div class="dgtcp-logo-text">
@@ -29,10 +32,6 @@
         </form>
     </div>
 
-    <a class="dgtcp-mobile-btn" id="mobile_btn">
-        <i class="fas fa-bars"></i>
-    </a>
-
     <ul class="dgtcp-nav-menu">
         <!-- Sélecteur de langue -->
         {{-- <li class="dgtcp-nav-item dgtcp-language-selector">
@@ -45,8 +44,8 @@
         </li> --}}
 
         <!-- Notifications DGTCP -->
-        <li class="dgtcp-nav-item dgtcp-notifications">
-            <a href="#" class="dgtcp-nav-link dgtcp-notification-toggle" data-bs-toggle="dropdown">
+        <li class="dgtcp-nav-item dgtcp-notifications dropdown">
+            <a href="#" class="dgtcp-nav-link dgtcp-notification-toggle dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false">
                 <div class="dgtcp-notification-icon">
                     <i class="fas fa-bell"></i>
                     @if(auth()->user()->unreadNotifications->count() > 0)
@@ -54,7 +53,7 @@
                     @endif
                 </div>
             </a>
-            <div class="dgtcp-dropdown-menu dgtcp-notifications-dropdown">
+            <div class="dropdown-menu dgtcp-dropdown-menu dgtcp-notifications-dropdown">
                 <div class="dgtcp-dropdown-header">
                     <div class="dgtcp-notification-title">
                         <i class="fas fa-bell me-2"></i>
@@ -176,8 +175,8 @@
         </li>
 
         <!-- Profile utilisateur DGTCP -->
-        <li class="dgtcp-nav-item dgtcp-user-menu">
-            <a href="#" class="dgtcp-nav-link dgtcp-user-toggle" data-bs-toggle="dropdown">
+        <li class="dgtcp-nav-item dgtcp-user-menu dropdown">
+            <a href="#" class="dgtcp-nav-link dgtcp-user-toggle dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false">
                 <div class="dgtcp-user-info">
                     <div class="dgtcp-user-avatar">
                         <img src="{{ asset('assets/img/profiles/Avatar-01.png') }}" alt="{{ Auth::check() ? Auth::user()->name : 'Guest' }}">
@@ -211,7 +210,7 @@
                     <i class="fas fa-chevron-down dgtcp-dropdown-arrow"></i>
                 </div>
             </a>
-            <div class="dgtcp-dropdown-menu dgtcp-user-dropdown">
+            <div class="dropdown-menu dgtcp-dropdown-menu dgtcp-user-dropdown">
                 <div class="dgtcp-user-header">
                     <div class="dgtcp-user-avatar-large">
                         <img src="{{ asset('assets/img/profiles/Avatar-01.png') }}" alt="User Image">

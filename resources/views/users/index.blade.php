@@ -520,9 +520,7 @@
                 searching: true,
                 ordering: true,
                 order: [[1, 'asc']],
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json'
-                },
+                language: window.DGTCP_DATATABLES_FR,
                 dom: 'Bfrtip',
                 buttons: [
                     {

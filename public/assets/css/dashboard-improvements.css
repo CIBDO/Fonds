@@ -1365,9 +1365,18 @@ body {
     font-weight: 500 !important;
 }
 
-/* Ajustement du contenu principal pour le nouveau sidebar */
+/* Ajustement du contenu principal — mobile-first */
 .page-wrapper {
-    margin-left: 280px !important;
+    margin-top: 70px !important;
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+@media (min-width: 1200px) {
+    .page-wrapper {
+        margin-left: 280px !important;
+    }
 }
 
 /* Animations */
@@ -1444,16 +1453,25 @@ body {
     animation: pulse 2s infinite !important;
 }
 
-/* Responsive pour mobile */
-@media (max-width: 768px) {
-    .sidebar {
-        width: 260px !important;
-        transform: translateX(-100%) !important;
-        transition: transform 0.3s ease !important;
+/* Responsive pour mobile / tablette */
+@media (max-width: 1199.98px) {
+    .page-wrapper {
+        margin-left: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
     }
 
-    .sidebar.opened {
-        transform: translateX(0) !important;
+    .sidebar {
+        width: min(300px, 88vw) !important;
+        transform: translate3d(-105%, 0, 0) !important;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        margin-left: 0 !important;
+    }
+
+    .sidebar.opened,
+    .slide-nav .sidebar {
+        transform: translate3d(0, 0, 0) !important;
+        margin-left: 0 !important;
     }
 
     .sidebar-menu > ul > li > a {
@@ -1469,11 +1487,6 @@ body {
         left: 1rem;
         right: 1rem;
     }
-}
-
-/* Ajustement du contenu principal */
-.page-wrapper {
-    margin-top: 70px !important;
 }
 
 /* Logo Section */
@@ -1612,7 +1625,7 @@ body {
     color: #2d3748;
 }
 
-/* Mobile Button */
+/* Mobile Button — masqué sur desktop */
 .dgtcp-mobile-btn {
     display: none;
     color: #4a5568;
@@ -2077,9 +2090,11 @@ body {
     .dgtcp-search-container {
         display: none;
     }
+}
 
+@media (max-width: 1199.98px) {
     .dgtcp-mobile-btn {
-        display: flex;
+        display: flex !important;
         align-items: center;
         justify-content: center;
     }

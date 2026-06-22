@@ -32,15 +32,18 @@
     body {
         font-family: 'JetBrains Mono', monospace, sans-serif !important;
         min-height: 100vh;
+        min-height: 100dvh;
         display: flex;
-        align-items: center;
-        justify-content: center;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
         background: #f5f7fa;
         position: relative;
         overflow-x: hidden;
         padding: 10px;
         width: 100%;
         max-width: 100vw;
+        margin: 0;
     }
 
     /* Arrière-plan adouci */
@@ -65,6 +68,8 @@
         position: relative;
         z-index: 1;
         box-sizing: border-box;
+        flex: 1 0 auto;
+        align-self: stretch;
     }
 
     /* Carte de connexion */
@@ -568,20 +573,23 @@
         text-decoration: underline;
     }
 
-    /* Version et copyright en bas à droite */
+    /* Version et copyright */
     .page-footer {
-        position: fixed;
-        bottom: 20px;
-        right: 30px;
+        position: relative;
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 12px 20px 20px;
         font-size: 11px;
-        color: rgba(255, 255, 255, 0.6);
+        color: #6b7280;
         z-index: 10;
-        text-align: right;
+        text-align: center;
+        flex-shrink: 0;
     }
 
     .page-footer .version {
         font-weight: 600;
-        color: rgba(255, 255, 255, 0.8);
+        color: #4b5563;
     }
 
     /* Responsive */
@@ -816,12 +824,7 @@
         }
 
         .page-footer {
-            position: relative;
-            bottom: auto;
-            right: auto;
-            text-align: center;
-            margin-top: 20px;
-            padding: 15px;
+            padding: 10px 15px 15px;
             font-size: 10px;
         }
 

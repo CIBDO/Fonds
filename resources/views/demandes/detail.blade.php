@@ -322,9 +322,7 @@
                 },
                 'copy', 'csv', 'pdf', 'print'
             ],
-            language: {
-                url: "//cdn.datatables.net/plug-ins/1.11.5/i18n/fr-FR.json"
-            },
+            language: window.DGTCP_DATATABLES_FR,
             rowGroup: {
                 dataSrc: 3 // Groupe par désignation (index de la colonne)
             },

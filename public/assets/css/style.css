@@ -3077,11 +3077,12 @@ footer p {
 }
 
 .login-wrapper {
-    width: 10%;
-    height: 10%;
-    display: table-cell;
+    width: 100%;
+    height: auto;
+    display: block;
     vertical-align: middle;
     background-image: url(../img/fond.png);
+    background-size: cover;
 }
 
 .login-wrapper .loginbox {
@@ -10162,12 +10163,18 @@ body[data-layout-mode=dark] .alertify .ajs-footer .ajs-buttons .ajs-button.ajs-o
     }
 
     .sidebar {
-        margin-left: -225px;
-        width: 225px;
-        -webkit-transition: all .4s ease;
-        -moz-transition: all .4s ease;
-        transition: all .4s ease;
+        margin-left: 0 !important;
+        width: min(300px, 88vw) !important;
+        transform: translate3d(-105%, 0, 0) !important;
+        -webkit-transition: transform 0.3s ease;
+        -moz-transition: transform 0.3s ease;
+        transition: transform 0.3s ease;
         z-index: 1041
+    }
+
+    .slide-nav .sidebar {
+        transform: translate3d(0, 0, 0) !important;
+        margin-left: 0 !important;
     }
 
     .page-wrapper {
