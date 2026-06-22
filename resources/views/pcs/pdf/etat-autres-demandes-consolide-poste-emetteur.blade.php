@@ -63,13 +63,6 @@
             text-align: center;
         }
 
-        .subtitle-period {
-            font-size: 11px;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
         .poste-info {
             font-size: 11px;
             font-weight: bold;
@@ -127,7 +120,7 @@
         }
 
         .table-section {
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .table-title {
@@ -137,10 +130,20 @@
             margin-bottom: 10px;
             text-decoration: underline;
         }
+
+        .note {
+            font-size: 7px;
+            font-style: italic;
+            color: #555;
+            margin-top: 5px;
+        }
+
+        .page-break {
+            page-break-before: always;
+        }
     </style>
 </head>
 <body>
-    <!-- En-tête -->
     <div class="header clearfix">
         <div class="header-left">
             <div class="title">MINISTÈRE DE L'ÉCONOMIE</div>
@@ -149,7 +152,6 @@
             <div class="subtitle">DIRECTION GÉNÉRALE DU TRÉSOR</div>
             <div class="subtitle">ET DE LA COMPTABILITÉ PUBLIQUE</div>
             <div class="stars" style="margin-left: 40px;">**************</div>
-            {{-- <div class="subtitle">POSTE ÉMETTEUR: {{ strtoupper($poste->nom) }}</div> --}}
         </div>
 
         <div class="header-right">
@@ -159,18 +161,13 @@
         </div>
     </div>
 
-    <!-- Titre principal -->
     <div class="main-title">
-        SITUATION CONSOLIDÉE DES AUTRES DEMANDES FINANCIÈRES  AU TITRE DE L'EXERCICE {{ $annee }}
+        SITUATION CONSOLIDÉE DES AUTRES DEMANDES FINANCIÈRES AU TITRE DE L'EXERCICE {{ $annee }}
     </div>
 
     <div class="poste-info">
         POSTE ÉMETTEUR : {{ strtoupper($poste->nom) }}
     </div>
-
-    {{-- <div class="subtitle-period">
-        PÉRIODE DU 01/01/{{ $annee }} AU {{ \Carbon\Carbon::now()->format('d/m/Y') }}
-    </div> --}}
 
     <div style="text-align: center; font-size: 9px; font-style: italic; margin-bottom: 15px; color: #666;">
         (Montants en francs CFA)
@@ -184,59 +181,145 @@
         ];
     @endphp
 
-    <!-- Tableau des Autres Demandes -->
+    {{-- Synthèse mensuelle --}}
     <div class="table-section">
-        <div class="table-title">AUTRES DEMANDES FINANCIÈRES {{ $annee }}</div>
+        <div class="table-title">SYNTHÈSE MENSUELLE {{ $annee }}</div>
         <table>
             <thead>
                 <tr>
-                    <th style="width: 15%;">MOIS</th>
-                    <th style="width: 20%;">NOMBRE DE DEMANDES</th>
-                    <th style="width: 21.25%;">MONTANT DEMANDÉ</th>
-                    <th style="width: 21.25%;">MONTANT ACCORDÉ</th>
-                    <th style="width: 22.5%;">% ACCORD</th>
+                    <th style="width: 11%;">MOIS</th>
+                    <th style="width: 10%;">NB DEMANDES</th>
+                    <th style="width: 15%;">MONTANT DEMANDÉ</th>
+                    <th style="width: 10%;">NB VERSEMENTS</th>
+                    <th style="width: 13%;">MONTANT VERSÉ</th>
+                    <th style="width: 14%;">PLAFOND ACCORDÉ*</th>
+                    <th style="width: 13%;">% VERSÉ / DEMANDÉ</th>
                 </tr>
             </thead>
             <tbody>
                 @for($mois = 1; $mois <= 12; $mois++)
+                @php
+                    $demandeMois = $montantDemandeParMois[$mois] ?? 0;
+                    $verseMois = $montantVerseParMois[$mois] ?? 0;
+                    $plafondMois = $montantPlafondParMois[$mois] ?? 0;
+                    $pourcentageLabel = \App\Models\AutreDemande::pourcentageVerseLabel($verseMois, $demandeMois);
+                @endphp
                 <tr>
                     <td class="text-left"><strong>{{ $moisList[$mois] }}</strong></td>
-                    <td class="text-right">{{ $demandesSoumisesParMois[$mois] ?? 0 }}</td>
-                    <td class="text-right">{{ number_format($montantSoumisParMois[$mois] ?? 0, 0, ',', ' ') }}</td>
-                    <td class="text-right">{{ number_format($montantValideParMois[$mois] ?? 0, 0, ',', ' ') }}</td>
-                    <td class="text-right">
-                        @php
-                            $pourcentage = ($montantSoumisParMois[$mois] ?? 0) > 0
-                                ? round((($montantValideParMois[$mois] ?? 0) / ($montantSoumisParMois[$mois] ?? 1)) * 100, 1)
-                                : 0;
-                        @endphp
-                        {{ $pourcentage }}%
-                    </td>
+                    <td class="text-right">{{ $demandesParMois[$mois] ?? 0 }}</td>
+                    <td class="text-right">{{ number_format($demandeMois, 0, ',', ' ') }}</td>
+                    <td class="text-right">{{ $versementsParMois[$mois] ?? 0 }}</td>
+                    <td class="text-right">{{ number_format($verseMois, 0, ',', ' ') }}</td>
+                    <td class="text-right">{{ $plafondMois > 0 ? number_format($plafondMois, 0, ',', ' ') : '-' }}</td>
+                    <td class="text-right">{{ $demandeMois > 0 ? $pourcentageLabel : '-' }}</td>
                 </tr>
                 @endfor
             </tbody>
             <tfoot>
                 <tr class="total-row">
                     <td class="text-left"><strong>TOTAL</strong></td>
-                    <td class="text-right"><strong>{{ $totalDemandesSoumises }}</strong></td>
-                    <td class="text-right"><strong>{{ number_format($totalMontantSoumis, 0, ',', ' ') }}</strong></td>
-                    <td class="text-right"><strong>{{ number_format($totalMontantValide, 0, ',', ' ') }}</strong></td>
+                    <td class="text-right"><strong>{{ $totalDemandes }}</strong></td>
+                    <td class="text-right"><strong>{{ number_format($totalMontantDemande, 0, ',', ' ') }}</strong></td>
+                    <td class="text-right"><strong>{{ $totalVersements }}</strong></td>
+                    <td class="text-right"><strong>{{ number_format($totalMontantVerse, 0, ',', ' ') }}</strong></td>
+                    <td class="text-right"><strong>{{ number_format($totalMontantPlafond, 0, ',', ' ') }}</strong></td>
                     <td class="text-right">
-                        <strong>
-                            @php
-                                $pourcentageTotal = $totalMontantSoumis > 0
-                                    ? round(($totalMontantValide / $totalMontantSoumis) * 100, 1)
-                                    : 0;
-                            @endphp
-                            {{ $pourcentageTotal }}%
-                        </strong>
+                        <strong>{{ \App\Models\AutreDemande::pourcentageVerseLabel($totalMontantVerse, $totalMontantDemande) }}</strong>
                     </td>
                 </tr>
             </tfoot>
         </table>
+        <div class="note">
+            * Les demandes sont comptabilisées au mois de leur saisie. Les versements sont comptabilisés au mois de leur date effective.
+            Le plafond accordé correspond aux demandes ayant reçu au moins un versement dans le mois.
+            Reste global à verser sur les demandes avec plafond : <strong>{{ number_format(max(0, $totalMontantPlafond - $totalMontantVerse), 0, ',', ' ') }} FCFA</strong>.
+        </div>
     </div>
 
-    <!-- Signature -->
+    {{-- Détail des versements --}}
+    @php
+        $aUnDetailVersements = $versements->isNotEmpty() || $demandes->contains(fn ($d) => $d->echelons->isEmpty() && $d->statut === 'valide' && $d->montant_accord);
+    @endphp
+    @if($aUnDetailVersements)
+    <div class="table-section">
+        <div class="table-title">DÉTAIL DES VERSEMENTS ENREGISTRÉS — {{ $annee }}</div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 8%;">DATE VERSEMENT</th>
+                    <th style="width: 8%;">DATE DEMANDE</th>
+                    <th style="width: 30%;">DÉSIGNATION</th>
+                    <th style="width: 8%;">N°</th>
+                    <th style="width: 12%;">MONTANT VERSEMENT</th>
+                    <th style="width: 12%;">CUMUL VERSÉ</th>
+                    <th style="width: 12%;">MONTANT DEMANDÉ</th>
+                    <th style="width: 10%;">STATUT</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                    $cumulsParDemande = [];
+                @endphp
+                @foreach($versements as $echelon)
+                @php
+                    $demande = $echelon->demande;
+                    if (! $demande) {
+                        continue;
+                    }
+                    $demandeId = $demande->id;
+                    $cumulsParDemande[$demandeId] = ($cumulsParDemande[$demandeId] ?? 0) + (float) $echelon->montant;
+
+                    $statutLabel = match($demande->statut) {
+                        'valide' => 'Validé',
+                        'soumis' => 'Soumis',
+                        'rejete' => 'Rejeté',
+                        'brouillon' => 'Brouillon',
+                        default => $demande->statut,
+                    };
+                @endphp
+                <tr>
+                    <td>{{ $echelon->date_echeance->format('d/m/Y') }}</td>
+                    <td>{{ $demande->date_demande->format('d/m/Y') }}</td>
+                    <td class="text-left">{{ $demande->designation }}</td>
+                    <td>{{ $echelon->ordre }}</td>
+                    <td class="text-right">{{ number_format($echelon->montant, 0, ',', ' ') }}</td>
+                    <td class="text-right">{{ number_format($cumulsParDemande[$demandeId], 0, ',', ' ') }}</td>
+                    <td class="text-right">{{ number_format($demande->montant, 0, ',', ' ') }}</td>
+                    <td>{{ $statutLabel }}</td>
+                </tr>
+                @endforeach
+
+                @foreach($demandes as $demande)
+                @if($demande->echelons->isEmpty() && $demande->statut === 'valide' && $demande->montant_accord)
+                @php
+                    $dateRef = $demande->date_validation ?? $demande->date_demande;
+                @endphp
+                @if((int) $dateRef->format('Y') === (int) $annee)
+                <tr>
+                    <td>{{ $dateRef->format('d/m/Y') }}</td>
+                    <td>{{ $demande->date_demande->format('d/m/Y') }}</td>
+                    <td class="text-left">{{ $demande->designation }}</td>
+                    <td>1</td>
+                    <td class="text-right">{{ number_format($demande->montant_accord, 0, ',', ' ') }}</td>
+                    <td class="text-right">{{ number_format($demande->montant_accord, 0, ',', ' ') }}</td>
+                    <td class="text-right">{{ number_format($demande->montant, 0, ',', ' ') }}</td>
+                    <td>Validé</td>
+                </tr>
+                @endif
+                @endif
+                @endforeach
+            </tbody>
+            <tfoot>
+                <tr class="total-row">
+                    <td colspan="4" class="text-left"><strong>TOTAL VERSEMENTS</strong></td>
+                    <td class="text-right"><strong>{{ number_format($totalMontantVerse, 0, ',', ' ') }}</strong></td>
+                    <td colspan="3"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    @endif
+
     <div class="signature">
         <div class="date-signature">
             {{ $poste->nom }}, le {{ \Carbon\Carbon::now()->format('d/m/Y') }}
@@ -247,4 +330,3 @@
     </div>
 </body>
 </html>
-

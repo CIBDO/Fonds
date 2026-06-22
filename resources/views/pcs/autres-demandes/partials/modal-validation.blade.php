@@ -4,7 +4,8 @@
     $montantPlafond = $demande->montant_accord !== null ? (float) $demande->montant_accord : $montantDemande;
     $montantVerse = (float) $demande->montant_verse;
     $montantRestant = max(0, $montantPlafond - $montantVerse);
-    $plafondVerrouille = $demande->montant_accord !== null;
+    $estValidee = $demande->statut === 'valide';
+    $plafondMin = max($montantVerse, 0.01);
 @endphp
 <div class="modal fade" id="{{ $modalId }}" tabindex="-1" aria-labelledby="{{ $modalId }}Label" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -12,7 +13,9 @@
             <div class="modal-header bg-success text-white flex-shrink-0">
                 <h5 class="modal-title" id="{{ $modalId }}Label">
                     <i class="fas fa-check-circle me-2"></i>
-                    @if($montantVerse > 0)
+                    @if($estValidee)
+                        Versement supplémentaire
+                    @elseif($montantVerse > 0)
                         Enregistrer un versement
                     @else
                         Valider la Demande
@@ -58,8 +61,20 @@
                         <div class="col-md-4">
                             <div class="card border-warning h-100 mb-0">
                                 <div class="card-body text-center py-3">
-                                    <h6 class="card-title text-warning small mb-1">Reste à verser</h6>
-                                    <div class="fw-bold text-warning montant-restant-display">{{ number_format($montantRestant, 0, ',', ' ') }} FCFA</div>
+                                    <h6 class="card-title text-warning small mb-1">
+                                        @if($estValidee && $montantRestant <= 0)
+                                            Complément possible
+                                        @else
+                                            Reste à verser
+                                        @endif
+                                    </h6>
+                                    <div class="fw-bold text-warning montant-restant-display">
+                                        @if($estValidee && $montantRestant <= 0)
+                                            —
+                                        @else
+                                            {{ number_format($montantRestant, 0, ',', ' ') }} FCFA
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -73,14 +88,17 @@
                                    name="montant_plafond"
                                    value="{{ old('montant_plafond', $montantPlafond) }}"
                                    step="0.01"
-                                   min="0.01"
-                                   {{ $plafondVerrouille ? 'readonly' : '' }}
+                                   min="{{ $plafondMin }}"
+                                   data-montant-verse="{{ $montantVerse }}"
                                    required>
                             <span class="input-group-text">FCFA</span>
                         </div>
-                        @if($plafondVerrouille)
-                            <small class="text-muted">Plafond fixé lors du premier versement.</small>
-                        @endif
+                        <small class="text-muted">
+                            Vous pouvez accorder un montant supérieur au montant demandé ({{ number_format($montantDemande, 0, ',', ' ') }} FCFA).
+                            @if($montantVerse > 0)
+                                Le plafond ne peut pas être inférieur au total déjà versé.
+                            @endif
+                        </small>
                     </div>
 
                     @if($demande->echelons->isNotEmpty())
@@ -112,7 +130,9 @@
                     <div class="border rounded p-3 bg-light">
                         <h6 class="text-success mb-3">
                             <i class="fas fa-money-bill-wave me-1"></i>
-                            @if($montantVerse > 0)
+                            @if($estValidee)
+                                Nouveau versement supplémentaire
+                            @elseif($montantVerse > 0)
                                 Nouveau versement (avance ou solde)
                             @else
                                 Versement
@@ -125,20 +145,22 @@
                                     <input type="number"
                                            class="form-control montant-versement-input"
                                            name="montant_versement"
-                                           value="{{ old('montant_versement', $montantRestant > 0 ? $montantRestant : '') }}"
+                                           value="{{ old('montant_versement', (!$estValidee && $montantRestant > 0) ? $montantRestant : '') }}"
                                            step="0.01"
                                            min="0.01"
-                                           max="{{ $montantRestant > 0 ? $montantRestant : $montantPlafond }}"
                                            data-montant-restant="{{ $montantRestant }}"
+                                           data-deja-verse="{{ $montantVerse }}"
                                            required>
                                     <span class="input-group-text">FCFA</span>
                                 </div>
+                                @if(!$estValidee && $montantRestant > 0)
                                 <div class="form-check mt-2">
                                     <input class="form-check-input btn-verser-total" type="checkbox" id="verser_total_{{ $modalId }}">
                                     <label class="form-check-label small" for="verser_total_{{ $modalId }}">
                                         Verser tout le montant restant
                                     </label>
                                 </div>
+                                @endif
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">Date du versement <span class="text-danger">*</span></label>
@@ -160,7 +182,8 @@
 
                     <div class="alert alert-info mt-3 mb-0 small">
                         <i class="fas fa-info-circle me-1"></i>
-                        Vous pouvez accorder une <strong>avance</strong> inférieure au montant demandé et enregistrer le solde plus tard. La demande sera entièrement validée lorsque le total versé atteindra le montant accordé.
+                        Vous pouvez accorder <strong>plus que le montant demandé</strong>, verser par <strong>avances partielles</strong>,
+                        ou ajouter des <strong>versements supplémentaires</strong> même après validation complète.
                     </div>
                 </div>
 
@@ -170,7 +193,9 @@
                     </button>
                     <button type="submit" class="btn btn-success">
                         <i class="fas fa-check me-1"></i>
-                        @if($montantVerse > 0)
+                        @if($estValidee)
+                            Enregistrer le complément
+                        @elseif($montantVerse > 0)
                             Enregistrer le versement
                         @else
                             Valider

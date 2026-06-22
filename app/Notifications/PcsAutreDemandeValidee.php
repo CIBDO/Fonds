@@ -11,10 +11,12 @@ class PcsAutreDemandeValidee extends Notification
     use Queueable;
 
     protected $demande;
+    protected $versementSupplementaire;
 
-    public function __construct(AutreDemande $demande)
+    public function __construct(AutreDemande $demande, bool $versementSupplementaire = false)
     {
         $this->demande = $demande;
+        $this->versementSupplementaire = $versementSupplementaire;
     }
 
     public function via($notifiable)
@@ -29,7 +31,9 @@ class PcsAutreDemandeValidee extends Notification
 
         $montantVerse = number_format($this->demande->montant_verse, 0, ',', ' ');
 
-        if ($this->demande->statut === 'valide') {
+        if ($this->versementSupplementaire) {
+            $message = "Versement supplémentaire enregistré pour '{$this->demande->designation}'. Total versé : {$montantVerse} FCFA";
+        } elseif ($this->demande->statut === 'valide') {
             $message = "Votre demande '{$this->demande->designation}' est entièrement validée ({$montantAccorde} FCFA versés)";
         } elseif ($this->demande->montant_verse > 0) {
             $reste = number_format($this->demande->montant_restant_accord, 0, ',', ' ');

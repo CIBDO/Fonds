@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class AutreDemande extends Model
 {
@@ -75,6 +76,24 @@ class AutreDemande extends Model
         return (float) $this->echelons()->sum('montant');
     }
 
+    /**
+     * Cumul des montants versés (somme des échelons).
+     */
+    public function getMontantVerseCumuleAttribute(): float
+    {
+        $verse = $this->montant_verse;
+
+        if ($verse > 0) {
+            return $verse;
+        }
+
+        if ($this->statut === 'valide' && $this->montant_accord !== null) {
+            return (float) $this->montant_accord;
+        }
+
+        return 0;
+    }
+
     public function getMontantRestantAccordAttribute(): float
     {
         $plafond = $this->montant_accord !== null ? (float) $this->montant_accord : (float) $this->montant;
@@ -82,8 +101,66 @@ class AutreDemande extends Model
         return max(0, $plafond - $this->montant_verse);
     }
 
+    /**
+     * Recrée l'échelon du premier versement si la demande a été validée avant l'introduction des échelons.
+     */
+    public function reparerEchelonsLegacySiNecessaire(): bool
+    {
+        if ($this->statut !== 'valide' || $this->montant_accord === null) {
+            return false;
+        }
+
+        $accord = (float) $this->montant_accord;
+        $verseEchelons = (float) $this->echelons()->sum('montant');
+
+        if ($verseEchelons >= $accord - 0.01) {
+            return false;
+        }
+
+        $dateInitial = $this->date_validation ?? $this->date_demande;
+
+        if ($this->echelons()->count() === 0) {
+            $this->echelons()->create([
+                'ordre' => 1,
+                'date_echeance' => $dateInitial,
+                'montant' => $accord,
+            ]);
+            $this->unsetRelation('echelons');
+
+            return true;
+        }
+
+        DB::transaction(function () use ($accord, $dateInitial) {
+            $existants = $this->echelons()->orderBy('ordre')->get();
+
+            $this->echelons()->create([
+                'ordre' => 1,
+                'date_echeance' => $dateInitial,
+                'montant' => $accord,
+            ]);
+
+            foreach ($existants as $index => $echelon) {
+                $echelon->update(['ordre' => $index + 2]);
+            }
+
+            $totalVerse = (float) $this->echelons()->sum('montant');
+            if ($totalVerse > $accord) {
+                $this->montant_accord = $totalVerse;
+                $this->save();
+            }
+        });
+
+        $this->unsetRelation('echelons');
+
+        return true;
+    }
+
     public function estPartiellementValidee(): bool
     {
+        if ($this->statut === 'valide') {
+            return false;
+        }
+
         return $this->statut === 'soumis' && $this->montant_verse > 0;
     }
 
@@ -102,7 +179,7 @@ class AutreDemande extends Model
 
     public function peutRecevoirVersement(): bool
     {
-        return $this->statut === 'soumis' && ! $this->estValidationComplete();
+        return in_array($this->statut, ['soumis', 'valide'], true);
     }
 
     /**
@@ -155,11 +232,16 @@ class AutreDemande extends Model
     }
 
     /**
-     * Enregistre un versement (avance ou solde). Valide définitivement quand le total versé atteint le plafond.
+     * Enregistre un versement (avance, solde ou complément). Le plafond accordé peut être relevé.
      */
     public function ajouterVersement(int $valideurId, float $montantPlafond, float $montantVersement, string $dateVersement): void
     {
+        $this->reparerEchelonsLegacySiNecessaire();
+        $this->load('echelons');
+
         if ($this->montant_accord === null) {
+            $this->montant_accord = $montantPlafond;
+        } elseif ($montantPlafond > (float) $this->montant_accord) {
             $this->montant_accord = $montantPlafond;
         }
 
@@ -173,8 +255,15 @@ class AutreDemande extends Model
         $this->valide_par = $valideurId;
 
         $totalVerse = (float) $this->echelons()->sum('montant');
-        if ($totalVerse >= (float) $this->montant_accord - 0.01) {
+
+        if ($totalVerse > (float) $this->montant_accord) {
+            $this->montant_accord = $totalVerse;
+        }
+
+        if ($this->statut === 'soumis' && $totalVerse >= (float) $this->montant_accord - 0.01) {
             $this->statut = 'valide';
+            $this->date_validation = now();
+        } elseif ($this->statut === 'valide') {
             $this->date_validation = now();
         }
 
@@ -204,17 +293,42 @@ class AutreDemande extends Model
     }
 
     /**
+     * Pourcentage versé par rapport au montant demandé (100 % seulement si réellement couvert).
+     */
+    public static function pourcentageVerse(float $montantVerse, float $montantDemande): ?float
+    {
+        if ($montantDemande <= 0 || $montantVerse <= 0) {
+            return null;
+        }
+
+        if ($montantVerse >= $montantDemande - 0.01) {
+            return 100.0;
+        }
+
+        return round(($montantVerse / $montantDemande) * 100, 2);
+    }
+
+    public static function pourcentageVerseLabel(float $montantVerse, float $montantDemande): string
+    {
+        $pourcentage = self::pourcentageVerse($montantVerse, $montantDemande);
+
+        return $pourcentage === null ? '-' : $pourcentage . '%';
+    }
+
+    /**
      * Accessor : Pourcentage accordé par rapport au demandé
      */
     public function getPourcentageAccordeAttribute()
     {
-        if ($this->montant > 0) {
-            $verse = $this->montant_verse > 0 ? $this->montant_verse : (float) ($this->montant_accord ?? 0);
-
-            return round(($verse / $this->montant) * 100, 2);
+        if ($this->montant <= 0) {
+            return 0;
         }
 
-        return 0;
+        $verse = $this->montant_verse_cumule > 0
+            ? $this->montant_verse_cumule
+            : (float) ($this->montant_accord ?? 0);
+
+        return self::pourcentageVerse($verse, (float) $this->montant) ?? 0;
     }
 
     /**

@@ -27,9 +27,15 @@
                 </tbody>
                 <tfoot class="table-light">
                     <tr>
-                        <th colspan="2" class="text-end">Total accordé</th>
-                        <th class="text-end text-success">{{ number_format($demande->montant_accord, 0, ',', ' ') }} FCFA</th>
+                        <th colspan="2" class="text-end">Total versé</th>
+                        <th class="text-end text-success">{{ number_format($demande->montant_verse, 0, ',', ' ') }} FCFA</th>
                     </tr>
+                    @if($demande->montant_accord !== null && $demande->montant_verse > 0 && abs($demande->montant_accord - $demande->montant_verse) > 0.01 && $demande->statut !== 'valide')
+                    <tr>
+                        <th colspan="2" class="text-end">Montant accordé (plafond)</th>
+                        <th class="text-end">{{ number_format($demande->montant_accord, 0, ',', ' ') }} FCFA</th>
+                    </tr>
+                    @endif
                 </tfoot>
             </table>
         </div>

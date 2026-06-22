@@ -210,39 +210,36 @@
                     <th style="width: 15%;">POSTE</th>
                     <th style="width: 30%;">DÉSIGNATION</th>
                     <th style="width: 12%;">DEMANDÉ (FCFA)</th>
-                    <th style="width: 12%;">ACCORDÉ (FCFA)</th>
+                    <th style="width: 12%;">VERSÉ (CUMUL)</th>
                     <th style="width: 12%;">ÉCART (FCFA)</th>
-                    <th style="width: 11%;">% ACCORDÉ</th>
+                    <th style="width: 11%;">% VERSÉ</th>
                 </tr>
             </thead>
             <tbody>
                 @php
                     $totalDemande = 0;
-                    $totalAccorde = 0;
+                    $totalVerse = 0;
                 @endphp
                 @foreach($autresDemandes as $demande)
                 @php
-                    $montantDemande = $demande->montant;
-                    // N'afficher le montant accordé que s'il a été réellement renseigné (validation ACCT)
-                    $montantAccorde = $demande->montant_accord !== null ? (float) $demande->montant_accord : 0;
-                    $ecart = $montantAccorde - $montantDemande;
-                    $pourcentage = $demande->montant > 0 && $demande->montant_accord !== null
-                        ? round($demande->montant_accord / $demande->montant * 100, 1)
-                        : 0;
+                    $montantDemande = (float) $demande->montant;
+                    $montantVerse = (float) $demande->montant_verse_cumule;
+                    $ecart = $montantVerse - $montantDemande;
+                    $pourcentageLabel = \App\Models\AutreDemande::pourcentageVerseLabel($montantVerse, $montantDemande);
 
-                    $totalDemande += $demande->montant;
-                    $totalAccorde += $montantAccorde;
+                    $totalDemande += $montantDemande;
+                    $totalVerse += $montantVerse;
                 @endphp
                 <tr>
                     <td class="text-center">{{ \Carbon\Carbon::parse($demande->date_demande)->format('d/m/Y') }}</td>
                     <td class="text-left"><strong>{{ $demande->poste->nom }}</strong></td>
                     <td class="text-left">{{ $demande->designation }}</td>
                     <td class="text-right">{{ number_format($montantDemande, 0, ',', ' ') }}</td>
-                    <td class="text-right">{{ $montantAccorde > 0 ? number_format($montantAccorde, 0, ',', ' ') : '-' }}</td>
+                    <td class="text-right">{{ $montantVerse > 0 ? number_format($montantVerse, 0, ',', ' ') : '-' }}</td>
                     <td class="text-right {{ $ecart > 0 ? 'positive' : ($ecart < 0 ? 'negative' : '') }}">
-                        {{ $ecart != 0 ? number_format($ecart, 0, ',', ' ') : '-' }}
+                        {{ $montantVerse > 0 ? number_format($ecart, 0, ',', ' ') : '-' }}
                     </td>
-                    <td class="text-center">{{ $pourcentage }}%</td>
+                    <td class="text-center">{{ $montantVerse > 0 ? $pourcentageLabel : '-' }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -250,14 +247,17 @@
                 <tr class="total-row">
                     <td colspan="3" class="text-left"><strong>TOTAL GÉNÉRAL</strong></td>
                     <td class="text-right"><strong>{{ number_format($totalDemande, 0, ',', ' ') }}</strong></td>
-                    <td class="text-right"><strong>{{ number_format($totalAccorde, 0, ',', ' ') }}</strong></td>
-                    <td class="text-right {{ ($totalAccorde - $totalDemande) > 0 ? 'positive' : (($totalAccorde - $totalDemande) < 0 ? 'negative' : '') }}">
-                        <strong>{{ number_format(($totalAccorde - $totalDemande), 0, ',', ' ') }}</strong>
+                    <td class="text-right"><strong>{{ number_format($totalVerse, 0, ',', ' ') }}</strong></td>
+                    <td class="text-right {{ ($totalVerse - $totalDemande) > 0 ? 'positive' : (($totalVerse - $totalDemande) < 0 ? 'negative' : '') }}">
+                        <strong>{{ number_format(($totalVerse - $totalDemande), 0, ',', ' ') }}</strong>
                     </td>
-                    <td class="text-center"><strong>{{ $totalDemande > 0 ? round(($totalAccorde / $totalDemande) * 100, 1) : 0 }}%</strong></td>
+                    <td class="text-center"><strong>{{ \App\Models\AutreDemande::pourcentageVerseLabel($totalVerse, $totalDemande) }}</strong></td>
                 </tr>
             </tfoot>
         </table>
+        <div style="font-size: 7px; font-style: italic; color: #555; margin-top: 5px;">
+            Le montant versé correspond au cumul de tous les versements enregistrés pour chaque demande.
+        </div>
     </div>
 
     <!-- Signature -->

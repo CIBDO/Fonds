@@ -95,9 +95,12 @@
                                 <div class="fw-bold text-primary">{{ number_format($demande->montant, 0, ',', ' ') }} FCFA</div>
                                 @if($demande->montant_verse > 0 || $demande->montant_accord !== null)
                                     <div class="small text-success">
-                                        Versé : {{ number_format($demande->montant_verse, 0, ',', ' ') }}
+                                        Versé : {{ number_format($demande->montant_verse_cumule, 0, ',', ' ') }}
                                         / {{ number_format($demande->montant_accord ?? $demande->montant, 0, ',', ' ') }} FCFA
                                     </div>
+                                    @if(($demande->montant_accord ?? 0) > $demande->montant)
+                                        <div class="small text-info">+{{ number_format($demande->montant_accord - $demande->montant, 0, ',', ' ') }} au-delà du demandé</div>
+                                    @endif
                                     @if($demande->echelons->count() > 0)
                                         <div class="small text-muted"><i class="fas fa-calendar-alt"></i> {{ $demande->echelons->count() }} versement(s)</div>
                                     @endif
@@ -157,7 +160,7 @@
                                                 class="btn btn-outline-success"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#validationModal{{ $demande->id }}"
-                                                title="{{ $demande->estPartiellementValidee() ? 'Enregistrer un versement' : 'Valider' }}">
+                                                title="{{ $demande->statut === 'valide' ? 'Enregistrer un versement supplémentaire' : ($demande->estPartiellementValidee() ? 'Enregistrer un versement' : 'Valider') }}">
                                             <i class="fas fa-check"></i>
                                         </button>
                                     @endif
@@ -237,7 +240,8 @@
 @foreach($demandes as $demande)
 @if($demande->peutRecevoirVersement())
 @include('pcs.autres-demandes.partials.modal-validation', ['demande' => $demande, 'modalId' => 'validationModal' . $demande->id])
-
+@endif
+@if($demande->statut == 'soumis')
 <!-- Modal Rejeter -->
 <div class="modal fade" id="rejeterModal{{ $demande->id }}" tabindex="-1" aria-labelledby="rejeterModalLabel{{ $demande->id }}" aria-hidden="true">
     <div class="modal-dialog">

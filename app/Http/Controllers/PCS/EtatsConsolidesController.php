@@ -297,7 +297,7 @@ class EtatsConsolidesController extends Controller
         $statut = $request->get('statut');
 
         // Récupérer les demandes : filtrer par statut si choisi, sinon toutes (pour éviter un état vierge)
-        $query = AutreDemande::with('poste')
+        $query = AutreDemande::with(['poste', 'echelons'])
             ->where('annee', $annee);
 
         if ($statut && $statut !== '') {

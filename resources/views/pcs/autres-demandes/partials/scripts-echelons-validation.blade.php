@@ -5,6 +5,10 @@
         return isNaN(n) ? 0 : n;
     }
 
+    function formatFcfa(n) {
+        return new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(n) + ' FCFA';
+    }
+
     function initFormVersement(form) {
         if (form.dataset.versementInit === '1') return;
         form.dataset.versementInit = '1';
@@ -12,15 +16,25 @@
         const versementInput = form.querySelector('.montant-versement-input');
         const plafondInput = form.querySelector('.montant-plafond-input');
         const verserTotal = form.querySelector('.btn-verser-total');
+        const restantEl = form.closest('.modal-content')?.querySelector('.montant-restant-display');
 
         if (!versementInput) return;
 
+        const dejaVerse = parseMontant(versementInput.dataset.dejaVerse || 0);
+
+        function getPlafond() {
+            return parseMontant(plafondInput ? plafondInput.value : 0);
+        }
+
         function getRestant() {
-            const plafond = parseMontant(plafondInput ? plafondInput.value : 0);
-            const dejaVerse = parseMontant(versementInput.dataset.dejaVerse || 0);
-            const fromData = parseMontant(versementInput.dataset.montantRestant);
-            if (fromData > 0) return fromData;
-            return Math.max(0, plafond - dejaVerse);
+            return Math.max(0, getPlafond() - dejaVerse);
+        }
+
+        function updateRestantDisplay() {
+            if (!restantEl) return;
+            const restant = getRestant();
+            restantEl.textContent = restant > 0 ? formatFcfa(restant) : '—';
+            versementInput.dataset.montantRestant = restant;
         }
 
         if (verserTotal) {
@@ -28,26 +42,36 @@
                 if (this.checked) {
                     const restant = getRestant();
                     versementInput.value = restant > 0 ? restant : '';
-                    versementInput.max = restant;
                 }
             });
         }
 
-        if (plafondInput && !plafondInput.readOnly) {
+        if (plafondInput) {
             plafondInput.addEventListener('input', function () {
-                const plafond = parseMontant(plafondInput.value);
-                versementInput.max = plafond;
-                versementInput.dataset.montantRestant = plafond;
-                const restantEl = form.closest('.modal-content')?.querySelector('.montant-restant-display');
-                if (restantEl) {
-                    restantEl.textContent = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(plafond) + ' FCFA';
+                const plafond = getPlafond();
+                const minPlafond = parseMontant(plafondInput.min || 0);
+                if (plafond < minPlafond) {
+                    plafondInput.value = minPlafond;
                 }
+                updateRestantDisplay();
             });
         }
+
+        versementInput.addEventListener('input', function () {
+            const versement = parseMontant(versementInput.value);
+            const plafond = getPlafond();
+            const totalApres = dejaVerse + versement;
+
+            if (versement > 0 && totalApres > plafond + 0.01 && plafondInput) {
+                plafondInput.value = totalApres;
+                updateRestantDisplay();
+            }
+        });
 
         form.addEventListener('submit', function (e) {
             const versement = parseMontant(versementInput.value);
-            const restant = parseMontant(versementInput.dataset.montantRestant) || getRestant();
+            const plafond = getPlafond();
+            const minPlafond = parseMontant(plafondInput ? plafondInput.min : 0);
 
             if (versement <= 0) {
                 e.preventDefault();
@@ -55,11 +79,17 @@
                 return;
             }
 
-            if (restant > 0 && versement > restant + 0.01) {
+            if (dejaVerse + versement > plafond + 0.01 && plafondInput) {
+                plafondInput.value = dejaVerse + versement;
+            }
+
+            if (parseMontant(plafondInput ? plafondInput.value : 0) < minPlafond) {
                 e.preventDefault();
-                alert('Le versement ne peut pas dépasser le montant restant (' + new Intl.NumberFormat('fr-FR').format(restant) + ' FCFA).');
+                alert('Le montant accordé ne peut pas être inférieur au total déjà versé.');
             }
         });
+
+        updateRestantDisplay();
     }
 
     document.querySelectorAll('.form-validation-versement').forEach(initFormVersement);

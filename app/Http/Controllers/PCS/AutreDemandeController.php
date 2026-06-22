@@ -4,6 +4,7 @@ namespace App\Http\Controllers\PCS;
 
 use App\Http\Controllers\Controller;
 use App\Models\AutreDemande;
+use App\Models\AutreDemandeEchelon;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -48,6 +49,11 @@ class AutreDemandeController extends Controller
         }
 
         $demandes = $query->paginate(12);
+        $demandes->getCollection()->transform(function ($demande) {
+            $demande->reparerEchelonsLegacySiNecessaire();
+
+            return $demande->load('echelons');
+        });
 
         return view('pcs.autres-demandes.index', compact('demandes'));
     }
@@ -220,6 +226,9 @@ class AutreDemandeController extends Controller
     public function show(AutreDemande $demande)
     {
         $demande->load(['poste', 'saisiPar', 'validePar', 'echelons']);
+        $demande->reparerEchelonsLegacySiNecessaire();
+        $demande->load('echelons');
+
         return view('pcs.autres-demandes.show', compact('demande'));
     }
 
@@ -323,9 +332,12 @@ class AutreDemandeController extends Controller
         }
 
         if (! $demande->peutRecevoirVersement()) {
-            Alert::error('Erreur', 'Cette demande est déjà entièrement validée.');
+            Alert::error('Erreur', 'Seules les demandes soumises ou validées peuvent recevoir un versement.');
             return redirect()->back();
         }
+
+        $demande->reparerEchelonsLegacySiNecessaire();
+        $demande->load('echelons');
 
         $request->validate([
             'montant_plafond' => 'required|numeric|min:0.01',
@@ -337,20 +349,27 @@ class AutreDemandeController extends Controller
             'date_versement.required' => 'La date du versement est obligatoire',
         ]);
 
-        $montantPlafond = $demande->montant_accord !== null
-            ? (float) $demande->montant_accord
-            : (float) $request->montant_plafond;
+        $montantPlafond = (float) $request->montant_plafond;
+        if ($demande->montant_accord !== null) {
+            $montantPlafond = max((float) $demande->montant_accord, $montantPlafond);
+        }
 
         $montantVersement = (float) $request->montant_versement;
-        $montantRestant = $demande->montant_restant_accord;
+        $totalApresVersement = $demande->montant_verse + $montantVersement;
 
-        if ($montantVersement > $montantRestant + 0.01) {
+        if ($totalApresVersement > $montantPlafond + 0.01) {
+            $montantPlafond = $totalApresVersement;
+        }
+
+        if ($montantPlafond < $demande->montant_verse + $montantVersement - 0.01) {
             Alert::error(
                 'Erreur',
-                'Le versement (' . number_format($montantVersement, 0, ',', ' ') . ' FCFA) dépasse le montant restant (' . number_format($montantRestant, 0, ',', ' ') . ' FCFA).'
+                'Le montant accordé ne peut pas être inférieur au total déjà versé plus ce versement.'
             );
             return redirect()->back()->withInput();
         }
+
+        $etaitValide = $demande->statut === 'valide';
 
         $demande->ajouterVersement(
             $user->id,
@@ -362,10 +381,12 @@ class AutreDemandeController extends Controller
         $demande->load('echelons');
 
         if ($demande->saisiPar) {
-            $demande->saisiPar->notify(new PcsAutreDemandeValidee($demande));
+            $demande->saisiPar->notify(new PcsAutreDemandeValidee($demande, $etaitValide));
         }
 
-        if ($demande->statut === 'valide') {
+        if ($etaitValide) {
+            $message = 'Versement supplémentaire de ' . number_format($montantVersement, 0, ',', ' ') . ' FCFA enregistré. Total versé : ' . number_format($demande->montant_verse, 0, ',', ' ') . ' FCFA';
+        } elseif ($demande->statut === 'valide') {
             $message = 'Demande entièrement validée. Total accordé : ' . number_format($demande->montant_accord, 0, ',', ' ') . ' FCFA';
         } else {
             $message = 'Versement de ' . number_format($montantVersement, 0, ',', ' ') . ' FCFA enregistré. Reste à verser : ' . number_format($demande->montant_restant_accord, 0, ',', ' ') . ' FCFA';
@@ -448,8 +469,9 @@ class AutreDemandeController extends Controller
         $annee = $request->get('annee', date('Y'));
 
         // Récupérer les données des autres demandes
-        $autresDemandes = AutreDemande::with('poste')
+        $autresDemandes = AutreDemande::with(['poste', 'echelons'])
             ->where('annee', $annee)
+            ->orderBy('date_demande')
             ->get();
 
         // Organiser les données par poste et mois
@@ -551,6 +573,7 @@ class AutreDemandeController extends Controller
         ksort($recapitulatifParPoste);
 
         $pdf = PDF::loadView('pcs.pdf.etat-autres-demandes-consolide', compact(
+            'autresDemandes',
             'demandesSoumisesParPoste',
             'demandesValideesParPoste',
             'recapitulatifParPoste',
@@ -597,7 +620,7 @@ class AutreDemandeController extends Controller
         $format = $validated['format'] ?? 'pdf';
 
         // Construire la requête avec filtres
-        $query = AutreDemande::with('poste')
+        $query = AutreDemande::with(['poste', 'echelons'])
             ->whereBetween('date_demande', [$dateDebut, $dateFin])
             ->where('annee', $annee);
 
@@ -609,7 +632,7 @@ class AutreDemandeController extends Controller
             $query->where('statut', $statut);
         }
 
-        $autresDemandes = $query->get();
+        $autresDemandes = $query->orderBy('date_demande')->get();
 
         // Organiser les données (même logique que etatConsolideAutresDemandes)
         $demandesSoumisesParPoste = [];
@@ -722,6 +745,7 @@ class AutreDemandeController extends Controller
 
         if ($format === 'pdf') {
             $pdf = PDF::loadView('pcs.pdf.etat-autres-demandes-consolide', compact(
+                'autresDemandes',
                 'demandesSoumisesParPoste',
                 'demandesValideesParPoste',
                 'recapitulatifParPoste',
@@ -818,53 +842,97 @@ class AutreDemandeController extends Controller
             return redirect()->route('pcs.autres-demandes.index');
         }
 
-        $annee = $request->get('annee', date('Y'));
+        $annee = (int) $request->get('annee', date('Y'));
         $poste = $user->poste;
 
-        // Récupérer les demandes du poste émetteur
-        $demandes = AutreDemande::where('poste_id', $poste->id)
+        $demandes = AutreDemande::with('echelons')
+            ->where('poste_id', $poste->id)
             ->whereYear('date_demande', $annee)
             ->get();
 
-        // Organiser les données par mois
-        // Pour le poste émetteur : compter toutes les demandes créées pour le montant demandé
-        $demandesSoumisesParMois = array_fill(1, 12, 0);
-        $demandesValideesParMois = array_fill(1, 12, 0);
-        $totalDemandesSoumises = 0;
-        $totalDemandesValidees = 0;
-        $montantSoumisParMois = array_fill(1, 12, 0);
-        $montantValideParMois = array_fill(1, 12, 0);
-        $totalMontantSoumis = 0;
-        $totalMontantValide = 0;
+        $versements = AutreDemandeEchelon::whereHas('demande', function ($q) use ($poste) {
+                $q->where('poste_id', $poste->id);
+            })
+            ->whereYear('date_echeance', $annee)
+            ->with('demande')
+            ->orderBy('date_echeance')
+            ->orderBy('ordre')
+            ->get();
+
+        $demandesParMois = array_fill(1, 12, 0);
+        $montantDemandeParMois = array_fill(1, 12, 0);
+        $versementsParMois = array_fill(1, 12, 0);
+        $montantVerseParMois = array_fill(1, 12, 0);
+        $montantPlafondParMois = array_fill(1, 12, 0);
+        $demandesAvecVersementParMois = array_fill(1, 12, []);
+
+        $totalDemandes = 0;
+        $totalMontantDemande = 0;
+        $totalVersements = 0;
+        $totalMontantVerse = 0;
+        $totalMontantPlafond = 0;
 
         foreach ($demandes as $demande) {
             $mois = $demande->date_demande->month;
+            $demandesParMois[$mois]++;
+            $montantDemandeParMois[$mois] += (float) $demande->montant;
+            $totalDemandes++;
+            $totalMontantDemande += (float) $demande->montant;
 
-            // Pour le poste émetteur : compter TOUTES les demandes créées (tous statuts) pour le montant demandé
-            // et le nombre de demandes
-            $demandesSoumisesParMois[$mois]++;
-            $totalDemandesSoumises++;
-            $montantSoumisParMois[$mois] += $demande->montant;
-            $totalMontantSoumis += $demande->montant;
-
-            // Montant accordé : seulement pour les demandes validées
-            if ($demande->statut === 'valide') {
-                $demandesValideesParMois[$mois]++;
-                $totalDemandesValidees++;
-                $montantValideParMois[$mois] += $demande->montant_accord ?? $demande->montant;
-                $totalMontantValide += $demande->montant_accord ?? $demande->montant;
+            if ($demande->montant_accord !== null) {
+                $totalMontantPlafond += (float) $demande->montant_accord;
             }
         }
 
+        foreach ($versements as $echelon) {
+            $mois = $echelon->date_echeance->month;
+            $versementsParMois[$mois]++;
+            $montantVerseParMois[$mois] += (float) $echelon->montant;
+            $totalVersements++;
+            $totalMontantVerse += (float) $echelon->montant;
+
+            $demande = $echelon->demande;
+            if ($demande && $demande->montant_accord !== null) {
+                $demandesAvecVersementParMois[$mois][$demande->id] = (float) $demande->montant_accord;
+            }
+        }
+
+        foreach ($demandesAvecVersementParMois as $mois => $plafondsParDemande) {
+            $montantPlafondParMois[$mois] = array_sum($plafondsParDemande);
+        }
+
+        // Demandes validées sans échelons (données antérieures)
+        foreach ($demandes as $demande) {
+            if ($demande->echelons->isNotEmpty() || $demande->statut !== 'valide' || ! $demande->montant_accord) {
+                continue;
+            }
+
+            $dateRef = $demande->date_validation ?? $demande->date_demande;
+            if ((int) $dateRef->format('Y') !== $annee) {
+                continue;
+            }
+
+            $mois = (int) $dateRef->format('n');
+            $versementsParMois[$mois]++;
+            $montantVerseParMois[$mois] += (float) $demande->montant_accord;
+            $montantPlafondParMois[$mois] += (float) $demande->montant_accord;
+            $totalVersements++;
+            $totalMontantVerse += (float) $demande->montant_accord;
+        }
+
         $pdf = PDF::loadView('pcs.pdf.etat-autres-demandes-consolide-poste-emetteur', compact(
-            'demandesSoumisesParMois',
-            'demandesValideesParMois',
-            'totalDemandesSoumises',
-            'totalDemandesValidees',
-            'montantSoumisParMois',
-            'montantValideParMois',
-            'totalMontantSoumis',
-            'totalMontantValide',
+            'demandesParMois',
+            'montantDemandeParMois',
+            'versementsParMois',
+            'montantVerseParMois',
+            'montantPlafondParMois',
+            'totalDemandes',
+            'totalMontantDemande',
+            'totalVersements',
+            'totalMontantVerse',
+            'totalMontantPlafond',
+            'versements',
+            'demandes',
             'annee',
             'poste'
         ));
