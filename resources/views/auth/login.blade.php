@@ -8,6 +8,7 @@
 
     <link rel="shortcut icon" href="{{ asset('assets/img/favicon.png') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/jetbrains-mono.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome/css/fontawesome.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/login.css') }}">
 </head>
@@ -78,7 +79,7 @@
                     </div>
 
                     <button type="submit" class="login-submit" id="login-submit">
-                        <i class="fas fa-right-to-bracket" aria-hidden="true"></i>
+                        <i class="fas fa-sign-in-alt" aria-hidden="true"></i>
                         <span>Se connecter</span>
                     </button>
                 </form>

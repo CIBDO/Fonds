@@ -17,7 +17,14 @@ body, html {
 }
 
 /* Exceptions pour les éléments qui ont besoin de polices spécifiques */
-.icon, [class*="icon-"], [class*="fa-"] {
-    font-family: 'Font Awesome 6 Free', 'Font Awesome 6 Brands', 'feather' !important;
+.icon,
+[class*="icon-"],
+[class*="fa-"],
+.fas,
+.far,
+.fab,
+.fal,
+.fad {
+    font-family: 'Font Awesome 5 Free', 'Font Awesome 5 Brands', 'feather' !important;
 }
 
