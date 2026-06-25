@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
 
     <link href="{{ asset('assets/css/notifications.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('assets/css/mobile-responsive.css') }}?v=3">
+    <link rel="stylesheet" href="{{ asset('assets/css/mobile-responsive.css') }}?v=4">
 
     {{-- Styles critiques sidebar mobile (ne dépend pas du cache externe) --}}
     <style>
@@ -157,5 +157,6 @@
     <script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
     @yield('add-js')
     @stack('scripts')
+    <link rel="stylesheet" href="{{ asset('assets/css/dgtcp-responsive-fixes.css') }}?v=1">
 </body>
 </html>

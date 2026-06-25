@@ -36,7 +36,7 @@
                 <button class="btn btn-danger export-pdf">📄 Exporter en PDF</button>
             </div> --}}
         </div>
-        
+
         <div class="table-responsive">
             <table id="totaux-table" class="table table-hover table-striped">
                 <thead class="table-dark">

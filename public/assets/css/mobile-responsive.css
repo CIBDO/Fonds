@@ -10,7 +10,7 @@ html {
 }
 
 body {
-    overflow-x: hidden;
+    overflow-x: clip;
     max-width: 100vw;
 }
 
@@ -328,7 +328,14 @@ html.mobile-layout .dgtcp-mobile-btn {
 .table-responsive {
     display: block;
     width: 100%;
+    max-width: 100%;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.dgtcp-table-container {
+    overflow-x: auto !important;
+    max-width: 100%;
     -webkit-overflow-scrolling: touch;
 }
 

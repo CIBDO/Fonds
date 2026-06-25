@@ -279,7 +279,7 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     height: 100%;
 }
 
@@ -323,11 +323,12 @@
 }
 
 .dgtcp-stats-value {
-    font-size: 1.75rem;
+    font-size: clamp(1rem, 1.5vw, 1.75rem);
     font-weight: 800;
     color: #1e293b;
-    line-height: 1;
+    line-height: 1.2;
     margin-bottom: 0.25rem;
+    word-break: break-word;
 }
 
 .dgtcp-stats-unit {
@@ -365,7 +366,9 @@
 .dgtcp-table-container {
     background: #ffffff;
     border-radius: 12px;
-    overflow: hidden;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 

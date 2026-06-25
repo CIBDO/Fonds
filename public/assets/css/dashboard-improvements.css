@@ -665,7 +665,10 @@ body {
 .dgtcp-table-container {
     background: white;
     border-radius: var(--border-radius-large);
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
     box-shadow: var(--shadow-medium);
     border: 1px solid #E5E7EB;
 }
@@ -769,6 +772,8 @@ body {
     margin-bottom: 2rem;
     box-shadow: var(--shadow-light);
     border-left: 4px solid var(--dgtcp-green);
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .dgtcp-section-header {
@@ -970,6 +975,8 @@ body {
     box-shadow: var(--shadow-light);
     transition: var(--transition);
     overflow: hidden;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .dgtcp-card:hover {
@@ -1371,11 +1378,15 @@ body {
     margin-left: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: clip;
 }
 
 @media (min-width: 1200px) {
     .page-wrapper {
         margin-left: 280px !important;
+        width: calc(100% - 280px) !important;
+        max-width: calc(100vw - 280px) !important;
     }
 }
 
