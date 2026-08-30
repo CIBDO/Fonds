@@ -5,100 +5,64 @@
 @include('partials.vuexy.datatables-assets')
 
 @section('content')
-{{-- <div class="page-header d-flex justify-content-between align-items-center">
-    <div>
-        <h3 class="page-title">Totaux par Mois</h3>
-        <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item active">Totaux par Mois</li>
-        </ul>
-    </div>
-</div> --}}
 
-<!-- Formulaire de sélection de l'année -->
-<div class="card mb-4">
-    <div class="card-body">
-        <form action="{{ route('demandes-fonds.totaux-par-mois') }}" method="GET" class="row g-3">
-            <div class="col-lg-4 col-md-6">
-                <label for="annee" class="form-label">Année</label>
-                <input type="number" name="annee" id="annee" class="form-control" value="{{ $annee ?? date('Y') }}" min="2000" max="{{ date('Y') }}">
-            </div>
-            <div class="col-lg-4 col-md-6 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary w-100">Afficher</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Tableau des totaux par mois -->
-<div class="card mb-4">
-    <div class="card-body">
-        <div class="d-flex justify-content-between mb-3">
-            <h4 class="card-title">Détails des Montants</h4>
-            {{-- <div>
-                <button class="btn btn-success export-excel">📊 Exporter en Excel</button>
-                <button class="btn btn-danger export-pdf">📄 Exporter en PDF</button>
-            </div> --}}
+<x-vuexy.card title="Sélection de l'année" icon="tabler-calendar" class="mb-4">
+    <form action="{{ route('demandes-fonds.totaux-par-mois') }}" method="GET" class="row g-3 align-items-end">
+        <div class="col-md-4">
+            <label for="annee" class="form-label">Année</label>
+            <input type="number" name="annee" id="annee" class="form-control"
+                   value="{{ $annee ?? date('Y') }}" min="2000" max="{{ date('Y') }}">
         </div>
-
-        <div class="table-responsive">
-            <table id="totaux-table" class="table table-bordered table-hover table-striped">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Mois</th>
-                        <th>Total Montant (F CFA)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($montantsParMois as $montant)
-                    <tr>
-                        <td>{{ $montant->mois }}</td>
-                        <td class="text-end">{{ number_format($montant->total_mois, 0, ',', ' ') }} F CFA</td>
-                    </tr>
-                    @endforeach
-                </tbody>
-                <tfoot class="table-light">
-                    <tr>
-                        <th class="text-end">Total Général :</th>
-                        <th id="total-sum" class="text-end"></th>
-                    </tr>
-                </tfoot>
-            </table>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-primary"><i class="icon-base ti tabler-search me-1"></i>Afficher</button>
         </div>
-    </div>
-</div>
+    </form>
+</x-vuexy.card>
 
+<x-vuexy.card title="Détail des montants" icon="tabler-chart-bar">
+    <div class="table-responsive">
+        <table id="totaux-table" class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Mois</th>
+                    <th class="text-end">Total Montant (FCFA)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($montantsParMois as $montant)
+                <tr>
+                    <td class="fw-medium">{{ $montant->mois }}</td>
+                    <td class="text-end">{{ number_format($montant->total_mois, 0, ',', ' ') }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+            <tfoot class="table-light">
+                <tr>
+                    <th>Total général</th>
+                    <th class="text-end" id="total-sum"></th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</x-vuexy.card>
 @endsection
 
 @push('scripts')
 <script>
-    $(document).ready(function() {
-        let table = $('#totaux-table').DataTable({
-            language: window.DGTCP_DATATABLES_FR,
-            dom: 'Bfrtip',
-            buttons: [
-                { extend: 'excelHtml5', text: '📊 Excel', className: 'btn btn-success' },
-                { extend: 'pdfHtml5', text: '📄 PDF', className: 'btn btn-danger' },
-                { extend: 'print', text: '🖨️ Imprimer', className: 'btn btn-primary' }
-            ],
-            responsive: true,
-            pageLength: 10,
-            drawCallback: function () {
-                let api = this.api();
-                let total = api.column(1, { page: 'all' }).data().reduce((a, b) => {
-                    return parseFloat(a) + parseFloat(b.toString().replace(/\s/g, '').replace('F CFA', ''));
-                }, 0);
-                $('#total-sum').html(new Intl.NumberFormat('fr-FR').format(total) + ' F CFA');
-            }
-        });
-
-        $('.export-excel').on('click', function() {
-            table.button('.buttons-excel').trigger();
-        });
-
-        $('.export-pdf').on('click', function() {
-            table.button('.buttons-pdf').trigger();
-        });
+$(document).ready(function() {
+    $('#totaux-table').DataTable({
+        language: window.DGTCP_DATATABLES_FR,
+        dom: 'tr<"row mt-3"<"col-md-5"i><"col-md-7"p>>',
+        responsive: true,
+        pageLength: 12,
+        paging: false,
+        drawCallback: function () {
+            const total = this.api().column(1, { page: 'all' }).data().reduce((a, b) => {
+                return parseFloat(a) + parseFloat(String(b).replace(/\s/g, '').replace('F CFA', ''));
+            }, 0);
+            $('#total-sum').html(new Intl.NumberFormat('fr-FR').format(total) + ' FCFA');
+        }
     });
+});
 </script>
 @endpush
