@@ -74,7 +74,7 @@
                         </div>
                         <div>
                             <h6 class="mb-0">{{ Auth::user()->name }}</h6>
-                            <small class="text-body-secondary">{{ Auth::user()->role }}</small>
+                            <small class="text-body-secondary">{{ Auth::user()->poste->nom ?? 'N/A' }}</small>
                         </div>
                     </div>
                 </a>

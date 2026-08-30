@@ -10,7 +10,7 @@
         <div class="navbar-brand app-brand demo d-none d-xl-flex py-0 me-4">
             <a href="{{ $dashboardUrl }}" class="app-brand-link gap-2">
                 <img src="{{ asset('assets/img/logo.png') }}" alt="DGTCP" style="max-height:32px;">
-                <span class="app-brand-text fw-bold text-heading">DGTCP Fonds</span>
+                <span class="app-brand-text fw-bold text-heading">DGTCP-MALI</span>
             </a>
             <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-xl-none">
                 <i class="icon-base ti tabler-x"></i>
