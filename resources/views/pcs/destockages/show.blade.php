@@ -3,214 +3,162 @@
 @section('title', 'Détail Destockage PCS')
 
 @section('content')
-<x-vuexy.page-header title="Détail du Règlement" subtitle="{{ $destockage->reference_règlement ?? '' }}">
-    <x-slot:actions>
-        <a href="{{ route('pcs.destockages.index') }}" class="btn btn-label-secondary btn-sm me-2">
-            <i class="ti tabler-arrow-left me-1"></i>Retour
-        </a>
-        <a href="{{ route('pcs.destockages.pdf', $destockage) }}" class="btn btn-primary btn-sm">
-            <i class="ti tabler-file-type-pdf me-1"></i>Télécharger PDF
-        </a>
-    </x-slot:actions>
-</x-vuexy.page-header>
+<div class="d-flex justify-content-end flex-wrap gap-2 mb-4">
+    <a href="{{ route('pcs.destockages.index') }}" class="btn btn-label-secondary btn-sm">
+        <i class="icon-base ti tabler-arrow-left me-1"></i>Retour
+    </a>
+    <a href="{{ route('pcs.destockages.pdf', $destockage) }}" class="btn btn-primary btn-sm" target="_blank">
+        <i class="icon-base ti tabler-file-type-pdf me-1"></i>Télécharger PDF
+    </a>
+</div>
 
-    <!-- Informations générales -->
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-danger text-white">
-            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informations Générales</h5>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-3 mb-3">
-                    <label class="text-muted small">Référence</label>
-                    <div>
-                        <span class="badge bg-danger fs-6">
-                            <i class="fas fa-hashtag me-1"></i>{{ $destockage->reference_destockage }}
-                        </span>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="text-muted small">Programme</label>
-                    <div>
-                        <span class="badge bg-{{ $destockage->programme == 'UEMOA' ? 'primary' : 'warning' }} fs-6">
-                            {{ $destockage->programme }}
-                        </span>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="text-muted small">Période</label>
-                    <div class="fw-bold">{{ $destockage->nom_mois }} {{ $destockage->periode_annee }}</div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="text-muted small">Date Règlement</label>
-                    <div class="fw-bold">
-                        <i class="fas fa-calendar-check text-danger me-1"></i>
-                        {{ \Carbon\Carbon::parse($destockage->date_destockage)->format('d/m/Y') }}
-                    </div>
-                </div>
+<x-vuexy.card title="Informations Générales" icon="tabler-info-circle" class="mb-4">
+    <div class="row g-3">
+        <div class="col-md-3">
+            <label class="text-body-secondary small">Référence</label>
+            <div>
+                <span class="badge bg-label-primary fs-6">
+                    <i class="icon-base ti tabler-hash me-1"></i>{{ $destockage->reference_destockage }}
+                </span>
             </div>
-            <div class="row">
-                <div class="col-md-3 mb-3">
-                    <label class="text-muted small">Montant Total Règlement</label>
-                    <div class="fw-bold text-success fs-5">
-                        {{ number_format($destockage->montant_total_destocke, 0, ',', ' ') }} FCFA
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="text-muted small">Nombre de Postes</label>
-                    <div>
-                        <span class="badge bg-info text-dark fs-6">
-                            {{ $destockage->postes->count() }} postes
-                        </span>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="text-muted small">Statut</label>
-                    <div>
-                        @if($destockage->statut == 'valide')
-                            <span class="badge bg-success fs-6">
-                                <i class="fas fa-check-circle"></i> Validé
-                            </span>
-                        @elseif($destockage->statut == 'brouillon')
-                            <span class="badge bg-secondary fs-6">
-                                <i class="fas fa-edit"></i> Brouillon
-                            </span>
+        </div>
+        <div class="col-md-3">
+            <label class="text-body-secondary small">Programme</label>
+            <div>
+                <span class="badge bg-label-{{ $destockage->programme == 'UEMOA' ? 'primary' : 'warning' }} fs-6">
+                    {{ $destockage->programme }}
+                </span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <label class="text-body-secondary small">Période</label>
+            <div class="fw-medium">{{ $destockage->nom_mois }} {{ $destockage->periode_annee }}</div>
+        </div>
+        <div class="col-md-3">
+            <label class="text-body-secondary small">Date Règlement</label>
+            <div class="fw-medium">
+                <i class="icon-base ti tabler-calendar-check me-1"></i>
+                {{ \Carbon\Carbon::parse($destockage->date_destockage)->format('d/m/Y') }}
+            </div>
+        </div>
+        <div class="col-md-3">
+            <label class="text-body-secondary small">Montant Total Règlement</label>
+            <div class="fw-bold text-success fs-5">
+                {{ number_format($destockage->montant_total_destocke, 0, ',', ' ') }} FCFA
+            </div>
+        </div>
+        <div class="col-md-3">
+            <label class="text-body-secondary small">Nombre de Postes</label>
+            <div>
+                <span class="badge bg-label-info fs-6">{{ $destockage->postes->count() }} postes</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <label class="text-body-secondary small">Statut</label>
+            <div>@include('partials.pcs.status-badge', ['statut' => $destockage->statut])</div>
+        </div>
+        <div class="col-md-3">
+            <label class="text-body-secondary small">Créé Par</label>
+            <div class="fw-medium">
+                <i class="icon-base ti tabler-user me-1"></i>
+                {{ $destockage->creePar->name ?? 'N/A' }}
+            </div>
+        </div>
+        @if($destockage->observation)
+        <div class="col-12">
+            <label class="text-body-secondary small">Observation</label>
+            <div class="alert alert-light border mb-0">
+                <i class="icon-base ti tabler-message me-2"></i>{{ $destockage->observation }}
+            </div>
+        </div>
+        @endif
+    </div>
+</x-vuexy.card>
+
+<x-vuexy.card title="Détail par Poste" icon="tabler-list" class="mb-4">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th><i class="icon-base ti tabler-building me-1"></i>Entité</th>
+                    <th class="text-end"><i class="icon-base ti tabler-arrow-up me-1"></i>Montant Collecté</th>
+                    <th class="text-end"><i class="icon-base ti tabler-currency-franc me-1"></i>Montant Déstocké</th>
+                    <th class="text-end"><i class="icon-base ti tabler-scale me-1"></i>Solde Avant</th>
+                    <th class="text-end"><i class="icon-base ti tabler-wallet me-1"></i>Solde Après</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($destockage->postes as $posteDestockage)
+                <tr>
+                    <td>
+                        @if($posteDestockage->poste_id)
+                            <span class="badge bg-label-primary me-1">Poste</span>
+                            <strong>{{ $posteDestockage->poste->nom ?? 'N/A' }}</strong>
                         @else
-                            <span class="badge bg-danger fs-6">
-                                <i class="fas fa-times-circle"></i> Annulé
-                            </span>
+                            <span class="badge bg-label-info me-1">Bureau</span>
+                            <strong>{{ $posteDestockage->bureauDouane->libelle ?? 'N/A' }}</strong>
                         @endif
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="text-muted small">Créé Par</label>
-                    <div class="fw-bold">
-                        <i class="fas fa-user text-primary me-1"></i>
-                        {{ $destockage->creePar->name ?? 'N/A' }}
-                    </div>
-                </div>
-            </div>
-            @if($destockage->observation)
-            <div class="row">
-                <div class="col-md-12">
-                    <label class="text-muted small">Observation</label>
-                    <div class="alert alert-light mb-0">
-                        <i class="fas fa-comment-alt text-muted me-2"></i>{{ $destockage->observation }}
-                    </div>
-                </div>
-            </div>
-            @endif
-        </div>
+                    </td>
+                    <td class="text-end fw-medium text-success">
+                        {{ number_format($posteDestockage->montant_collecte, 0, ',', ' ') }} FCFA
+                    </td>
+                    <td class="text-end fw-medium text-danger">
+                        {{ number_format($posteDestockage->montant_destocke, 0, ',', ' ') }} FCFA
+                    </td>
+                    <td class="text-end fw-medium text-warning">
+                        {{ number_format($posteDestockage->solde_avant, 0, ',', ' ') }} FCFA
+                    </td>
+                    <td class="text-end fw-medium {{ $posteDestockage->solde_apres > 0 ? 'text-success' : 'text-body-secondary' }}">
+                        {{ number_format($posteDestockage->solde_apres, 0, ',', ' ') }} FCFA
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+            <tfoot class="table-light">
+                <tr>
+                    <th>TOTAUX</th>
+                    <th class="text-end text-success">{{ number_format($destockage->postes->sum('montant_collecte'), 0, ',', ' ') }} FCFA</th>
+                    <th class="text-end text-danger">{{ number_format($destockage->postes->sum('montant_destocke'), 0, ',', ' ') }} FCFA</th>
+                    <th class="text-end text-warning">{{ number_format($destockage->postes->sum('solde_avant'), 0, ',', ' ') }} FCFA</th>
+                    <th class="text-end text-success">{{ number_format($destockage->postes->sum('solde_apres'), 0, ',', ' ') }} FCFA</th>
+                </tr>
+            </tfoot>
+        </table>
     </div>
+</x-vuexy.card>
 
-    <!-- Détail par poste -->
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-warning text-dark">
-            <h5 class="mb-0"><i class="fas fa-list-ul me-2"></i>Détail par Poste</h5>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th><i class="fas fa-building"></i> Entité</th>
-                            <th class="text-end"><i class="fas fa-arrow-up"></i> Montant Collecté</th>
-                            <th class="text-end"><i class="fas fa-money-bill-wave"></i> Montant Déstocké</th>
-                            <th class="text-end"><i class="fas fa-balance-scale"></i> Solde Avant</th>
-                            <th class="text-end"><i class="fas fa-wallet"></i> Solde Après</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($destockage->postes as $posteDestockage)
-                        <tr>
-                            <td>
-                                @if($posteDestockage->poste_id)
-                                    <span class="badge bg-primary">Poste</span>
-                                    <strong>{{ $posteDestockage->poste->nom ?? 'N/A' }}</strong>
-                                @else
-                                    <span class="badge bg-info">Bureau</span>
-                                    <strong>{{ $posteDestockage->bureauDouane->libelle ?? 'N/A' }}</strong>
-                                @endif
-                            </td>
-                            <td class="text-end fw-bold text-success">
-                                {{ number_format($posteDestockage->montant_collecte, 0, ',', ' ') }} FCFA
-                            </td>
-                            <td class="text-end fw-bold text-danger">
-                                {{ number_format($posteDestockage->montant_destocke, 0, ',', ' ') }} FCFA
-                            </td>
-                            <td class="text-end fw-bold text-warning">
-                                {{ number_format($posteDestockage->solde_avant, 0, ',', ' ') }} FCFA
-                            </td>
-                            <td class="text-end fw-bold {{ $posteDestockage->solde_apres > 0 ? 'text-success' : 'text-muted' }}">
-                                {{ number_format($posteDestockage->solde_apres, 0, ',', ' ') }} FCFA
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot class="table-light">
-                        <tr>
-                            <th>TOTAUX</th>
-                            <th class="text-end text-success">
-                                {{ number_format($destockage->postes->sum('montant_collecte'), 0, ',', ' ') }} FCFA
-                            </th>
-                            <th class="text-end text-danger">
-                                {{ number_format($destockage->postes->sum('montant_destocke'), 0, ',', ' ') }} FCFA
-                            </th>
-                            <th class="text-end text-warning">
-                                {{ number_format($destockage->postes->sum('solde_avant'), 0, ',', ' ') }} FCFA
-                            </th>
-                            <th class="text-end text-success">
-                                {{ number_format($destockage->postes->sum('solde_apres'), 0, ',', ' ') }} FCFA
-                            </th>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        </div>
+<div class="row g-3">
+    <div class="col-md-3">
+        <x-vuexy.card class="bg-label-success text-center h-100">
+            <i class="icon-base ti tabler-arrow-up icon-32px text-success mb-2"></i>
+            <h6 class="mb-1">Total Collecté</h6>
+            <h5 class="fw-bold text-success mb-0">{{ number_format($destockage->postes->sum('montant_collecte'), 0, ',', ' ') }} FCFA</h5>
+        </x-vuexy.card>
     </div>
-
-    <!-- Statistiques -->
-    <div class="row">
-        <div class="col-md-3">
-            <div class="card shadow-sm border-0 bg-success text-white">
-                <div class="card-body text-center">
-                    <i class="fas fa-arrow-up fa-2x mb-2"></i>
-                    <h6 class="mb-1">Total Collecté</h6>
-                    <h5 class="fw-bold">{{ number_format($destockage->postes->sum('montant_collecte'), 0, ',', ' ') }} FCFA</h5>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card shadow-sm border-0 bg-danger text-white">
-                <div class="card-body text-center">
-                    <i class="fas fa-arrow-down fa-2x mb-2"></i>
-                    <h6 class="mb-1">Total Règlement</h6>
-                    <h5 class="fw-bold">{{ number_format($destockage->postes->sum('montant_destocke'), 0, ',', ' ') }} FCFA</h5>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card shadow-sm border-0 bg-warning text-dark">
-                <div class="card-body text-center">
-                    <i class="fas fa-balance-scale fa-2x mb-2"></i>
-                    <h6 class="mb-1">Taux Règlement</h6>
-                    <h5 class="fw-bold">
-                        {{ $destockage->postes->sum('montant_collecte') > 0
-                           ? number_format(($destockage->postes->sum('montant_destocke') / $destockage->postes->sum('montant_collecte')) * 100, 1)
-                           : 0 }}%
-                    </h5>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card shadow-sm border-0 bg-info text-white">
-                <div class="card-body text-center">
-                    <i class="fas fa-wallet fa-2x mb-2"></i>
-                    <h6 class="mb-1">Solde Restant</h6>
-                    <h5 class="fw-bold">{{ number_format($destockage->postes->sum('solde_apres'), 0, ',', ' ') }} FCFA</h5>
-                </div>
-            </div>
-        </div>
+    <div class="col-md-3">
+        <x-vuexy.card class="bg-label-danger text-center h-100">
+            <i class="icon-base ti tabler-arrow-down icon-32px text-danger mb-2"></i>
+            <h6 class="mb-1">Total Règlement</h6>
+            <h5 class="fw-bold text-danger mb-0">{{ number_format($destockage->postes->sum('montant_destocke'), 0, ',', ' ') }} FCFA</h5>
+        </x-vuexy.card>
     </div>
+    <div class="col-md-3">
+        <x-vuexy.card class="bg-label-warning text-center h-100">
+            <i class="icon-base ti tabler-scale icon-32px text-warning mb-2"></i>
+            <h6 class="mb-1">Taux Règlement</h6>
+            <h5 class="fw-bold text-warning mb-0">
+                {{ $destockage->postes->sum('montant_collecte') > 0
+                   ? number_format(($destockage->postes->sum('montant_destocke') / $destockage->postes->sum('montant_collecte')) * 100, 1)
+                   : 0 }}%
+            </h5>
+        </x-vuexy.card>
+    </div>
+    <div class="col-md-3">
+        <x-vuexy.card class="bg-label-info text-center h-100">
+            <i class="icon-base ti tabler-wallet icon-32px text-info mb-2"></i>
+            <h6 class="mb-1">Solde Restant</h6>
+            <h5 class="fw-bold text-info mb-0">{{ number_format($destockage->postes->sum('solde_apres'), 0, ',', ' ') }} FCFA</h5>
+        </x-vuexy.card>
+    </div>
+</div>
 @endsection
-

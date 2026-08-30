@@ -3,13 +3,11 @@
 @section('title', 'Modifier Autre Demande')
 
 @section('content')
-<x-vuexy.page-header title="Modifier la Demande" subtitle="{{ Str::limit($demande->designation, 60) }}">
-    <x-slot:actions>
-        <a href="{{ route('pcs.autres-demandes.index') }}" class="btn btn-label-secondary btn-sm">
-            <i class="ti tabler-arrow-left me-1"></i>Retour
-        </a>
-    </x-slot:actions>
-</x-vuexy.page-header>
+<div class="d-flex justify-content-end mb-4">
+    <a href="{{ route('pcs.autres-demandes.index') }}" class="btn btn-label-secondary btn-sm">
+        <i class="icon-base ti tabler-arrow-left me-1"></i>Retour
+    </a>
+</div>
 
 <x-vuexy.card title="Informations de la Demande" icon="tabler-file">
     @if($demande->statut == 'soumis')
@@ -73,10 +71,10 @@
 
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
             <a href="{{ route('pcs.autres-demandes.index') }}" class="btn btn-label-secondary btn-lg">
-                <i class="ti tabler-x me-1"></i>Annuler
+                <i class="icon-base ti tabler-x me-1"></i>Annuler
             </a>
             <button type="submit" name="action" value="soumettre" class="btn btn-primary btn-lg">
-                <i class="ti tabler-send me-1"></i>Soumettre
+                <i class="icon-base ti tabler-send me-1"></i>Soumettre
             </button>
         </div>
     </form>

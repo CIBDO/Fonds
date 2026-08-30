@@ -3,13 +3,11 @@
 @section('title', 'Nouvelle Déclaration PCS')
 
 @section('content')
-<x-vuexy.page-header title="Nouvelle Déclaration PCS" subtitle="Saisie des déclarations UEMOA et AES">
-    <x-slot:actions>
-        <a href="{{ route('pcs.declarations.index') }}" class="btn btn-label-secondary btn-sm">
-            <i class="ti tabler-arrow-left me-1"></i>Retour
-        </a>
-    </x-slot:actions>
-</x-vuexy.page-header>
+<div class="d-flex justify-content-end mb-4">
+    <a href="{{ route('pcs.declarations.index') }}" class="btn btn-label-secondary btn-sm">
+        <i class="icon-base ti tabler-arrow-left me-1"></i>Retour
+    </a>
+</div>
 
     <!-- Alerte mois manquants -->
     @php
@@ -48,14 +46,14 @@
 
     @if(count($moisManquantsAnnee) > 0)
     <div class="alert alert-warning alert-dismissible fade show mb-4" role="alert">
-        <i class="fas fa-exclamation-triangle me-2"></i>
+        <i class="icon-base ti tabler-alert-triangle me-2"></i>
         <strong>Attention !</strong> Vous avez <strong>{{ count($moisManquantsAnnee) }} mois restant (s)</strong> pour {{ $annee }}.
         <br>
         <button type="button" class="btn btn-warning btn-sm mt-2" id="toggleRattrapage">
-            <i class="fas fa-history me-1"></i>Utiliser le mode Rattrapage
+            <i class="icon-base ti tabler-history me-1"></i>Utiliser le mode Rattrapage
         </button>
         <button type="button" class="btn btn-secondary btn-sm mt-2 ms-2" id="toggleNormal" style="display:none;">
-            <i class="fas fa-calendar me-1"></i>Revenir au mode Normal
+            <i class="icon-base ti tabler-calendar me-1"></i>Revenir au mode Normal
         </button>
     </div>
     @endif
@@ -66,12 +64,8 @@
         <!-- Mode Normal -->
         <div id="modeNormal" class="{{ $aDesMoisManquants ? '' : '' }}">
             <!-- Période -->
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-header bg-danger text-white">
-                    <h5 class="mb-0"><i class="fas fa-calendar me-2"></i>Période de Déclaration</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
+            <x-vuexy.card title="Période de Déclaration" icon="tabler-calendar" class="mb-4">
+                    <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Mois <span class="text-danger">*</span></label>
                             <select name="mois" class="form-select" required>
@@ -92,20 +86,12 @@
                             </select>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mode Rattrapage -->
+            </x-vuexy.card>
         @if($aDesMoisManquants)
         <div id="modeRattrapage" style="display:none;">
             <!-- Sélection des mois -->
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0"><i class="fas fa-history me-2"></i>Rattrapage - Sélection des Mois</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
+            <x-vuexy.card title="Rattrapage - Sélection des Mois" icon="tabler-history" class="mb-4">
+                    <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Année <span class="text-danger">*</span></label>
                             <select name="annee" class="form-select" id="anneeRattrapage" required>
@@ -151,14 +137,13 @@
                                 @endfor
                             </div>
                             <small class="text-muted">
-                                <i class="fas fa-info-circle me-1"></i>
+                                <i class="icon-base ti tabler-info-circle me-1"></i>
                                 Sélectionnez tous les mois que vous souhaitez renseigner en une seule fois.
                                 Les mois déjà renseignés sont grisés et ne peuvent pas être sélectionnés.
                             </small>
                         </div>
                     </div>
-                </div>
-            </div>
+            </x-vuexy.card>
         </div>
         @endif
 
@@ -167,12 +152,8 @@
         <div id="formulaireRattrapage" style="display:none;">
             @if($poste->isRgd())
                 <!-- Tableau RGD -->
-                <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-header bg-danger text-white">
-                        <h5 class="mb-0"><i class="fas fa-building me-2"></i>RGD - Opérations Propres</h5>
-                        <small class="text-white-50">Renseignez les données pour chaque mois sélectionné</small>
-                    </div>
-                    <div class="card-body">
+                <x-vuexy.card title="RGD - Opérations Propres" icon="tabler-building" class="mb-4">
+                    <p class="text-body-secondary small mb-3">Renseignez les données pour chaque mois sélectionné</p>
                         <div class="table-responsive">
                             <table class="table table-bordered table-sm" id="tableRattrapageRgd">
                                 <thead class="table-light">
@@ -196,22 +177,16 @@
                         </div>
                         <div class="mt-3">
                             <button type="button" class="btn btn-sm btn-outline-primary" id="copierPremierMoisRgd">
-                                <i class="fas fa-copy me-1"></i>Copier les valeurs du premier mois vers les autres
+                                <i class="icon-base ti tabler-copy me-1"></i>Copier les valeurs du premier mois vers les autres
                             </button>
                         </div>
-                    </div>
-                </div>
+                </x-vuexy.card>
 
-                <!-- Tableau Bureaux -->
-                <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-header bg-info text-white">
-                        <h5 class="mb-0"><i class="fas fa-building me-2"></i>Bureaux de Douanes</h5>
-                    </div>
-                    <div class="card-body">
+                <x-vuexy.card title="Bureaux de Douanes" icon="tabler-building" class="mb-4">
                         @foreach($bureaux as $bureau)
                         <div class="mb-4 border-bottom pb-4">
-                            <h6 class="text-primary fw-bold mb-3">
-                                <span class="badge bg-primary">{{ $bureau->code }}</span> {{ $bureau->libelle }}
+                            <h6 class="fw-bold mb-3">
+                                <span class="badge bg-label-primary">{{ $bureau->code }}</span> {{ $bureau->libelle }}
                             </h6>
                             <div class="table-responsive">
                                 <table class="table table-bordered table-sm" data-bureau="{{ $bureau->id }}">
@@ -235,16 +210,10 @@
                             </div>
                         </div>
                         @endforeach
-                    </div>
-                </div>
+                </x-vuexy.card>
             @else
-                <!-- Tableau Poste Normal -->
-                <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-header bg-danger text-white">
-                        <h5 class="mb-0"><i class="fas fa-building me-2"></i>{{ $poste->nom }}</h5>
-                        <small class="text-white-50">Renseignez les données pour chaque mois sélectionné</small>
-                    </div>
-                    <div class="card-body">
+                <x-vuexy.card title="{{ $poste->nom }}" icon="tabler-building" class="mb-4">
+                    <p class="text-body-secondary small mb-3">Renseignez les données pour chaque mois sélectionné</p>
                         <div class="table-responsive">
                             <table class="table table-bordered table-sm" id="tableRattrapagePoste">
                                 <thead class="table-light">
@@ -268,11 +237,10 @@
                         </div>
                         <div class="mt-3">
                             <button type="button" class="btn btn-sm btn-outline-primary" id="copierPremierMoisPoste">
-                                <i class="fas fa-copy me-1"></i>Copier les valeurs du premier mois vers les autres
+                                <i class="icon-base ti tabler-copy me-1"></i>Copier les valeurs du premier mois vers les autres
                             </button>
                         </div>
-                    </div>
-                </div>
+                </x-vuexy.card>
             @endif
         </div>
             {{-- FORMULAIRE RGD AVEC BUREAUX --}}
@@ -284,17 +252,13 @@
             {{-- FORMULAIRE RGD AVEC BUREAUX --}}
 
             <!-- RGD Propre -->
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-header bg-danger text-white">
-                    <h5 class="mb-0"><i class="fas fa-building me-2"></i>RGD - Opérations Propres</h5>
-                </div>
-                <div class="card-body">
+            <x-vuexy.card title="RGD - Opérations Propres" icon="tabler-building" class="mb-4">
                     <div class="row">
                         <!-- UEMOA -->
                         <div class="col-md-6">
                             <div class="border-end pe-3">
                                 <h6 class="text-success fw-bold mb-3">
-                                    <i class="fas fa-globe"></i> Prélèvement UEMOA
+                                    <i class="icon-base ti tabler-world me-1"></i> Prélèvement UEMOA
                                 </h6>
                                 <div class="mb-3">
                                     <label class="form-label">Montant Recouvré (FCFA)</label>
@@ -325,7 +289,7 @@
                                            placeholder="Référence...">
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label"><i class="fas fa-paperclip me-1"></i>Justificatif</label>
+                                    <label class="form-label"><i class="icon-base ti tabler-paperclip me-1"></i>Justificatif</label>
                                     <input type="file" name="rgd_UEMOA_preuve_paiement" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
                                 </div>
                                 <div>
@@ -341,7 +305,7 @@
                         <!-- AES -->
                         <div class="col-md-6">
                             <h6 class="text-warning fw-bold mb-3">
-                                <i class="fas fa-globe"></i> Prélèvement AES (PC)
+                                <i class="icon-base ti tabler-world me-1"></i> Prélèvement AES (PC)
                             </h6>
                             <div class="mb-3">
                                 <label class="form-label">Montant Recouvré (FCFA)</label>
@@ -372,7 +336,7 @@
                                        placeholder="Référence...">
                             </div>
                             <div class="mb-3">
-                                <label class="form-label"><i class="fas fa-paperclip me-1"></i>Justificatif</label>
+                                <label class="form-label"><i class="icon-base ti tabler-paperclip me-1"></i>Justificatif</label>
                                 <input type="file" name="rgd_AES_preuve_paiement" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
                             </div>
                             <div>
@@ -384,19 +348,13 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+            </x-vuexy.card>
 
-            <!-- Bureaux de Douanes -->
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0"><i class="fas fa-building me-2"></i>Bureaux de Douanes ({{ $bureaux->count() }} bureaux)</h5>
-                </div>
-                <div class="card-body">
+            <x-vuexy.card title="Bureaux de Douanes ({{ $bureaux->count() }} bureaux)" icon="tabler-building" class="mb-4">
                     @foreach($bureaux as $bureau)
                     <div class="bureau-section mb-4 pb-4 border-bottom">
                         <h6 class="text-primary fw-bold mb-3">
-                            <span class="badge bg-primary">{{ $bureau->code }}</span> {{ $bureau->libelle }}
+                            <span class="badge bg-label-primary">{{ $bureau->code }}</span> {{ $bureau->libelle }}
                         </h6>
 
                         <div class="row">
@@ -404,7 +362,7 @@
                             <div class="col-md-6">
                                 <div class="border-end pe-3">
                                     <p class="text-success fw-bold mb-2">
-                                        <i class="fas fa-globe"></i> Prélèvement UEMOA
+                                        <i class="icon-base ti tabler-world me-1"></i> Prélèvement UEMOA
                                     </p>
                                     <div class="mb-2">
                                         <label class="form-label small">Recouvré (FCFA)</label>
@@ -435,7 +393,7 @@
                                                placeholder="Référence...">
                                     </div>
                                     <div class="mb-2">
-                                        <label class="form-label small"><i class="fas fa-paperclip"></i> Preuve</label>
+                                        <label class="form-label small"><i class="icon-base ti tabler-paperclip me-1"></i> Preuve</label>
                                         <input type="file" name="bureau_{{ $bureau->id }}_UEMOA_preuve_paiement" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
                                     </div>
                                     <div>
@@ -451,7 +409,7 @@
                             <!-- AES -->
                             <div class="col-md-6">
                                 <p class="text-warning fw-bold mb-2">
-                                    <i class="fas fa-globe"></i> Prélèvement AES
+                                    <i class="icon-base ti tabler-world me-1"></i> Prélèvement AES
                                 </p>
                                 <div class="mb-2">
                                     <label class="form-label small">Recouvré (FCFA)</label>
@@ -482,7 +440,7 @@
                                            placeholder="Référence...">
                                 </div>
                                 <div class="mb-2">
-                                    <label class="form-label small"><i class="fas fa-paperclip"></i> Preuve</label>
+                                    <label class="form-label small"><i class="icon-base ti tabler-paperclip me-1"></i> Preuve</label>
                                     <input type="file" name="bureau_{{ $bureau->id }}_AES_preuve_paiement" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
                                 </div>
                                 <div>
@@ -496,23 +454,18 @@
                         </div>
                     </div>
                     @endforeach
-                </div>
-            </div>
+            </x-vuexy.card>
 
         @else
             {{-- FORMULAIRE POSTE NORMAL --}}
 
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-header bg-danger text-white">
-                    <h5 class="mb-0"><i class="fas fa-building me-2"></i>{{ $poste->nom }}</h5>
-                </div>
-                <div class="card-body">
+            <x-vuexy.card title="{{ $poste->nom }}" icon="tabler-building" class="mb-4">
                     <div class="row">
                         <!-- UEMOA -->
                         <div class="col-md-6">
                             <div class="border-end pe-4">
                                 <h5 class="text-success fw-bold mb-3">
-                                    <i class="fas fa-globe"></i> Prélèvement UEMOA
+                                    <i class="icon-base ti tabler-world me-1"></i> Prélèvement UEMOA
                                 </h5>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Montant Recouvré (FCFA)</label>
@@ -545,7 +498,7 @@
                                            placeholder="Référence...">
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold"><i class="fas fa-paperclip me-1"></i>Justificatif</label>
+                                    <label class="form-label fw-bold"><i class="icon-base ti tabler-paperclip me-1"></i>Justificatif</label>
                                     <input type="file" name="UEMOA_preuve_paiement" class="form-control" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
                                 </div>
                                 <div>
@@ -561,7 +514,7 @@
                         <!-- AES -->
                         <div class="col-md-6">
                             <h5 class="text-warning fw-bold mb-3">
-                                <i class="fas fa-globe"></i> Prélèvement AES
+                                <i class="icon-base ti tabler-world me-1"></i> Prélèvement AES
                             </h5>
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Montant Recouvré (FCFA)</label>
@@ -594,7 +547,7 @@
                                        placeholder="Référence...">
                             </div>
                             <div class="mb-3">
-                                <label class="form-label fw-bold"><i class="fas fa-paperclip me-1"></i>Justificatif</label>
+                                <label class="form-label fw-bold"><i class="icon-base ti tabler-paperclip me-1"></i>Justificatif</label>
                                 <input type="file" name="AES_preuve_paiement" class="form-control" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
                             </div>
                             <div>
@@ -605,28 +558,19 @@
                                           placeholder="Observations éventuelles...">{{ old('AES_observation') }}</textarea>
                             </div>
                         </div>
-                </div>
-            </div>
-        </div>
+                    </div>
+            </x-vuexy.card>
         @endif
         </div>
         <!-- Fin Formulaire Normal -->
 
-        <!-- Boutons d'action -->
-        <div class="card shadow-sm border-0 mb-4">
-            <div class="card-body">
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                    <a href="{{ route('pcs.declarations.index') }}" class="btn btn-secondary btn-lg">
-                        <i class="fas fa-times me-1"></i>Annuler
-                    </a>
-                    {{-- <button type="submit" name="action" value="brouillon" class="btn btn-outline-danger btn-lg">
-                        <i class="fas fa-save me-1"></i>Enregistrer Brouillon
-                    </button> --}}
-                    <button type="submit" name="action" value="soumettre" class="btn btn-danger btn-lg">
-                        <i class="fas fa-check-circle me-1"></i>Valider et Envoyer
-                    </button>
-                </div>
-            </div>
+        <div class="d-flex flex-wrap justify-content-end gap-2 mb-5">
+            <a href="{{ route('pcs.declarations.index') }}" class="btn btn-label-secondary">
+                <i class="icon-base ti tabler-x me-1"></i>Annuler
+            </a>
+            <button type="submit" name="action" value="soumettre" class="btn btn-primary">
+                <i class="icon-base ti tabler-circle-check me-1"></i>Valider et Envoyer
+            </button>
         </div>
     </form>
 
@@ -771,9 +715,9 @@
             // Mettre à jour le badge
             badgeContainer.innerHTML = '';
             if (isManquant && !isRenseigne) {
-                badgeContainer.innerHTML = '<span class="badge bg-warning text-dark">Manquant</span>';
+                badgeContainer.innerHTML = '<span class="badge bg-label-warning">Manquant</span>';
             } else if (isRenseigne) {
-                badgeContainer.innerHTML = '<span class="badge bg-success">Déjà renseigné</span>';
+                badgeContainer.innerHTML = '<span class="badge bg-label-success">Déjà renseigné</span>';
             }
 
             // Si c'est l'année précédente et le mois est < 9, désactiver
@@ -783,7 +727,7 @@
                 label.classList.add('text-muted');
                 label.style.opacity = '0.4';
                 label.style.cursor = 'not-allowed';
-                badgeContainer.innerHTML = '<span class="badge bg-secondary">Non disponible</span>';
+                badgeContainer.innerHTML = '<span class="badge bg-label-secondary">Non disponible</span>';
             }
         });
 
@@ -946,7 +890,7 @@
                 <td><input type="file" name="mois_${mois}_rgd_AES_preuve_paiement" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"></td>
                 <td>
                     ${index > 0 ? `<button type="button" class="btn btn-sm btn-outline-secondary copier-ligne" data-index="${index}">
-                        <i class="fas fa-copy"></i>
+                        <i class="icon-base ti tabler-copy"></i>
                     </button>` : ''}
                 </td>
             `;
@@ -998,7 +942,7 @@
                 <td><input type="file" name="mois_${mois}_AES_preuve_paiement" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"></td>
                 <td>
                     ${index > 0 ? `<button type="button" class="btn btn-sm btn-outline-secondary copier-ligne" data-index="${index}">
-                        <i class="fas fa-copy"></i>
+                        <i class="icon-base ti tabler-copy"></i>
                     </button>` : ''}
                 </td>
             `;

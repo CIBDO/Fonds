@@ -5,13 +5,11 @@
 @include('partials.vuexy.datatables-assets')
 
 @section('content')
-<x-vuexy.page-header title="Gestion des Bureaux de Douanes" subtitle="Administration des bureaux PCS">
-    <x-slot:actions>
-        <a href="{{ route('pcs.bureaux.create') }}" class="btn btn-primary btn-sm">
-            <i class="ti tabler-plus me-1"></i>Nouveau Bureau
-        </a>
-    </x-slot:actions>
-</x-vuexy.page-header>
+<div class="d-flex justify-content-end mb-4">
+    <a href="{{ route('pcs.bureaux.create') }}" class="btn btn-primary btn-sm">
+        <i class="icon-base ti tabler-plus me-1"></i>Nouveau Bureau
+    </a>
+</div>
 
 <x-vuexy.card title="Liste des Bureaux de Douanes" icon="tabler-list">
     <x-slot:header>

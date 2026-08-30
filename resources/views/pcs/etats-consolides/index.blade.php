@@ -1,32 +1,19 @@
-@extends('layouts.master')
+﻿@extends('layouts.master')
 
 @section('title', 'États Consolidés PCS - Interface Unifiée')
 
 @section('content')
 
-<x-vuexy.page-header
-    title="États Consolidés PCS - Interface Unifiée"
-    subtitle="Générez vos états personnalisés en quelques clics"
-/>
-
-        <div class="row">
-            <!-- Carte de sélection du type d'état -->
+<div class="row">
             <div class="col-12 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-file-alt text-primary me-2"></i>
-                            Type d'état à générer
-                        </h5>
-                    </div>
-                    <div class="card-body">
+                <x-vuexy.card title="Type d'état à générer" icon="tabler-file-text">
                         <div class="row">
                             <div class="col-lg-4 col-md-6">
                                 <div class="form-check card-type-selector" onclick="selectTypeEtat('recouvrements')">
                                     <input class="form-check-input" type="radio" name="type_etat" id="type_recouvrements" value="recouvrements">
                                     <label class="form-check-label" for="type_recouvrements">
                                         <div class="type-card">
-                                            <i class="fas fa-coins fa-3x text-success mb-3"></i>
+                                            <i class="icon-base ti tabler-coins icon-48px text-success mb-3"></i>
                                             <h5>Recouvrements</h5>
                                             <p class="text-muted">État des recouvrements PCS par poste et mois</p>
                                         </div>
@@ -38,7 +25,7 @@
                                     <input class="form-check-input" type="radio" name="type_etat" id="type_reversements" value="reversements">
                                     <label class="form-check-label" for="type_reversements">
                                         <div class="type-card">
-                                            <i class="fas fa-exchange-alt fa-3x text-primary mb-3"></i>
+                                            <i class="icon-base ti tabler-arrows-exchange icon-48px text-primary mb-3"></i>
                                             <h5>Reversements</h5>
                                             <p class="text-muted">État des reversements PCS par poste et mois</p>
                                         </div>
@@ -50,7 +37,7 @@
                                     <input class="form-check-input" type="radio" name="type_etat" id="type_uemoa_aes" value="uemoa-aes">
                                     <label class="form-check-label" for="type_uemoa_aes">
                                         <div class="type-card">
-                                            <i class="fas fa-globe-africa fa-3x text-info mb-3"></i>
+                                            <i class="icon-base ti tabler-world icon-48px text-info mb-3"></i>
                                             <h5>États UEMOA/AES</h5>
                                             <p class="text-muted">Situation mensuelle des liquidations UEMOA/AES</p>
                                         </div>
@@ -62,7 +49,7 @@
                                     <input class="form-check-input" type="radio" name="type_etat" id="type_autres_demandes" value="autres-demandes">
                                     <label class="form-check-label" for="type_autres_demandes">
                                         <div class="type-card">
-                                            <i class="fas fa-folder-open fa-3x text-warning mb-3"></i>
+                                            <i class="icon-base ti tabler-folder-open icon-48px text-warning mb-3"></i>
                                             <h5>Autres Demandes</h5>
                                             <p class="text-muted">État des autres demandes financières</p>
                                         </div>
@@ -74,7 +61,7 @@
                                     <input class="form-check-input" type="radio" name="type_etat" id="type_trie" value="trie">
                                     <label class="form-check-label" for="type_trie">
                                         <div class="type-card">
-                                            <i class="fas fa-coins fa-3x text-primary mb-3"></i>
+                                            <i class="icon-base ti tabler-coins icon-48px text-primary mb-3"></i>
                                             <h5>États TRIE</h5>
                                             <p class="text-muted">États et rapports TRIE/CCIM</p>
                                         </div>
@@ -82,20 +69,12 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
+                </x-vuexy.card>
             </div>
 
-            <!-- Carte de filtrage -->
             <div class="col-12 mb-4">
-                <div class="card" id="filtresCard" style="display: none;">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-filter text-primary me-2"></i>
-                            Paramètres de filtrage
-                        </h5>
-                    </div>
-                    <div class="card-body">
+                <div id="filtresCard" style="display: none;">
+                <x-vuexy.card title="Paramètres de filtrage" icon="tabler-filter">
                         <form id="filtreForm" method="GET" target="_blank">
                             @csrf
 
@@ -103,7 +82,7 @@
                             <div class="row mb-4">
                                 <div class="col-xl-4 col-lg-4 col-md-6">
                                     <label for="annee" class="form-label fw-bold">
-                                        <i class="fas fa-calendar-year text-warning me-1"></i>
+                                        <i class="icon-base ti tabler-calendar text-warning me-1"></i>
                                         Année de référence <span class="text-danger">*</span>
                                     </label>
                                     <input type="number"
@@ -117,7 +96,7 @@
                                 </div>
                                 <div class="col-xl-4 col-lg-4 col-md-6" id="programmeField">
                                     <label for="programme" class="form-label fw-bold">
-                                        <i class="fas fa-globe text-info me-1"></i>
+                                        <i class="icon-base ti tabler-world text-info me-1"></i>
                                         Programme <span class="text-danger">*</span>
                                     </label>
                                     <select class="form-select" id="programme" name="programme">
@@ -128,7 +107,7 @@
                                 </div>
                                 <div class="col-xl-4 col-lg-4 col-md-6">
                                     <label for="poste_id" class="form-label fw-bold">
-                                        <i class="fas fa-map-marker-alt text-info me-1"></i>
+                                        <i class="icon-base ti tabler-map-pin text-info me-1"></i>
                                         Filtrer par poste
                                     </label>
                                     <select class="form-select" id="poste_id" name="poste_id">
@@ -144,7 +123,7 @@
                             <div class="row mb-4">
                                 <div class="col-xl-4 col-lg-4 col-md-6">
                                     <label for="mois" class="form-label fw-bold">
-                                        <i class="fas fa-calendar-day text-primary me-1"></i>
+                                        <i class="icon-base ti tabler-calendar-event text-primary me-1"></i>
                                         Filtrer par mois <span id="moisRequired" class="text-danger" style="display: none;">*</span>
                                     </label>
                                     <select class="form-select" id="mois" name="mois">
@@ -156,7 +135,7 @@
                                 </div>
                                 <div class="col-xl-4 col-lg-4 col-md-6">
                                     <label for="format" class="form-label fw-bold">
-                                        <i class="fas fa-file-export text-primary me-1"></i>
+                                        <i class="icon-base ti tabler-file-export text-primary me-1"></i>
                                         Format d'export
                                     </label>
                                     <select class="form-select" id="format" name="format">
@@ -166,7 +145,7 @@
                                 </div>
                                 <div class="col-xl-4 col-lg-4 col-md-6" id="statutField" style="display: none;">
                                     <label for="statut" class="form-label fw-bold">
-                                        <i class="fas fa-tags text-secondary me-1"></i>
+                                        <i class="icon-base ti tabler-tags text-secondary me-1"></i>
                                         Filtrer par statut
                                     </label>
                                     <select class="form-select" id="statut" name="statut">
@@ -179,7 +158,7 @@
                                 </div>
                                 <div class="col-xl-4 col-lg-4 col-md-6" id="typeEtatTrieField" style="display: none;">
                                     <label for="type_etat_trie" class="form-label fw-bold">
-                                        <i class="fas fa-file-alt text-primary me-1"></i>
+                                        <i class="icon-base ti tabler-file-text text-primary me-1"></i>
                                         Type d'état TRIE <span class="text-danger">*</span>
                                     </label>
                                     <select class="form-select" id="type_etat_trie" name="type_etat_trie">
@@ -194,22 +173,22 @@
                                 <div class="col-12">
                                     <div class="d-flex gap-2">
                                         <button type="button" class="btn btn-primary btn-lg" id="btnGenerer" onclick="genererEtat()">
-                                            <i class="fas fa-file-pdf me-2"></i>
+                                            <i class="icon-base ti tabler-file-type-pdf me-2"></i>
                                             Générer l'état
                                         </button>
                                         <button type="button" class="btn btn-success btn-lg" onclick="afficherApercu()">
-                                            <i class="fas fa-eye me-2"></i>
+                                            <i class="icon-base ti tabler-eye me-2"></i>
                                             Aperçu
                                         </button>
-                                        <button type="button" class="btn btn-secondary" onclick="resetForm()">
-                                            <i class="fas fa-undo me-1"></i>
+                                        <button type="button" class="btn btn-label-secondary" onclick="resetForm()">
+                                            <i class="icon-base ti tabler-arrow-back-up me-1"></i>
                                             Réinitialiser
                                         </button>
                                     </div>
                                 </div>
                             </div>
                         </form>
-                    </div>
+                </x-vuexy.card>
                 </div>
             </div>
         </div>
@@ -217,26 +196,12 @@
         <!-- Section des états TRIE -->
         <div class="row" id="trieSection" style="display: none;">
             <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-coins text-primary me-2"></i>
-                            États et Rapports TRIE - CCIM
-                        </h5>
-                    </div>
-                    <div class="card-body">
+                <x-vuexy.card title="États et Rapports TRIE - CCIM" icon="tabler-coins">
                         <div class="row">
-                            <!-- Carte État Mensuel -->
                             <div class="col-md-6 mb-4">
-                                <div class="card shadow-sm border-0 h-100">
-                                    <div class="card-header bg-primary text-white">
-                                        <h5 class="mb-0">
-                                            <i class="fas fa-calendar-alt me-2"></i>État Mensuel des Paiements
-                                        </h5>
-                                    </div>
-                                    <div class="card-body">
+                                <x-vuexy.card title="État Mensuel des Paiements" icon="tabler-calendar" class="h-100">
                                         <div class="text-center mb-3">
-                                            <i class="fas fa-receipt fa-4x text-primary mb-3"></i>
+                                            <i class="icon-base ti tabler-receipt icon-48px text-primary mb-3"></i>
                                             <p class="text-muted">
                                                 Générer l'état des paiements TRIE/CCIM pour un mois donné.
                                                 <br>Regroupe les données par <strong>POSTE</strong> avec le détail des paiements.
@@ -272,25 +237,17 @@
                                             </div>
                                             <div class="d-grid">
                                                 <button type="submit" class="btn btn-primary btn-lg">
-                                                    <i class="fas fa-download me-1"></i>Générer l'État Mensuel
+                                                    <i class="icon-base ti tabler-download me-1"></i>Générer l'État Mensuel
                                                 </button>
                                             </div>
                                         </form>
-                                    </div>
-                                </div>
+                                </x-vuexy.card>
                             </div>
 
-                            <!-- Carte État Consolidé Annuel -->
                             <div class="col-md-6 mb-4">
-                                <div class="card shadow-sm border-0 h-100">
-                                    <div class="card-header bg-success text-white">
-                                        <h5 class="mb-0">
-                                            <i class="fas fa-chart-bar me-2"></i>État Consolidé Annuel
-                                        </h5>
-                                    </div>
-                                    <div class="card-body">
+                                <x-vuexy.card title="État Consolidé Annuel" icon="tabler-chart-bar" class="h-100">
                                         <div class="text-center mb-3">
-                                            <i class="fas fa-table fa-4x text-success mb-3"></i>
+                                            <i class="icon-base ti tabler-table icon-48px text-success mb-3"></i>
                                             <p class="text-muted">
                                                 Générer l'état consolidé des cotisations par poste et bureau
                                                 pour une année complète.
@@ -310,23 +267,15 @@
                                             </div>
                                             <div class="d-grid">
                                                 <button type="submit" class="btn btn-success btn-lg">
-                                                    <i class="fas fa-download me-1"></i>Générer l'État Consolidé
+                                                    <i class="icon-base ti tabler-download me-1"></i>Générer l'État Consolidé
                                                 </button>
                                             </div>
                                         </form>
-                                    </div>
-                                </div>
+                                </x-vuexy.card>
                             </div>
                         </div>
 
-                        <!-- Statistiques Rapides TRIE -->
-                        <div class="card shadow-sm border-0 mt-4">
-                            <div class="card-header bg-info text-white">
-                                <h5 class="mb-0">
-                                    <i class="fas fa-chart-pie me-2"></i>Statistiques Rapides TRIE
-                                </h5>
-                            </div>
-                            <div class="card-body">
+                        <x-vuexy.card title="Statistiques Rapides TRIE" icon="tabler-chart-pie" class="mt-4">
                                 <div class="row g-3" id="statsTrieContainer">
                                     @php
                                         $anneeActuelle = date('Y');
@@ -347,7 +296,7 @@
                                     <div class="col-md-4">
                                         <div class="card border-primary">
                                             <div class="card-body text-center">
-                                                <i class="fas fa-coins fa-2x text-primary mb-2"></i>
+                                                <i class="icon-base ti tabler-coins icon-32px text-primary mb-2"></i>
                                                 <h6>Total Cotisations {{ $anneeActuelle }}</h6>
                                                 <h4 class="fw-bold text-primary">
                                                     {{ number_format($totalAnnee, 0, ',', ' ') }} FCFA
@@ -358,7 +307,7 @@
                                     <div class="col-md-4">
                                         <div class="card border-success">
                                             <div class="card-body text-center">
-                                                <i class="fas fa-calendar-check fa-2x text-success mb-2"></i>
+                                                <i class="icon-base ti tabler-calendar-check icon-32px text-success mb-2"></i>
                                                 <h6>Cotisations du Mois</h6>
                                                 <h4 class="fw-bold text-success">
                                                     {{ number_format($totalMois, 0, ',', ' ') }} FCFA
@@ -369,7 +318,7 @@
                                     <div class="col-md-4">
                                         <div class="card border-warning">
                                             <div class="card-body text-center">
-                                                <i class="fas fa-undo fa-2x text-warning mb-2"></i>
+                                                <i class="icon-base ti tabler-arrow-back-up icon-32px text-warning mb-2"></i>
                                                 <h6>Total Apurements {{ $anneeActuelle }}</h6>
                                                 <h4 class="fw-bold text-warning">
                                                     {{ number_format($totalApurement, 0, ',', ' ') }} FCFA
@@ -378,26 +327,15 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                        </x-vuexy.card>
+                </x-vuexy.card>
             </div>
         </div>
 
-        <!-- Section des états UEMOA/AES -->
         <div class="row" id="uemoaAesSection" style="display: none;">
             <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-globe-africa text-info me-2"></i>
-                            États UEMOA et AES - Situation Mensuelle des Liquidations
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <!-- Sélecteur de programme -->
-                        <div class="row mb-4">
+                <x-vuexy.card title="États UEMOA et AES - Situation Mensuelle des Liquidations" icon="tabler-world">
+                        <div class="row mb-4 g-3">
                             <div class="col-md-6">
                                 <label for="programmeUemoaAes" class="form-label fw-bold">Programme</label>
                                 <select class="form-select" id="programmeUemoaAes" onchange="chargerEtatUemoaAes()">
@@ -415,12 +353,8 @@
                             </div>
                         </div>
 
-                        <!-- Contenu des états -->
-                        <div id="contenuEtatUemoaAes">
-                            <!-- Les états seront chargés ici dynamiquement -->
-                        </div>
-                    </div>
-                </div>
+                        <div id="contenuEtatUemoaAes"></div>
+                </x-vuexy.card>
             </div>
         </div>
 
@@ -431,7 +365,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title mb-0">
-                            <i class="fas fa-question-circle text-info me-2"></i>
+                            <i class="icon-base ti tabler-help text-info me-2"></i>
                             Guide d'utilisation
                         </h5>
                     </div>
@@ -467,14 +401,14 @@
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title mb-0">
-                            <i class="fas fa-chart-bar text-success me-2"></i>
+                            <i class="icon-base ti tabler-chart-bar text-success me-2"></i>
                             Statistiques
                         </h5>
                     </div>
                     <div class="card-body">
                         <div id="statsContainer">
                             <div class="text-center text-muted">
-                                <i class="fas fa-info-circle fa-2x mb-2"></i>
+                                <i class="icon-base ti tabler-info-circle icon-32px mb-2"></i>
                                 <p>Sélectionnez un type d'état pour voir les statistiques</p>
                             </div>
                         </div>
@@ -489,7 +423,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">
-                            <i class="fas fa-eye me-2"></i>
+                            <i class="icon-base ti tabler-eye me-2"></i>
                             Aperçu de l'état
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -497,7 +431,7 @@
                     <div class="modal-body">
                         <div id="apercuContent">
                             <div class="text-center">
-                                <i class="fas fa-spinner fa-spin fa-2x"></i>
+                                <i class="spinner-border text-primary"></i>
                                 <p class="mt-2">Chargement de l'aperçu...</p>
                             </div>
                         </div>
@@ -505,7 +439,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
                         <button type="button" class="btn btn-primary" onclick="genererEtat()">
-                            <i class="fas fa-file-pdf me-1"></i>
+                            <i class="icon-base ti tabler-file-type-pdf me-1"></i>
                             Générer le PDF
                         </button>
                     </div>
@@ -713,7 +647,7 @@ function afficherApercu() {
         .catch(error => {
             document.getElementById('apercuContent').innerHTML = `
                 <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-triangle me-1"></i>
+                    <i class="icon-base ti tabler-alert-triangle me-1"></i>
                     Erreur lors du chargement de l'aperçu
                 </div>
             `;
@@ -836,7 +770,7 @@ function chargerEtatUemoaAes() {
     // Afficher un loader
     document.getElementById('contenuEtatUemoaAes').innerHTML = `
         <div class="text-center py-5">
-            <i class="fas fa-spinner fa-spin fa-3x text-primary mb-3"></i>
+            <i class="spinner-border spinner-border-sm text-primary icon-48px text-primary mb-3"></i>
             <p>Chargement des données...</p>
         </div>
     `;
@@ -851,7 +785,7 @@ function chargerEtatUemoaAes() {
             console.error('Erreur:', error);
             document.getElementById('contenuEtatUemoaAes').innerHTML = `
                 <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <i class="icon-base ti tabler-alert-triangle me-2"></i>
                     Erreur lors du chargement des données. Veuillez réessayer.
                 </div>
             `;
@@ -919,7 +853,7 @@ function genererAffichageEtat(donnees) {
             <div class="text-center mt-4">
                 <p class="text-muted small">*Ces données mensuelles sont provisoires et ne concernent que les déclarations validées</p>
                 <button class="btn btn-primary" onclick="genererPDFUemoaAes()">
-                    <i class="fas fa-file-pdf me-2"></i>Générer PDF
+                    <i class="icon-base ti tabler-file-type-pdf me-2"></i>Générer PDF
                 </button>
             </div>
         </div>

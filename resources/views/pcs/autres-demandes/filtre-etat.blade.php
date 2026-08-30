@@ -3,220 +3,199 @@
 @section('title', 'Filtrage État Autres Demandes PCS')
 
 @section('content')
-<x-vuexy.page-header title="Filtrage État Autres Demandes PCS" subtitle="Génération d'états consolidés avec filtres personnalisés">
-    <x-slot:actions>
-        <a href="{{ route('pcs.autres-demandes.index') }}" class="btn btn-label-secondary btn-sm">
-            <i class="ti tabler-arrow-left me-1"></i>Retour à la liste
-        </a>
-    </x-slot:actions>
-</x-vuexy.page-header>
+<div class="d-flex justify-content-end mb-4">
+    <a href="{{ route('pcs.autres-demandes.index') }}" class="btn btn-label-secondary btn-sm">
+        <i class="icon-base ti tabler-arrow-left me-1"></i>Retour à la liste
+    </a>
+</div>
 
-<div class="row g-6">
+<div class="row g-4">
     <div class="col-lg-8">
         <x-vuexy.card title="Paramètres de filtrage" icon="tabler-calendar">
-                        <form id="filtreForm" method="GET" action="{{ route('pcs.autres-demandes.etat-consolide.autres-demandes') }}" target="_blank">
-                            <!-- Période de filtrage -->
-                            <div class="row mb-4">
-                                <div class="col-md-6">
-                                    <label for="date_debut" class="form-label fw-bold">
-                                        <i class="fas fa-calendar-plus text-success me-1"></i>
-                                        Date de début <span class="text-danger">*</span>
-                                    </label>
-                                    <input type="date"
-                                           class="form-control @error('date_debut') is-invalid @enderror"
-                                           id="date_debut"
-                                           name="date_debut"
-                                           value="{{ old('date_debut', request('date_debut', date('Y-01-01'))) }}"
-                                           required>
-                                    @error('date_debut')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="date_fin" class="form-label fw-bold">
-                                        <i class="fas fa-calendar-minus text-danger me-1"></i>
-                                        Date de fin <span class="text-danger">*</span>
-                                    </label>
-                                    <input type="date"
-                                           class="form-control @error('date_fin') is-invalid @enderror"
-                                           id="date_fin"
-                                           name="date_fin"
-                                           value="{{ old('date_fin', request('date_fin', date('Y-m-d'))) }}"
-                                           required>
-                                    @error('date_fin')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
+            <form id="filtreForm" method="GET" action="{{ route('pcs.autres-demandes.etat-consolide.autres-demandes') }}" target="_blank">
+                <div class="row mb-4 g-3">
+                    <div class="col-md-6">
+                        <label for="date_debut" class="form-label fw-bold">
+                            <i class="icon-base ti tabler-calendar-plus text-success me-1"></i>
+                            Date de début <span class="text-danger">*</span>
+                        </label>
+                        <input type="date"
+                               class="form-control @error('date_debut') is-invalid @enderror"
+                               id="date_debut"
+                               name="date_debut"
+                               value="{{ old('date_debut', request('date_debut', date('Y-01-01'))) }}"
+                               required>
+                        @error('date_debut')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-6">
+                        <label for="date_fin" class="form-label fw-bold">
+                            <i class="icon-base ti tabler-calendar-minus text-danger me-1"></i>
+                            Date de fin <span class="text-danger">*</span>
+                        </label>
+                        <input type="date"
+                               class="form-control @error('date_fin') is-invalid @enderror"
+                               id="date_fin"
+                               name="date_fin"
+                               value="{{ old('date_fin', request('date_fin', date('Y-m-d'))) }}"
+                               required>
+                        @error('date_fin')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
 
-                            <!-- Année de référence -->
-                            <div class="row mb-4">
-                                <div class="col-md-6">
-                                    <label for="annee" class="form-label fw-bold">
-                                        <i class="fas fa-calendar-year text-warning me-1"></i>
-                                        Année de référence <span class="text-danger">*</span>
-                                    </label>
-                                    <input type="number"
-                                           class="form-control @error('annee') is-invalid @enderror"
-                                           id="annee"
-                                           name="annee"
-                                           value="{{ old('annee', request('annee', date('Y'))) }}"
-                                           min="2020"
-                                           max="{{ date('Y') + 1 }}"
-                                           required>
-                                    @error('annee')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="poste_id" class="form-label fw-bold">
-                                        <i class="fas fa-map-marker-alt text-info me-1"></i>
-                                        Filtrer par poste
-                                    </label>
-                                    <select class="form-select @error('poste_id') is-invalid @enderror"
-                                            id="poste_id"
-                                            name="poste_id">
-                                        <option value="">Tous les postes</option>
-                                        @foreach($postes as $poste)
-                                            <option value="{{ $poste->id }}"
-                                                    {{ old('poste_id', request('poste_id')) == $poste->id ? 'selected' : '' }}>
-                                                {{ $poste->nom }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('poste_id')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
+                <div class="row mb-4 g-3">
+                    <div class="col-md-6">
+                        <label for="annee" class="form-label fw-bold">
+                            <i class="icon-base ti tabler-calendar text-warning me-1"></i>
+                            Année de référence <span class="text-danger">*</span>
+                        </label>
+                        <input type="number"
+                               class="form-control @error('annee') is-invalid @enderror"
+                               id="annee"
+                               name="annee"
+                               value="{{ old('annee', request('annee', date('Y'))) }}"
+                               min="2020"
+                               max="{{ date('Y') + 1 }}"
+                               required>
+                        @error('annee')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-6">
+                        <label for="poste_id" class="form-label fw-bold">
+                            <i class="icon-base ti tabler-map-pin text-info me-1"></i>
+                            Filtrer par poste
+                        </label>
+                        <select class="form-select @error('poste_id') is-invalid @enderror"
+                                id="poste_id"
+                                name="poste_id">
+                            <option value="">Tous les postes</option>
+                            @foreach($postes as $poste)
+                                <option value="{{ $poste->id }}"
+                                        {{ old('poste_id', request('poste_id')) == $poste->id ? 'selected' : '' }}>
+                                    {{ $poste->nom }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('poste_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
 
-                            <!-- Statut -->
-                            <div class="row mb-4">
-                                <div class="col-md-6">
-                                    <label for="statut" class="form-label fw-bold">
-                                        <i class="fas fa-tags text-secondary me-1"></i>
-                                        Filtrer par statut
-                                    </label>
-                                    <select class="form-select @error('statut') is-invalid @enderror"
-                                            id="statut"
-                                            name="statut">
-                                        <option value="">Tous les statuts</option>
-                                        <option value="brouillon" {{ old('statut', request('statut')) == 'brouillon' ? 'selected' : '' }}>
-                                            Brouillon
-                                        </option>
-                                        <option value="soumis" {{ old('statut', request('statut')) == 'soumis' ? 'selected' : '' }}>
-                                            Soumis
-                                        </option>
-                                        <option value="valide" {{ old('statut', request('statut')) == 'valide' ? 'selected' : '' }}>
-                                            Validé
-                                        </option>
-                                        <option value="rejete" {{ old('statut', request('statut')) == 'rejete' ? 'selected' : '' }}>
-                                            Rejeté
-                                        </option>
-                                    </select>
-                                    @error('statut')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="format" class="form-label fw-bold">
-                                        <i class="fas fa-file-export text-primary me-1"></i>
-                                        Format d'export
-                                    </label>
-                                    <select class="form-select" id="format" name="format">
-                                        <option value="pdf" selected>PDF</option>
-                                        <option value="excel">Excel</option>
-                                    </select>
-                                </div>
-                            </div>
+                <div class="row mb-4 g-3">
+                    <div class="col-md-6">
+                        <label for="statut" class="form-label fw-bold">
+                            <i class="icon-base ti tabler-tags text-secondary me-1"></i>
+                            Filtrer par statut
+                        </label>
+                        <select class="form-select @error('statut') is-invalid @enderror"
+                                id="statut"
+                                name="statut">
+                            <option value="">Tous les statuts</option>
+                            <option value="brouillon" {{ old('statut', request('statut')) == 'brouillon' ? 'selected' : '' }}>Brouillon</option>
+                            <option value="soumis" {{ old('statut', request('statut')) == 'soumis' ? 'selected' : '' }}>Soumis</option>
+                            <option value="valide" {{ old('statut', request('statut')) == 'valide' ? 'selected' : '' }}>Validé</option>
+                            <option value="rejete" {{ old('statut', request('statut')) == 'rejete' ? 'selected' : '' }}>Rejeté</option>
+                        </select>
+                        @error('statut')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-6">
+                        <label for="format" class="form-label fw-bold">
+                            <i class="icon-base ti tabler-file-export text-primary me-1"></i>
+                            Format d'export
+                        </label>
+                        <select class="form-select" id="format" name="format">
+                            <option value="pdf" selected>PDF</option>
+                            <option value="excel">Excel</option>
+                        </select>
+                    </div>
+                </div>
 
-                            <!-- Boutons d'action -->
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="d-flex gap-2">
-                                        <button type="submit" class="btn btn-primary btn-lg" id="btnGenerer">
-                                            <i class="fas fa-file-pdf me-2"></i>
-                                            Générer l'état PDF
-                                        </button>
-                                        <button type="button" class="btn btn-success btn-lg" id="btnApercu" onclick="afficherApercu()">
-                                            <i class="fas fa-eye me-2"></i>
-                                            Aperçu des données
-                                        </button>
-                                        <button type="button" class="btn btn-secondary" onclick="resetForm()">
-                                            <i class="fas fa-undo me-1"></i>
-                                            Réinitialiser
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg" id="btnGenerer">
+                        <i class="icon-base ti tabler-file-type-pdf me-2"></i>
+                        Générer l'état PDF
+                    </button>
+                    <button type="button" class="btn btn-label-success btn-lg" id="btnApercu" onclick="afficherApercu()">
+                        <i class="icon-base ti tabler-eye me-2"></i>
+                        Aperçu des données
+                    </button>
+                    <button type="button" class="btn btn-label-secondary" onclick="resetForm()">
+                        <i class="icon-base ti tabler-arrow-back-up me-1"></i>
+                        Réinitialiser
+                    </button>
+                </div>
+            </form>
         </x-vuexy.card>
     </div>
 
     <div class="col-lg-4">
-        <x-vuexy.card title="Informations" icon="tabler-info-circle">
-                        <div class="alert alert-info">
-                            <h6><i class="fas fa-lightbulb me-1"></i> Comment utiliser :</h6>
-                            <ul class="mb-0">
-                                <li>Sélectionnez la période de filtrage</li>
-                                <li>Choisissez l'année de référence</li>
-                                <li>Optionnel : filtrez par poste ou statut</li>
-                                <li>Cliquez sur "Générer l'état PDF"</li>
-                            </ul>
-                        </div>
-
-                        <div class="alert alert-warning">
-                            <h6><i class="fas fa-exclamation-triangle me-1"></i> Note importante :</h6>
-                            <p class="mb-0">L'état PDF sera généré avec les données correspondant aux critères sélectionnés et téléchargé automatiquement.</p>
-                        </div>
+        <x-vuexy.card title="Informations" icon="tabler-info-circle" class="mb-4">
+            <x-vuexy.alert type="info">
+                <h6><i class="icon-base ti tabler-bulb me-1"></i> Comment utiliser :</h6>
+                <ul class="mb-0 ps-3">
+                    <li>Sélectionnez la période de filtrage</li>
+                    <li>Choisissez l'année de référence</li>
+                    <li>Optionnel : filtrez par poste ou statut</li>
+                    <li>Cliquez sur « Générer l'état PDF »</li>
+                </ul>
+            </x-vuexy.alert>
+            <x-vuexy.alert type="warning" class="mb-0">
+                <h6><i class="icon-base ti tabler-alert-triangle me-1"></i> Note importante :</h6>
+                <p class="mb-0">L'état PDF sera généré avec les données correspondant aux critères sélectionnés et téléchargé automatiquement.</p>
+            </x-vuexy.alert>
         </x-vuexy.card>
 
         <x-vuexy.card title="Statistiques rapides" icon="tabler-chart-bar">
-                        <div id="statsContainer">
-                            <div class="text-center text-muted">
-                                <i class="fas fa-spinner fa-spin fa-2x"></i>
-                                <p class="mt-2">Chargement des statistiques...</p>
-                            </div>
-                        </div>
+            <div id="statsContainer">
+                <div class="text-center text-body-secondary py-3">
+                    <div class="spinner-border spinner-border-sm text-primary mb-2" role="status"></div>
+                    <p class="mb-0 small">Chargement des statistiques...</p>
+                </div>
+            </div>
         </x-vuexy.card>
     </div>
 </div>
 
-<!-- Modal d'aperçu -->
-        <div class="modal fade" id="apercuModal" tabindex="-1">
-            <div class="modal-dialog modal-xl">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">
-                            <i class="fas fa-eye me-2"></i>
-                            Aperçu des données filtrées
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div id="apercuContent">
-                            <div class="text-center">
-                                <i class="fas fa-spinner fa-spin fa-2x"></i>
-                                <p class="mt-2">Chargement de l'aperçu...</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                        <button type="button" class="btn btn-primary" onclick="genererAvecParametres()">
-                            <i class="fas fa-file-pdf me-1"></i>
-                            Générer le PDF
-                        </button>
+<div class="modal fade" id="apercuModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="icon-base ti tabler-eye me-2"></i>
+                    Aperçu des données filtrées
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="apercuContent">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary mb-2" role="status"></div>
+                        <p class="mb-0">Chargement de l'aperçu...</p>
                     </div>
                 </div>
             </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Fermer</button>
+                <button type="button" class="btn btn-primary" onclick="genererAvecParametres()">
+                    <i class="icon-base ti tabler-file-type-pdf me-1"></i>
+                    Générer le PDF
+                </button>
+            </div>
         </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Validation des dates
     const dateDebut = document.getElementById('date_debut');
     const dateFin = document.getElementById('date_fin');
     const btnGenerer = document.getElementById('btnGenerer');
@@ -237,10 +216,8 @@ document.addEventListener('DOMContentLoaded', function() {
     dateDebut.addEventListener('change', validateDates);
     dateFin.addEventListener('change', validateDates);
 
-    // Charger les statistiques au chargement de la page
     chargerStatistiques();
 
-    // Recharger les statistiques quand les filtres changent
     [dateDebut, dateFin, document.getElementById('poste_id'), document.getElementById('statut')].forEach(element => {
         element.addEventListener('change', chargerStatistiques);
     });
@@ -271,32 +248,29 @@ function chargerStatistiques() {
         .then(response => response.json())
         .then(data => {
             document.getElementById('statsContainer').innerHTML = `
-                <div class="row text-center">
+                <div class="row text-center g-3">
                     <div class="col-6">
-                        <div class="stat-item">
-                            <h3 class="text-primary">${data.total_demandes}</h3>
-                            <p class="text-muted mb-0">Total demandes</p>
+                        <div class="p-3 rounded bg-label-primary">
+                            <h3 class="text-primary mb-1">${data.total_demandes}</h3>
+                            <p class="text-body-secondary mb-0 small">Total demandes</p>
                         </div>
                     </div>
                     <div class="col-6">
-                        <div class="stat-item">
-                            <h3 class="text-success">${data.montant_total}</h3>
-                            <p class="text-muted mb-0">Montant total</p>
-                        </div>
-                    </div>
-                </div>
-                <hr>
-                <div class="row text-center">
-                    <div class="col-6">
-                        <div class="stat-item">
-                            <h3 class="text-warning">${data.demandes_soumises}</h3>
-                            <p class="text-muted mb-0">Soumises</p>
+                        <div class="p-3 rounded bg-label-success">
+                            <h3 class="text-success mb-1">${data.montant_total}</h3>
+                            <p class="text-body-secondary mb-0 small">Montant total</p>
                         </div>
                     </div>
                     <div class="col-6">
-                        <div class="stat-item">
-                            <h3 class="text-info">${data.demandes_validees}</h3>
-                            <p class="text-muted mb-0">Validées</p>
+                        <div class="p-3 rounded bg-label-warning">
+                            <h3 class="text-warning mb-1">${data.demandes_soumises}</h3>
+                            <p class="text-body-secondary mb-0 small">Soumises</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 rounded bg-label-info">
+                            <h3 class="text-info mb-1">${data.demandes_validees}</h3>
+                            <p class="text-body-secondary mb-0 small">Validées</p>
                         </div>
                     </div>
                 </div>
@@ -304,8 +278,8 @@ function chargerStatistiques() {
         })
         .catch(error => {
             document.getElementById('statsContainer').innerHTML = `
-                <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-triangle me-1"></i>
+                <div class="alert alert-danger mb-0">
+                    <i class="icon-base ti tabler-alert-triangle me-1"></i>
                     Erreur lors du chargement des statistiques
                 </div>
             `;
@@ -316,7 +290,6 @@ function afficherApercu() {
     const modal = new bootstrap.Modal(document.getElementById('apercuModal'));
     modal.show();
 
-    // Charger l'aperçu
     const params = new URLSearchParams({
         date_debut: document.getElementById('date_debut').value,
         date_fin: document.getElementById('date_fin').value,
@@ -335,7 +308,7 @@ function afficherApercu() {
         .catch(error => {
             document.getElementById('apercuContent').innerHTML = `
                 <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-triangle me-1"></i>
+                    <i class="icon-base ti tabler-alert-triangle me-1"></i>
                     Erreur lors du chargement de l'aperçu
                 </div>
             `;
@@ -346,53 +319,4 @@ function genererAvecParametres() {
     document.getElementById('filtreForm').submit();
 }
 </script>
-
-<style>
-.stat-item {
-    padding: 1rem;
-    border-radius: 8px;
-    background: #f8f9fa;
-    margin-bottom: 1rem;
-}
-
-.stat-item h3 {
-    font-size: 1.8rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-}
-
-.form-label {
-    margin-bottom: 0.5rem;
-}
-
-.btn-lg {
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-}
-
-.alert {
-    border-radius: 8px;
-}
-
-.card {
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.card-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 12px 12px 0 0 !important;
-}
-
-.page-title h4 {
-    color: #2c3e50;
-    font-weight: 600;
-}
-
-.page-title h6 {
-    color: #6c757d;
-    font-size: 0.9rem;
-}
-</style>
 @endpush

@@ -3,31 +3,29 @@
 @section('title', 'Déclarations PCS')
 
 @section('content')
-<x-vuexy.page-header title="Déclarations PCS" subtitle="Programme de Consolidation des Statistiques UEMOA/AES">
-    <x-slot:actions>
-        @if(!auth()->user()->hasRole('acct'))
-        <div class="btn-group" role="group">
-            <a href="{{ route('pcs.declarations.create') }}" class="btn btn-primary btn-sm">
-                <i class="ti tabler-plus me-1"></i>Nouvelle Déclaration
-            </a>
-            <button type="button" class="btn btn-outline-primary btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
-                <span class="visually-hidden">Toggle Dropdown</span>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end">
-                @if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct', 'admin']))
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalEtatConsolidePosteEmetteur">
-                    <i class="ti tabler-file-export text-success"></i> État Consolidé (Poste Émetteur)
-                </a></li>
-                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalEtatReferences">
-                    <i class="ti tabler-hash text-info"></i> État des références (Déclarations et Cotisations)
-                </a></li>
-                @endif
-            </ul>
-        </div>
-        @endif
-    </x-slot:actions>
-</x-vuexy.page-header>
+@if(!auth()->user()->hasRole('acct'))
+<div class="d-flex justify-content-end mb-4">
+    <div class="btn-group" role="group">
+        <a href="{{ route('pcs.declarations.create') }}" class="btn btn-primary btn-sm">
+            <i class="icon-base ti tabler-plus me-1"></i>Nouvelle Déclaration
+        </a>
+        <button type="button" class="btn btn-outline-primary btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
+            <span class="visually-hidden">Toggle Dropdown</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            @if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct', 'admin']))
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalEtatConsolidePosteEmetteur">
+                <i class="icon-base ti tabler-file-export text-success"></i> État Consolidé (Poste Émetteur)
+            </a></li>
+            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalEtatReferences">
+                <i class="icon-base ti tabler-hash text-info"></i> État des références (Déclarations et Cotisations)
+            </a></li>
+            @endif
+        </ul>
+    </div>
+</div>
+@endif
 
 <x-vuexy.card title="Filtres" icon="tabler-filter" class="mb-4">
             <form method="GET" action="{{ route('pcs.declarations.index') }}" class="row g-3">
@@ -72,8 +70,8 @@
                 <div class="col-md-3">
                     <label class="form-label">&nbsp;</label>
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fas fa-search"></i> Filtrer
+                        <button type="submit" class="btn btn-primary">
+                            <i class="icon-base ti tabler-search me-1"></i>Filtrer
                         </button>
                     </div>
                 </div>
@@ -89,24 +87,22 @@
                 <table class="table table-bordered table-hover align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th><i class="fas fa-calendar"></i> Période</th>
-                            <th><i class="fas fa-building"></i> Entité</th>
-                            <th colspan="2" class="text-center bg-success text-black"><i class="fas fa-globe"></i> UEMOA</th>
-                            <th colspan="2" class="text-center bg-warning"><i class="fas fa-globe"></i> AES</th>
-                            <th class="text-center"><i class="fas fa-flag"></i> Statut</th>
-                            {{-- <th class="text-center"><i class="fas fa-user"></i> Saisi par</th> --}}
-                            <th class="text-center"><i class="fas fa-cogs"></i> Actions</th>
+                            <th><i class="icon-base ti tabler-calendar me-1"></i>Période</th>
+                            <th><i class="icon-base ti tabler-building me-1"></i>Entité</th>
+                            <th colspan="2" class="text-center bg-label-success">UEMOA</th>
+                            <th colspan="2" class="text-center bg-label-warning">AES</th>
+                            <th class="text-center">Statut</th>
+                            <th class="text-center" style="min-width: 140px;">Actions</th>
                         </tr>
                         <tr>
                             <th></th>
                             <th></th>
-                            <th class="text-end small bg-success-subtle">Recouvrement</th>
-                            <th class="text-end small bg-success-subtle">Reversement</th>
-                            <th class="text-end small bg-warning-subtle">Recouvrement</th>
-                            <th class="text-end small bg-warning-subtle">Reversement</th>
+                            <th class="text-end small bg-label-success">Recouvrement</th>
+                            <th class="text-end small bg-label-success">Reversement</th>
+                            <th class="text-end small bg-label-warning">Recouvrement</th>
+                            <th class="text-end small bg-label-warning">Reversement</th>
                             <th></th>
-                            <th></th>
-                            <th></th>
+                            <th class="text-center" style="min-width: 140px;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -121,15 +117,15 @@
                                 <strong>{{ \Carbon\Carbon::create()->month((int)$premierDecl->mois)->locale('fr')->translatedFormat('F') }}</strong> {{ $premierDecl->annee }}
                                 @if($groupe->count() > 1)
                                     <br><small class="text-muted">
-                                        <i class="fas fa-list"></i> {{ $groupe->count() }} déclaration(s)
+                                        <i class="icon-base ti tabler-list"></i> {{ $groupe->count() }} déclaration(s)
                                     </small>
                                 @endif
                             </td>
                             <td>
                                 @if($premierDecl->poste_id)
-                                    <span class="badge bg-primary">{{ $premierDecl->poste->nom }}</span>
+                                    <span class="badge bg-label-primary">{{ $premierDecl->poste->nom }}</span>
                                 @else
-                                    <span class="badge bg-info">{{ $premierDecl->bureauDouane->libelle }}</span>
+                                    <span class="badge bg-label-info">{{ $premierDecl->bureauDouane->libelle }}</span>
                                 @endif
                             </td>
 
@@ -174,16 +170,16 @@
                                 @endphp
                                 @switch($statutPrincipal)
                                     @case('brouillon')
-                                        <span class="badge bg-secondary"><i class="fas fa-pencil-alt"></i> Brouillon</span>
+                                        <span class="badge bg-label-secondary"><i class="icon-base ti tabler-pencil me-1"></i>Brouillon</span>
                                         @break
                                     @case('soumis')
-                                        <span class="badge bg-primary"><i class="fas fa-paper-plane"></i> Soumis</span>
+                                        <span class="badge bg-label-primary"><i class="icon-base ti tabler-send me-1"></i>Soumis</span>
                                         @break
                                     @case('valide')
-                                        <span class="badge bg-success"><i class="fas fa-check-circle"></i> Validé</span>
+                                        <span class="badge bg-label-success"><i class="icon-base ti tabler-circle-check me-1"></i>Validé</span>
                                         @break
                                     @case('rejete')
-                                        <span class="badge bg-danger"><i class="fas fa-times-circle"></i> Rejeté</span>
+                                        <span class="badge bg-label-danger"><i class="icon-base ti tabler-circle-x me-1"></i>Rejeté</span>
                                         @break
                                 @endswitch
                             </td>
@@ -191,59 +187,54 @@
                                 <small class="text-muted">{{ $premierDecl->saisiPar->name }}</small>
                             </td> --}}
                             <td class="text-center">
-                                <div class="btn-group btn-group-sm" role="group">
-                                    {{-- @if($groupe->count() > 1)
-                                        <button type="button"
-                                                class="btn btn-outline-info btn-sm"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#detailModal{{ $loop->index }}"
-                                                title="Voir toutes les déclarations ({{ $groupe->count() }})">
-                                            <i class="fas fa-list"></i> {{ $groupe->count() }}
-                                        </button>
-                                    @endif --}}
+                                <div class="d-flex align-items-center justify-content-center gap-1 flex-wrap">
                                     @if($declUemoa)
                                         <a href="{{ route('pcs.declarations.show', $declUemoa) }}"
-                                           class="btn btn-outline-success btn-sm"
+                                           class="btn btn-icon btn-sm btn-label-success rounded-pill"
                                            data-bs-toggle="tooltip"
                                            title="Voir UEMOA">
-                                            <i class="fas fa-eye"></i> U
+                                            <i class="icon-base ti tabler-eye icon-22px"></i>
                                         </a>
                                         @if($declUemoa->preuve_paiement)
                                             <a href="{{ route('pcs.declarations.preuve', $declUemoa) }}"
-                                               class="btn btn-outline-secondary btn-sm"
+                                               class="btn btn-icon btn-sm btn-text-secondary rounded-pill"
                                                data-bs-toggle="tooltip"
                                                title="Preuve de paiement UEMOA"
-                                               target="_blank"><i class="fas fa-paperclip"></i></a>
+                                               target="_blank">
+                                                <i class="icon-base ti tabler-paperclip icon-22px"></i>
+                                            </a>
                                         @endif
                                         @if($declUemoa->saisi_par == auth()->id())
                                             <a href="{{ route('pcs.declarations.edit', $declUemoa) }}"
-                                               class="btn btn-outline-primary btn-sm"
+                                               class="btn btn-icon btn-sm btn-text-secondary rounded-pill"
                                                data-bs-toggle="tooltip"
                                                title="Modifier UEMOA">
-                                                <i class="fas fa-edit"></i>
+                                                <i class="icon-base ti tabler-edit icon-22px"></i>
                                             </a>
                                         @endif
                                     @endif
                                     @if($declAes)
                                         <a href="{{ route('pcs.declarations.show', $declAes) }}"
-                                           class="btn btn-outline-warning btn-sm"
+                                           class="btn btn-icon btn-sm btn-label-warning rounded-pill"
                                            data-bs-toggle="tooltip"
                                            title="Voir AES">
-                                            <i class="fas fa-eye"></i> A
+                                            <i class="icon-base ti tabler-eye icon-22px"></i>
                                         </a>
                                         @if($declAes->preuve_paiement)
                                             <a href="{{ route('pcs.declarations.preuve', $declAes) }}"
-                                               class="btn btn-outline-secondary btn-sm"
+                                               class="btn btn-icon btn-sm btn-text-secondary rounded-pill"
                                                data-bs-toggle="tooltip"
                                                title="Preuve de paiement AES"
-                                               target="_blank"><i class="fas fa-paperclip"></i></a>
+                                               target="_blank">
+                                                <i class="icon-base ti tabler-paperclip icon-22px"></i>
+                                            </a>
                                         @endif
                                         @if($declAes->saisi_par == auth()->id())
                                             <a href="{{ route('pcs.declarations.edit', $declAes) }}"
-                                               class="btn btn-outline-primary btn-sm"
+                                               class="btn btn-icon btn-sm btn-text-secondary rounded-pill"
                                                data-bs-toggle="tooltip"
                                                title="Modifier AES">
-                                                <i class="fas fa-edit"></i>
+                                                <i class="icon-base ti tabler-edit icon-22px"></i>
                                             </a>
                                         @endif
                                     @endif
@@ -254,11 +245,11 @@
                                 <div class="modal fade" id="detailModal{{ $loop->index }}" tabindex="-1" aria-labelledby="detailModalLabel{{ $loop->index }}" aria-hidden="true">
                                     <div class="modal-dialog modal-lg">
                                         <div class="modal-content">
-                                            <div class="modal-header bg-primary text-white">
+                                            <div class="modal-header">
                                                 <h5 class="modal-title" id="detailModalLabel{{ $loop->index }}">
-                                                    <i class="fas fa-list"></i> Détail des déclarations
+                                                    <i class="icon-base ti tabler-list me-1"></i>Détail des déclarations
                                                 </h5>
-                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
                                             </div>
                                             <div class="modal-body">
                                                 <p class="mb-3">
@@ -289,16 +280,16 @@
                                                             <tr>
                                                                 <td>
                                                                     @if($decl->programme == 'UEMOA')
-                                                                        <span class="badge bg-success">{{ $decl->programme }}</span>
+                                                                        <span class="badge bg-label-success">{{ $decl->programme }}</span>
                                                                     @else
-                                                                        <span class="badge bg-warning">{{ $decl->programme }}</span>
+                                                                        <span class="badge bg-label-warning">{{ $decl->programme }}</span>
                                                                     @endif
                                                                 </td>
                                                                 <td>
                                                                     @if($decl->poste_id)
-                                                                        <span class="badge bg-primary">{{ $decl->poste->nom }}</span>
+                                                                        <span class="badge bg-label-primary">{{ $decl->poste->nom }}</span>
                                                                     @else
-                                                                        <span class="badge bg-info">{{ $decl->bureauDouane->libelle }}</span>
+                                                                        <span class="badge bg-label-info">{{ $decl->bureauDouane->libelle }}</span>
                                                                     @endif
                                                                 </td>
                                                                 <td class="text-end">{{ number_format($decl->montant_recouvrement, 0, ',', ' ') }}</td>
@@ -306,37 +297,42 @@
                                                                 <td class="text-center">
                                                                     @switch($decl->statut)
                                                                         @case('brouillon')
-                                                                            <span class="badge bg-secondary">Brouillon</span>
+                                                                            <span class="badge bg-label-secondary">Brouillon</span>
                                                                             @break
                                                                         @case('soumis')
-                                                                            <span class="badge bg-primary">Soumis</span>
+                                                                            <span class="badge bg-label-primary">Soumis</span>
                                                                             @break
                                                                         @case('valide')
-                                                                            <span class="badge bg-success">Validé</span>
+                                                                            <span class="badge bg-label-success">Validé</span>
                                                                             @break
                                                                         @case('rejete')
-                                                                            <span class="badge bg-danger">Rejeté</span>
+                                                                            <span class="badge bg-label-danger">Rejeté</span>
                                                                             @break
                                                                     @endswitch
                                                                 </td>
                                                                 <td class="text-center">
-                                                                    <div class="btn-group btn-group-sm" role="group">
+                                                                    <div class="d-flex align-items-center justify-content-center gap-1">
                                                                         <a href="{{ route('pcs.declarations.show', $decl) }}"
-                                                                           class="btn btn-sm btn-outline-info"
+                                                                           class="btn btn-icon btn-sm btn-text-secondary rounded-pill"
+                                                                           data-bs-toggle="tooltip"
                                                                            title="Voir">
-                                                                            <i class="fas fa-eye"></i>
+                                                                            <i class="icon-base ti tabler-eye icon-22px"></i>
                                                                         </a>
                                                                         @if($decl->preuve_paiement)
                                                                             <a href="{{ route('pcs.declarations.preuve', $decl) }}"
-                                                                               class="btn btn-sm btn-outline-secondary"
+                                                                               class="btn btn-icon btn-sm btn-text-secondary rounded-pill"
+                                                                               data-bs-toggle="tooltip"
                                                                                title="Preuve de paiement"
-                                                                               target="_blank"><i class="fas fa-paperclip"></i></a>
+                                                                               target="_blank">
+                                                                                <i class="icon-base ti tabler-paperclip icon-22px"></i>
+                                                                            </a>
                                                                         @endif
                                                                         @if($decl->saisi_par == auth()->id())
                                                                             <a href="{{ route('pcs.declarations.edit', $decl) }}"
-                                                                               class="btn btn-sm btn-outline-primary"
+                                                                               class="btn btn-icon btn-sm btn-text-secondary rounded-pill"
+                                                                               data-bs-toggle="tooltip"
                                                                                title="Modifier">
-                                                                                <i class="fas fa-edit"></i>
+                                                                                <i class="icon-base ti tabler-edit icon-22px"></i>
                                                                             </a>
                                                                         @endif
                                                                     </div>
@@ -348,7 +344,7 @@
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                                                <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Fermer</button>
                                             </div>
                                         </div>
                                     </div>
@@ -376,13 +372,13 @@
                                 @if ($declarations->onFirstPage())
                                     <li class="page-item disabled">
                                         <span class="page-link" aria-label="Première page">
-                                            <i class="fas fa-angle-double-left"></i>
+                                            <i class="icon-base ti tabler-chevrons-left"></i>
                                         </span>
                                     </li>
                                 @else
                                     <li class="page-item">
                                         <a class="page-link" href="{{ $declarations->url(1) }}" aria-label="Première page">
-                                            <i class="fas fa-angle-double-left"></i>
+                                            <i class="icon-base ti tabler-chevrons-left"></i>
                                         </a>
                                     </li>
                                 @endif
@@ -391,13 +387,13 @@
                                 @if ($declarations->onFirstPage())
                                     <li class="page-item disabled">
                                         <span class="page-link" aria-label="Précédent">
-                                            <i class="fas fa-angle-left"></i>
+                                            <i class="icon-base ti tabler-chevron-left"></i>
                                         </span>
                                     </li>
                                 @else
                                     <li class="page-item">
                                         <a class="page-link" href="{{ $declarations->previousPageUrl() }}" rel="prev" aria-label="Précédent">
-                                            <i class="fas fa-angle-left"></i>
+                                            <i class="icon-base ti tabler-chevron-left"></i>
                                         </a>
                                     </li>
                                 @endif
@@ -444,13 +440,13 @@
                                 @if ($declarations->hasMorePages())
                                     <li class="page-item">
                                         <a class="page-link" href="{{ $declarations->nextPageUrl() }}" rel="next" aria-label="Suivant">
-                                            <i class="fas fa-angle-right"></i>
+                                            <i class="icon-base ti tabler-chevron-right"></i>
                                         </a>
                                     </li>
                                 @else
                                     <li class="page-item disabled">
                                         <span class="page-link" aria-label="Suivant">
-                                            <i class="fas fa-angle-right"></i>
+                                            <i class="icon-base ti tabler-chevron-right"></i>
                                         </span>
                                     </li>
                                 @endif
@@ -459,13 +455,13 @@
                                 @if ($declarations->hasMorePages())
                                     <li class="page-item">
                                         <a class="page-link" href="{{ $declarations->url($lastPage) }}" aria-label="Dernière page">
-                                            <i class="fas fa-angle-double-right"></i>
+                                            <i class="icon-base ti tabler-chevrons-right"></i>
                                         </a>
                                     </li>
                                 @else
                                     <li class="page-item disabled">
                                         <span class="page-link" aria-label="Dernière page">
-                                            <i class="fas fa-angle-double-right"></i>
+                                            <i class="icon-base ti tabler-chevrons-right"></i>
                                         </span>
                                     </li>
                                 @endif
@@ -478,7 +474,7 @@
             </div>
             @else
             <div class="alert alert-info text-center">
-                <i class="fas fa-info-circle fa-2x mb-2"></i>
+                <i class="icon-base ti tabler-info-circle icon-lg mb-2 d-block"></i>
                 <p class="mb-0">Aucune déclaration trouvée. Cliquez sur "Nouvelle Déclaration" pour commencer.</p>
             </div>
             @endif
@@ -498,16 +494,16 @@
 <div class="modal fade" id="modalEtatReferences" tabindex="-1" aria-labelledby="modalEtatReferencesLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header bg-info text-white">
+            <div class="modal-header">
                 <h5 class="modal-title" id="modalEtatReferencesLabel">
-                    <i class="fas fa-hashtag me-2"></i>Générer État des références
+                    <i class="icon-base ti tabler-hash me-2"></i>Générer État des références
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
             </div>
             <form method="GET" action="{{ route('pcs.etat-references.poste-emetteur') }}" target="_blank">
                 <div class="modal-body">
                     <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i>
+                        <i class="icon-base ti tabler-info-circle me-2"></i>
                         Affiche les <strong>références</strong> des déclarations PCS et des cotisations TRIE pour votre poste.
                     </div>
                     <div class="mb-3">
@@ -528,11 +524,11 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-1"></i>Annuler
+                    <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
+                        <i class="icon-base ti tabler-x me-1"></i>Annuler
                     </button>
-                    <button type="submit" class="btn btn-info">
-                        <i class="fas fa-file-pdf me-1"></i>Générer le PDF
+                    <button type="submit" class="btn btn-primary">
+                        <i class="icon-base ti tabler-file-type-pdf me-1"></i>Générer le PDF
                     </button>
                 </div>
             </form>
@@ -543,16 +539,16 @@
 <div class="modal fade" id="modalEtatConsolidePosteEmetteur" tabindex="-1" aria-labelledby="modalEtatConsolidePosteEmetteurLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
+            <div class="modal-header">
                 <h5 class="modal-title" id="modalEtatConsolidePosteEmetteurLabel">
-                    <i class="fas fa-file-export me-2"></i>Générer État Consolidé
+                    <i class="icon-base ti tabler-file-export me-2"></i>Générer État Consolidé
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
             </div>
             <form method="GET" action="{{ route('pcs.declarations.etat-consolide.poste-emetteur') }}" target="_blank">
                 <div class="modal-body">
                     <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i>
+                        <i class="icon-base ti tabler-info-circle me-2"></i>
                         <strong>Poste émetteur :</strong> {{ auth()->user()->poste->nom }}
                     </div>
                     <div class="mb-3">
@@ -577,11 +573,11 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-1"></i>Annuler
+                    <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
+                        <i class="icon-base ti tabler-x me-1"></i>Annuler
                     </button>
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-file-pdf me-1"></i>Générer le PDF
+                    <button type="submit" class="btn btn-primary">
+                        <i class="icon-base ti tabler-file-type-pdf me-1"></i>Générer le PDF
                     </button>
                 </div>
             </form>

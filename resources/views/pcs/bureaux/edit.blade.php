@@ -3,13 +3,11 @@
 @section('title', 'Modifier le Bureau de Douane')
 
 @section('content')
-<x-vuexy.page-header title="Modifier le Bureau de Douane" subtitle="{{ $bureau->libelle }}">
-    <x-slot:actions>
-        <a href="{{ route('pcs.bureaux.index') }}" class="btn btn-label-secondary btn-sm">
-            <i class="ti tabler-arrow-left me-1"></i>Retour
-        </a>
-    </x-slot:actions>
-</x-vuexy.page-header>
+<div class="d-flex justify-content-end mb-4">
+    <a href="{{ route('pcs.bureaux.index') }}" class="btn btn-label-secondary btn-sm">
+        <i class="icon-base ti tabler-arrow-left me-1"></i>Retour
+    </a>
+</div>
 
 <x-vuexy.card title="Informations du Bureau" icon="tabler-building">
     <form action="{{ route('pcs.bureaux.update', $bureau) }}" method="POST">

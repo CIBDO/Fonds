@@ -3,177 +3,158 @@
 @section('title', 'Nouvelle Autre Demande')
 
 @section('content')
-<x-vuexy.page-header title="Nouvelle(s) Demande(s) Financière(s)" subtitle="Saisie des autres demandes PCS">
-    <x-slot:actions>
-        <a href="{{ route('pcs.autres-demandes.index') }}" class="btn btn-label-secondary btn-sm">
-            <i class="ti tabler-arrow-left me-1"></i>Retour
-        </a>
-    </x-slot:actions>
-</x-vuexy.page-header>
+<div class="d-flex justify-content-end mb-4">
+    <a href="{{ route('pcs.autres-demandes.index') }}" class="btn btn-label-secondary btn-sm">
+        <i class="icon-base ti tabler-arrow-left me-1"></i>Retour
+    </a>
+</div>
 
 <x-vuexy.card title="Informations des Demandes" icon="tabler-file">
-    <x-slot:header>
+    <x-slot:actions>
         <button type="button" class="btn btn-primary btn-sm" id="ajouterLigne">
-            <i class="ti tabler-plus me-1"></i>Ajouter une ligne
+            <i class="icon-base ti tabler-plus me-1"></i>Ajouter une ligne
         </button>
-    </x-slot:header>
-                    <form action="{{ route('pcs.autres-demandes.store') }}" method="POST" id="formDemandes" enctype="multipart/form-data">
-                        @csrf
+    </x-slot:actions>
 
-                        <!-- Paramètres globaux -->
-                        <div class="row mb-4">
-                            <!-- Année commune -->
-                            <div class="col-md-6 mb-3">
-                                <label for="annee_globale" class="form-label fw-bold">
-                                    Année (pour toutes les demandes) <span class="text-danger">*</span>
-                                </label>
-                                <select name="annee_globale"
-                                        id="annee_globale"
-                                        class="form-select @error('annee_globale') is-invalid @enderror"
-                                        required>
-                                    @for($i = date('Y'); $i >= date('Y') - 2; $i--)
-                                        <option value="{{ $i }}" {{ old('annee_globale', date('Y')) == $i ? 'selected' : '' }}>
-                                            {{ $i }}
-                                        </option>
-                                    @endfor
-                                </select>
-                                @error('annee_globale')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+    <form action="{{ route('pcs.autres-demandes.store') }}" method="POST" id="formDemandes" enctype="multipart/form-data">
+        @csrf
 
-                            <!-- Date commune -->
-                            <div class="col-md-6 mb-3">
-                                <label for="date_globale" class="form-label fw-bold">
-                                    Date (pour toutes les demandes) <span class="text-danger">*</span>
-                                </label>
-                                <input type="date"
-                                       class="form-control @error('date_globale') is-invalid @enderror"
-                                       id="date_globale"
-                                       name="date_globale"
-                                       value="{{ old('date_globale', date('Y-m-d')) }}"
-                                       required>
-                                @error('date_globale')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <label for="annee_globale" class="form-label fw-bold">
+                    Année (pour toutes les demandes) <span class="text-danger">*</span>
+                </label>
+                <select name="annee_globale"
+                        id="annee_globale"
+                        class="form-select @error('annee_globale') is-invalid @enderror"
+                        required>
+                    @for($i = date('Y'); $i >= date('Y') - 2; $i--)
+                        <option value="{{ $i }}" {{ old('annee_globale', date('Y')) == $i ? 'selected' : '' }}>
+                            {{ $i }}
+                        </option>
+                    @endfor
+                </select>
+                @error('annee_globale')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
 
-                        <hr class="my-4">
+            <div class="col-md-6 mb-3">
+                <label for="date_globale" class="form-label fw-bold">
+                    Date (pour toutes les demandes) <span class="text-danger">*</span>
+                </label>
+                <input type="date"
+                       class="form-control @error('date_globale') is-invalid @enderror"
+                       id="date_globale"
+                       name="date_globale"
+                       value="{{ old('date_globale', date('Y-m-d')) }}"
+                       required>
+                @error('date_globale')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+        </div>
 
-                        <!-- Conteneur des lignes de demandes -->
-                        <div id="lignes-demandes">
-                            <!-- Ligne de demande template (sera dupliquée) -->
-                            <div class="ligne-demande border rounded p-3 mb-3 bg-light position-relative" data-index="0">
-                                <div class="position-absolute top-0 end-0 m-2">
-                                    <button type="button" class="btn btn-danger btn-sm supprimer-ligne" style="display: none;">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
+        <hr class="my-4">
 
-                                <h6 class="text-danger fw-bold mb-3">
-                                    <i class="fas fa-file-alt me-2"></i>Demande <span class="numero-ligne">1</span>
-                                </h6>
+        <div id="lignes-demandes">
+            <div class="ligne-demande border rounded p-3 mb-3 bg-label-secondary position-relative" data-index="0">
+                <div class="position-absolute top-0 end-0 m-2">
+                    <button type="button" class="btn btn-danger btn-sm btn-icon supprimer-ligne" style="display: none;">
+                        <i class="icon-base ti tabler-trash"></i>
+                    </button>
+                </div>
 
-                                <div class="row">
-                                    <!-- Désignation -->
-                                    <div class="col-md-12 mb-3">
-                                        <label class="form-label fw-bold">
-                                            Désignation <span class="text-danger">*</span>
-                                        </label>
-                                        <input type="text"
-                                               class="form-control"
-                                               name="demandes[0][designation]"
-                                               placeholder="Ex: Demande d'avance pour mission, Achat matériel, etc."
-                                               required>
-                                        <small class="text-muted">Nature ou objet de la demande</small>
-                                    </div>
+                <h6 class="fw-bold mb-3">
+                    <i class="icon-base ti tabler-file-text me-2"></i>Demande <span class="numero-ligne">1</span>
+                </h6>
 
-                                    <!-- Montant -->
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label fw-bold">
-                                            Montant (FCFA) <span class="text-danger">*</span>
-                                        </label>
-                                        <input type="text"
-                                               class="form-control form-control-lg montant-ligne montant-input"
-                                               name="demandes[0][montant]"
-                                               inputmode="decimal"
-                                               data-min="0"
-                                               placeholder="0"
-                                               required>
-                                    </div>
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label fw-bold">
+                            Désignation <span class="text-danger">*</span>
+                        </label>
+                        <input type="text"
+                               class="form-control"
+                               name="demandes[0][designation]"
+                               placeholder="Ex: Demande d'avance pour mission, Achat matériel, etc."
+                               required>
+                        <small class="text-body-secondary">Nature ou objet de la demande</small>
+                    </div>
 
-                                    <!-- Observation -->
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label fw-bold">Observation</label>
-                                        <textarea name="demandes[0][observation]"
-                                                  class="form-control"
-                                                  rows="3"
-                                                  placeholder="Détails complémentaires..."></textarea>
-                                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">
+                            Montant (FCFA) <span class="text-danger">*</span>
+                        </label>
+                        <input type="text"
+                               class="form-control form-control-lg montant-ligne montant-input"
+                               name="demandes[0][montant]"
+                               inputmode="decimal"
+                               data-min="0"
+                               placeholder="0"
+                               required>
+                    </div>
 
-                                    <!-- Preuve de paiement (fichier) -->
-                                    <div class="col-md-12 mb-3">
-                                        <label class="form-label fw-bold">
-                                            <i class="fas fa-paperclip me-1"></i>Justificatif(fichier)
-                                        </label>
-                                        <input type="file"
-                                               class="form-control"
-                                               name="demandes[0][preuve_paiement]"
-                                               accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                                               id="preuve_0">
-                                        <small class="text-muted">PDF, images ou Word. Optionnel.</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Observation</label>
+                        <textarea name="demandes[0][observation]"
+                                  class="form-control"
+                                  rows="3"
+                                  placeholder="Détails complémentaires..."></textarea>
+                    </div>
 
-                        <!-- Résumé -->
-                        <div class="card border-danger mb-4">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <h6 class="text-muted">Nombre de demandes</h6>
-                                        <h4 class="text-danger" id="nombre-demandes">1</h4>
-                                    </div>
-                                    <div class="col-md-6 text-end">
-                                        <h6 class="text-muted">Montant total</h6>
-                                        <h4 class="text-danger" id="montant-total">0 FCFA</h4>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label fw-bold">
+                            <i class="icon-base ti tabler-paperclip me-1"></i>Justificatif (fichier)
+                        </label>
+                        <input type="file"
+                               class="form-control"
+                               name="demandes[0][preuve_paiement]"
+                               accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                               id="preuve_0">
+                        <small class="text-body-secondary">PDF, images ou Word. Optionnel.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                        <!-- Poste (affichage) -->
-                        <div class="alert alert-light border">
-                            <strong>Poste :</strong> {{ $poste->nom }}
-                        </div>
+        <x-vuexy.card class="mb-4 border-primary">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6 class="text-body-secondary">Nombre de demandes</h6>
+                    <h4 class="text-primary" id="nombre-demandes">1</h4>
+                </div>
+                <div class="col-md-6 text-end">
+                    <h6 class="text-body-secondary">Montant total</h6>
+                    <h4 class="text-primary" id="montant-total">0 FCFA</h4>
+                </div>
+            </div>
+        </x-vuexy.card>
 
-                        <!-- Messages d'erreur globaux -->
-                        @if($errors->any())
-                        <div class="alert alert-danger">
-                            <h6 class="alert-heading">Erreurs de validation :</h6>
-                            <ul class="mb-0">
-                                @foreach($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                        @endif
+        <div class="alert alert-light border mb-4">
+            <strong>Poste :</strong> {{ $poste->nom }}
+        </div>
 
-                        <!-- Boutons -->
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="{{ route('pcs.autres-demandes.index') }}" class="btn btn-secondary btn-lg">
-                                <i class="fas fa-times me-1"></i>Annuler
-                            </a>
-                           {{--  <button type="submit" name="action" value="brouillon" class="btn btn-outline-danger btn-lg">
-                                <i class="fas fa-save me-1"></i>Enregistrer en Brouillon
-                            </button> --}}
-                            <button type="submit" name="action" value="soumettre" class="btn btn-danger btn-lg">
-                                <i class="fas fa-paper-plane me-1"></i>Soumettre
-                            </button>
-                        </div>
-                    </form>
+        @if($errors->any())
+        <x-vuexy.alert type="danger" class="mb-4">
+            <h6 class="alert-heading">Erreurs de validation :</h6>
+            <ul class="mb-0">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </x-vuexy.alert>
+        @endif
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a href="{{ route('pcs.autres-demandes.index') }}" class="btn btn-label-secondary btn-lg">
+                <i class="icon-base ti tabler-x me-1"></i>Annuler
+            </a>
+            <button type="submit" name="action" value="soumettre" class="btn btn-primary btn-lg">
+                <i class="icon-base ti tabler-send me-1"></i>Soumettre
+            </button>
+        </div>
+    </form>
 </x-vuexy.card>
 @endsection
 
@@ -182,7 +163,6 @@
 (function() {
     'use strict';
 
-    // --- Formatage des montants (séparateur de milliers : espace, décimal : virgule) ---
     function parseMontant(str) {
         if (str === '' || str == null) return '';
         const s = String(str).replace(/\s/g, '').replace(',', '.');
@@ -212,7 +192,6 @@
         });
     }
 
-    // Attendre que le DOM soit complètement chargé
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
@@ -220,15 +199,13 @@
     }
 
     function init() {
-        let ligneIndex = 1; // Commence à 1 car on a déjà la ligne 0
+        let ligneIndex = 1;
 
-        // Initialiser le formatage des montants et formater les valeurs existantes
         initMontantInputs();
         document.querySelectorAll('.montant-input').forEach(function(input) {
             if (input.value && input.value.trim()) input.value = formatMontant(input.value);
         });
 
-        // Bouton d'ajout de ligne
         const btnAjouter = document.getElementById('ajouterLigne');
         if (!btnAjouter) return;
 
@@ -292,21 +269,18 @@
             });
         }
 
-        // Empêcher la soumission du formulaire par la touche Entrée (sauf dans les textarea)
         document.getElementById('formDemandes').addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
                 e.preventDefault();
             }
         });
 
-        // À la soumission : envoyer les montants sans séparateurs (format numérique)
         document.getElementById('formDemandes').addEventListener('submit', function() {
             document.querySelectorAll('.montant-input').forEach(function(input) {
                 if (input.value && input.value.trim()) input.value = parseMontant(input.value);
             });
         });
 
-        // Fonction pour mettre à jour les numéros de ligne
         function mettreAJourNumeros() {
             document.querySelectorAll('.ligne-demande').forEach(function(ligne, index) {
                 const numeroLigne = ligne.querySelector('.numero-ligne');
@@ -316,7 +290,6 @@
             });
         }
 
-        // Fonction pour gérer l'affichage du bouton supprimer
         function mettreAJourBoutonSupprimer() {
             const lignes = document.querySelectorAll('.ligne-demande');
             lignes.forEach(function(ligne) {
@@ -331,7 +304,6 @@
             });
         }
 
-        // Fonction pour calculer le total (prend en compte le format avec séparateurs)
         function calculerTotal() {
             let total = 0;
 
@@ -361,4 +333,3 @@
 })();
 </script>
 @endpush
-

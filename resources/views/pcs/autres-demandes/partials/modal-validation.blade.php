@@ -10,9 +10,9 @@
 <div class="modal fade" id="{{ $modalId }}" tabindex="-1" aria-labelledby="{{ $modalId }}Label" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content d-flex flex-column" style="max-height: 90vh;">
-            <div class="modal-header bg-success text-white flex-shrink-0">
+            <div class="modal-header flex-shrink-0">
                 <h5 class="modal-title" id="{{ $modalId }}Label">
-                    <i class="fas fa-check-circle me-2"></i>
+                    <i class="icon-base ti tabler-circle-check me-2 text-success"></i>
                     @if($estValidee)
                         Versement supplémentaire
                     @elseif($montantVerse > 0)
@@ -21,7 +21,7 @@
                         Valider la Demande
                     @endif
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
             <form action="{{ route('pcs.autres-demandes.valider', $demande) }}" method="POST" class="form-validation-versement d-flex flex-column flex-grow-1 overflow-hidden">
@@ -38,12 +38,12 @@
 
                     <div class="mb-3">
                         <strong>Désignation :</strong>
-                        <p class="text-muted mb-0">{{ $demande->designation }}</p>
+                        <p class="text-body-secondary mb-0">{{ $demande->designation }}</p>
                     </div>
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-4">
-                            <div class="card bg-light h-100 mb-0">
+                            <div class="card bg-label-primary h-100 mb-0">
                                 <div class="card-body text-center py-3">
                                     <h6 class="card-title text-primary small mb-1">Montant demandé</h6>
                                     <div class="fw-bold text-primary">{{ number_format($montantDemande, 0, ',', ' ') }} FCFA</div>
@@ -51,7 +51,7 @@
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="card bg-light h-100 mb-0">
+                            <div class="card bg-label-success h-100 mb-0">
                                 <div class="card-body text-center py-3">
                                     <h6 class="card-title text-success small mb-1">Déjà versé</h6>
                                     <div class="fw-bold text-success">{{ number_format($montantVerse, 0, ',', ' ') }} FCFA</div>
@@ -59,7 +59,7 @@
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="card border-warning h-100 mb-0">
+                            <div class="card bg-label-warning h-100 mb-0">
                                 <div class="card-body text-center py-3">
                                     <h6 class="card-title text-warning small mb-1">
                                         @if($estValidee && $montantRestant <= 0)
@@ -93,7 +93,7 @@
                                    required>
                             <span class="input-group-text">FCFA</span>
                         </div>
-                        <small class="text-muted">
+                        <small class="text-body-secondary">
                             Vous pouvez accorder un montant supérieur au montant demandé ({{ number_format($montantDemande, 0, ',', ' ') }} FCFA).
                             @if($montantVerse > 0)
                                 Le plafond ne peut pas être inférieur au total déjà versé.
@@ -103,9 +103,9 @@
 
                     @if($demande->echelons->isNotEmpty())
                     <div class="mb-3">
-                        <h6 class="text-success"><i class="fas fa-history me-1"></i>Versements déjà enregistrés</h6>
+                        <h6 class="text-success"><i class="icon-base ti tabler-history me-1"></i>Versements déjà enregistrés</h6>
                         <div class="table-responsive">
-                            <table class="table table-sm table-bordered mb-0">
+                            <table class="table table-sm table-hover mb-0">
                                 <thead class="table-light">
                                     <tr>
                                         <th>N°</th>
@@ -127,9 +127,9 @@
                     </div>
                     @endif
 
-                    <div class="border rounded p-3 bg-light">
+                    <div class="border rounded p-3 bg-label-secondary">
                         <h6 class="text-success mb-3">
-                            <i class="fas fa-money-bill-wave me-1"></i>
+                            <i class="icon-base ti tabler-currency-franc me-1"></i>
                             @if($estValidee)
                                 Nouveau versement supplémentaire
                             @elseif($montantVerse > 0)
@@ -176,23 +176,22 @@
                     @if($demande->observation)
                     <div class="mt-3">
                         <strong>Observation :</strong>
-                        <p class="text-muted mb-0">{{ $demande->observation }}</p>
+                        <p class="text-body-secondary mb-0">{{ $demande->observation }}</p>
                     </div>
                     @endif
 
-                    <div class="alert alert-info mt-3 mb-0 small">
-                        <i class="fas fa-info-circle me-1"></i>
+                    <x-vuexy.alert type="info" class="mt-3 mb-0 small">
                         Vous pouvez accorder <strong>plus que le montant demandé</strong>, verser par <strong>avances partielles</strong>,
                         ou ajouter des <strong>versements supplémentaires</strong> même après validation complète.
-                    </div>
+                    </x-vuexy.alert>
                 </div>
 
-                <div class="modal-footer flex-shrink-0 border-top bg-white">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-1"></i>Annuler
+                <div class="modal-footer flex-shrink-0 border-top">
+                    <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
+                        <i class="icon-base ti tabler-x me-1"></i>Annuler
                     </button>
                     <button type="submit" class="btn btn-success">
-                        <i class="fas fa-check me-1"></i>
+                        <i class="icon-base ti tabler-check me-1"></i>
                         @if($estValidee)
                             Enregistrer le complément
                         @elseif($montantVerse > 0)
