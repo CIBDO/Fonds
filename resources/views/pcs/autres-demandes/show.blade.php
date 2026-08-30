@@ -1,9 +1,9 @@
 @extends('layouts.master')
 
 @php
-    $montantAccorde = $demande->montant_accord ?? $demande->montant;
-    $aDesVersements = $demande->montant_accord !== null || $demande->montant_verse > 0;
-    $surplusAccorde = $demande->montant_accord !== null && $demande->montant_accord > $demande->montant;
+    $montantAccordeDefini = $demande->montant_accord !== null;
+    $aDesVersements = $demande->montant_verse > 0;
+    $surplusAccorde = $montantAccordeDefini && $demande->montant_accord > $demande->montant;
     $peutValider = auth()->user()->peut_valider_pcs || auth()->user()->hasRole('acct') || auth()->user()->hasRole('admin');
     $peutModifier = in_array($demande->statut, ['brouillon', 'soumis', 'rejete']) && $demande->saisi_par == auth()->id();
 @endphp
@@ -32,24 +32,51 @@
     <div class="col-md-6 col-xl-3">
         <x-vuexy.card>
             <div class="text-body-secondary small mb-1"><i class="icon-base ti tabler-checks me-1"></i>Montant versé</div>
-            <div class="fs-5 fw-bold text-success">
+            <div class="fs-5 fw-bold {{ $aDesVersements ? 'text-success' : 'text-body-secondary' }}">
                 {{ number_format($demande->montant_verse_cumule, 0, ',', ' ') }}
                 <small class="fs-6 fw-normal">FCFA</small>
             </div>
             @if($aDesVersements)
                 <span class="badge bg-label-info mt-2">{{ $demande->pourcentage_accorde }}% du demandé</span>
+            @elseif(in_array($demande->statut, ['soumis', 'brouillon']))
+                <span class="badge bg-label-secondary mt-2">Aucun versement</span>
             @endif
         </x-vuexy.card>
     </div>
     <div class="col-md-6 col-xl-3">
         <x-vuexy.card>
-            <div class="text-body-secondary small mb-1"><i class="icon-base ti tabler-file-certificate me-1"></i>Montant accordé</div>
-            <div class="fs-5 fw-bold">
-                {{ number_format($montantAccorde, 0, ',', ' ') }}
-                <small class="fs-6 fw-normal">FCFA</small>
-            </div>
-            @if($surplusAccorde)
-                <span class="badge bg-label-info mt-2">+{{ number_format($demande->montant_accord - $demande->montant, 0, ',', ' ') }} au-delà</span>
+            @if($demande->statut === 'rejete')
+                <div class="text-body-secondary small mb-1"><i class="icon-base ti tabler-circle-x me-1"></i>Accord</div>
+                <div class="fs-6 fw-medium text-danger">Demande rejetée</div>
+                <span class="badge bg-label-danger mt-2">Aucun accord</span>
+            @elseif($demande->statut === 'brouillon')
+                <div class="text-body-secondary small mb-1"><i class="icon-base ti tabler-clock me-1"></i>Accord</div>
+                <div class="fs-6 fw-medium text-body-secondary">En attente de soumission</div>
+                <span class="badge bg-label-secondary mt-2">Non transmise</span>
+            @elseif(!$montantAccordeDefini)
+                <div class="text-body-secondary small mb-1"><i class="icon-base ti tabler-hourglass me-1"></i>Accord</div>
+                <div class="fs-5 fw-bold text-body-secondary">—</div>
+                <span class="badge bg-label-warning mt-2">
+                    @if($demande->estPartiellementValidee())
+                        Versement en cours
+                    @else
+                        En cours d'examen
+                    @endif
+                </span>
+            @else
+                <div class="text-body-secondary small mb-1"><i class="icon-base ti tabler-file-certificate me-1"></i>Montant accordé</div>
+                <div class="fs-5 fw-bold">
+                    {{ number_format($demande->montant_accord, 0, ',', ' ') }}
+                    <small class="fs-6 fw-normal">FCFA</small>
+                </div>
+                @if($demande->statut === 'soumis' && !$demande->estValidationComplete())
+                    <span class="badge bg-label-warning mt-2">Accord partiel</span>
+                @elseif($demande->statut === 'valide')
+                    <span class="badge bg-label-success mt-2">Accord confirmé</span>
+                @endif
+                @if($surplusAccorde)
+                    <span class="badge bg-label-info mt-2">+{{ number_format($demande->montant_accord - $demande->montant, 0, ',', ' ') }} au-delà</span>
+                @endif
             @endif
         </x-vuexy.card>
     </div>
@@ -62,10 +89,12 @@
                     'partiel' => $demande->estPartiellementValidee(),
                 ])
             </div>
-            @if($demande->montant_restant_accord > 0 && $demande->statut !== 'valide')
+            @if($montantAccordeDefini && $demande->montant_restant_accord > 0 && $demande->statut !== 'valide')
                 <div class="small text-warning fw-semibold">
-                    Reste : {{ number_format($demande->montant_restant_accord, 0, ',', ' ') }} FCFA
+                    Reste à verser : {{ number_format($demande->montant_restant_accord, 0, ',', ' ') }} FCFA
                 </div>
+            @elseif($demande->statut === 'soumis' && !$montantAccordeDefini)
+                <div class="small text-body-secondary">Décision en attente</div>
             @elseif($demande->statut === 'valide' && $demande->montant_restant_accord <= 0)
                 <div class="small text-body-secondary">Versements complémentaires possibles</div>
             @endif

@@ -34,43 +34,81 @@
 
 @php
     $totalDemandes = $stats->sum('nombre');
-    $montantTotal = $stats->sum('total_montant');
-    $montantAccordeTotal = $stats->sum('total_montant_accord');
+    $montantTotal = (float) $stats->sum('total_montant');
+    $montantAccordeTotal = (float) $stats->sum('total_montant_accord');
+    $pourcentageGlobal = $montantTotal > 0 ? ($montantAccordeTotal / $montantTotal) * 100 : 0;
+    $differenceGlobale = $montantAccordeTotal - $montantTotal;
 @endphp
 
-<div class="row g-3 mb-4">
+<div class="row g-4 mb-4">
     <div class="col-md-4">
-        <x-vuexy.card class="bg-label-primary h-100">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <p class="text-body-secondary small mb-1">Total Demandes Validées</p>
-                    <h2 class="mb-0 text-primary">{{ $totalDemandes }}</h2>
+        <div class="card h-100 border-start border-primary border-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between gap-3">
+                    <div class="min-w-0">
+                        <p class="text-body-secondary small mb-1">Demandes validées</p>
+                        <h3 class="mb-1 text-primary">{{ number_format($totalDemandes, 0, ',', ' ') }}</h3>
+                        <small class="text-body-secondary">Année {{ $annee }}</small>
+                    </div>
+                    <span class="avatar avatar-lg flex-shrink-0">
+                        <span class="avatar-initial rounded bg-label-primary">
+                            <i class="icon-base ti tabler-file-check icon-28px"></i>
+                        </span>
+                    </span>
                 </div>
-                <i class="icon-base ti tabler-file-text icon-32px text-primary opacity-50"></i>
             </div>
-        </x-vuexy.card>
+        </div>
     </div>
     <div class="col-md-4">
-        <x-vuexy.card class="bg-label-info h-100">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <p class="text-body-secondary small mb-1">Montant Demandé</p>
-                    <h2 class="mb-0 text-info">{{ number_format($montantTotal, 0, ',', ' ') }} <small class="fs-6">FCFA</small></h2>
+        <div class="card h-100 border-start border-info border-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between gap-3">
+                    <div class="min-w-0">
+                        <p class="text-body-secondary small mb-1">Montant demandé</p>
+                        <h3 class="mb-1 text-info text-break" style="font-size: clamp(1.1rem, 2.5vw, 1.5rem);">
+                            {{ number_format($montantTotal, 0, ',', ' ') }}
+                            <small class="fs-6 fw-normal">FCFA</small>
+                        </h3>
+                        <small class="text-body-secondary">Total des demandes validées</small>
+                    </div>
+                    <span class="avatar avatar-lg flex-shrink-0">
+                        <span class="avatar-initial rounded bg-label-info">
+                            <i class="icon-base ti tabler-hand-stop icon-28px"></i>
+                        </span>
+                    </span>
                 </div>
-                <i class="icon-base ti tabler-hand-stop icon-32px text-info opacity-50"></i>
             </div>
-        </x-vuexy.card>
+        </div>
     </div>
     <div class="col-md-4">
-        <x-vuexy.card class="bg-label-success h-100">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <p class="text-body-secondary small mb-1">Montant Accordé</p>
-                    <h2 class="mb-0 text-success">{{ number_format($montantAccordeTotal, 0, ',', ' ') }} <small class="fs-6">FCFA</small></h2>
+        <div class="card h-100 border-start border-success border-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between gap-3">
+                    <div class="min-w-0">
+                        <p class="text-body-secondary small mb-1">Montant accordé</p>
+                        <h3 class="mb-1 text-success text-break" style="font-size: clamp(1.1rem, 2.5vw, 1.5rem);">
+                            {{ number_format($montantAccordeTotal, 0, ',', ' ') }}
+                            <small class="fs-6 fw-normal">FCFA</small>
+                        </h3>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mt-1">
+                            <span class="badge bg-label-{{ $pourcentageGlobal >= 100 ? 'success' : ($pourcentageGlobal >= 80 ? 'warning' : 'danger') }}">
+                                {{ number_format($pourcentageGlobal, 1) }}% du demandé
+                            </span>
+                            @if($differenceGlobale != 0)
+                                <small class="text-body-secondary">
+                                    {{ $differenceGlobale > 0 ? '+' : '' }}{{ number_format($differenceGlobale, 0, ',', ' ') }} FCFA
+                                </small>
+                            @endif
+                        </div>
+                    </div>
+                    <span class="avatar avatar-lg flex-shrink-0">
+                        <span class="avatar-initial rounded bg-label-success">
+                            <i class="icon-base ti tabler-cash icon-28px"></i>
+                        </span>
+                    </span>
                 </div>
-                <i class="icon-base ti tabler-currency-franc icon-32px text-success opacity-50"></i>
             </div>
-        </x-vuexy.card>
+        </div>
     </div>
 </div>
 

@@ -61,9 +61,8 @@
     <form action="{{ route('pcs.declarations.store') }}" method="POST" id="declarationForm" enctype="multipart/form-data">
         @csrf
 
-        <!-- Mode Normal -->
-        <div id="modeNormal" class="{{ $aDesMoisManquants ? '' : '' }}">
-            <!-- Période -->
+        <!-- Mode Normal : sélection période -->
+        <div id="modeNormal">
             <x-vuexy.card title="Période de Déclaration" icon="tabler-calendar" class="mb-4">
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -87,6 +86,8 @@
                         </div>
                     </div>
             </x-vuexy.card>
+        </div>
+
         @if($aDesMoisManquants)
         <div id="modeRattrapage" style="display:none;">
             <!-- Sélection des mois -->
@@ -800,14 +801,21 @@
         document.getElementById('toggleNormal').style.display = 'inline-block';
 
         // Désactiver les champs du mode normal pour qu'ils ne soient pas soumis
-        document.querySelectorAll('#modeNormal input, #modeNormal select').forEach(el => el.disabled = true);
+        document.querySelectorAll('#modeNormal input, #modeNormal select').forEach(el => {
+            el.disabled = true;
+            if (el.hasAttribute('required')) el.dataset.wasRequired = '1';
+            el.removeAttribute('required');
+        });
         document.querySelectorAll('#formulaireNormal input, #formulaireNormal select, #formulaireNormal textarea').forEach(el => el.disabled = true);
 
         // Activer les champs du mode rattrapage
-        document.querySelectorAll('#modeRattrapage input, #modeRattrapage select').forEach(el => el.disabled = false);
+        document.querySelectorAll('#modeRattrapage input, #modeRattrapage select').forEach(el => {
+            el.disabled = false;
+            if (el.dataset.wasRequired === '1') el.setAttribute('required', 'required');
+        });
         document.querySelectorAll('#formulaireRattrapage input, #formulaireRattrapage select, #formulaireRattrapage textarea').forEach(el => el.disabled = false);
 
-        // Générer les lignes du tableau
+        mettreAJourMoisSelonAnnee();
         genererLignesRattrapage();
     });
 
@@ -821,7 +829,10 @@
         document.getElementById('toggleNormal').style.display = 'none';
 
         // Activer les champs du mode normal
-        document.querySelectorAll('#modeNormal input, #modeNormal select').forEach(el => el.disabled = false);
+        document.querySelectorAll('#modeNormal input, #modeNormal select').forEach(el => {
+            el.disabled = false;
+            if (el.dataset.wasRequired === '1') el.setAttribute('required', 'required');
+        });
         document.querySelectorAll('#formulaireNormal input, #formulaireNormal select, #formulaireNormal textarea').forEach(el => el.disabled = false);
 
         // Désactiver les champs du mode rattrapage
