@@ -4,10 +4,10 @@
 
 @section('content')
 
-<div class="row">
+<div class="row g-4">
             <div class="col-12 mb-4">
                 <x-vuexy.card title="Type d'état à générer" icon="tabler-file-text">
-                        <div class="row">
+                        <div class="row g-4">
                             <div class="col-lg-4 col-md-6">
                                 <div class="form-check card-type-selector" onclick="selectTypeEtat('recouvrements')">
                                     <input class="form-check-input" type="radio" name="type_etat" id="type_recouvrements" value="recouvrements">
@@ -15,7 +15,7 @@
                                         <div class="type-card">
                                             <i class="icon-base ti tabler-coins icon-48px text-success mb-3"></i>
                                             <h5>Recouvrements</h5>
-                                            <p class="text-muted">État des recouvrements PCS par poste et mois</p>
+                                            <p class="text-body-secondary">État des recouvrements PCS par poste et mois</p>
                                         </div>
                                     </label>
                                 </div>
@@ -27,7 +27,7 @@
                                         <div class="type-card">
                                             <i class="icon-base ti tabler-arrows-exchange icon-48px text-primary mb-3"></i>
                                             <h5>Reversements</h5>
-                                            <p class="text-muted">État des reversements PCS par poste et mois</p>
+                                            <p class="text-body-secondary">État des reversements PCS par poste et mois</p>
                                         </div>
                                     </label>
                                 </div>
@@ -39,7 +39,7 @@
                                         <div class="type-card">
                                             <i class="icon-base ti tabler-world icon-48px text-info mb-3"></i>
                                             <h5>États UEMOA/AES</h5>
-                                            <p class="text-muted">Situation mensuelle des liquidations UEMOA/AES</p>
+                                            <p class="text-body-secondary">Situation mensuelle des liquidations UEMOA/AES</p>
                                         </div>
                                     </label>
                                 </div>
@@ -51,7 +51,7 @@
                                         <div class="type-card">
                                             <i class="icon-base ti tabler-folder-open icon-48px text-warning mb-3"></i>
                                             <h5>Autres Demandes</h5>
-                                            <p class="text-muted">État des autres demandes financières</p>
+                                            <p class="text-body-secondary">État des autres demandes financières</p>
                                         </div>
                                     </label>
                                 </div>
@@ -63,7 +63,7 @@
                                         <div class="type-card">
                                             <i class="icon-base ti tabler-coins icon-48px text-primary mb-3"></i>
                                             <h5>États TRIE</h5>
-                                            <p class="text-muted">États et rapports TRIE/CCIM</p>
+                                            <p class="text-body-secondary">États et rapports TRIE/CCIM</p>
                                         </div>
                                     </label>
                                 </div>
@@ -171,12 +171,12 @@
                             <!-- Boutons d'action -->
                             <div class="row">
                                 <div class="col-12">
-                                    <div class="d-flex gap-2">
-                                        <button type="button" class="btn btn-primary btn-lg" id="btnGenerer" onclick="genererEtat()">
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <button type="button" class="btn btn-primary" id="btnGenerer" onclick="genererEtat()">
                                             <i class="icon-base ti tabler-file-type-pdf me-2"></i>
                                             Générer l'état
                                         </button>
-                                        <button type="button" class="btn btn-success btn-lg" onclick="afficherApercu()">
+                                        <button type="button" class="btn btn-success" onclick="afficherApercu()">
                                             <i class="icon-base ti tabler-eye me-2"></i>
                                             Aperçu
                                         </button>
@@ -190,145 +190,6 @@
                         </form>
                 </x-vuexy.card>
                 </div>
-            </div>
-        </div>
-
-        <!-- Section des états TRIE -->
-        <div class="row" id="trieSection" style="display: none;">
-            <div class="col-12">
-                <x-vuexy.card title="États et Rapports TRIE - CCIM" icon="tabler-coins">
-                        <div class="row">
-                            <div class="col-md-6 mb-4">
-                                <x-vuexy.card title="État Mensuel des Paiements" icon="tabler-calendar" class="h-100">
-                                        <div class="text-center mb-3">
-                                            <i class="icon-base ti tabler-receipt icon-48px text-primary mb-3"></i>
-                                            <p class="text-muted">
-                                                Générer l'état des paiements TRIE/CCIM pour un mois donné.
-                                                <br>Regroupe les données par <strong>POSTE</strong> avec le détail des paiements.
-                                            </p>
-                                        </div>
-                                        <form method="GET" action="{{ route('trie.etats.mensuel') }}" target="_blank" id="formEtatMensuelTrie">
-                                            <div class="mb-3">
-                                                <label class="form-label fw-bold">Mois <span class="text-danger">*</span></label>
-                                                <select name="mois" class="form-select" id="moisTrieMensuel" required>
-                                                    @php
-                                                        $moisList = [
-                                                            1 => 'Janvier', 2 => 'Février', 3 => 'Mars', 4 => 'Avril',
-                                                            5 => 'Mai', 6 => 'Juin', 7 => 'Juillet', 8 => 'Août',
-                                                            9 => 'Septembre', 10 => 'Octobre', 11 => 'Novembre', 12 => 'Décembre'
-                                                        ];
-                                                    @endphp
-                                                    @foreach($moisList as $num => $nom)
-                                                        <option value="{{ $num }}" {{ $num == date('n') ? 'selected' : '' }}>
-                                                            {{ $nom }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label fw-bold">Année <span class="text-danger">*</span></label>
-                                                <select name="annee" class="form-select" id="anneeTrieMensuel" required>
-                                                    @for($i = date('Y'); $i >= date('Y') - 5; $i--)
-                                                        <option value="{{ $i }}" {{ $i == date('Y') ? 'selected' : '' }}>
-                                                            {{ $i }}
-                                                        </option>
-                                                    @endfor
-                                                </select>
-                                            </div>
-                                            <div class="d-grid">
-                                                <button type="submit" class="btn btn-primary btn-lg">
-                                                    <i class="icon-base ti tabler-download me-1"></i>Générer l'État Mensuel
-                                                </button>
-                                            </div>
-                                        </form>
-                                </x-vuexy.card>
-                            </div>
-
-                            <div class="col-md-6 mb-4">
-                                <x-vuexy.card title="État Consolidé Annuel" icon="tabler-chart-bar" class="h-100">
-                                        <div class="text-center mb-3">
-                                            <i class="icon-base ti tabler-table icon-48px text-success mb-3"></i>
-                                            <p class="text-muted">
-                                                Générer l'état consolidé des cotisations par poste et bureau
-                                                pour une année complète.
-                                                <br>Affiche le détail <strong>mensuel par BUREAU</strong> + récapitulatif bi-annuel.
-                                            </p>
-                                        </div>
-                                        <form method="GET" action="{{ route('trie.etats.consolide') }}" target="_blank" id="formEtatConsolideTrie">
-                                            <div class="mb-3">
-                                                <label class="form-label fw-bold">Année <span class="text-danger">*</span></label>
-                                                <select name="annee" class="form-select" id="anneeTrieConsolide" required>
-                                                    @for($i = date('Y'); $i >= date('Y') - 5; $i--)
-                                                        <option value="{{ $i }}" {{ $i == date('Y') ? 'selected' : '' }}>
-                                                            {{ $i }}
-                                                        </option>
-                                                    @endfor
-                                                </select>
-                                            </div>
-                                            <div class="d-grid">
-                                                <button type="submit" class="btn btn-success btn-lg">
-                                                    <i class="icon-base ti tabler-download me-1"></i>Générer l'État Consolidé
-                                                </button>
-                                            </div>
-                                        </form>
-                                </x-vuexy.card>
-                            </div>
-                        </div>
-
-                        <x-vuexy.card title="Statistiques Rapides TRIE" icon="tabler-chart-pie" class="mt-4">
-                                <div class="row g-3" id="statsTrieContainer">
-                                    @php
-                                        $anneeActuelle = date('Y');
-                                        $totalAnnee = \App\Models\CotisationTrie::where('annee', $anneeActuelle)
-                                            ->where('statut', 'valide')
-                                            ->sum('montant_total');
-
-                                        $moisActuel = date('n');
-                                        $totalMois = \App\Models\CotisationTrie::where('annee', $anneeActuelle)
-                                            ->where('mois', $moisActuel)
-                                            ->where('statut', 'valide')
-                                            ->sum('montant_total');
-
-                                        $totalApurement = \App\Models\CotisationTrie::where('annee', $anneeActuelle)
-                                            ->where('statut', 'valide')
-                                            ->sum('montant_apurement');
-                                    @endphp
-                                    <div class="col-md-4">
-                                        <div class="card border-primary">
-                                            <div class="card-body text-center">
-                                                <i class="icon-base ti tabler-coins icon-32px text-primary mb-2"></i>
-                                                <h6>Total Cotisations {{ $anneeActuelle }}</h6>
-                                                <h4 class="fw-bold text-primary">
-                                                    {{ number_format($totalAnnee, 0, ',', ' ') }} FCFA
-                                                </h4>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="card border-success">
-                                            <div class="card-body text-center">
-                                                <i class="icon-base ti tabler-calendar-check icon-32px text-success mb-2"></i>
-                                                <h6>Cotisations du Mois</h6>
-                                                <h4 class="fw-bold text-success">
-                                                    {{ number_format($totalMois, 0, ',', ' ') }} FCFA
-                                                </h4>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="card border-warning">
-                                            <div class="card-body text-center">
-                                                <i class="icon-base ti tabler-arrow-back-up icon-32px text-warning mb-2"></i>
-                                                <h6>Total Apurements {{ $anneeActuelle }}</h6>
-                                                <h4 class="fw-bold text-warning">
-                                                    {{ number_format($totalApurement, 0, ',', ' ') }} FCFA
-                                                </h4>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                        </x-vuexy.card>
-                </x-vuexy.card>
             </div>
         </div>
 
@@ -358,64 +219,18 @@
             </div>
         </div>
 
-        <!-- Section des statistiques et guide en bas -->
-        {{-- <div class="row">
-            <div class="col-xl-8 col-lg-7">
-                <!-- Guide d'utilisation -->
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">
-                            <i class="icon-base ti tabler-help text-info me-2"></i>
-                            Guide d'utilisation
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="guide-step">
-                                    <div class="step-number">1</div>
-                                    <p>Choisissez le type d'état à générer</p>
-                                </div>
-                                <div class="guide-step">
-                                    <div class="step-number">2</div>
-                                    <p>Configurez vos filtres (année, période, poste...)</p>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="guide-step">
-                                    <div class="step-number">3</div>
-                                    <p>Cliquez sur "Générer l'état" ou "Aperçu"</p>
-                                </div>
-                                <div class="guide-step">
-                                    <div class="step-number">4</div>
-                                    <p>Le PDF se télécharge automatiquement</p>
-                                </div>
-                            </div>
+        <div class="row" id="statsRow" style="display: none;">
+            <div class="col-12 mb-4">
+                <x-vuexy.card title="Statistiques" icon="tabler-chart-bar">
+                    <div id="statsContainer">
+                        <div class="text-center text-body-secondary py-3">
+                            <i class="icon-base ti tabler-info-circle icon-32px mb-2 d-block"></i>
+                            <p class="mb-0">Sélectionnez un type d'état et ajustez les filtres pour voir les statistiques</p>
                         </div>
                     </div>
-                </div>
+                </x-vuexy.card>
             </div>
-
-            <div class="col-xl-4 col-lg-5">
-                <!-- Statistiques -->
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">
-                            <i class="icon-base ti tabler-chart-bar text-success me-2"></i>
-                            Statistiques
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div id="statsContainer">
-                            <div class="text-center text-muted">
-                                <i class="icon-base ti tabler-info-circle icon-32px mb-2"></i>
-                                <p>Sélectionnez un type d'état pour voir les statistiques</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> --}}
+        </div>
 
         <!-- Modal d'aperçu -->
         <div class="modal fade" id="apercuModal" tabindex="-1">
@@ -437,7 +252,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Fermer</button>
                         <button type="button" class="btn btn-primary" onclick="genererEtat()">
                             <i class="icon-base ti tabler-file-type-pdf me-1"></i>
                             Générer le PDF
@@ -455,6 +270,12 @@
 <script>
 let typeEtatSelectionne = null;
 
+function toggleStatsRow(type) {
+    const statsRow = document.getElementById('statsRow');
+    if (!statsRow) return;
+    statsRow.style.display = (type && type !== 'trie') ? 'block' : 'none';
+}
+
 function selectTypeEtat(type) {
     typeEtatSelectionne = type;
 
@@ -469,45 +290,36 @@ function selectTypeEtat(type) {
     });
     event.currentTarget.classList.add('active');
 
-    // Afficher le formulaire de filtres
-    document.getElementById('filtresCard').style.display = 'block';
-
     // Adapter les champs selon le type
     if (type === 'autres-demandes') {
         document.getElementById('programmeField').style.display = 'none';
         document.getElementById('statutField').style.display = 'block';
         document.getElementById('uemoaAesSection').style.display = 'none';
-        document.getElementById('trieSection').style.display = 'none';
         document.getElementById('filtresCard').style.display = 'block';
-        // Charger les statistiques normales
+        toggleStatsRow(type);
         chargerStatistiques();
     } else if (type === 'uemoa-aes') {
         document.getElementById('programmeField').style.display = 'none';
         document.getElementById('statutField').style.display = 'none';
         document.getElementById('filtresCard').style.display = 'none';
         document.getElementById('uemoaAesSection').style.display = 'block';
-        document.getElementById('trieSection').style.display = 'none';
-        // Charger l'état UEMOA/AES (les statistiques seront chargées automatiquement)
+        toggleStatsRow(type);
         chargerEtatUemoaAes();
     } else if (type === 'trie') {
         document.getElementById('programmeField').style.display = 'none';
         document.getElementById('statutField').style.display = 'none';
         document.getElementById('typeEtatTrieField').style.display = 'block';
         document.getElementById('uemoaAesSection').style.display = 'none';
-        document.getElementById('trieSection').style.display = 'none';
         document.getElementById('filtresCard').style.display = 'block';
-        // Gérer l'affichage du champ mois requis
+        toggleStatsRow('trie');
         gererChampMoisTrie();
-        // Charger les statistiques TRIE
-        chargerStatistiquesTrie();
     } else {
         document.getElementById('programmeField').style.display = 'block';
         document.getElementById('statutField').style.display = 'none';
         document.getElementById('typeEtatTrieField').style.display = 'none';
         document.getElementById('uemoaAesSection').style.display = 'none';
-        document.getElementById('trieSection').style.display = 'none';
         document.getElementById('filtresCard').style.display = 'block';
-        // Charger les statistiques normales
+        toggleStatsRow(type);
         chargerStatistiques();
     }
 
@@ -692,36 +504,54 @@ function chargerStatistiques() {
 
             if (typeEtatSelectionne === 'recouvrements' || typeEtatSelectionne === 'reversements') {
                 statsHTML = `
-                    <div class="stat-item text-center">
-                        <h4 class="text-primary">${data.total}</h4>
-                        <p class="text-muted mb-0">Total déclarations</p>
-                    </div>
-                    <hr>
-                    <div class="stat-item text-center">
-                        <h5 class="text-success">${data.montant}</h5>
-                        <p class="text-muted mb-0">Montant total (FCFA)</p>
-                    </div>
-                    <hr>
-                    <div class="stat-item text-center">
-                        <h5 class="text-info">${data.postes}</h5>
-                        <p class="text-muted mb-0">Postes actifs</p>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 text-center h-100">
+                                <i class="icon-base ti tabler-file-check text-primary icon-lg mb-2"></i>
+                                <h4 class="text-primary mb-1">${data.total}</h4>
+                                <p class="text-body-secondary small mb-0">Total déclarations</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 text-center h-100">
+                                <i class="icon-base ti tabler-cash text-success icon-lg mb-2"></i>
+                                <h5 class="text-success mb-1">${data.montant}</h5>
+                                <p class="text-body-secondary small mb-0">Montant total (FCFA)</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 text-center h-100">
+                                <i class="icon-base ti tabler-map-pin text-info icon-lg mb-2"></i>
+                                <h5 class="text-info mb-1">${data.postes}</h5>
+                                <p class="text-body-secondary small mb-0">Postes actifs</p>
+                            </div>
+                        </div>
                     </div>
                 `;
             } else {
                 statsHTML = `
-                    <div class="stat-item text-center">
-                        <h4 class="text-primary">${data.total}</h4>
-                        <p class="text-muted mb-0">Total demandes</p>
-                    </div>
-                    <hr>
-                    <div class="stat-item text-center">
-                        <h5 class="text-success">${data.montant_demande}</h5>
-                        <p class="text-muted mb-0">Montant demandé</p>
-                    </div>
-                    <hr>
-                    <div class="stat-item text-center">
-                        <h5 class="text-warning">${data.montant_accorde}</h5>
-                        <p class="text-muted mb-0">Montant accordé</p>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 text-center h-100">
+                                <i class="icon-base ti tabler-folder text-primary icon-lg mb-2"></i>
+                                <h4 class="text-primary mb-1">${data.total}</h4>
+                                <p class="text-body-secondary small mb-0">Total demandes</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 text-center h-100">
+                                <i class="icon-base ti tabler-hand-stop text-success icon-lg mb-2"></i>
+                                <h5 class="text-success mb-1">${data.montant_demande}</h5>
+                                <p class="text-body-secondary small mb-0">Montant demandé</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 text-center h-100">
+                                <i class="icon-base ti tabler-circle-check text-warning icon-lg mb-2"></i>
+                                <h5 class="text-warning mb-1">${data.montant_accorde}</h5>
+                                <p class="text-body-secondary small mb-0">Montant accordé</p>
+                            </div>
+                        </div>
                     </div>
                 `;
             }
@@ -851,7 +681,7 @@ function genererAffichageEtat(donnees) {
             </div>
 
             <div class="text-center mt-4">
-                <p class="text-muted small">*Ces données mensuelles sont provisoires et ne concernent que les déclarations validées</p>
+                <p class="text-body-secondary small">*Ces données mensuelles sont provisoires et ne concernent que les déclarations validées</p>
                 <button class="btn btn-primary" onclick="genererPDFUemoaAes()">
                     <i class="icon-base ti tabler-file-type-pdf me-2"></i>Générer PDF
                 </button>
@@ -985,19 +815,28 @@ function afficherStatistiquesUemoaAes(totalRecouvrements, totalReversements, tot
     }
 
     const statsHTML = `
-        <div class="stat-item text-center">
-            <h4 class="text-success">${totalRecouvrements.toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</h4>
-            <p class="text-muted mb-0">Recouvrement (Millions FCFA)</p>
-        </div>
-        <hr>
-        <div class="stat-item text-center">
-            <h4 class="text-primary">${totalReversements.toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</h4>
-            <p class="text-muted mb-0">Reversement (Millions FCFA)</p>
-        </div>
-        <hr>
-        <div class="stat-item text-center">
-            <h4 class="${totalResteAReverser > 0 ? 'text-danger' : 'text-success'}">${totalResteAReverser.toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</h4>
-            <p class="text-muted mb-0">Reste à reverser (Millions FCFA)</p>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="border rounded p-3 text-center h-100">
+                    <i class="icon-base ti tabler-trending-up text-success icon-lg mb-2"></i>
+                    <h4 class="text-success mb-1">${totalRecouvrements.toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</h4>
+                    <p class="text-body-secondary small mb-0">Recouvrement (Millions FCFA)</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="border rounded p-3 text-center h-100">
+                    <i class="icon-base ti tabler-trending-down text-primary icon-lg mb-2"></i>
+                    <h4 class="text-primary mb-1">${totalReversements.toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</h4>
+                    <p class="text-body-secondary small mb-0">Reversement (Millions FCFA)</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="border rounded p-3 text-center h-100">
+                    <i class="icon-base ti tabler-scale icon-lg mb-2 ${totalResteAReverser > 0 ? 'text-danger' : 'text-success'}"></i>
+                    <h4 class="${totalResteAReverser > 0 ? 'text-danger' : 'text-success'} mb-1">${totalResteAReverser.toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</h4>
+                    <p class="text-body-secondary small mb-0">Reste à reverser (Millions FCFA)</p>
+                </div>
+            </div>
         </div>
     `;
 
@@ -1024,12 +863,6 @@ function genererPDFUemoaAes() {
     window.open(url, '_blank');
 }
 
-// Fonction pour charger les statistiques TRIE (pour l'instant, les stats sont statiques)
-function chargerStatistiquesTrie() {
-    // Les statistiques sont calculées côté serveur dans la vue
-    // Cette fonction peut être étendue plus tard pour charger des stats dynamiques
-    console.log('Statistiques TRIE chargées');
-}
 
 // Fonction pour gérer l'affichage du champ mois selon le type d'état TRIE
 function gererChampMoisTrie() {
@@ -1071,35 +904,24 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
-/* Optimisation pour l'utilisation de toute la largeur */
-.page-wrapper {
-    max-width: 100%;
-    padding: 0 15px;
-}
-
-.content {
-    max-width: 100%;
-}
-
-/* Cards de sélection de type d'état */
 .card-type-selector {
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
     border: 2px solid transparent;
-    border-radius: 12px;
-    padding: 10px;
+    border-radius: var(--bs-border-radius-lg, 0.5rem);
+    padding: 0.5rem;
     height: 100%;
 }
 
 .card-type-selector:hover {
-    border-color: #667eea;
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.2);
+    border-color: var(--bs-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 0.25rem 1rem rgba(var(--bs-primary-rgb), 0.15);
 }
 
 .card-type-selector.active {
-    border-color: #667eea;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border-color: var(--bs-primary);
+    background: rgba(var(--bs-primary-rgb), 0.06);
 }
 
 .card-type-selector input[type="radio"] {
@@ -1108,10 +930,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .type-card {
     text-align: center;
-    padding: 20px;
-    border-radius: 8px;
-    background: #fff;
-    transition: all 0.3s ease;
+    padding: 1.25rem 1rem;
+    border-radius: var(--bs-border-radius, 0.375rem);
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -1120,230 +940,58 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .type-card h5 {
     font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 10px;
+    margin-bottom: 0.5rem;
 }
 
 .type-card p {
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     margin-bottom: 0;
 }
 
-/* Formulaires de filtrage optimisés */
-.form-label {
-    font-size: 0.9rem;
-    margin-bottom: 5px;
+#filtresCard,
+#uemoaAesSection {
+    animation: fadeSlideIn 0.35s ease;
 }
 
-.form-control, .form-select {
-    font-size: 0.9rem;
+@keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* Guide d'utilisation */
-.guide-step {
-    display: flex;
-    align-items: start;
-    margin-bottom: 15px;
-}
-
-.step-number {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    margin-right: 10px;
-    flex-shrink: 0;
-}
-
-.guide-step p {
-    margin: 0;
-    line-height: 30px;
-    font-size: 0.9rem;
-}
-
-.stat-item h4, .stat-item h5 {
-    margin-bottom: 5px;
-}
-
-/* Cards générales */
-.card {
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
-}
-
-.card-header {
-    background: linear-gradient(135deg, #eefdf5 0%, #edfdf4 100%);
-    border-radius: 12px 12px 0 0 !important;
-}
-
-.card-header .card-title {
-    font-size: 1.1rem;
-}
-
-/* Animation pour les filtres */
-#filtresCard {
-    animation: slideDown 0.5s ease;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Responsive optimisé */
-@media (min-width: 1200px) {
-    .col-xl-3 {
-        flex: 0 0 25%;
-        max-width: 25%;
-    }
-}
-
-@media (min-width: 992px) {
-    .col-lg-4 {
-        flex: 0 0 33.333333%;
-        max-width: 33.333333%;
-    }
-    .col-lg-5 {
-        flex: 0 0 41.666667%;
-        max-width: 41.666667%;
-    }
-    .col-lg-7 {
-        flex: 0 0 58.333333%;
-        max-width: 58.333333%;
-    }
-}
-
-/* Boutons d'action */
-.btn-lg {
-    padding: 12px 24px;
-    font-size: 1rem;
-}
-
-/* Optimisation des statistiques */
-#statsContainer .stat-item {
-    text-align: center;
-    padding: 10px 0;
-}
-
-#statsContainer .stat-item h4 {
-    font-size: 1.5rem;
-    font-weight: bold;
-}
-
-#statsContainer .stat-item h5 {
-    font-size: 1.2rem;
-    font-weight: 600;
-}
-
-/* Styles spécifiques pour les états UEMOA/AES */
 .etat-container {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    background: var(--bs-body-bg);
+    padding: 1rem;
+    border-radius: var(--bs-border-radius-lg, 0.5rem);
+    border: 1px solid var(--bs-border-color);
 }
 
-/* Styles pour les en-têtes des colonnes */
 .bg-success-light {
-    background-color: rgba(40, 167, 69, 0.3) !important;
-    color: #155724 !important;
-    font-weight: bold !important;
+    background-color: rgba(var(--bs-success-rgb), 0.15) !important;
+    color: var(--bs-success-text-emphasis, #0f5132) !important;
+    font-weight: 600 !important;
 }
 
 .bg-primary-light {
-    background-color: rgba(0, 123, 255, 0.3) !important;
-    color: #004085 !important;
-    font-weight: bold !important;
+    background-color: rgba(var(--bs-primary-rgb), 0.15) !important;
+    color: var(--bs-primary-text-emphasis, #052c65) !important;
+    font-weight: 600 !important;
 }
 
-.etat-header {
-    border-bottom: 2px solid #dee2e6;
-    padding-bottom: 20px;
-    margin-bottom: 30px;
-}
-
-.etat-header h4, .etat-header h5, .etat-header h6 {
-    margin-bottom: 5px;
-    color: #2c3e50;
-}
-
-.etat-header .text-primary {
-    color: #007bff !important;
-}
-
-/* Styles des tableaux */
 .etat-container .table {
     font-size: 0.85rem;
-    margin-bottom: 30px;
 }
 
 .etat-container .table th {
-    background-color: #343a40;
-    color: white;
-    font-weight: bold;
-    text-align: center;
     vertical-align: middle;
-    padding: 8px 4px;
-    border: 1px solid #dee2e6;
-}
-
-.etat-container .table td {
-    padding: 6px 4px;
-    border: 1px solid #dee2e6;
-    vertical-align: middle;
-}
-
-.etat-container .table-striped tbody tr:nth-of-type(odd) {
-    background-color: rgba(0,0,0,.02);
-}
-
-.etat-container .table-success {
-    background-color: #d4edda !important;
-    font-weight: bold;
 }
 
 .etat-container .text-end {
-    text-align: right;
-    font-family: 'Courier New', monospace;
+    font-variant-numeric: tabular-nums;
 }
 
-/* Responsive pour les tableaux */
 @media (max-width: 768px) {
     .etat-container .table {
         font-size: 0.75rem;
-    }
-
-    .etat-container .table th,
-    .etat-container .table td {
-        padding: 4px 2px;
-    }
-}
-
-/* Animation pour l'affichage des états */
-#uemoaAesSection {
-    animation: fadeIn 0.5s ease-in;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
     }
 }
 </style>

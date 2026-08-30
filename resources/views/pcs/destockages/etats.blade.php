@@ -3,6 +3,12 @@
 @section('title', 'États Destockages PCS')
 
 @section('content')
+<div class="d-flex justify-content-end mb-4">
+    <a href="{{ route('pcs.destockages.index') }}" class="btn btn-label-secondary btn-sm">
+        <i class="icon-base ti tabler-arrow-left me-1"></i>Retour aux Règlements
+    </a>
+</div>
+
 <x-vuexy.card title="Type d'état à générer" icon="tabler-file-text" class="mb-4">
     <div class="row g-4">
         <div class="col-lg-6">

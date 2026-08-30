@@ -3,9 +3,7 @@
 @section('title', 'Mon Profil')
 
 @section('content')
-<x-vuexy.page-header title="Mon Profil" subtitle="Gérez vos informations personnelles et la sécurité de votre compte" />
-
-<div class="row g-6">
+<div class="row g-4">
     <div class="col-12">
         <x-vuexy.card title="Informations du profil" icon="tabler-user">
             @include('profile.partials.update-profile-information-form')

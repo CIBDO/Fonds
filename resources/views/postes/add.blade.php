@@ -2,7 +2,9 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addPosteModalLabel">Ajouter un Poste</h5>
+                <h5 class="modal-title" id="addPosteModalLabel">
+                    <i class="icon-base ti tabler-plus me-2"></i>Ajouter un Poste
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
             </div>
             <div class="modal-body">
@@ -14,7 +16,9 @@
                     </div>
                     <div class="d-flex justify-content-end gap-2">
                         <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <button type="submit" class="btn btn-primary">Ajouter</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="icon-base ti tabler-plus me-1"></i>Ajouter
+                        </button>
                     </div>
                 </form>
             </div>

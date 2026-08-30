@@ -5,13 +5,11 @@
 @include('partials.vuexy.datatables-assets')
 
 @section('content')
-<x-vuexy.page-header title="Gestion des Postes" subtitle="Administration des postes DGTCP">
-    <x-slot:actions>
-        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addPosteModal">
-            <i class="icon-base ti tabler-plus me-1"></i>Nouveau Poste
-        </button>
-    </x-slot:actions>
-</x-vuexy.page-header>
+<div class="d-flex justify-content-end mb-4">
+    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addPosteModal">
+        <i class="icon-base ti tabler-plus me-1"></i>Nouveau Poste
+    </button>
+</div>
 
 <x-vuexy.card title="Liste des Postes" icon="tabler-briefcase">
     <div class="table-responsive">
@@ -41,11 +39,11 @@
                         </div>
                     </td>
                     <td class="text-center">
-                        <button class="btn btn-sm btn-outline-primary"
+                        <button class="btn btn-icon btn-sm btn-text-secondary rounded-pill"
                                 data-bs-toggle="modal"
                                 data-bs-target="#editPosteModal{{ $poste->id }}"
                                 title="Modifier le poste">
-                            <i class="icon-base ti tabler-edit"></i>
+                            <i class="icon-base ti tabler-edit icon-22px"></i>
                         </button>
                     </td>
                 </tr>

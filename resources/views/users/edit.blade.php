@@ -3,13 +3,11 @@
 @section('title', 'Modifier l\'Utilisateur')
 
 @section('content')
-<x-vuexy.page-header title="Modifier l'Utilisateur" :subtitle="$user->name">
-    <x-slot:actions>
-        <a href="{{ route('users.index') }}" class="btn btn-label-secondary btn-sm">
-            <i class="icon-base ti tabler-arrow-left me-1"></i>Retour
-        </a>
-    </x-slot:actions>
-</x-vuexy.page-header>
+<div class="d-flex justify-content-end mb-4">
+    <a href="{{ route('users.index') }}" class="btn btn-label-secondary btn-sm">
+        <i class="icon-base ti tabler-arrow-left me-1"></i>Retour
+    </a>
+</div>
 
 <x-vuexy.card title="Modification des Informations" icon="tabler-user-edit">
     @if ($errors->any())

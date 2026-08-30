@@ -3,13 +3,11 @@
 @section('title', 'Créer un Utilisateur')
 
 @section('content')
-<x-vuexy.page-header title="Création d'Utilisateur" subtitle="Ajouter un nouveau compte utilisateur">
-    <x-slot:actions>
-        <a href="{{ route('users.index') }}" class="btn btn-label-secondary btn-sm">
-            <i class="icon-base ti tabler-arrow-left me-1"></i>Retour
-        </a>
-    </x-slot:actions>
-</x-vuexy.page-header>
+<div class="d-flex justify-content-end mb-4">
+    <a href="{{ route('users.index') }}" class="btn btn-label-secondary btn-sm">
+        <i class="icon-base ti tabler-arrow-left me-1"></i>Retour
+    </a>
+</div>
 
 <x-vuexy.card title="Informations de l'Utilisateur" icon="tabler-user-plus">
     @if ($errors->any())

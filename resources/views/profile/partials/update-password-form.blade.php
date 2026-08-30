@@ -32,7 +32,9 @@
         </div>
 
         <div class="d-flex align-items-center gap-3">
-            <button type="submit" class="btn btn-primary">Enregistrer</button>
+            <button type="submit" class="btn btn-primary">
+                <i class="icon-base ti tabler-device-floppy me-1"></i>Enregistrer
+            </button>
             @if (session('status') === 'password-updated')
                 <span class="text-success small">Enregistré.</span>
             @endif

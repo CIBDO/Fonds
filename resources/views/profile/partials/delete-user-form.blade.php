@@ -4,7 +4,7 @@
     </p>
 
     <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmUserDeletionModal">
-        Supprimer le compte
+        <i class="icon-base ti tabler-trash me-1"></i>Supprimer le compte
     </button>
 
     <div class="modal fade" id="confirmUserDeletionModal" tabindex="-1" aria-labelledby="confirmUserDeletionModalLabel" aria-hidden="true">
@@ -15,7 +15,9 @@
                     @method('delete')
 
                     <div class="modal-header">
-                        <h5 class="modal-title" id="confirmUserDeletionModalLabel">Êtes-vous sûr de vouloir supprimer votre compte ?</h5>
+                        <h5 class="modal-title" id="confirmUserDeletionModalLabel">
+                            <i class="icon-base ti tabler-alert-triangle me-2"></i>Supprimer votre compte ?
+                        </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
                     </div>
 
@@ -35,7 +37,9 @@
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <button type="submit" class="btn btn-danger">Supprimer définitivement</button>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="icon-base ti tabler-trash me-1"></i>Supprimer définitivement
+                        </button>
                     </div>
                 </form>
             </div>

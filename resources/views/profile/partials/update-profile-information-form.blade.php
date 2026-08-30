@@ -31,8 +31,8 @@
                     <p class="text-body-secondary small mb-2">
                         Votre adresse e-mail n'est pas vérifiée.
                     </p>
-                    <button form="send-verification" class="btn btn-sm btn-outline-primary">
-                        Renvoyer l'e-mail de vérification
+                    <button form="send-verification" class="btn btn-sm btn-label-primary">
+                        <i class="icon-base ti tabler-mail me-1"></i>Renvoyer l'e-mail de vérification
                     </button>
                 </div>
 
@@ -45,7 +45,9 @@
         </div>
 
         <div class="d-flex align-items-center gap-3">
-            <button type="submit" class="btn btn-primary">Enregistrer</button>
+            <button type="submit" class="btn btn-primary">
+                <i class="icon-base ti tabler-device-floppy me-1"></i>Enregistrer
+            </button>
             @if (session('status') === 'profile-updated')
                 <span class="text-success small">Enregistré.</span>
             @endif

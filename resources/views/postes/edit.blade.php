@@ -3,7 +3,9 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editPosteModalLabel{{ $poste->id }}">Modifier le Poste</h5>
+                <h5 class="modal-title" id="editPosteModalLabel{{ $poste->id }}">
+                    <i class="icon-base ti tabler-edit me-2"></i>Modifier le Poste
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
             </div>
             <div class="modal-body">
@@ -16,7 +18,9 @@
                     </div>
                     <div class="d-flex justify-content-end gap-2">
                         <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="icon-base ti tabler-device-floppy me-1"></i>Mettre à jour
+                        </button>
                     </div>
                 </form>
             </div>
