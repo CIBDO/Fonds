@@ -3,16 +3,14 @@
 @section('title', 'Gestion Bureaux TRIE')
 
 @section('content')
-<x-vuexy.page-header title="Bureaux TRIE - {{ $poste->nom }}" subtitle="Gestion des bureaux du poste">
-    <x-slot:actions>
-        <a href="{{ route('trie.bureaux.index') }}" class="btn btn-label-secondary btn-sm">
-            <i class="ti tabler-arrow-left me-1"></i>Retour
-        </a>
-        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalNouveauBureau">
-            <i class="ti tabler-plus me-1"></i>Nouveau Bureau
-        </button>
-    </x-slot:actions>
-</x-vuexy.page-header>
+<div class="d-flex justify-content-end flex-wrap gap-2 mb-4">
+    <a href="{{ route('trie.bureaux.index') }}" class="btn btn-label-secondary btn-sm">
+        <i class="icon-base ti tabler-arrow-left me-1"></i>Retour
+    </a>
+    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalNouveauBureau">
+        <i class="icon-base ti tabler-plus me-1"></i>Nouveau Bureau
+    </button>
+</div>
 
 <x-vuexy.card title="Liste des Bureaux ({{ $bureaux->count() }})" icon="tabler-list">
     @if($bureaux->count() > 0)
@@ -48,13 +46,13 @@
                         </form>
                     </td>
                     <td class="text-center">
-                        <div class="btn-group" role="group">
+                        <div class="d-flex justify-content-center gap-1">
                             <button type="button"
-                                    class="btn btn-sm btn-outline-warning"
+                                    class="btn btn-icon btn-sm btn-text-secondary rounded-pill"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modalModifierBureau{{ $bureau->id }}"
                                     title="Modifier">
-                                <i class="ti tabler-edit"></i>
+                                <i class="icon-base ti tabler-edit"></i>
                             </button>
                             <form action="{{ route('trie.bureaux.destroy', $bureau) }}"
                                   method="POST"
@@ -62,8 +60,8 @@
                                   onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce bureau ?');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer">
-                                    <i class="ti tabler-trash"></i>
+                                <button type="submit" class="btn btn-icon btn-sm btn-text-danger rounded-pill" title="Supprimer">
+                                    <i class="icon-base ti tabler-trash"></i>
                                 </button>
                             </form>
                         </div>

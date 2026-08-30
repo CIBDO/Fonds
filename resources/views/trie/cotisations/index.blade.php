@@ -3,70 +3,68 @@
 @section('title', 'Cotisations TRIE - CCIM')
 
 @section('content')
-<x-vuexy.page-header title="Cotisations TRIE - CCIM" subtitle="Gestion des cotisations CCIM">
-    <x-slot:actions>
-                @if(!auth()->user()->hasRole('acct'))
-                <div class="btn-group">
-                    <a href="{{ route('trie.cotisations.create') }}" class="btn btn-primary btn-sm">
-                        <i class="fas fa-plus me-1"></i>Nouvelle Cotisation
-                    </a>
-                    <button type="button" class="btn btn-primary btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="visually-hidden">Ouvrir le menu</span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <a class="dropdown-item" href="{{ route('trie.bureaux.index') }}">
-                                <i class="fas fa-building me-2"></i>Bureaux
-                            </a>
-                        </li>
-                        @if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct','admin']))
-                        <li>
-                            <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalEtatReferences">
-                                <i class="fas fa-hashtag me-2"></i>État des références
-                            </button>
-                        </li>
-                        <li>
-                            <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalEtatConsolideCotisations">
-                                <i class="fas fa-file-export me-2"></i>État Consolidé
-                            </button>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        @endif
-                        <li>
-                            <a class="dropdown-item" href="{{ route('trie.cotisations.create') }}">
-                                <i class="fas fa-plus me-2"></i>Créer une cotisation
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                @else
-                <div class="dropdown">
-                    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-bars me-1"></i>Actions
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <a class="dropdown-item" href="{{ route('trie.bureaux.index') }}">
-                                <i class="fas fa-building me-2"></i>Bureaux
-                            </a>
-                        </li>
-                        @if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct','admin']))
-                        <li>
-                            <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalEtatReferences">
-                                <i class="fas fa-hashtag me-2"></i>État des références
-                            </button>
-                        </li>
-                        <li>
-                            <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalEtatConsolideCotisations">
-                                <i class="fas fa-file-export me-2"></i>État Consolidé
-                            </button>
-                        </li>
-                        @endif
-                    </ul>
-                </div>
-                @endif
-    </x-slot:actions>
-</x-vuexy.page-header>
+<div class="d-flex justify-content-end mb-4">
+    @if(!auth()->user()->hasRole('acct'))
+    <div class="btn-group">
+        <a href="{{ route('trie.cotisations.create') }}" class="btn btn-primary btn-sm">
+            <i class="icon-base ti tabler-plus me-1"></i>Nouvelle Cotisation
+        </a>
+        <button type="button" class="btn btn-primary btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="visually-hidden">Ouvrir le menu</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+                <a class="dropdown-item" href="{{ route('trie.bureaux.index') }}">
+                    <i class="icon-base ti tabler-building me-2"></i>Bureaux
+                </a>
+            </li>
+            @if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct','admin']))
+            <li>
+                <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalEtatReferences">
+                    <i class="icon-base ti tabler-hash me-2"></i>État des références
+                </button>
+            </li>
+            <li>
+                <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalEtatConsolideCotisations">
+                    <i class="icon-base ti tabler-file-export me-2"></i>État Consolidé
+                </button>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            @endif
+            <li>
+                <a class="dropdown-item" href="{{ route('trie.cotisations.create') }}">
+                    <i class="icon-base ti tabler-plus me-2"></i>Créer une cotisation
+                </a>
+            </li>
+        </ul>
+    </div>
+    @else
+    <div class="dropdown">
+        <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="icon-base ti tabler-menu-2 me-1"></i>Actions
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+                <a class="dropdown-item" href="{{ route('trie.bureaux.index') }}">
+                    <i class="icon-base ti tabler-building me-2"></i>Bureaux
+                </a>
+            </li>
+            @if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct','admin']))
+            <li>
+                <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalEtatReferences">
+                    <i class="icon-base ti tabler-hash me-2"></i>État des références
+                </button>
+            </li>
+            <li>
+                <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalEtatConsolideCotisations">
+                    <i class="icon-base ti tabler-file-export me-2"></i>État Consolidé
+                </button>
+            </li>
+            @endif
+        </ul>
+    </div>
+    @endif
+</div>
 
 <x-vuexy.card title="Filtres" icon="tabler-filter" class="mb-4">
             <form method="GET" action="{{ route('trie.cotisations.index') }}" class="row g-3">
@@ -114,7 +112,7 @@
                     <label class="form-label">&nbsp;</label>
                     <div class="d-grid">
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search"></i> Filtrer
+                            <i class="icon-base ti tabler-filter"></i> Filtrer
                         </button>
                     </div>
                 </div>
@@ -130,13 +128,13 @@
                 <table class="table table-bordered table-hover align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th><i class="fas fa-calendar"></i> Période</th>
-                            <th><i class="fas fa-map-marker-alt"></i> Poste</th>
-                            <th><i class="fas fa-building"></i> Bureau</th>
-                            <th class="text-end"><i class="fas fa-money-bill"></i> Cotisation</th>
-                            <th class="text-end"><i class="fas fa-undo"></i> Apurement</th>
-                            <th class="text-end"><i class="fas fa-coins"></i> Total</th>
-                            <th class="text-center"><i class="fas fa-cogs"></i> Actions</th>
+                            <th><i class="icon-base ti tabler-calendar"></i> Période</th>
+                            <th><i class="icon-base ti tabler-map-pin"></i> Poste</th>
+                            <th><i class="icon-base ti tabler-building"></i> Bureau</th>
+                            <th class="text-end"><i class="icon-base ti tabler-cash"></i> Cotisation</th>
+                            <th class="text-end"><i class="icon-base ti tabler-refresh"></i> Apurement</th>
+                            <th class="text-end"><i class="icon-base ti tabler-coins"></i> Total</th>
+                            <th class="text-center"><i class="icon-base ti tabler-settings"></i> Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -160,17 +158,17 @@
                                 <strong class="text-success">{{ number_format($cotisation->montant_total, 0, ',', ' ') }}</strong>
                             </td>
                             <td class="text-center">
-                                <div class="btn-group" role="group">
+                                <div class="d-flex justify-content-center gap-1">
                                     <a href="{{ route('trie.cotisations.show', $cotisation) }}"
-                                       class="btn btn-sm btn-outline-primary"
+                                       class="btn btn-icon btn-sm btn-text-secondary rounded-pill"
                                        title="Voir">
-                                        <i class="fas fa-eye"></i>
+                                        <i class="icon-base ti tabler-eye"></i>
                                     </a>
                                     @if($cotisation->saisi_par == auth()->id())
                                         <a href="{{ route('trie.cotisations.edit', $cotisation) }}"
-                                           class="btn btn-sm btn-outline-warning"
+                                           class="btn btn-icon btn-sm btn-text-secondary rounded-pill"
                                            title="Modifier">
-                                            <i class="fas fa-edit"></i>
+                                            <i class="icon-base ti tabler-edit"></i>
                                         </a>
                                     @endif
                                 </div>
@@ -204,13 +202,13 @@
                                 @if ($cotisations->onFirstPage())
                                     <li class="page-item disabled">
                                         <span class="page-link" aria-label="Première page">
-                                            <i class="fas fa-angle-double-left"></i>
+                                            <i class="icon-base ti tabler-chevrons-left"></i>
                                         </span>
                                     </li>
                                 @else
                                     <li class="page-item">
                                         <a class="page-link" href="{{ $cotisations->appends(request()->except('page'))->url(1) }}" aria-label="Première page">
-                                            <i class="fas fa-angle-double-left"></i>
+                                            <i class="icon-base ti tabler-chevrons-left"></i>
                                         </a>
                                     </li>
                                 @endif
@@ -219,13 +217,13 @@
                                 @if ($cotisations->onFirstPage())
                                     <li class="page-item disabled">
                                         <span class="page-link" aria-label="Précédent">
-                                            <i class="fas fa-angle-left"></i>
+                                            <i class="icon-base ti tabler-chevron-left"></i>
                                         </span>
                                     </li>
                                 @else
                                     <li class="page-item">
                                         <a class="page-link" href="{{ $cotisations->appends(request()->except('page'))->previousPageUrl() }}" rel="prev" aria-label="Précédent">
-                                            <i class="fas fa-angle-left"></i>
+                                            <i class="icon-base ti tabler-chevron-left"></i>
                                         </a>
                                     </li>
                                 @endif
@@ -272,13 +270,13 @@
                                 @if ($cotisations->hasMorePages())
                                     <li class="page-item">
                                         <a class="page-link" href="{{ $cotisations->appends(request()->except('page'))->nextPageUrl() }}" rel="next" aria-label="Suivant">
-                                            <i class="fas fa-angle-right"></i>
+                                            <i class="icon-base ti tabler-chevron-right"></i>
                                         </a>
                                     </li>
                                 @else
                                     <li class="page-item disabled">
                                         <span class="page-link" aria-label="Suivant">
-                                            <i class="fas fa-angle-right"></i>
+                                            <i class="icon-base ti tabler-chevron-right"></i>
                                         </span>
                                     </li>
                                 @endif
@@ -287,13 +285,13 @@
                                 @if ($cotisations->hasMorePages())
                                     <li class="page-item">
                                         <a class="page-link" href="{{ $cotisations->appends(request()->except('page'))->url($lastPage) }}" aria-label="Dernière page">
-                                            <i class="fas fa-angle-double-right"></i>
+                                            <i class="icon-base ti tabler-chevrons-right"></i>
                                         </a>
                                     </li>
                                 @else
                                     <li class="page-item disabled">
                                         <span class="page-link" aria-label="Dernière page">
-                                            <i class="fas fa-angle-double-right"></i>
+                                            <i class="icon-base ti tabler-chevrons-right"></i>
                                         </span>
                                     </li>
                                 @endif
@@ -306,10 +304,10 @@
             </div>
             @else
             <div class="alert alert-info text-center">
-                <i class="fas fa-info-circle fa-2x mb-2"></i>
+                <i class="icon-base ti tabler-info-circle fa-2x mb-2"></i>
                 <p class="mb-0">Aucune cotisation trouvée.</p>
                 <a href="{{ route('trie.cotisations.create') }}" class="btn btn-primary mt-3">
-                    <i class="fas fa-plus me-1"></i>Créer une Cotisation
+                    <i class="icon-base ti tabler-plus me-1"></i>Créer une Cotisation
                 </a>
             </div>
             @endif
@@ -320,16 +318,16 @@
 <div class="modal fade" id="modalEtatReferences" tabindex="-1" aria-labelledby="modalEtatReferencesLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header bg-info text-white">
+            <div class="modal-header">
                 <h5 class="modal-title" id="modalEtatReferencesLabel">
-                    <i class="fas fa-hashtag me-2"></i>Générer État des références
+                    <i class="icon-base ti tabler-hash me-2"></i>Générer État des références
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
             </div>
             <form method="GET" action="{{ route('pcs.etat-references.poste-emetteur') }}" target="_blank">
                 <div class="modal-body">
                     <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i>
+                        <i class="icon-base ti tabler-info-circle me-2"></i>
                         Affiche les <strong>références</strong> des déclarations PCS et des cotisations TRIE pour votre poste.
                     </div>
                     <div class="mb-3">
@@ -343,10 +341,10 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-1"></i>Annuler
+                        <i class="icon-base ti tabler-x me-1"></i>Annuler
                     </button>
                     <button type="submit" class="btn btn-info">
-                        <i class="fas fa-file-pdf me-1"></i>Générer le PDF
+                        <i class="icon-base ti tabler-file-type-pdf me-1"></i>Générer le PDF
                     </button>
                 </div>
             </form>
@@ -356,16 +354,16 @@
 <div class="modal fade" id="modalEtatConsolideCotisations" tabindex="-1" aria-labelledby="modalEtatConsolideCotisationsLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
+            <div class="modal-header">
                 <h5 class="modal-title" id="modalEtatConsolideCotisationsLabel">
-                    <i class="fas fa-file-export me-2"></i>Générer État Consolidé
+                    <i class="icon-base ti tabler-file-export me-2"></i>Générer État Consolidé
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
             </div>
             <form method="GET" action="{{ route('trie.cotisations.etat-consolide.poste-emetteur') }}" target="_blank">
                 <div class="modal-body">
                     <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i>
+                        <i class="icon-base ti tabler-info-circle me-2"></i>
                         <strong>Poste émetteur :</strong> {{ auth()->user()->poste->nom }}
                     </div>
                     <div class="mb-3">
@@ -381,10 +379,10 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-1"></i>Annuler
+                        <i class="icon-base ti tabler-x me-1"></i>Annuler
                     </button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-file-pdf me-1"></i>Générer le PDF
+                        <i class="icon-base ti tabler-file-type-pdf me-1"></i>Générer le PDF
                     </button>
                 </div>
             </form>

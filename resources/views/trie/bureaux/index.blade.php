@@ -3,13 +3,11 @@
 @section('title', 'Bureaux TRIE - CCIM')
 
 @section('content')
-<x-vuexy.page-header title="Bureaux TRIE - CCIM" subtitle="Consultation des bureaux par poste">
-    <x-slot:actions>
-        <a href="{{ route('trie.cotisations.index') }}" class="btn btn-primary btn-sm">
-            <i class="ti tabler-coins me-1"></i>Cotisations
-        </a>
-    </x-slot:actions>
-</x-vuexy.page-header>
+<div class="d-flex justify-content-end mb-4">
+    <a href="{{ route('trie.cotisations.index') }}" class="btn btn-primary btn-sm">
+        <i class="icon-base ti tabler-coins me-1"></i>Cotisations
+    </a>
+</div>
 
 @if(in_array(Auth::user()->role, ['admin', 'acct']))
 <x-vuexy.alert type="info">

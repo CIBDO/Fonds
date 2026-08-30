@@ -10,25 +10,23 @@
     $totalExistant = 0;
 @endphp
 
-<x-vuexy.page-header title="Nouvelle Cotisation TRIE" subtitle="Saisie des cotisations CCIM">
-    <x-slot:actions>
-        <a href="{{ route('trie.cotisations.index') }}" class="btn btn-label-secondary btn-sm">
-            <i class="ti tabler-arrow-left me-1"></i>Retour
-        </a>
-    </x-slot:actions>
-</x-vuexy.page-header>
+<div class="d-flex justify-content-end mb-4">
+    <a href="{{ route('trie.cotisations.index') }}" class="btn btn-label-secondary btn-sm">
+        <i class="icon-base ti tabler-arrow-left me-1"></i>Retour
+    </a>
+</div>
 
     <!-- Sélection Poste et Mode -->
     <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-primary text-black d-flex justify-content-between align-items-center">
-            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Sélection du Poste et de la Période</h5>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="icon-base ti tabler-info-circle me-2"></i>Sélection du Poste et de la Période</h5>
             @if($poste && count($bureaux) > 0)
             <div class="btn-group" role="group">
                 <button type="button" class="btn btn-light btn-sm" id="toggleNormal">
-                    <i class="fas fa-calendar-day me-1"></i>Mois Unique
+                    <i class="icon-base ti tabler-calendar me-1"></i>Mois Unique
                 </button>
                 <button type="button" class="btn btn-warning btn-sm" id="toggleRattrapage">
-                    <i class="fas fa-history me-1"></i>Rattrapage
+                    <i class="icon-base ti tabler-history me-1"></i>Rattrapage
                 </button>
             </div>
             @endif
@@ -72,7 +70,7 @@
                         <div class="col-md-2">
                             <label class="form-label">&nbsp;</label>
                             <button type="submit" class="btn btn-primary w-100">
-                                <i class="fas fa-check"></i> Valider
+                                <i class="icon-base ti tabler-check"></i> Valider
                             </button>
                         </div>
                     </div>
@@ -85,7 +83,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>
+                            <i class="icon-base ti tabler-info-circle me-2"></i>
                             <strong>Mode Rattrapage :</strong> Sélectionnez tous les mois que vous souhaitez saisir en une seule fois.
                         </div>
                     </div>
@@ -144,7 +142,7 @@
                             @endfor
                         </div>
                         <small class="text-muted">
-                            <i class="fas fa-info-circle me-1"></i>
+                            <i class="icon-base ti tabler-info-circle me-1"></i>
                             Les mois déjà saisis sont grisés et ne peuvent pas être sélectionnés.
                         </small>
                     </div>
@@ -178,9 +176,9 @@
         <input type="hidden" name="annee" value="{{ $annee }}">
 
         <div class="card shadow-sm border-0 mb-4">
-            <div class="card-header bg-success text-black">
+            <div class="card-header">
                 <h5 class="mb-0">
-                    <i class="fas fa-money-check-alt me-2"></i>Saisie des Cotisations - {{ $poste->nom }}
+                    <i class="icon-base ti tabler-cash me-2"></i>Saisie des Cotisations - {{ $poste->nom }}
                     <small class="ms-2">({{ $moisList[$mois] }} {{ $annee }})</small>
                 </h5>
             </div>
@@ -188,7 +186,7 @@
 
                 @if($bureauxDejaSaisis->count() > 0)
                 <div class="alert alert-info mb-3">
-                    <i class="fas fa-info-circle me-2"></i>
+                    <i class="icon-base ti tabler-info-circle me-2"></i>
                     <strong>{{ $bureauxDejaSaisis->count() }} bureau(x)</strong> a/ont déjà une cotisation enregistrée pour cette période.
                     Les données de ces bureaux sont affichées ci-dessous en <strong class="text-success">vert</strong> (lecture seule).
                     @if($bureauxACompleter->count() > 0)
@@ -203,14 +201,14 @@
                                 <th style="width: 50px;">
                                     <input type="checkbox" id="selectAll" class="form-check-input">
                                 </th>
-                                <th><i class="fas fa-building"></i> Bureau</th>
-                                <th class="text-end"><i class="fas fa-money-bill-wave"></i> Cotisation Courante</th>
-                                <th class="text-end"><i class="fas fa-undo"></i> Apurement</th>
-                                <th><i class="fas fa-comment"></i> Détail Apurement</th>
-                                <th><i class="fas fa-credit-card"></i> Mode Paiement</th>
-                                <th><i class="fas fa-receipt"></i> Référence</th>
-                                <th><i class="fas fa-paperclip"></i> Preuve</th>
-                                <th><i class="fas fa-calendar-day"></i> Date</th>
+                                <th><i class="icon-base ti tabler-building"></i> Bureau</th>
+                                <th class="text-end"><i class="icon-base ti tabler-cash"></i> Cotisation Courante</th>
+                                <th class="text-end"><i class="icon-base ti tabler-refresh"></i> Apurement</th>
+                                <th><i class="icon-base ti tabler-message"></i> Détail Apurement</th>
+                                <th><i class="icon-base ti tabler-credit-card"></i> Mode Paiement</th>
+                                <th><i class="icon-base ti tabler-receipt"></i> Référence</th>
+                                <th><i class="icon-base ti tabler-paperclip"></i> Preuve</th>
+                                <th><i class="icon-base ti tabler-calendar"></i> Date</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -297,12 +295,12 @@
                             <!-- Bureau avec cotisation existante : Affichage des données -->
                             <tr class="table-success">
                                 <td class="text-center">
-                                    <i class="fas fa-check-circle text-success fs-5" title="Cotisation validée"></i>
+                                    <i class="icon-base ti tabler-check-circle text-success fs-5" title="Cotisation validée"></i>
                                 </td>
                                 <td>
                                     <strong class="text-success">{{ $bureau->code_bureau }}</strong>
                                     <br><small class="text-muted">{{ $bureau->nom_bureau }}</small>
-                                    <br><small class="text-success"><i class="fas fa-check-circle"></i> Cotisation enregistrée</small>
+                                    <br><small class="text-success"><i class="icon-base ti tabler-check-circle"></i> Cotisation enregistrée</small>
                                 </td>
                                 <td class="text-end">
                                     <strong class="text-primary">{{ number_format($bureau->cotisation_existante->montant_cotisation_courante, 0, ',', ' ') }}</strong>
@@ -331,7 +329,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($bureau->cotisation_existante->preuve_paiement ?? null)
-                                        <a href="{{ route('trie.cotisations.preuve', $bureau->cotisation_existante) }}" class="btn btn-sm btn-outline-secondary" target="_blank" title="Télécharger la preuve"><i class="fas fa-paperclip"></i></a>
+                                        <a href="{{ route('trie.cotisations.preuve', $bureau->cotisation_existante) }}" class="btn btn-sm btn-outline-secondary" target="_blank" title="Télécharger la preuve"><i class="icon-base ti tabler-paperclip"></i></a>
                                     @else
                                         <span class="text-muted">-</span>
                                     @endif
@@ -412,10 +410,10 @@
             <div class="card-body">
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                     <a href="{{ route('trie.cotisations.index') }}" class="btn btn-secondary btn-lg">
-                        <i class="fas fa-times me-1"></i>Annuler
+                        <i class="icon-base ti tabler-x me-1"></i>Annuler
                     </a>
                     <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled>
-                        <i class="fas fa-save me-1"></i>Enregistrer les Cotisations
+                        <i class="icon-base ti tabler-device-floppy me-1"></i>Enregistrer les Cotisations
                     </button>
                 </div>
             </div>
@@ -430,9 +428,9 @@
         <input type="hidden" name="annee" id="anneeRattrapageHidden" value="{{ $annee }}">
 
         <div class="card shadow-sm border-0 mb-4">
-            <div class="card-header bg-warning text-black">
+            <div class="card-header">
                 <h5 class="mb-0">
-                    <i class="fas fa-history me-2"></i>Rattrapage Multi-Mois - {{ $poste->nom }}
+                    <i class="icon-base ti tabler-history me-2"></i>Rattrapage Multi-Mois - {{ $poste->nom }}
                     <small class="ms-2">({{ $annee }})</small>
                 </h5>
             </div>
@@ -448,10 +446,10 @@
             <div class="card-body">
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                     <a href="{{ route('trie.cotisations.index') }}" class="btn btn-secondary btn-lg">
-                        <i class="fas fa-times me-1"></i>Annuler
+                        <i class="icon-base ti tabler-x me-1"></i>Annuler
                     </a>
                     <button type="submit" class="btn btn-warning btn-lg" id="submitBtnRattrapage" disabled>
-                        <i class="fas fa-save me-1"></i>Enregistrer le Rattrapage
+                        <i class="icon-base ti tabler-device-floppy me-1"></i>Enregistrer le Rattrapage
                     </button>
                 </div>
             </div>
@@ -459,15 +457,15 @@
     </form>
     @elseif($poste && count($bureaux) == 0)
     <div class="alert alert-warning">
-        <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+        <i class="icon-base ti tabler-alert-triangle fa-2x mb-2"></i>
         <p class="mb-0">Aucun bureau actif trouvé pour ce poste. Veuillez d'abord créer des bureaux.</p>
         @if($posteId)
         <a href="{{ route('trie.bureaux.manage', $posteId) }}" class="btn btn-primary mt-3">
-            <i class="fas fa-building me-1"></i>Gérer les Bureaux
+            <i class="icon-base ti tabler-building me-1"></i>Gérer les Bureaux
         </a>
         @else
         <a href="{{ route('trie.bureaux.index') }}" class="btn btn-primary mt-3">
-            <i class="fas fa-building me-1"></i>Voir les Bureaux
+            <i class="icon-base ti tabler-building me-1"></i>Voir les Bureaux
         </a>
         @endif
     </div>
@@ -646,7 +644,7 @@
             const alertDiv = document.createElement('div');
             alertDiv.className = 'alert alert-danger alert-dismissible fade show';
             alertDiv.innerHTML = `
-                <i class="fas fa-exclamation-triangle me-2"></i>
+                <i class="icon-base ti tabler-alert-triangle me-2"></i>
                 <strong>Erreur :</strong> Impossible de récupérer les mois renseignés. Veuillez rafraîchir la page.
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             `;
@@ -768,7 +766,7 @@
         if (moisSelectionnes.length === 0) {
             document.getElementById('tableauRattrapageContainer').innerHTML = `
                 <div class="alert alert-warning">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <i class="icon-base ti tabler-alert-triangle me-2"></i>
                     Veuillez sélectionner au moins un mois pour le rattrapage.
                 </div>
             `;
@@ -783,12 +781,12 @@
                 <table class="table table-bordered table-hover align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th rowspan="2" class="align-middle"><i class="fas fa-calendar"></i> Mois</th>
+                            <th rowspan="2" class="align-middle"><i class="icon-base ti tabler-calendar"></i> Mois</th>
         `;
 
         // En-têtes des bureaux
         bureaux.forEach(bureau => {
-            html += `<th colspan="5" class="text-center bg-primary text-black">${bureau.code} - ${bureau.nom}</th>`;
+            html += `<th colspan="5" class="text-center bg-label-primary">${bureau.code} - ${bureau.nom}</th>`;
         });
 
         html += `</tr><tr>`;

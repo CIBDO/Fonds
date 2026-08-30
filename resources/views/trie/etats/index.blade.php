@@ -3,13 +3,11 @@
 @section('title', 'États et Rapports TRIE')
 
 @section('content')
-<x-vuexy.page-header title="États et Rapports TRIE" subtitle="Génération des états mensuels et consolidés TRIE/CCIM">
-    <x-slot:actions>
-        <a href="{{ route('trie.cotisations.index') }}" class="btn btn-label-secondary btn-sm">
-            <i class="ti tabler-arrow-left me-1"></i>Retour aux Cotisations
-        </a>
-    </x-slot:actions>
-</x-vuexy.page-header>
+<div class="d-flex justify-content-end mb-4">
+    <a href="{{ route('trie.cotisations.index') }}" class="btn btn-label-secondary btn-sm">
+        <i class="icon-base ti tabler-arrow-left me-1"></i>Retour aux Cotisations
+    </a>
+</div>
 
 <div class="row g-6">
     <div class="col-md-6">
