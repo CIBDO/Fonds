@@ -149,7 +149,7 @@
 <li class="menu-item {{ $trieActive ? 'active open' : '' }}">
     <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon icon-base ti tabler-building-bank"></i>
-        <div>Fonds de garantie</div>
+        <div>Fonds Triés</div>
     </a>
     <ul class="menu-sub">
         <li class="menu-item {{ request()->routeIs('trie.bureaux.*') ? 'active' : '' }}">

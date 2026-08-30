@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
     success: '#28c76f',
   };
 
-  const chartFont = 'Public Sans, sans-serif';
+  const chartFont = "'JetBrains Mono', ui-monospace, monospace";
   const formatFcfa = (val) => {
     if (val >= 1000) return (val / 1000).toFixed(1) + ' Md';
     return val.toFixed(1) + ' M';

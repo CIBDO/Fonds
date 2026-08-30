@@ -16,9 +16,7 @@
     <meta name="description" content="Plateforme de gestion des fonds DGTCP">
 
     <link rel="shortcut icon" href="{{ asset('assets/img/favicon.png') }}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('assets/css/jetbrains-mono.css') }}">
 
     <link rel="stylesheet" href="{{ asset('vuexy/assets/vendor/fonts/iconify-icons.css') }}">
     <link rel="stylesheet" href="{{ asset('vuexy/assets/vendor/libs/node-waves/node-waves.css') }}">
@@ -29,7 +27,7 @@
     @yield('vendor-style')
     @stack('vendor-style')
 
-    <link rel="stylesheet" href="{{ asset('vuexy/assets/css/dgtcp-overrides.css') }}?v=4">
+    <link rel="stylesheet" href="{{ asset('vuexy/assets/css/dgtcp-overrides.css') }}?v=5">
     <link rel="stylesheet" href="{{ asset('vuexy/assets/vendor/libs/sweetalert2/sweetalert2.css') }}">
     @yield('page-style')
     @stack('styles')

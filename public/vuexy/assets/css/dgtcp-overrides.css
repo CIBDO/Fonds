@@ -10,6 +10,28 @@
   --dgtcp-white: #FFFFFF;
   --bs-primary: #009739;
   --bs-primary-rgb: 0, 151, 57;
+  --dgtcp-font: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --bs-font-sans-serif: var(--dgtcp-font);
+  --bs-body-font-family: var(--dgtcp-font);
+  --bs-font-monospace: var(--dgtcp-font);
+}
+
+body {
+  font-family: var(--dgtcp-font);
+}
+
+/* Surcharge des styles inline legacy */
+.dgtcp-table,
+.table,
+.form-control,
+.form-select,
+.btn,
+.card,
+.dropdown-menu,
+input,
+textarea,
+select {
+  font-family: var(--dgtcp-font);
 }
 
 /* Branding sidebar */

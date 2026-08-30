@@ -288,7 +288,7 @@
     width: 100% !important;
     border-collapse: separate;
     border-spacing: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: var(--dgtcp-font);
     color: #1e293b !important;
 }
 

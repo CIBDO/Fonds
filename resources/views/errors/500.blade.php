@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <title>Erreur serveur — DGTCP</title>
     <link rel="shortcut icon" href="{{ asset('assets/img/favicon.png') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/jetbrains-mono.css') }}">
     <link rel="stylesheet" href="{{ asset('vuexy/assets/vendor/fonts/iconify-icons.css') }}">
     <link rel="stylesheet" href="{{ asset('vuexy/assets/vendor/css/core.css') }}">
     <link rel="stylesheet" href="{{ asset('vuexy/assets/css/demo.css') }}">

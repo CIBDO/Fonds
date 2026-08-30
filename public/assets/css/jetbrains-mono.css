@@ -1,4 +1,4 @@
-/* Police personnalisée JetBrains Mono */
+/* JetBrains Mono — police globale DGTCP */
 @font-face {
     font-family: 'JetBrains Mono';
     src: url('../fonts/JetBrainsMono-Regular.ttf') format('truetype');
@@ -7,16 +7,21 @@
     font-display: swap;
 }
 
-/* Application globale de la police */
-body, html {
-    font-family: 'JetBrains Mono', monospace, sans-serif !important;
+:root {
+    --dgtcp-font: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --bs-font-sans-serif: var(--dgtcp-font);
+    --bs-body-font-family: var(--dgtcp-font);
+    --bs-font-monospace: var(--dgtcp-font);
 }
 
-* {
-    font-family: 'JetBrains Mono', monospace, sans-serif !important;
+html,
+body {
+    font-family: var(--dgtcp-font);
 }
 
-/* Exceptions pour les éléments qui ont besoin de polices spécifiques */
+/* Conserver les polices d'icônes */
+.ti,
+[class*="tabler-"],
 .icon,
 [class*="icon-"],
 [class*="fa-"],
@@ -24,7 +29,8 @@ body, html {
 .far,
 .fab,
 .fal,
-.fad {
-    font-family: 'Font Awesome 5 Free', 'Font Awesome 5 Brands', 'feather' !important;
+.fad,
+.swal2-icon,
+.menu-toggle::after {
+    font-family: inherit;
 }
-
