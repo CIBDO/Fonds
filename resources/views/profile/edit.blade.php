@@ -1,49 +1,27 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-2xl text-gray-800 leading-tight">
-                {{ __('Profile') }}
-            </h2>
-            <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300">
-                {{ __('Enregistre les modifcations') }}
-            </button>
-        </div>
-    </x-slot>
+@extends('layouts.master')
 
-    <div class="py-12 bg-gray-100">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <!-- Profile Information -->
-            <div class="p-6 bg-white shadow-md sm:rounded-lg transition duration-300 hover:shadow-lg">
-                <div class="flex items-center mb-4">
-                    <x-heroicon-o-user class="h-6 w-6 text-blue-500 mr-2" />
-                    <h3 class="text-lg font-semibold text-gray-700">{{ __('Mise à jour de vos Informations') }}</h3>
-                </div>
-                <div class="max-w-xl">
-                    @include('profile.partials.update-profile-information-form')
-                </div>
-            </div>
+@section('title', 'Mon Profil')
 
-            <!-- Update Password -->
-            <div class="p-6 bg-white shadow-md sm:rounded-lg transition duration-300 hover:shadow-lg">
-                <div class="flex items-center mb-4">
-                    <x-heroicon-o-lock-closed class="h-6 w-6 text-green-500 mr-2" />
-                    <h3 class="text-lg font-semibold text-gray-700">{{ __('Changer de Password') }}</h3>
-                </div>
-                <div class="max-w-xl">
-                    @include('profile.partials.update-password-form')
-                </div>
-            </div>
+@section('content')
+<x-vuexy.page-header title="Mon Profil" subtitle="Gérez vos informations personnelles et la sécurité de votre compte" />
 
-            <!-- Delete Account -->
-            <div class="p-6 bg-white shadow-md sm:rounded-lg transition duration-300 hover:shadow-lg">
-                <div class="flex items-center mb-4">
-                    <x-heroicon-o-trash class="h-6 w-6 text-red-500 mr-2" />
-                    <h3 class="text-lg font-semibold text-gray-700">{{ __('Supprimer le Compte') }}</h3>
-                </div>
-                <div class="max-w-xl">
-                    @include('profile.partials.delete-user-form')
-                </div>
-            </div>
-        </div>
+<div class="row g-6">
+    <div class="col-12">
+        <x-vuexy.card title="Informations du profil" icon="tabler-user">
+            @include('profile.partials.update-profile-information-form')
+        </x-vuexy.card>
     </div>
-</x-app-layout>
+
+    <div class="col-12">
+        <x-vuexy.card title="Mot de passe" icon="tabler-lock">
+            @include('profile.partials.update-password-form')
+        </x-vuexy.card>
+    </div>
+
+    <div class="col-12">
+        <x-vuexy.card title="Supprimer le compte" icon="tabler-trash">
+            @include('profile.partials.delete-user-form')
+        </x-vuexy.card>
+    </div>
+</div>
+@endsection

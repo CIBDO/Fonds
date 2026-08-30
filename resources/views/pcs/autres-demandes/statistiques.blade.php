@@ -1,29 +1,17 @@
 @extends('layouts.master')
 
-@section('content')
-<div class="content container-fluid">
-    <!-- En-tête de page -->
-    <div class="page-header mb-4">
-        <div class="row align-items-center">
-            <div class="col">
-                <div class="page-sub-header">
-                    <h3 class="page-title fw-bold text-danger">
-                        <i class="fas fa-chart-pie me-2"></i>Statistiques Autres Demandes
-                    </h3>
-                    <p class="text-muted mb-0">Vue d'ensemble par poste pour l'année {{ $annee }}</p>
-                </div>
-            </div>
-            <div class="col-auto">
-                <a href="{{ route('pcs.autres-demandes.index') }}" class="btn btn-secondary btn-sm">
-                    <i class="fas fa-arrow-left me-1"></i>Retour
-                </a>
-            </div>
-        </div>
-    </div>
+@section('title', 'Statistiques Autres Demandes PCS')
 
-    <!-- Formulaire de filtrage -->
-    <div class="card mb-4">
-        <div class="card-body">
+@section('content')
+<x-vuexy.page-header title="Statistiques Autres Demandes" subtitle="Vue d'ensemble par poste pour l'année {{ $annee }}">
+    <x-slot:actions>
+        <a href="{{ route('pcs.autres-demandes.index') }}" class="btn btn-label-secondary btn-sm">
+            <i class="ti tabler-arrow-left me-1"></i>Retour
+        </a>
+    </x-slot:actions>
+</x-vuexy.page-header>
+
+<x-vuexy.card title="Filtrage" icon="tabler-filter">
             <form method="GET" action="{{ route('pcs.autres-demandes.statistiques') }}" class="row g-3">
                 <div class="col-md-4">
                     <label for="annee" class="form-label">Année</label>
@@ -44,8 +32,7 @@
                     </a>
                 </div>
             </form>
-        </div>
-    </div>
+</x-vuexy.card>
 
     <!-- Statistiques globales -->
     @php
@@ -103,13 +90,7 @@
     </div>
 
     <!-- Tableau des statistiques par poste -->
-    <div class="card">
-        <div class="card-header bg-white">
-            <h5 class="card-title mb-0">
-                <i class="fas fa-table me-2"></i>Statistiques par Poste
-            </h5>
-        </div>
-        <div class="card-body">
+    <x-vuexy.card title="Statistiques par Poste" icon="tabler-table">
             @if ($stats->count() > 0)
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover" id="statsTable">
@@ -204,9 +185,8 @@
                     Aucune demande validée pour l'année {{ $annee }}
                 </div>
             @endif
-        </div>
-    </div>
-</div>
+    </x-vuexy.card>
+@endsection
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -266,5 +246,4 @@
     @endif
 </script>
 @endpush
-@endsection
 

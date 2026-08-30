@@ -1,155 +1,117 @@
 @extends('layouts.master')
 
+@section('title', 'Gestion des Bureaux de Douanes')
+
+@include('partials.vuexy.datatables-assets')
+
 @section('content')
-<div class="content container-fluid">
-    <!-- En-tête de page moderne -->
-    <div class="page-header mb-4">
-        <div class="row align-items-center">
-            <div class="col">
-                <div class="page-sub-header">
-                    <h3 class="page-title fw-bold text-danger">
-                        <i class="fas fa-building me-2"></i>Gestion des Bureaux de Douanes
-                    </h3>
-                </div>
-            </div>
-            <div class="col-auto">
-                <a href="{{ route('pcs.bureaux.create') }}" class="btn btn-danger btn-sm">
-                    <i class="fas fa-plus me-1"></i>Nouveau Bureau
-                </a>
-            </div>
-        </div>
-    </div>
+<x-vuexy.page-header title="Gestion des Bureaux de Douanes" subtitle="Administration des bureaux PCS">
+    <x-slot:actions>
+        <a href="{{ route('pcs.bureaux.create') }}" class="btn btn-primary btn-sm">
+            <i class="ti tabler-plus me-1"></i>Nouveau Bureau
+        </a>
+    </x-slot:actions>
+</x-vuexy.page-header>
 
-    <!-- Carte principale -->
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-danger text-white">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="fas fa-list me-2"></i>Liste des Bureaux de Douanes</h5>
-                <span class="badge bg-white text-danger">{{ $bureaux->count() }} bureaux</span>
-            </div>
-        </div>
+<x-vuexy.card title="Liste des Bureaux de Douanes" icon="tabler-list">
+    <x-slot:header>
+        <span class="badge bg-label-primary">{{ $bureaux->count() }} bureaux</span>
+    </x-slot:header>
 
-        <div class="card-body">
-            @if($bureaux->count() > 0)
-            <div class="table-responsive">
-                <table class="table table-hover align-middle" id="bureaux-table">
-                    <thead class="table-light">
-                        <tr>
-                            <th width="10%"><i class="fas fa-hashtag"></i> Code</th>
-                            <th width="40%"><i class="fas fa-tag"></i> Libellé</th>
-                            <th width="20%"><i class="fas fa-map-marker-alt"></i> Poste RGD</th>
-                            <th width="15%" class="text-center"><i class="fas fa-toggle-on"></i> Statut</th>
-                            <th width="15%" class="text-center"><i class="fas fa-cogs"></i> Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($bureaux as $bureau)
-                        <tr>
-                            <td>
-                                <span class="badge bg-danger">{{ $bureau->code }}</span>
-                            </td>
-                            <td class="fw-bold">{{ $bureau->libelle }}</td>
-                            <td>
-                                <span class="badge bg-secondary">{{ $bureau->posteRgd->nom }}</span>
-                            </td>
-                            <td class="text-center">
-                                @if($bureau->actif)
-                                    <span class="badge bg-success">
-                                        <i class="fas fa-check-circle"></i> Actif
-                                    </span>
-                                @else
-                                    <span class="badge bg-secondary">
-                                        <i class="fas fa-times-circle"></i> Inactif
-                                    </span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <a href="{{ route('pcs.bureaux.edit', $bureau) }}"
-                                       class="btn btn-outline-primary"
-                                       data-bs-toggle="tooltip"
-                                       title="Modifier">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <form action="{{ route('pcs.bureaux.toggle-actif', $bureau) }}"
-                                          method="POST"
-                                          class="d-inline">
-                                        @csrf
-                                        <button type="submit"
-                                                class="btn btn-outline-{{ $bureau->actif ? 'warning' : 'success' }}"
-                                                data-bs-toggle="tooltip"
-                                                title="{{ $bureau->actif ? 'Désactiver' : 'Activer' }}">
-                                            <i class="fas fa-power-off"></i>
-                                        </button>
-                                    </form>
-                                    <form action="{{ route('pcs.bureaux.destroy', $bureau) }}"
-                                          method="POST"
-                                          class="d-inline"
-                                          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce bureau ?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                                class="btn btn-outline-danger"
-                                                data-bs-toggle="tooltip"
-                                                title="Supprimer">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            @else
-            <div class="alert alert-info text-center">
-                <i class="fas fa-info-circle fa-2x mb-2"></i>
-                <p class="mb-0">Aucun bureau de douane enregistré. Cliquez sur "Nouveau Bureau" pour commencer.</p>
-            </div>
-            @endif
-        </div>
+    @if($bureaux->count() > 0)
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle" id="bureaux-table">
+            <thead>
+                <tr>
+                    <th width="10%">Code</th>
+                    <th width="40%">Libellé</th>
+                    <th width="20%">Poste RGD</th>
+                    <th width="15%" class="text-center">Statut</th>
+                    <th width="15%" class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($bureaux as $bureau)
+                <tr>
+                    <td>
+                        <span class="badge bg-label-primary">{{ $bureau->code }}</span>
+                    </td>
+                    <td class="fw-bold">{{ $bureau->libelle }}</td>
+                    <td>
+                        <span class="badge bg-label-secondary">{{ $bureau->posteRgd->nom }}</span>
+                    </td>
+                    <td class="text-center">
+                        @if($bureau->actif)
+                            <span class="badge bg-label-success">
+                                <i class="ti tabler-circle-check"></i> Actif
+                            </span>
+                        @else
+                            <span class="badge bg-label-secondary">
+                                <i class="ti tabler-circle-x"></i> Inactif
+                            </span>
+                        @endif
+                    </td>
+                    <td class="text-center">
+                        <div class="btn-group btn-group-sm" role="group">
+                            <a href="{{ route('pcs.bureaux.edit', $bureau) }}"
+                               class="btn btn-outline-primary"
+                               data-bs-toggle="tooltip"
+                               title="Modifier">
+                                <i class="ti tabler-edit"></i>
+                            </a>
+                            <form action="{{ route('pcs.bureaux.toggle-actif', $bureau) }}"
+                                  method="POST"
+                                  class="d-inline">
+                                @csrf
+                                <button type="submit"
+                                        class="btn btn-outline-{{ $bureau->actif ? 'warning' : 'success' }}"
+                                        data-bs-toggle="tooltip"
+                                        title="{{ $bureau->actif ? 'Désactiver' : 'Activer' }}">
+                                    <i class="ti tabler-power"></i>
+                                </button>
+                            </form>
+                            <form action="{{ route('pcs.bureaux.destroy', $bureau) }}"
+                                  method="POST"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce bureau ?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                        class="btn btn-outline-danger"
+                                        data-bs-toggle="tooltip"
+                                        title="Supprimer">
+                                    <i class="ti tabler-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
-</div>
+    @else
+    <x-vuexy.alert type="info">
+        Aucun bureau de douane enregistré. Cliquez sur « Nouveau Bureau » pour commencer.
+    </x-vuexy.alert>
+    @endif
+</x-vuexy.card>
+@endsection
 
 @push('scripts')
 <script>
     $(document).ready(function() {
         $('#bureaux-table').DataTable({
-            language: {
-                processing: "Traitement en cours...",
-                search: "Rechercher&nbsp;:",
-                lengthMenu: "Afficher _MENU_ éléments",
-                info: "Affichage de _START_ à _END_ sur _TOTAL_ bureaux",
-                infoEmpty: "Affichage de 0 à 0 sur 0 bureau",
-                infoFiltered: "(filtré de _MAX_ bureaux au total)",
-                infoPostFix: "",
-                loadingRecords: "Chargement en cours...",
-                zeroRecords: "Aucun bureau à afficher",
-                emptyTable: "Aucune donnée disponible dans le tableau",
-                paginate: {
-                    first: "Premier",
-                    previous: "Précédent",
-                    next: "Suivant",
-                    last: "Dernier"
-                },
-                aria: {
-                    sortAscending: ": activer pour trier la colonne par ordre croissant",
-                    sortDescending: ": activer pour trier la colonne par ordre décroissant"
-                }
-            },
+            language: datatablesFrench,
             order: [[0, 'asc']],
             pageLength: 25,
             dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rt<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p">>'
         });
 
-        // Initialiser les tooltips
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
     });
 </script>
 @endpush
-@endsection
-

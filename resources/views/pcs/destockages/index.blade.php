@@ -1,19 +1,10 @@
 @extends('layouts.master')
 
+@section('title', 'Destockages PCS')
+
 @section('content')
-<div class="content container-fluid">
-    <!-- En-tête de page -->
-    <div class="page-header mb-4">
-        <div class="row align-items-center">
-            <div class="col">
-                <div class="page-sub-header">
-                    <h3 class="page-title fw-bold text-danger">
-                        <i class="fas fa-list me-2"></i>Liste des Règlements
-                    </h3>
-                    {{-- <p class="text-muted mb-0">Historique des règlements de fonds PCS</p> --}}
-                </div>
-            </div>
-            <div class="col-auto">
+<x-vuexy.page-header title="Liste des Règlements" subtitle="Historique des règlements de fonds PCS">
+    <x-slot:actions>
                 <div class="btn-group me-2" role="group">
                     <button type="button" class="btn btn-outline-danger btn-sm dropdown-toggle" data-bs-toggle="dropdown">
                         <i class="fas fa-file-pdf me-1"></i>États PDF
@@ -45,16 +36,13 @@
                 <a href="{{ route('pcs.destockages.collecte') }}" class="btn btn-secondary btn-sm me-2">
                     <i class="fas fa-coins me-1"></i>Vue de Collecte
                 </a>
-                <a href="{{ route('pcs.destockages.create') }}" class="btn btn-danger btn-sm">
-                    <i class="fas fa-plus me-1"></i>Nouveau Règlement
+                <a href="{{ route('pcs.destockages.create') }}" class="btn btn-primary btn-sm">
+                    <i class="ti tabler-plus me-1"></i>Nouveau Règlement
                 </a>
-            </div>
-        </div>
-    </div>
+    </x-slot:actions>
+</x-vuexy.page-header>
 
-    <!-- Filtres -->
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body">
+<x-vuexy.card title="Filtres" icon="tabler-filter" class="mb-4">
             <form method="GET" action="{{ route('pcs.destockages.index') }}" class="row g-3">
                 <div class="col-md-3">
                     <label class="form-label fw-bold">Programme</label>
@@ -104,22 +92,15 @@
                     </div>
                 </div>
             </form>
-        </div>
-    </div>
+</x-vuexy.card>
 
-    <!-- Table des déstockages -->
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-danger text-white">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="fas fa-list me-2"></i>Historique des Règlements</h5>
-                <span class="badge bg-white text-danger">{{ $destockages->total() }} règlements</span>
-            </div>
-        </div>
-
-        <div class="card-body">
+<x-vuexy.card title="Historique des Règlements" icon="tabler-list">
+    <x-slot:header>
+        <span class="badge bg-label-primary">{{ $destockages->total() }} règlements</span>
+    </x-slot:header>
             @if($destockages->count() > 0)
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
+                <table class="table table-bordered table-hover align-middle">
                     <thead class="table-light">
                         <tr>
                             <th><i class="fas fa-hashtag"></i> Référence</th>
@@ -263,9 +244,7 @@
                 </a>
             </div>
             @endif
-        </div>
-    </div>
-</div>
+</x-vuexy.card>
 
 @push('scripts')
 <script>

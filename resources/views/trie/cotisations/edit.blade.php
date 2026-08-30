@@ -1,24 +1,15 @@
 @extends('layouts.master')
 
+@section('title', 'Modifier Cotisation TRIE')
+
 @section('content')
-<div class="content container-fluid">
-    <!-- En-tête de page -->
-    <div class="page-header mb-4">
-        <div class="row align-items-center">
-            <div class="col">
-                <div class="page-sub-header">
-                    <h3 class="page-title fw-bold text-warning">
-                        <i class="fas fa-edit me-2"></i>Modifier la Cotisation TRIE
-                    </h3>
-                </div>
-            </div>
-            <div class="col-auto">
-                <a href="{{ route('trie.cotisations.show', $cotisation) }}" class="btn btn-secondary btn-sm">
-                    <i class="fas fa-arrow-left me-1"></i>Retour
-                </a>
-            </div>
-        </div>
-    </div>
+<x-vuexy.page-header title="Modifier la Cotisation TRIE" subtitle="{{ $cotisation->nom_mois }} {{ $cotisation->annee }}">
+    <x-slot:actions>
+        <a href="{{ route('trie.cotisations.show', $cotisation) }}" class="btn btn-label-secondary btn-sm">
+            <i class="ti tabler-arrow-left me-1"></i>Retour
+        </a>
+    </x-slot:actions>
+</x-vuexy.page-header>
 
     <form action="{{ route('trie.cotisations.update', $cotisation) }}" method="POST">
         @csrf
@@ -158,6 +149,5 @@
             </div>
         </div>
     </form>
-</div>
 @endsection
 

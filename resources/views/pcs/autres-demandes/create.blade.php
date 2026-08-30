@@ -1,40 +1,22 @@
 @extends('layouts.master')
 
+@section('title', 'Nouvelle Autre Demande')
+
 @section('content')
-<div class="content container-fluid">
-    <!-- En-tête de page -->
-    <div class="page-header mb-4">
-        <div class="row align-items-center">
-            <div class="col">
-                <div class="page-sub-header">
-                    <h3 class="page-title fw-bold text-danger">
-                        <i class="fas fa-plus-circle me-2"></i>Nouvelle(s) Demande(s) Financière(s)
-                    </h3>
-                    {{-- <p class="text-muted mb-0">{{ $poste->nom }}</p> --}}
-                </div>
-            </div>
-            <div class="col-auto">
-                <a href="{{ route('pcs.autres-demandes.index') }}" class="btn btn-secondary btn-sm">
-                    <i class="fas fa-arrow-left me-1"></i>Retour
-                </a>
-            </div>
-        </div>
-    </div>
+<x-vuexy.page-header title="Nouvelle(s) Demande(s) Financière(s)" subtitle="Saisie des autres demandes PCS">
+    <x-slot:actions>
+        <a href="{{ route('pcs.autres-demandes.index') }}" class="btn btn-label-secondary btn-sm">
+            <i class="ti tabler-arrow-left me-1"></i>Retour
+        </a>
+    </x-slot:actions>
+</x-vuexy.page-header>
 
-    <!-- Formulaire -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-danger text-white">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i>Informations des Demandes</h5>
-                        <button type="button" class="btn btn-danger btn-sm" id="ajouterLigne">
-                            <i class="fas fa-plus me-1"></i>Ajouter une ligne
-                        </button>
-                    </div>
-                </div>
-
-                <div class="card-body">
+<x-vuexy.card title="Informations des Demandes" icon="tabler-file">
+    <x-slot:header>
+        <button type="button" class="btn btn-primary btn-sm" id="ajouterLigne">
+            <i class="ti tabler-plus me-1"></i>Ajouter une ligne
+        </button>
+    </x-slot:header>
                     <form action="{{ route('pcs.autres-demandes.store') }}" method="POST" id="formDemandes" enctype="multipart/form-data">
                         @csrf
 
@@ -192,14 +174,10 @@
                             </button>
                         </div>
                     </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+</x-vuexy.card>
 @endsection
 
-@section('add-js')
+@push('scripts')
 <script>
 (function() {
     'use strict';
@@ -382,5 +360,5 @@
     }
 })();
 </script>
-@endsection
+@endpush
 

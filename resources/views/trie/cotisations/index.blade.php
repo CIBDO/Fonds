@@ -1,18 +1,10 @@
 @extends('layouts.master')
 
+@section('title', 'Cotisations TRIE - CCIM')
+
 @section('content')
-<div class="content container-fluid">
-    <!-- En-tête de page -->
-    <div class="page-header mb-4">
-        <div class="row align-items-center">
-            <div class="col">
-                <div class="page-sub-header">
-                    <h3 class="page-title fw-bold text-primary">
-                        <i class="fas fa-coins me-2"></i>Cotisations TRIE - CCIM
-                    </h3>
-                </div>
-            </div>
-            <div class="col-auto">
+<x-vuexy.page-header title="Cotisations TRIE - CCIM" subtitle="Gestion des cotisations CCIM">
+    <x-slot:actions>
                 @if(!auth()->user()->hasRole('acct'))
                 <div class="btn-group">
                     <a href="{{ route('trie.cotisations.create') }}" class="btn btn-primary btn-sm">
@@ -73,13 +65,10 @@
                     </ul>
                 </div>
                 @endif
-            </div>
-        </div>
-    </div>
+    </x-slot:actions>
+</x-vuexy.page-header>
 
-    <!-- Filtres -->
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body">
+<x-vuexy.card title="Filtres" icon="tabler-filter" class="mb-4">
             <form method="GET" action="{{ route('trie.cotisations.index') }}" class="row g-3">
                 @if(in_array(Auth::user()->role, ['admin', 'acct']) && $postes->count() > 1)
                 <div class="col-md-3">
@@ -130,21 +119,15 @@
                     </div>
                 </div>
             </form>
-        </div>
-    </div>
+</x-vuexy.card>
 
-    <!-- Liste des cotisations -->
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-primary text-white">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="fas fa-list me-2"></i>Liste des Cotisations</h5>
-                <span class="badge bg-white text-primary">{{ $cotisations->total() }} cotisations</span>
-            </div>
-        </div>
-        <div class="card-body">
+<x-vuexy.card title="Liste des Cotisations" icon="tabler-list">
+    <x-slot:header>
+        <span class="badge bg-label-primary">{{ $cotisations->total() }} cotisations</span>
+    </x-slot:header>
             @if($cotisations->count() > 0)
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
+                <table class="table table-bordered table-hover align-middle">
                     <thead class="table-light">
                         <tr>
                             <th><i class="fas fa-calendar"></i> Période</th>
@@ -330,9 +313,7 @@
                 </a>
             </div>
             @endif
-        </div>
-    </div>
-</div>
+</x-vuexy.card>
 
 @if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct', 'admin']))
 <!-- Modal État des références (Déclarations + Cotisations) -->

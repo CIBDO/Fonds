@@ -1,5 +1,9 @@
 @extends('layouts.master')
 
+@section('title', 'Détail des Demandes de Fonds')
+
+@include('partials.vuexy.datatables-assets')
+
 @section('content')
     <style>
         body {
@@ -58,7 +62,7 @@
     }
 
     </style>
-    <div class="container">
+    <div>
         <h3 style="text-align: center; font-weight: bold; font-family: 'Times New Roman', Times, serif;">Situation des demandes de fonds</h3>
         <div class="export-form">
 
@@ -281,19 +285,10 @@
             </tbody>
         </table>
     </div>
-     @section('add-js')
-    <!-- Inclure les fichiers DataTables CSS et JS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
+     @endsection
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+@push('scripts')
+    <!-- Inclure les fichiers DataTables CSS et JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 
  <script>
@@ -392,6 +387,4 @@
 
 
 
-@stop
-
-@endsection
+@endpush

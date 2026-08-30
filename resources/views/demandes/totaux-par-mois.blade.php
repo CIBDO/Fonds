@@ -1,5 +1,9 @@
 @extends('layouts.master')
 
+@section('title', 'Totaux par Mois')
+
+@include('partials.vuexy.datatables-assets')
+
 @section('content')
 {{-- <div class="page-header d-flex justify-content-between align-items-center">
     <div>
@@ -38,7 +42,7 @@
         </div>
 
         <div class="table-responsive">
-            <table id="totaux-table" class="table table-hover table-striped">
+            <table id="totaux-table" class="table table-bordered table-hover table-striped">
                 <thead class="table-dark">
                     <tr>
                         <th>Mois</th>
@@ -64,20 +68,9 @@
     </div>
 </div>
 
-@section('add-js')
-<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
+@endsection
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.bootstrap5.min.js"></script>
-
+@push('scripts')
 <script>
     $(document).ready(function() {
         let table = $('#totaux-table').DataTable({
@@ -108,5 +101,4 @@
         });
     });
 </script>
-@stop
-@endsection
+@endpush

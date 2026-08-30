@@ -1,4 +1,8 @@
 @extends('layouts.master')
+
+@section('title', 'Envoi des Demandes de Fonds')
+
+@include('partials.vuexy.datatables-assets')
 @section('content')
 @if(session('error'))
     <div class="alert alert-danger">
@@ -50,7 +54,7 @@
 
 <!-- Tableau des demandes DGTCP -->
 <div class="dgtcp-section">
-    <div class="dgtcp-card">
+    <div class="card dgtcp-card">
         {{-- <div class="dgtcp-card-header">
             <div class="dgtcp-card-title">
                 <i class="fas fa-table"></i>
@@ -94,11 +98,11 @@
                     <button type="submit" class="btn btn-sm btn-primary">
                         <i class="fas fa-search"></i> Afficher
                     </button>
-                    <a href="{{ route('demandes-fonds.envois') }}" class="btn btn-sm btn-outline-secondary">Réinitialiser</a>
+                    <a href="{{ route('demandes-fonds.envois') }}" class="btn btn-sm btn-label-secondary">Réinitialiser</a>
                 </div>
             </form>
             <div class="dgtcp-table-container">
-                <table id="demandes-table" class="dgtcp-table">
+                <table id="demandes-table" class="table table-bordered dgtcp-table">
                     <thead>
                         <tr>
                             <th><i class="fas fa-calendar-alt"></i> Mois</th>
@@ -223,8 +227,8 @@
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="dgtcp-btn secondary" data-bs-dismiss="modal">Annuler</button>
-                                            <button type="submit" class="dgtcp-btn primary">Envoyer</button>
+                                            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Annuler</button>
+                                            <button type="submit" class="btn btn-primary">Envoyer</button>
                                         </div>
                                     </form>
                                 </div>
@@ -254,8 +258,8 @@
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="dgtcp-btn secondary" data-bs-dismiss="modal">Annuler</button>
-                                            <button type="submit" class="dgtcp-btn danger">Soumettre</button>
+                                            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Annuler</button>
+                                            <button type="submit" class="btn btn-danger">Soumettre</button>
                                         </div>
                                     </form>
                                 </div>
@@ -266,22 +270,11 @@
     </div>
 </div>
 
-@section('add-js')
+@endsection
+
+@push('scripts')
 <!-- DataTables CSS moderne -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
-
 <!-- DataTables JS -->
-<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-
 <style>
 /* Styles DataTable DGTCP */
 .dgtcp-table-container {
@@ -914,6 +907,4 @@ document.addEventListener('DOMContentLoaded', function () {
         anneeSelect.addEventListener('change', updateFormAction);
     });
 </script>
-@stop
-
-@endsection
+@endpush

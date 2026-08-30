@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
+@section('title', 'Modifier la Demande de Fonds')
+
 @section('content')
 @if ($errors->any())
     <div class="alert alert-danger">
@@ -10,7 +12,7 @@
         </ul>
     </div>
 @endif
-<div class="container">
+<div>
     <h2 class="my-4">Modifier la Demande de Fonds</h2>
     <form method="POST" action="{{ route('demandes-fonds.update', $demande->id) }}">
         @csrf
@@ -91,19 +93,6 @@
         </div>
         @include('demandes._edit')
 
-        <script>
-        document.querySelector('form').addEventListener('submit', function(e) {
-            // Sélectionner tous les champs numériques
-            const numericFields = document.querySelectorAll('input[type="text"], .net, .revers, .total_courant, .ancien_salaire, .total_demande');
-
-            numericFields.forEach(field => {
-                // Enlever le formatage avant l'envoi
-                field.value = field.value.replace(/\s/g, '').replace(',', '.');
-            });
-        });
-        </script>
-
     </form>
 </div>
-
 @endsection

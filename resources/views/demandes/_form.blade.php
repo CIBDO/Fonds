@@ -200,7 +200,7 @@
 </style>
 
 <div class="table-salaires-wrapper">
-    <table class="table table-salaires table-hover">
+    <table class="table table-bordered table-salaires table-hover">
         <thead>
             <tr>
                 <th style="width: 22%;">
@@ -331,6 +331,7 @@
         </tbody>
     </table>
 </div>
+@push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         function formatNumber(number) {
@@ -419,4 +420,4 @@
         calculateTotals();
     });
     </script>
-
+@endpush

@@ -1,20 +1,9 @@
 @extends('layouts.master')
 
+@section('title', 'États Destockages PCS')
+
 @section('content')
-<div class="content container-fluid">
-    <!-- En-tête de page -->
-    <div class="page-header mb-4">
-        <div class="row align-items-center">
-            <div class="col">
-                <div class="page-sub-header">
-                    <h3 class="page-title fw-bold text-danger">
-                        <i class="fas fa-chart-line me-2"></i>États et Rapports - Règlements PCS
-                    </h3>
-                     {{-- <p class="text-muted mb-0">Générez vos états de collecte et règlements</p> --}}
-                </div>
-            </div>
-        </div>
-    </div>
+<x-vuexy.page-header title="États et Rapports - Règlements PCS" subtitle="Génération des états de collecte et règlements" />
 
     <div class="row">
         <!-- Carte de sélection du type d'état -->
@@ -173,7 +162,6 @@
             </div>
         </div>
     </div>
-</div>
 
 <!-- Modal État de Collecte -->
 <div class="modal fade" id="modalEtatCollecte" tabindex="-1">

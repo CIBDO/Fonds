@@ -3,19 +3,10 @@
 @section('title', 'Vue Par Type de Personnel - Demandes de Fonds')
 
 @section('content')
-<div class="content">
-    <!-- En-tête de page -->
-    <div class="page-header">
-        <div class="add-item d-flex">
-            <div class="page-title">
-                <h4>
-                    <i class="fas fa-users text-primary me-2"></i>
-                    Vue Par Type de Personnel
-                </h4>
-                <h6 class="text-muted">Montants alloués par catégorie de personnel selon les filtres appliqués</h6>
-            </div>
-        </div>
-    </div>
+<x-vuexy.page-header
+    title="Vue Par Type de Personnel"
+    subtitle="Montants alloués par catégorie de personnel selon les filtres appliqués"
+/>
 
     <!-- Filtres -->
     <div class="row mb-4">
@@ -306,7 +297,6 @@
             </div>
         </div>
     </div>
-</div>
 @endsection
 
 @push('styles')

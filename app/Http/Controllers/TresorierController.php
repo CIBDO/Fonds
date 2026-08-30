@@ -3,38 +3,33 @@
 namespace App\Http\Controllers;
 
 use App\Models\DemandeFonds;
+use App\Services\DashboardAnalyticsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class TresorierController extends Controller
 {
-    /**
-     * Affiche le tableau de bord pour le trésorier.
-     */
+    public function __construct(private DashboardAnalyticsService $analytics) {}
+
     public function index()
     {
         $user = Auth::user();
+        $posteId = $user->poste_id;
 
-        // Filtrer les demandes de fonds pour le poste de l'utilisateur connecté
-        // Inclure toutes les demandes pour le tableau détaillé
-        $demandesFonds = DemandeFonds::where('poste_id', $user->poste_id)->with('poste')
-        ->orderBy('created_at', 'desc')
-        ->paginate(12);
+        $demandesFonds = DemandeFonds::where('poste_id', $posteId)
+            ->with('poste')
+            ->orderBy('created_at', 'desc')
+            ->paginate(12);
 
-        // Calculs spécifiques pour les totaux uniquement pour le poste de l'utilisateur
-        $fondsDemandes = DemandeFonds::where('poste_id', $user->poste_id)->sum('total_courant');
-        $fondsRecettes = DemandeFonds::where('poste_id', $user->poste_id)->sum('montant_disponible');
+        $analytics = $this->analytics->build($posteId);
 
-        // Fonds en cours de traitement (en_attente) - cumul des soldes
-        $fondsEnCours = DemandeFonds::where('poste_id', $user->poste_id)
-            ->where('status', 'en_attente')
-            ->sum('solde');
+        $fondsDemandes = $analytics['kpis']['fonds_demandes'];
+        $fondsRecettes = $analytics['kpis']['fonds_recettes'];
+        $fondsEnCours = $analytics['kpis']['fonds_en_cours'];
+        $paiementsEffectues = $analytics['kpis']['paiements_effectues'];
 
-        // Paiements effectués (approuvés) - cumul des montants
-        $paiementsEffectues = DemandeFonds::where('poste_id', $user->poste_id)
-            ->where('status', 'approuve')
-            ->sum('montant');
-
-        return view('dashboard.tresorier', compact('demandesFonds', 'fondsDemandes', 'fondsRecettes', 'fondsEnCours', 'paiementsEffectues'));
+        return view('dashboard.tresorier', compact(
+            'demandesFonds', 'fondsDemandes', 'fondsRecettes', 'fondsEnCours', 'paiementsEffectues', 'analytics'
+        ));
     }
 }

@@ -3,39 +3,17 @@
 @section('title', 'Filtrage État Autres Demandes PCS')
 
 @section('content')
-<div class="page-wrapper">
-    <div class="content">
-        <!-- En-tête de page -->
-        <div class="page-header">
-            <div class="add-item d-flex">
-                <div class="page-title">
-                    <h4>
-                        <i class="fas fa-filter text-primary me-2"></i>
-                        Filtrage État Autres Demandes PCS
-                    </h4>
-                    <h6 class="text-muted">Génération d'états consolidés avec filtres personnalisés</h6>
-                </div>
-            </div>
-            <ul class="table-top-head">
-                <li>
-                    <a href="{{ route('pcs.autres-demandes.index') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-1"></i>Retour à la liste
-                    </a>
-                </li>
-            </ul>
-        </div>
+<x-vuexy.page-header title="Filtrage État Autres Demandes PCS" subtitle="Génération d'états consolidés avec filtres personnalisés">
+    <x-slot:actions>
+        <a href="{{ route('pcs.autres-demandes.index') }}" class="btn btn-label-secondary btn-sm">
+            <i class="ti tabler-arrow-left me-1"></i>Retour à la liste
+        </a>
+    </x-slot:actions>
+</x-vuexy.page-header>
 
-        <div class="row">
-            <div class="col-lg-8">
-                <!-- Carte de filtrage -->
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-calendar-alt text-primary me-2"></i>
-                            Paramètres de filtrage
-                        </h5>
-                    </div>
-                    <div class="card-body">
+<div class="row g-6">
+    <div class="col-lg-8">
+        <x-vuexy.card title="Paramètres de filtrage" icon="tabler-calendar">
                         <form id="filtreForm" method="GET" action="{{ route('pcs.autres-demandes.etat-consolide.autres-demandes') }}" target="_blank">
                             <!-- Période de filtrage -->
                             <div class="row mb-4">
@@ -172,20 +150,11 @@
                                 </div>
                             </div>
                         </form>
-                    </div>
-                </div>
-            </div>
+        </x-vuexy.card>
+    </div>
 
-            <div class="col-lg-4">
-                <!-- Aide et informations -->
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-info-circle text-info me-2"></i>
-                            Informations
-                        </h5>
-                    </div>
-                    <div class="card-body">
+    <div class="col-lg-4">
+        <x-vuexy.card title="Informations" icon="tabler-info-circle">
                         <div class="alert alert-info">
                             <h6><i class="fas fa-lightbulb me-1"></i> Comment utiliser :</h6>
                             <ul class="mb-0">
@@ -200,30 +169,20 @@
                             <h6><i class="fas fa-exclamation-triangle me-1"></i> Note importante :</h6>
                             <p class="mb-0">L'état PDF sera généré avec les données correspondant aux critères sélectionnés et téléchargé automatiquement.</p>
                         </div>
-                    </div>
-                </div>
+        </x-vuexy.card>
 
-                <!-- Statistiques rapides -->
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-chart-bar text-success me-2"></i>
-                            Statistiques rapides
-                        </h5>
-                    </div>
-                    <div class="card-body">
+        <x-vuexy.card title="Statistiques rapides" icon="tabler-chart-bar">
                         <div id="statsContainer">
                             <div class="text-center text-muted">
                                 <i class="fas fa-spinner fa-spin fa-2x"></i>
                                 <p class="mt-2">Chargement des statistiques...</p>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </x-vuexy.card>
+    </div>
+</div>
 
-        <!-- Modal d'aperçu -->
+<!-- Modal d'aperçu -->
         <div class="modal fade" id="apercuModal" tabindex="-1">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
@@ -252,11 +211,9 @@
                 </div>
             </div>
         </div>
-    </div>
-</div>
 @endsection
 
-@section('add-js')
+@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Validation des dates
@@ -438,4 +395,4 @@ function genererAvecParametres() {
     font-size: 0.9rem;
 }
 </style>
-@endsection
+@endpush

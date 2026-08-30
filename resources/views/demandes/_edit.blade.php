@@ -125,6 +125,7 @@
     <button type="submit" class="btn btn-primary mt-3">Mettre à jour</button>
 </div>
 
+@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     function formatNumber(number) {
@@ -213,3 +214,4 @@ document.addEventListener('DOMContentLoaded', function () {
     calculateTotals();
 });
 </script>
+@endpush

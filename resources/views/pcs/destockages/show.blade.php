@@ -1,28 +1,18 @@
 @extends('layouts.master')
 
+@section('title', 'Détail Destockage PCS')
+
 @section('content')
-<div class="content container-fluid">
-    <!-- En-tête de page -->
-    <div class="page-header mb-4">
-        <div class="row align-items-center">
-            <div class="col">
-                <div class="page-sub-header">
-                    <h3 class="page-title fw-bold text-danger">
-                        <i class="fas fa-file-invoice me-2"></i>Détail du Règlement
-                    </h3>
-                    {{-- <p class="text-muted mb-0">{{ $destockage->reference_règlement }}</p> --}}
-                </div>
-            </div>
-            <div class="col-auto">
-                <a href="{{ route('pcs.destockages.index') }}" class="btn btn-secondary btn-sm me-2">
-                    <i class="fas fa-arrow-left me-1"></i>Retour
-                </a>
-                <a href="{{ route('pcs.destockages.pdf', $destockage) }}" class="btn btn-danger btn-sm">
-                    <i class="fas fa-file-pdf me-1"></i>Télécharger PDF
-                </a>
-            </div>
-        </div>
-    </div>
+<x-vuexy.page-header title="Détail du Règlement" subtitle="{{ $destockage->reference_règlement ?? '' }}">
+    <x-slot:actions>
+        <a href="{{ route('pcs.destockages.index') }}" class="btn btn-label-secondary btn-sm me-2">
+            <i class="ti tabler-arrow-left me-1"></i>Retour
+        </a>
+        <a href="{{ route('pcs.destockages.pdf', $destockage) }}" class="btn btn-primary btn-sm">
+            <i class="ti tabler-file-type-pdf me-1"></i>Télécharger PDF
+        </a>
+    </x-slot:actions>
+</x-vuexy.page-header>
 
     <!-- Informations générales -->
     <div class="card shadow-sm border-0 mb-4">
@@ -120,7 +110,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
+                <table class="table table-bordered table-hover align-middle">
                     <thead class="table-light">
                         <tr>
                             <th><i class="fas fa-building"></i> Entité</th>
@@ -222,6 +212,5 @@
             </div>
         </div>
     </div>
-</div>
 @endsection
 

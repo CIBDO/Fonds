@@ -1,162 +1,115 @@
-<!DOCTYPE html>
-<html lang="fr">
+<!doctype html>
+@php $menuLayout = config('ui.menu_layout', 'vertical'); @endphp
+<html lang="fr"
+    class="layout-navbar-fixed layout-menu-fixed layout-compact"
+    dir="ltr"
+    data-skin="default"
+    data-assets-path="{{ asset('vuexy/assets/') }}/"
+    data-template="{{ $menuLayout === 'horizontal' ? 'horizontal-menu-template-no-customizer' : 'vertical-menu-template-no-customizer' }}"
+    data-bs-theme="light">
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Gestion des Fonds</title>
-    <link rel="shortcut icon" href="{{ asset('assets/img/favicon.png') }}">
-
-    <!-- Police personnalisée JetBrains Mono -->
-    <link rel="stylesheet" href="{{ asset('assets/css/jetbrains-mono.css') }}">
-
-    <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/plugins/feather/feather.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/plugins/icons/flags/flags.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome/css/fontawesome.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome/css/all.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/dashboard-improvements.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/pcs-improvements.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-    <!-- Inclure DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
-
-    <link href="{{ asset('assets/css/notifications.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('assets/css/mobile-responsive.css') }}?v=4">
-
-    {{-- Styles critiques sidebar mobile (ne dépend pas du cache externe) --}}
-    <style>
-        html.mobile-layout .page-wrapper {
-            margin-left: 0 !important;
-            width: 100% !important;
-            max-width: 100% !important;
-        }
-        html.mobile-layout #sidebar.sidebar {
-            position: fixed !important;
-            top: 60px !important;
-            left: 0 !important;
-            bottom: 0 !important;
-            width: min(300px, 88vw) !important;
-            max-width: 300px !important;
-            margin-left: 0 !important;
-            z-index: 1042 !important;
-            transform: translate3d(-100%, 0, 0) !important;
-            transition: transform 0.3s ease !important;
-            overflow-y: auto !important;
-            -webkit-overflow-scrolling: touch;
-        }
-        html.mobile-layout.nav-open #sidebar.sidebar {
-            transform: translate3d(0, 0, 0) !important;
-            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.18) !important;
-        }
-        html.mobile-layout #mobile_btn,
-        html.mobile-layout .dgtcp-mobile-btn {
-            display: flex !important;
-            align-items: center;
-            justify-content: center;
-        }
-        html.mobile-layout .sidebar-overlay.opened {
-            display: block !important;
-        }
-        html.mobile-layout:not(.nav-open) .sidebar-overlay {
-            display: none !important;
-            pointer-events: none !important;
-        }
-        html.menu-opened,
-        html.nav-open,
-        body.nav-open {
-            overflow: hidden !important;
-        }
-        html.mobile-layout:not(.nav-open) body {
-            overflow-x: hidden !important;
-            overflow-y: auto !important;
-        }
-    </style>
-
-    <script>
-        (function () {
-            var mq = window.matchMedia('(max-width: 1199.98px)');
-
-            function applyLayout() {
-                document.documentElement.classList.toggle('mobile-layout', mq.matches);
-                if (!mq.matches) {
-                    document.documentElement.classList.remove('nav-open');
-                    if (document.body) {
-                        document.body.style.overflow = '';
-                        document.body.classList.remove('nav-open');
-                    }
-                }
-            }
-
-            function resetNavState() {
-                document.documentElement.classList.remove('nav-open');
-                document.documentElement.style.overflow = '';
-                if (!document.body) {
-                    return;
-                }
-                document.body.classList.remove('nav-open');
-                document.body.style.overflow = '';
-                document.body.style.position = '';
-            }
-
-            function initNavLayout() {
-                resetNavState();
-                applyLayout();
-            }
-
-            if (document.body) {
-                initNavLayout();
-            } else {
-                document.addEventListener('DOMContentLoaded', initNavLayout, { once: true });
-            }
-
-            if (mq.addEventListener) {
-                mq.addEventListener('change', applyLayout);
-            } else if (mq.addListener) {
-                mq.addListener(applyLayout);
-            }
-        })();
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'Gestion des Fonds') — DGTCP</title>
+    <meta name="description" content="Plateforme de gestion des fonds DGTCP">
+
+    <link rel="shortcut icon" href="{{ asset('assets/img/favicon.png') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ asset('vuexy/assets/vendor/fonts/iconify-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('vuexy/assets/vendor/libs/node-waves/node-waves.css') }}">
+    <link rel="stylesheet" href="{{ asset('vuexy/assets/vendor/css/core.css') }}">
+    <link rel="stylesheet" href="{{ asset('vuexy/assets/css/demo.css') }}">
+    <link rel="stylesheet" href="{{ asset('vuexy/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}">
+
+    @yield('vendor-style')
+    @stack('vendor-style')
+
+    <link rel="stylesheet" href="{{ asset('vuexy/assets/css/dgtcp-overrides.css') }}?v=4">
+    <link rel="stylesheet" href="{{ asset('vuexy/assets/vendor/libs/sweetalert2/sweetalert2.css') }}">
+    @yield('page-style')
+    @stack('styles')
+
+    <script src="{{ asset('vuexy/assets/vendor/js/helpers.js') }}"></script>
+    <script src="{{ asset('vuexy/assets/js/config-dgtcp.js') }}"></script>
 </head>
 
 <body>
-    <div class="main-wrapper">
-        @include('partials.header')
-        @include('partials.sidebar')
-        @include('sweetalert::alert')
-        <div class="page-wrapper">
-            @yield('content')
-            @include('partials.footer')
+@if($menuLayout === 'horizontal')
+    {{-- Layout horizontal : pleine largeur pour les données --}}
+    <div class="layout-wrapper layout-navbar-full layout-horizontal layout-without-menu">
+        <div class="layout-container">
+            @include('partials.vuexy.navbar-horizontal')
+
+            <div class="layout-page">
+                <div class="content-wrapper">
+                    @include('partials.vuexy.menu-horizontal')
+
+                    <div class="container-xxl flex-grow-1 container-p-y">
+                        @include('sweetalert::alert')
+                        @yield('content')
+                    </div>
+
+                    @include('partials.vuexy.footer')
+                    <div class="content-backdrop fade"></div>
+                </div>
+            </div>
         </div>
+        <div class="layout-overlay layout-menu-toggle"></div>
+        <div class="drag-target"></div>
     </div>
+@else
+    {{-- Layout vertical : sidebar latérale --}}
+    <div class="layout-wrapper layout-content-navbar">
+        <div class="layout-container">
+            @include('partials.vuexy.sidebar')
 
-    <!-- Scripts JS -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="{{ asset('assets/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('assets/js/feather.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/slimscroll/jquery.slimscroll.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/apexchart/apexcharts.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/apexchart/chart-data.js') }}"></script>
+            <div class="menu-mobile-toggler d-xl-none rounded-1">
+                <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large text-bg-secondary p-2 rounded-1">
+                    <i class="ti tabler-menu icon-base"></i>
+                    <i class="ti tabler-chevron-right icon-base"></i>
+                </a>
+            </div>
 
-    <!-- Inclure DataTables JS -->
-    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
-    <script src="{{ asset('assets/js/datatables-fr.js') }}"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+            <div class="layout-page">
+                @include('partials.vuexy.navbar')
 
-    <script src="{{ asset('assets/js/script.js') }}"></script>
-    <script src="{{ asset('assets/js/mobile-sidebar.js') }}?v=3"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
-    <script src="{{ asset('assets/js/notifications.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
-    @yield('add-js')
-    @stack('scripts')
-    <link rel="stylesheet" href="{{ asset('assets/css/dgtcp-responsive-fixes.css') }}?v=1">
+                <div class="content-wrapper">
+                    <div class="container-xxl flex-grow-1 container-p-y">
+                        @include('sweetalert::alert')
+                        @yield('content')
+                    </div>
+
+                    @include('partials.vuexy.footer')
+                    <div class="content-backdrop fade"></div>
+                </div>
+            </div>
+        </div>
+        <div class="layout-overlay layout-menu-toggle"></div>
+        <div class="drag-target"></div>
+    </div>
+@endif
+
+<script src="{{ asset('vuexy/assets/vendor/libs/jquery/jquery.js') }}"></script>
+<script src="{{ asset('vuexy/assets/vendor/libs/popper/popper.js') }}"></script>
+<script src="{{ asset('vuexy/assets/vendor/js/bootstrap.js') }}"></script>
+<script src="{{ asset('vuexy/assets/vendor/libs/node-waves/node-waves.js') }}"></script>
+<script src="{{ asset('vuexy/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
+<script src="{{ asset('vuexy/assets/vendor/libs/hammer/hammer.js') }}"></script>
+<script src="{{ asset('vuexy/assets/vendor/js/menu.js') }}"></script>
+
+@yield('vendor-script')
+@stack('vendor-script')
+
+<script src="{{ asset('vuexy/assets/vendor/libs/sweetalert2/sweetalert2.js') }}"></script>
+<script src="{{ asset('vuexy/assets/js/main.js') }}"></script>
+<script src="{{ asset('assets/js/notifications.js') }}"></script>
+
+@yield('page-script')
+@stack('scripts')
 </body>
 </html>

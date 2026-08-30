@@ -1,37 +1,26 @@
 @extends('layouts.master')
 
-@section('content')
-<div class="content container-fluid">
-    <!-- En-tête de page -->
-    <div class="page-header mb-4">
-        <div class="row align-items-center">
-            <div class="col">
-                <div class="page-sub-header">
-                    <h3 class="page-title fw-bold text-danger">
-                        <i class="fas fa-folder-open me-2"></i>Autres Demandes Financières
-                    </h3>
-                </div>
-            </div>
-            <div class="col-auto">
-                <div class="btn-group" role="group">
-                    @if(!auth()->user()->hasRole('acct'))
-                    <a href="{{ route('pcs.autres-demandes.create') }}" class="btn btn-danger btn-sm">
-                        <i class="fas fa-plus me-1"></i>Nouvelle Demande
-                    </a>
-                    @endif
-                    @if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct', 'admin']))
-                    <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalEtatConsolideAutresDemandes">
-                        <i class="fas fa-file-export me-1"></i>État Consolidé
-                    </button>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
+@section('title', 'Autres Demandes Financières')
 
-    <!-- Filtres -->
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body">
+@section('content')
+<x-vuexy.page-header title="Autres Demandes Financières" subtitle="Gestion des autres demandes financières PCS">
+    <x-slot:actions>
+        <div class="btn-group" role="group">
+            @if(!auth()->user()->hasRole('acct'))
+            <a href="{{ route('pcs.autres-demandes.create') }}" class="btn btn-primary btn-sm">
+                <i class="ti tabler-plus me-1"></i>Nouvelle Demande
+            </a>
+            @endif
+            @if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct', 'admin']))
+            <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEtatConsolideAutresDemandes">
+                <i class="ti tabler-file-export me-1"></i>État Consolidé
+            </button>
+            @endif
+        </div>
+    </x-slot:actions>
+</x-vuexy.page-header>
+
+<x-vuexy.card title="Filtres" icon="tabler-filter" class="mb-4">
             <form method="GET" class="row g-3">
                 <div class="col-md-4">
                     <label class="form-label fw-bold">Année</label>
@@ -59,22 +48,15 @@
                     </button>
                 </div>
             </form>
-        </div>
-    </div>
+</x-vuexy.card>
 
-    <!-- Liste des demandes -->
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-danger text-white">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="fas fa-list me-2"></i>Liste des Demandes</h5>
-                <span class="badge bg-white text-danger">{{ $demandes->total() }} demandes</span>
-            </div>
-        </div>
-
-        <div class="card-body">
+<x-vuexy.card title="Liste des Demandes" icon="tabler-list">
+    <x-slot:header>
+        <span class="badge bg-label-primary">{{ $demandes->total() }} demandes</span>
+    </x-slot:header>
             @if($demandes->count() > 0)
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
+                <table class="table table-bordered table-hover align-middle">
                     <thead class="table-light">
                         <tr>
                             <th><i class="fas fa-calendar"></i> Date</th>
@@ -232,9 +214,7 @@
                 <p class="mb-0">Aucune demande trouvée. Cliquez sur "Nouvelle Demande" pour commencer.</p>
             </div>
             @endif
-        </div>
-    </div>
-</div>
+</x-vuexy.card>
 
 <!-- Modales de Validation -->
 @foreach($demandes as $demande)

@@ -1,0 +1,281 @@
+/**
+ * DGTCP — Overrides Vuexy
+ * Couleurs institutionnelles et compatibilité classes legacy dgtcp-*
+ */
+:root {
+  --dgtcp-green: #009739;
+  --dgtcp-gold: #FFD600;
+  --dgtcp-red: #E30613;
+  --dgtcp-black: #1F2937;
+  --dgtcp-white: #FFFFFF;
+  --bs-primary: #009739;
+  --bs-primary-rgb: 0, 151, 57;
+}
+
+/* Branding sidebar */
+.app-brand .app-brand-text {
+  color: var(--dgtcp-green);
+}
+
+.app-brand-logo img {
+  max-height: 32px;
+  width: auto;
+}
+
+/* Legacy dgtcp components — transition layer */
+.dgtcp-section { margin-bottom: 1.5rem; }
+
+.dgtcp-card,
+.dgtcp-section .card {
+  background: var(--bs-card-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-lg);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  margin-bottom: 1.5rem;
+}
+
+.dgtcp-card-header,
+.dgtcp-card .card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--bs-border-color);
+  background: transparent;
+}
+
+.dgtcp-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.dgtcp-card-body,
+.dgtcp-card .card-body { padding: 1.25rem; }
+
+.dgtcp-table-container { overflow-x: auto; }
+
+.dgtcp-table,
+table.dgtcp-table {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.dgtcp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--bs-border-radius);
+  font-weight: 500;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dgtcp-btn.primary,
+.dgtcp-btn-primary { background: var(--dgtcp-green); color: #fff; }
+.dgtcp-btn.primary:hover { background: #007a2f; color: #fff; }
+
+.dgtcp-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-radius: var(--bs-border-radius);
+  margin-bottom: 1.5rem;
+}
+
+.dgtcp-alert.warning { background: rgba(255, 214, 0, 0.15); border-left: 4px solid var(--dgtcp-gold); }
+.dgtcp-alert.info { background: rgba(0, 151, 57, 0.1); border-left: 4px solid var(--dgtcp-green); }
+.dgtcp-alert.danger { background: rgba(227, 6, 19, 0.1); border-left: 4px solid var(--dgtcp-red); }
+
+.dgtcp-stat-card {
+  display: block;
+  background: var(--bs-card-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-lg);
+  padding: 1.25rem;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
+}
+
+.dgtcp-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  color: inherit;
+}
+
+.dgtcp-stat-card.funds-requested { border-top: 3px solid var(--dgtcp-green); }
+.dgtcp-stat-card.customs-receipts { border-top: 3px solid var(--dgtcp-gold); }
+.dgtcp-stat-card.funds-sent { border-top: 3px solid var(--dgtcp-red); }
+.dgtcp-stat-card.pending-requests { border-top: 3px solid #3B82F6; }
+
+.dgtcp-stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--bs-border-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+  background: rgba(0, 151, 57, 0.1);
+  color: var(--dgtcp-green);
+}
+
+.dgtcp-stat-label { font-size: 0.875rem; color: var(--bs-secondary-color); margin-bottom: 0.25rem; }
+.dgtcp-stat-value { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem; }
+.dgtcp-stat-subtitle { font-size: 0.75rem; color: var(--bs-secondary-color); }
+
+.dgtcp-stats-mini { text-align: right; }
+.dgtcp-stats-value { font-size: 1.25rem; font-weight: 700; display: block; }
+.dgtcp-stats-label { font-size: 0.75rem; color: var(--bs-secondary-color); }
+
+.dgtcp-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.dgtcp-breadcrumb a { color: var(--dgtcp-green); text-decoration: none; }
+.dgtcp-breadcrumb .separator { color: var(--bs-secondary-color); }
+
+.dgtcp-header {
+  background: linear-gradient(135deg, var(--dgtcp-green) 0%, #007a2f 100%);
+  color: #fff;
+  padding: 1.5rem;
+  border-radius: var(--bs-border-radius-lg);
+  margin-bottom: 1.5rem;
+}
+
+.dgtcp-form-group { margin-bottom: 1rem; }
+.dgtcp-form-label { font-weight: 500; margin-bottom: 0.375rem; display: block; }
+
+/* DataTables dans Vuexy */
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_length select {
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  padding: 0.375rem 0.75rem;
+}
+
+/* Notifications navbar */
+.dropdown-notifications .dropdown-notifications-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.notification-item { padding: 0.75rem 1rem; border-bottom: 1px solid var(--bs-border-color); }
+.notification-item:hover { background: var(--bs-tertiary-bg); }
+.notification-item.unread { background: rgba(0, 151, 57, 0.05); }
+
+/* Mail module */
+.app-email { min-height: calc(100vh - 12rem); }
+
+/* Fade animations */
+.fade-in { animation: dgtcpFadeIn 0.4s ease; }
+@keyframes dgtcpFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   Menu horizontal DGTCP
+   ========================================================================== */
+.layout-horizontal .layout-menu-horizontal {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid var(--bs-border-color);
+  background: var(--bs-paper-bg);
+}
+
+/* Empêche le chevauchement texte / icônes */
+.layout-horizontal .menu-horizontal .menu-inner {
+  flex-wrap: wrap;
+  overflow: visible;
+  row-gap: 0.25rem;
+  column-gap: 0.25rem;
+}
+
+.layout-horizontal .menu-horizontal .menu-inner > .menu-item {
+  flex-shrink: 0;
+  margin-inline: 0.125rem !important;
+}
+
+.layout-horizontal .menu-horizontal .menu-inner > .menu-item > .menu-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding-inline-start: 0.875rem;
+  padding-inline-end: 0.875rem;
+  white-space: nowrap;
+}
+
+/* Réserve l'espace pour la flèche des sous-menus */
+.layout-horizontal .menu-horizontal .menu-inner > .menu-item > .menu-link.menu-toggle {
+  padding-inline-end: calc(0.875rem + 1.4em);
+}
+
+.layout-horizontal .menu-horizontal .menu-inner > .menu-item > .menu-link.menu-toggle::after {
+  inset-inline-end: 0.5rem;
+}
+
+.layout-horizontal .menu-horizontal .menu-inner > .menu-item > .menu-link > div {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.layout-horizontal .menu-horizontal .menu-inner > .menu-item > .menu-link .menu-icon {
+  flex-shrink: 0;
+  margin-inline-end: 0;
+}
+
+.layout-horizontal .menu-horizontal .menu-sub {
+  min-width: 220px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border-radius: var(--bs-border-radius);
+}
+
+.layout-horizontal .menu-horizontal .menu-sub .menu-link {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.layout-horizontal .menu-horizontal .menu-item.active > .menu-link,
+.layout-horizontal .menu-horizontal .menu-item.open > .menu-link {
+  color: var(--dgtcp-green);
+}
+
+.layout-horizontal .layout-page {
+  width: 100%;
+}
+
+.layout-horizontal .container-p-y {
+  padding-top: 1.5rem !important;
+}
+
+.layout-horizontal .menu-horizontal .menu-sub .menu-icon {
+  font-size: 1rem;
+  margin-right: 0.5rem;
+  opacity: 0.7;
+}
+
+.layout-horizontal #layout-navbar {
+  border-bottom: 1px solid var(--bs-border-color);
+  box-shadow: none;
+}
+
+.layout-horizontal .app-brand-text {
+  color: var(--dgtcp-green) !important;
+  font-size: 1.1rem;
+}

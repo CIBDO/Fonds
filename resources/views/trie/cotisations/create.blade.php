@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
+@section('title', 'Nouvelle Cotisation TRIE')
+
 @section('content')
 @php
     // Initialiser les variables pour JavaScript (toujours disponibles)
@@ -8,24 +10,13 @@
     $totalExistant = 0;
 @endphp
 
-<div class="content container-fluid">
-    <!-- En-tête de page -->
-    <div class="page-header mb-4">
-        <div class="row align-items-center">
-            <div class="col">
-                <div class="page-sub-header">
-                    <h3 class="page-title fw-bold text-primary">
-                        <i class="fas fa-plus-circle me-2"></i>Nouvelle Cotisation TRIE
-                    </h3>
-                </div>
-            </div>
-            <div class="col-auto">
-                <a href="{{ route('trie.cotisations.index') }}" class="btn btn-secondary btn-sm">
-                    <i class="fas fa-arrow-left me-1"></i>Retour
-                </a>
-            </div>
-        </div>
-    </div>
+<x-vuexy.page-header title="Nouvelle Cotisation TRIE" subtitle="Saisie des cotisations CCIM">
+    <x-slot:actions>
+        <a href="{{ route('trie.cotisations.index') }}" class="btn btn-label-secondary btn-sm">
+            <i class="ti tabler-arrow-left me-1"></i>Retour
+        </a>
+    </x-slot:actions>
+</x-vuexy.page-header>
 
     <!-- Sélection Poste et Mode -->
     <div class="card shadow-sm border-0 mb-4">
@@ -206,7 +197,7 @@
                 </div>
                 @endif
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle">
+                    <table class="table table-bordered table-hover align-middle">
                         <thead class="table-light">
                             <tr>
                                 <th style="width: 50px;">
@@ -481,7 +472,6 @@
         @endif
     </div>
     @endif
-</div>
 
 @push('scripts')
 <style>

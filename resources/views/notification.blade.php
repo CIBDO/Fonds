@@ -1,22 +1,30 @@
-@extends('layouts.app')
+@extends('layouts.master')
+
+@section('title', 'Notifications')
 
 @section('content')
-<div class="container">
-    <h1>Notifications</h1>
+<x-vuexy.page-header title="Notifications" />
 
+<x-vuexy.card>
     @if($notifications->isEmpty())
-        <p>Aucune notification.</p>
+        <x-vuexy.alert type="info">Aucune notification.</x-vuexy.alert>
     @else
-        <ul class="list-group">
+        <div class="list-group list-group-flush">
             @foreach($notifications as $notification)
-                <li class="list-group-item">
-                    <strong>{{ $notification->data['sujet'] }}</strong><br>
-                    {{ $notification->data['contenu'] }}<br>
-                    <small>Envoyé par : {{ $notification->data['sender_id'] }}</small>
-                    <a href="{{ route('messages.show', $notification->data['message_id']) }}" class="btn btn-primary btn-sm">Voir le message</a>
-                </li>
+                <div class="list-group-item list-group-item-action">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1">{{ $notification->data['sujet'] ?? 'Notification' }}</h6>
+                            <p class="mb-1 text-body-secondary">{{ $notification->data['contenu'] ?? '' }}</p>
+                            <small class="text-body-secondary">Envoyé par : {{ $notification->data['sender_id'] ?? '—' }}</small>
+                        </div>
+                        @if(isset($notification->data['message_id']))
+                            <a href="{{ route('messages.show', $notification->data['message_id']) }}" class="btn btn-sm btn-primary">Voir le message</a>
+                        @endif
+                    </div>
+                </div>
             @endforeach
-        </ul>
+        </div>
     @endif
-</div>
+</x-vuexy.card>
 @endsection

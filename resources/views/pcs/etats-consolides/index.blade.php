@@ -4,19 +4,10 @@
 
 @section('content')
 
-    <div class="content">
-        <!-- En-tête de page -->
-        {{-- <div class="page-header">
-            <div class="add-item d-flex">
-                <div class="page-title">
-                    <h4>
-                        <i class="fas fa-chart-line text-primary me-2"></i>
-                        États Consolidés PCS - Interface Dynamique
-                    </h4>
-                    <h6 class="text-muted">Générez vos états personnalisés en quelques clics</h6>
-                </div>
-            </div>
-        </div> --}}
+<x-vuexy.page-header
+    title="États Consolidés PCS - Interface Unifiée"
+    subtitle="Générez vos états personnalisés en quelques clics"
+/>
 
         <div class="row">
             <!-- Carte de sélection du type d'état -->
@@ -521,11 +512,10 @@
                 </div>
             </div>
         </div>
-    </div>
 
 @endsection
 
-@section('add-js')
+@push('scripts')
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
@@ -1423,4 +1413,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 }
 </style>
-@endsection
+@endpush

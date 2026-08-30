@@ -8,31 +8,15 @@
     $peutModifier = in_array($demande->statut, ['brouillon', 'soumis', 'rejete']) && $demande->saisi_par == auth()->id();
 @endphp
 
-@section('content')
-<div class="content container-fluid">
+@section('title', 'Détail Autre Demande')
 
-    {{-- En-tête --}}
-    <div class="page-header mb-4">
-        <div class="row align-items-center g-3">
-            <div class="col">
-                <div class="page-sub-header">
-                    <h3 class="page-title fw-bold text-danger mb-1">
-                        <i class="fas fa-file-alt me-2"></i>Détail de la Demande
-                    </h3>
-                    <p class="text-muted mb-0">
-                        <span class="badge bg-primary me-1">{{ $demande->poste->nom }}</span>
-                        <span class="me-1">·</span>
-                        {{ $demande->date_demande->format('d/m/Y') }}
-                        <span class="me-1">·</span>
-                        Année {{ $demande->annee }}
-                    </p>
-                </div>
-            </div>
-            <div class="col-auto">
-                <div class="btn-group btn-group-sm" role="group">
-                    <a href="{{ route('pcs.autres-demandes.index') }}" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left me-1"></i>Retour
-                    </a>
+@section('content')
+<x-vuexy.page-header title="Détail de la Demande" :subtitle="$demande->poste->nom . ' · ' . $demande->date_demande->format('d/m/Y') . ' · Année ' . $demande->annee">
+    <x-slot:actions>
+        <div class="btn-group btn-group-sm" role="group">
+            <a href="{{ route('pcs.autres-demandes.index') }}" class="btn btn-label-secondary">
+                <i class="ti tabler-arrow-left me-1"></i>Retour
+            </a>
                     @if($peutModifier)
                     <a href="{{ route('pcs.autres-demandes.edit', $demande) }}" class="btn btn-outline-primary">
                         <i class="fas fa-edit me-1"></i>Modifier
@@ -43,10 +27,9 @@
                         <i class="fas fa-paperclip me-1"></i>Preuve
                     </a>
                     @endif
-                </div>
-            </div>
         </div>
-    </div>
+    </x-slot:actions>
+</x-vuexy.page-header>
 
     {{-- Synthèse financière --}}
     <div class="row g-3 mb-4">
@@ -286,7 +269,6 @@
             @endif
         </div>
     </div>
-</div>
 
 {{-- Modales (hors flux principal) --}}
 @if($demande->peutRecevoirVersement())
@@ -323,7 +305,6 @@
             </form>
         </div>
     </div>
-</div>
 @endif
 
 @push('scripts')

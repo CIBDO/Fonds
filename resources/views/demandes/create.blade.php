@@ -1,7 +1,8 @@
 @extends('layouts.master')
 
+@section('title', 'Nouvelle Demande de Fonds')
+
 @section('content')
-<div class="content container-fluid">
     <!-- En-tête de page moderne -->
     <div class="page-header mb-4">
         <div class="row align-items-center">
@@ -14,7 +15,7 @@
                 </div>
             </div>
             <div class="col-auto">
-                <a href="{{ route('demandes-fonds.index') }}" class="btn btn-outline-secondary btn-sm">
+                <a href="{{ route('demandes-fonds.index') }}" class="btn btn-label-secondary btn-sm">
                     <i class="fas fa-arrow-left me-1"></i>Retour à la liste
                 </a>
             </div>
@@ -228,7 +229,7 @@
 
         <!-- Boutons d'action -->
         <div class="d-grid gap-2 d-md-flex justify-content-md-center mb-5">
-            <a href="{{ route('demandes-fonds.index') }}" class="btn btn-outline-secondary btn-lg px-5">
+            <a href="{{ route('demandes-fonds.index') }}" class="btn btn-label-secondary btn-lg px-5">
                 <i class="fas fa-times me-2"></i>Annuler
             </a>
             <button type="submit" class="btn btn-primary btn-lg px-5" id="submitBtn">
@@ -236,8 +237,8 @@
             </button>
         </div>
     </form>
-</div>
 
+@push('styles')
 <style>
     /* Animation pour le focus des champs */
     .form-control:focus, .form-select:focus {
@@ -312,8 +313,11 @@
         }
     }
 </style>
+@endpush
 
-@section('add-js')
+@endsection
+
+@push('scripts')
 <script>
 (function() {
     'use strict';
@@ -387,5 +391,4 @@
     });
 })();
 </script>
-@endsection
-@endsection
+@endpush

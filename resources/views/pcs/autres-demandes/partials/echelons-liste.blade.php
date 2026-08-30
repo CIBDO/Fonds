@@ -1,14 +1,7 @@
 @if($demande->echelons->isNotEmpty())
-<div class="card shadow-sm border-0 mb-4">
-    <div class="card-header bg-success text-white">
-        <h6 class="mb-0">
-            <i class="fas fa-calendar-check me-2"></i>
-            Versements enregistrés ({{ $demande->echelons->count() }})
-        </h6>
-    </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
+<x-vuexy.card title="Versements enregistrés ({{ $demande->echelons->count() }})" icon="tabler-calendar-check" class="mb-4">
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover mb-0">
                 <thead class="table-light">
                     <tr>
                         <th class="text-center">N°</th>
@@ -37,8 +30,7 @@
                     </tr>
                     @endif
                 </tfoot>
-            </table>
-        </div>
+        </table>
     </div>
-</div>
+</x-vuexy.card>
 @endif

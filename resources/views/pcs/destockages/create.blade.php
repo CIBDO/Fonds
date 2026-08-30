@@ -1,25 +1,15 @@
 @extends('layouts.master')
 
+@section('title', 'Nouveau Destockage PCS')
+
 @section('content')
-<div class="content container-fluid">
-    <!-- En-tête de page -->
-    <div class="page-header mb-4">
-        <div class="row align-items-center">
-            <div class="col">
-                <div class="page-sub-header">
-                    <h3 class="page-title fw-bold text-danger">
-                        <i class="fas fa-cash-register me-2"></i>Nouveau Règlement
-                    </h3>
-                    {{-- <p class="text-muted mb-0">Sélectionnez les postes et saisissez les montants à déstocker</p> --}}
-                </div>
-            </div>
-            <div class="col-auto">
-                <a href="{{ route('pcs.destockages.collecte', ['programme' => $programme, 'mois' => $mois, 'annee' => $annee]) }}" class="btn btn-secondary btn-sm">
-                    <i class="fas fa-arrow-left me-1"></i>Retour
-                </a>
-            </div>
-        </div>
-    </div>
+<x-vuexy.page-header title="Nouveau Règlement" subtitle="Saisie des montants à déstocker">
+    <x-slot:actions>
+        <a href="{{ route('pcs.destockages.collecte', ['programme' => $programme, 'mois' => $mois, 'annee' => $annee]) }}" class="btn btn-label-secondary btn-sm">
+            <i class="ti tabler-arrow-left me-1"></i>Retour
+        </a>
+    </x-slot:actions>
+</x-vuexy.page-header>
 
     <form action="{{ route('pcs.destockages.store') }}" method="POST" id="destockageForm">
         @csrf
@@ -83,7 +73,7 @@
             <div class="card-body">
                 @if(count($collectesParPoste) > 0)
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle">
+                    <table class="table table-bordered table-hover align-middle">
                         <thead class="table-light">
                             <tr>
                                 <th style="width: 50px;">
@@ -196,7 +186,6 @@
             </div>
         </div>
     </form>
-</div>
 
 @push('scripts')
 <script>

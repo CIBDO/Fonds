@@ -1,19 +1,10 @@
 @extends('layouts.master')
 
+@section('title', 'Collecte PCS')
+
 @section('content')
-<div class="content container-fluid">
-    <!-- En-tête de page -->
-    <div class="page-header mb-4">
-        <div class="row align-items-center">
-            <div class="col">
-                <div class="page-sub-header">
-                    <h3 class="page-title fw-bold text-danger">
-                        <i class="fas fa-coins me-2"></i>Fonds Collectés - Vue de Collecte
-                    </h3>
-                    {{-- <p class="text-muted mb-0">Consultez les fonds collectés par poste et programme</p> --}}
-                </div>
-            </div>
-            <div class="col-auto">
+<x-vuexy.page-header title="Fonds Collectés - Vue de Collecte" subtitle="Consultation des fonds collectés par poste">
+    <x-slot:actions>
                 <div class="btn-group me-2" role="group">
                     <button type="button" class="btn btn-outline-danger btn-sm dropdown-toggle" data-bs-toggle="dropdown">
                         <i class="fas fa-file-pdf me-1"></i>États PDF
@@ -34,16 +25,13 @@
                 <a href="{{ route('pcs.destockages.create', ['programme' => $programme, 'mois' => $mois, 'annee' => $annee]) }}" class="btn btn-danger btn-sm me-2">
                     <i class="fas fa-plus me-1"></i>Nouveau Règlement
                 </a>
-                <a href="{{ route('pcs.destockages.index') }}" class="btn btn-secondary btn-sm">
-                    <i class="fas fa-list me-1"></i>Liste des Règlements
+                <a href="{{ route('pcs.destockages.index') }}" class="btn btn-label-secondary btn-sm">
+                    <i class="ti tabler-list me-1"></i>Liste des Règlements
                 </a>
-            </div>
-        </div>
-    </div>
+    </x-slot:actions>
+</x-vuexy.page-header>
 
-    <!-- Filtres -->
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body">
+<x-vuexy.card title="Filtres" icon="tabler-filter" class="mb-4">
             <form method="GET" action="{{ route('pcs.destockages.collecte') }}" class="row g-3">
                 <div class="col-md-3">
                     <label class="form-label fw-bold">Programme</label>
@@ -81,24 +69,15 @@
                     </div>
                 </div>
             </form>
-        </div>
-    </div>
+</x-vuexy.card>
 
-    <!-- Table des fonds collectés -->
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-danger text-white">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">
-                    <i class="fas fa-list me-2"></i>Fonds Collectés - {{ $programme }} - {{ $moisList[$mois] }} {{ $annee }}
-                </h5>
-                <span class="badge bg-white text-danger">{{ count($collectesParPoste) }} entités</span>
-            </div>
-        </div>
-
-        <div class="card-body">
+<x-vuexy.card :title="'Fonds Collectés - ' . $programme . ' - ' . $moisList[$mois] . ' ' . $annee" icon="tabler-list">
+    <x-slot:header>
+        <span class="badge bg-label-primary">{{ count($collectesParPoste) }} entités</span>
+    </x-slot:header>
             @if(count($collectesParPoste) > 0)
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
+                <table class="table table-bordered table-hover align-middle">
                     <thead class="table-light">
                         <tr>
                             <th><i class="fas fa-building"></i> Entité</th>
@@ -168,9 +147,7 @@
                 <p class="mb-0">Aucun fonds collecté pour cette période.</p>
             </div>
             @endif
-        </div>
-    </div>
-</div>
+</x-vuexy.card>
 
 @push('scripts')
 <script>

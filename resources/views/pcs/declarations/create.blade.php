@@ -1,25 +1,15 @@
 @extends('layouts.master')
 
+@section('title', 'Nouvelle Déclaration PCS')
+
 @section('content')
-<div class="content container-fluid">
-    <!-- En-tête de page -->
-    <div class="page-header mb-4">
-        <div class="row align-items-center">
-            <div class="col">
-                <div class="page-sub-header">
-                    <h3 class="page-title fw-bold text-danger">
-                        <i class="fas fa-plus-circle me-2"></i>Nouvelle Déclaration PCS
-                    </h3>
-                    {{-- <p class="text-muted mb-0"> - {{ $poste->nom }} - Programme UEMOA & AES</p> --}}
-                </div>
-            </div>
-            <div class="col-auto">
-                <a href="{{ route('pcs.declarations.index') }}" class="btn btn-secondary btn-sm">
-                    <i class="fas fa-arrow-left me-1"></i>Retour
-                </a>
-            </div>
-        </div>
-    </div>
+<x-vuexy.page-header title="Nouvelle Déclaration PCS" subtitle="Saisie des déclarations UEMOA et AES">
+    <x-slot:actions>
+        <a href="{{ route('pcs.declarations.index') }}" class="btn btn-label-secondary btn-sm">
+            <i class="ti tabler-arrow-left me-1"></i>Retour
+        </a>
+    </x-slot:actions>
+</x-vuexy.page-header>
 
     <!-- Alerte mois manquants -->
     @php
@@ -639,7 +629,6 @@
             </div>
         </div>
     </form>
-</div>
 
 @push('scripts')
 <style>

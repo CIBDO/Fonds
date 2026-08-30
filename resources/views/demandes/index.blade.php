@@ -1,5 +1,9 @@
 @extends('layouts.master')
 
+@section('title', 'Demandes de Fonds')
+
+@include('partials.vuexy.datatables-assets')
+
 @section('content')
 <!-- Header DGTCP moderne -->
 {{-- <div class="dgtcp-header">
@@ -23,7 +27,7 @@
             </div>
             <div class="col-md-4 text-end">
                 <div class="dgtcp-header-actions">
-                    <a href="{{ route('demandes-fonds.create') }}" class="dgtcp-btn primary">
+                    <a href="{{ route('demandes-fonds.create') }}" class="btn btn-primary">
                         <i class="fas fa-plus-circle"></i>
                         <span>Nouvelle Demande</span>
                     </a>
@@ -37,7 +41,7 @@
 
 <!-- Tableau des demandes DGTCP -->
 <div class="dgtcp-section">
-    <div class="dgtcp-card">
+    <div class="card dgtcp-card">
         <div class="dgtcp-card-header">
             <div class="dgtcp-card-title">
                 <i class="fas fa-clock"></i>
@@ -52,7 +56,7 @@
         </div>
         <div class="dgtcp-card-body">
             <div class="dgtcp-table-container">
-                <table id="demandes-table" class="dgtcp-table">
+                <table id="demandes-table" class="table table-bordered dgtcp-table">
                     <thead>
                         <tr>
                             <th><i class="fas fa-calendar-alt"></i> Mois</th>
@@ -189,22 +193,11 @@
     </div>
 </div>
  --}}
-@section('add-js')
+@endsection
+
+@push('scripts')
 <!-- DataTables CSS moderne -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
-
 <!-- DataTables JS -->
-<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-
 <style>
 /* Styles DataTable DGTCP */
 .dgtcp-table-container {
@@ -749,5 +742,4 @@ $(document).ready(function() {
         anneeSelect.addEventListener('change', updateFormAction);
     });
 </script> --}}
-@stop
-@endsection
+@endpush

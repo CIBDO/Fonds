@@ -1,53 +1,35 @@
 @extends('layouts.master')
 
-@section('content')
-<div class="content container-fluid">
-    <!-- En-tête de page -->
-    <div class="page-header mb-4">
-        <div class="row align-items-center">
-            <div class="col">
-                <div class="page-sub-header">
-                    <h3 class="page-title fw-bold text-danger">
-                        <i class="fas fa-file-alt me-2"></i>Déclarations PCS
-                    </h3>
-                    {{-- <p class="text-muted mb-0">Programme de Consolidation des Statistiques UEMOA/AES</p> --}}
-                </div>
-            </div>
-            <div class="col-auto">
-                @if(!auth()->user()->hasRole('acct'))
-                <div class="btn-group" role="group">
-                    <a href="{{ route('pcs.declarations.create') }}" class="btn btn-danger btn-sm">
-                        <i class="fas fa-plus me-1"></i>Nouvelle Déclaration
-                    </a>
-                    <button type="button" class="btn btn-outline-danger btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
-                        <span class="visually-hidden">Toggle Dropdown</span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        {{-- <li><a class="dropdown-item" href="{{ route('pcs.declarations.pdf.recettes') }}?programme=UEMOA&annee={{ date('Y') }}">
-                            <i class="fas fa-file-pdf text-danger"></i> État UEMOA
-                        </a></li>
-                        <li><a class="dropdown-item" href="{{ route('pcs.declarations.pdf.recettes') }}?programme=AES&annee={{ date('Y') }}">
-                            <i class="fas fa-file-pdf text-danger"></i> État AES
-                        </a></li> --}}
-                        @if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct', 'admin']))
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalEtatConsolidePosteEmetteur">
-                            <i class="fas fa-file-export text-success"></i> État Consolidé (Poste Émetteur)
-                        </a></li>
-                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalEtatReferences">
-                            <i class="fas fa-hashtag text-info"></i> État des références (Déclarations et Cotisations)
-                        </a></li>
-                        @endif
-                    </ul>
-                </div>
-                @endif
-            </div>
-        </div>
-    </div>
+@section('title', 'Déclarations PCS')
 
-    <!-- Filtres -->
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body">
+@section('content')
+<x-vuexy.page-header title="Déclarations PCS" subtitle="Programme de Consolidation des Statistiques UEMOA/AES">
+    <x-slot:actions>
+        @if(!auth()->user()->hasRole('acct'))
+        <div class="btn-group" role="group">
+            <a href="{{ route('pcs.declarations.create') }}" class="btn btn-primary btn-sm">
+                <i class="ti tabler-plus me-1"></i>Nouvelle Déclaration
+            </a>
+            <button type="button" class="btn btn-outline-primary btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
+                <span class="visually-hidden">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                @if(auth()->user()->poste_id && !in_array(auth()->user()->role, ['acct', 'admin']))
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalEtatConsolidePosteEmetteur">
+                    <i class="ti tabler-file-export text-success"></i> État Consolidé (Poste Émetteur)
+                </a></li>
+                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalEtatReferences">
+                    <i class="ti tabler-hash text-info"></i> État des références (Déclarations et Cotisations)
+                </a></li>
+                @endif
+            </ul>
+        </div>
+        @endif
+    </x-slot:actions>
+</x-vuexy.page-header>
+
+<x-vuexy.card title="Filtres" icon="tabler-filter" class="mb-4">
             <form method="GET" action="{{ route('pcs.declarations.index') }}" class="row g-3">
                 <div class="col-md-2">
                     <label class="form-label fw-bold">Programme</label>
@@ -96,28 +78,15 @@
                     </div>
                 </div>
             </form>
-        </div>
-    </div>
+</x-vuexy.card>
 
-    <!-- Table des déclarations -->
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-danger text-white">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h5 class="mb-0"><i class="fas fa-list me-2"></i>Liste des Déclarations</h5>
-                    {{-- <small class="opacity-75">
-                        Les déclarations sont groupées par période et entité.
-                        Cliquez sur le bouton <i class="fas fa-list"></i> pour voir le détail de toutes les déclarations individuelles.
-                    </small> --}}
-                </div>
-                <span class="badge bg-white text-danger">{{ $declarations->total() }} période(s) · {{ $totalDeclarations ?? 0 }} déclarations</span>
-            </div>
-        </div>
-
-        <div class="card-body">
+<x-vuexy.card title="Liste des Déclarations" icon="tabler-list">
+    <x-slot:header>
+        <span class="badge bg-label-primary">{{ $declarations->total() }} période(s) · {{ $totalDeclarations ?? 0 }} déclarations</span>
+    </x-slot:header>
             @if($declarations->count() > 0)
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
+                <table class="table table-bordered table-hover align-middle">
                     <thead class="table-light">
                         <tr>
                             <th><i class="fas fa-calendar"></i> Période</th>
@@ -304,7 +273,7 @@
                                                     <strong>Total :</strong> {{ $groupe->count() }} déclaration(s)
                                                 </p>
                                                 <div class="table-responsive">
-                                                    <table class="table table-sm table-hover">
+                                                    <table class="table table-sm table-bordered table-hover">
                                                         <thead class="table-light">
                                                             <tr>
                                                                 <th>Programme</th>
@@ -513,9 +482,7 @@
                 <p class="mb-0">Aucune déclaration trouvée. Cliquez sur "Nouvelle Déclaration" pour commencer.</p>
             </div>
             @endif
-        </div>
-    </div>
-</div>
+</x-vuexy.card>
 
 @push('scripts')
 <script>
