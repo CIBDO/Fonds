@@ -222,15 +222,6 @@ class DashboardAnalyticsService
             ];
         }
 
-        $retard = (clone $query)->where('status', 'en_attente')
-            ->where('created_at', '<', now()->subDays(3))->count();
-        if ($retard > 0) {
-            $alertes[] = [
-                'type' => 'danger',
-                'message' => "{$retard} demande(s) en attente depuis plus de 3 jours",
-            ];
-        }
-
         $rejets = (clone $query)->where('status', 'rejete')
             ->whereMonth('updated_at', now()->month)->count();
         if ($rejets > 0) {

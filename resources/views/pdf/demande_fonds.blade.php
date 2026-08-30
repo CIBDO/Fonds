@@ -182,7 +182,7 @@
             </div>
             <div class="comptable-info">
                 {{-- <p>Bamako, le {{ $demandeFonds->created_at ? $demandeFonds->created_at->format('d/m/Y') : date('d/m/Y') }}</p> --}}
-                <p style="margin-top: 30px; "><strong>Le Trésorier Payeur</strong></p>
+                <p style="margin-top: 30px; "><strong>Le Responsable du Poste comptable</strong></p>
             </div>
         </div>
     </div>

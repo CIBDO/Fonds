@@ -61,7 +61,7 @@
                     <th><i class="icon-base ti tabler-tag me-1"></i>Désignation</th>
                     <th class="text-end"><i class="icon-base ti tabler-currency-franc me-1"></i>Montant</th>
                     <th class="text-center"><i class="icon-base ti tabler-flag me-1"></i>Statut</th>
-                    <th class="text-center" width="140">Actions</th>
+                    <th class="text-center" width="170">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -101,6 +101,13 @@
                                data-bs-toggle="tooltip"
                                title="Détails">
                                 <i class="icon-base ti tabler-eye icon-22px"></i>
+                            </a>
+                            <a href="{{ route('pcs.autres-demandes.etat', $demande) }}"
+                               class="btn btn-icon btn-sm btn-text-secondary rounded-pill"
+                               data-bs-toggle="tooltip"
+                               title="Télécharger l'état PDF"
+                               target="_blank">
+                                <i class="icon-base ti tabler-file-type-pdf icon-22px"></i>
                             </a>
                             @if($demande->preuve_paiement)
                                 <a href="{{ route('pcs.autres-demandes.preuve', $demande) }}"

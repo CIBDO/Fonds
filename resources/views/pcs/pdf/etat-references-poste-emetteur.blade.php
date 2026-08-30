@@ -242,7 +242,7 @@
             {{ $poste->nom }}, le {{ \Carbon\Carbon::now()->format('d/m/Y') }}
         </div>
         <div class="agent-signature">
-            Le Trésorier Payeur
+            Le Responsable du Poste comptable
         </div>
     </div>
 </body>

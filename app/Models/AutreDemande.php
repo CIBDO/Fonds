@@ -14,6 +14,7 @@ class AutreDemande extends Model
 
     protected $fillable = [
         'poste_id',
+        'lot_reference',
         'designation',
         'montant',
         'montant_accord',

@@ -292,6 +292,7 @@ Route::middleware(['auth'])->prefix('pcs')->name('pcs.')->group(function () {
         Route::get('create', 'create')->name('create');
         Route::post('/', 'store')->name('store');
         Route::get('{demande}/preuve', 'preuve')->name('preuve');
+        Route::get('{demande}/etat', 'etatDemande')->name('etat');
         Route::get('{demande}', 'show')->name('show');
         Route::get('{demande}/edit', 'edit')->name('edit');
         Route::put('{demande}', 'update')->name('update');

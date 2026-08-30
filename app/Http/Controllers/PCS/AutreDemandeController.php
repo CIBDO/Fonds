@@ -151,12 +151,14 @@ class AutreDemandeController extends Controller
         $statut = $request->input('action') === 'soumettre' ? 'soumis' : 'brouillon';
         $demandesCreees = [];
         $erreurs = [];
+        $lotReference = (string) \Illuminate\Support\Str::uuid();
 
         // Créer chaque demande
         foreach ($request->input('demandes') as $index => $demandeData) {
             try {
                 $demande = AutreDemande::create([
                     'poste_id' => $user->poste_id,
+                    'lot_reference' => $lotReference,
                     'designation' => $demandeData['designation'],
                     'montant' => $demandeData['montant'],
                     'observation' => $demandeData['observation'] ?? null,
@@ -938,6 +940,73 @@ class AutreDemandeController extends Controller
         ));
 
         return $pdf->download("Etat_Autres_Demandes_PCS_{$poste->nom}_{$annee}.pdf");
+    }
+
+    /**
+     * Générer l'état PDF d'une demande spécifique
+     */
+    public function etatDemande(AutreDemande $demande)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        $estValideurOuAcct = $user->peut_valider_pcs || $user->hasRole('acct') || $user->hasRole('admin');
+        if (! $estValideurOuAcct && $demande->poste_id !== $user->poste_id) {
+            Alert::error('Erreur', 'Vous n\'avez pas accès à cette demande');
+            return redirect()->route('pcs.autres-demandes.index');
+        }
+
+        $demandesGroupe = $this->resoudreDemandesGroupe($demande);
+
+        foreach ($demandesGroupe as $item) {
+            $item->reparerEchelonsLegacySiNecessaire();
+            $item->load('echelons');
+        }
+
+        $demande = $demandesGroupe->first();
+        $montantDemande = $demandesGroupe->sum(fn ($d) => (float) $d->montant);
+        $montantAccorde = $demandesGroupe->sum(fn ($d) => $d->montant_accord !== null ? (float) $d->montant_accord : 0);
+        $montantVerse = $demandesGroupe->sum(fn ($d) => $d->montant_verse_cumule);
+        $montantRestant = $demandesGroupe->sum(fn ($d) => $d->montant_restant_accord);
+
+        $aDetailVersements = $demandesGroupe->contains(function ($d) {
+            return $d->echelons->isNotEmpty()
+                || ($d->echelons->isEmpty() && $d->statut === 'valide' && $d->montant_accord);
+        });
+
+        $pdf = PDF::loadView('pcs.pdf.etat-autre-demande', compact(
+            'demande',
+            'demandesGroupe',
+            'montantDemande',
+            'montantAccorde',
+            'montantVerse',
+            'montantRestant',
+            'aDetailVersements',
+        ));
+
+        $slug = \Illuminate\Support\Str::slug($demande->poste->nom, '_');
+        $suffixe = $demandesGroupe->count() > 1 ? 'lot' : (string) $demande->id;
+
+        return $pdf->download("Etat_Demande_PCS_{$slug}_{$suffixe}.pdf");
+    }
+
+    /**
+     * Récupère toutes les demandes d'un même lot de saisie.
+     */
+    private function resoudreDemandesGroupe(AutreDemande $demande)
+    {
+        $relations = ['poste', 'saisiPar', 'validePar', 'echelons'];
+
+        if ($demande->lot_reference) {
+            return AutreDemande::with($relations)
+                ->where('lot_reference', $demande->lot_reference)
+                ->orderBy('id')
+                ->get();
+        }
+
+        $demande->load($relations);
+
+        return collect([$demande]);
     }
 }
 
