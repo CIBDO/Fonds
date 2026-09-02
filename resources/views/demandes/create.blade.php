@@ -49,26 +49,18 @@
                     <div class="col-md-3">
                         <label for="mois" class="form-label">Mois <span class="text-danger">*</span></label>
                         <select name="mois" id="mois" class="form-select" required>
-                            <option value="" disabled selected>Sélectionnez...</option>
-                            <option value="Janvier">Janvier</option>
-                            <option value="Fevrier">Février</option>
-                            <option value="Mars">Mars</option>
-                            <option value="Avril">Avril</option>
-                            <option value="Mai">Mai</option>
-                            <option value="Juin">Juin</option>
-                            <option value="Juillet">Juillet</option>
-                            <option value="Aout">Août</option>
-                            <option value="Septembre">Septembre</option>
-                            <option value="Octobre">Octobre</option>
-                            <option value="Novembre">Novembre</option>
-                            <option value="Decembre">Décembre</option>
+                            @foreach($moisList as $m)
+                                <option value="{{ $m }}" {{ ($moisCourant ?? '') === $m ? 'selected' : '' }}>
+                                    {{ $m === 'Fevrier' ? 'Février' : ($m === 'Aout' ? 'Août' : ($m === 'Decembre' ? 'Décembre' : $m)) }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
 
                     <div class="col-md-3">
                         <label for="annee" class="form-label">Année <span class="text-danger">*</span></label>
                         <input type="number" name="annee" id="annee" class="form-control"
-                               value="{{ now()->format('Y') }}" min="2020" max="2099" required>
+                               value="{{ $anneeCourante ?? now()->format('Y') }}" min="2020" max="2099" required>
                     </div>
 
                     <div class="col-md-6">

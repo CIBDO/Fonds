@@ -33,7 +33,7 @@
                 <td><input type="text" name="fonctionnaires_bcs_net" class="form-control net" placeholder="0"></td>
                 <td><input type="text" name="fonctionnaires_bcs_revers" class="form-control revers" placeholder="0"></td>
                 <td><input type="text" name="fonctionnaires_bcs_total_courant" class="form-control total_courant" readonly></td>
-                <td><input type="text" name="fonctionnaires_bcs_salaire_ancien" class="form-control ancien_salaire" value="{{ $previousData->fonctionnaires_bcs_total_courant ?? 0 }}" readonly></td>
+                <td><input type="text" name="fonctionnaires_bcs_salaire_ancien" class="form-control ancien_salaire" data-champ="fonctionnaires_bcs_total_courant" value="{{ $previousData?->fonctionnaires_bcs_total_courant ?? 0 }}" readonly></td>
                 <td><input type="text" name="fonctionnaires_bcs_total_demande" class="form-control total_demande" readonly></td>
             </tr>
 
@@ -45,7 +45,7 @@
                 <td><input type="text" name="collectivite_sante_net" class="form-control net" placeholder="0"></td>
                 <td><input type="text" name="collectivite_sante_revers" class="form-control revers" placeholder="0"></td>
                 <td><input type="text" name="collectivite_sante_total_courant" class="form-control total_courant" readonly></td>
-                <td><input type="text" name="collectivite_sante_salaire_ancien" class="form-control ancien_salaire" value="{{ $previousData->collectivite_sante_total_courant ?? 0 }}" readonly></td>
+                <td><input type="text" name="collectivite_sante_salaire_ancien" class="form-control ancien_salaire" data-champ="collectivite_sante_total_courant" value="{{ $previousData?->collectivite_sante_total_courant ?? 0 }}" readonly></td>
                 <td><input type="text" name="collectivite_sante_total_demande" class="form-control total_demande" readonly></td>
             </tr>
 
@@ -57,7 +57,7 @@
                 <td><input type="text" name="collectivite_education_net" class="form-control net" placeholder="0"></td>
                 <td><input type="text" name="collectivite_education_revers" class="form-control revers" placeholder="0"></td>
                 <td><input type="text" name="collectivite_education_total_courant" class="form-control total_courant" readonly></td>
-                <td><input type="text" name="collectivite_education_salaire_ancien" class="form-control ancien_salaire" value="{{ $previousData->collectivite_education_total_courant ?? 0 }}" readonly></td>
+                <td><input type="text" name="collectivite_education_salaire_ancien" class="form-control ancien_salaire" data-champ="collectivite_education_total_courant" value="{{ $previousData?->collectivite_education_total_courant ?? 0 }}" readonly></td>
                 <td><input type="text" name="collectivite_education_total_demande" class="form-control total_demande" readonly></td>
             </tr>
 
@@ -69,7 +69,7 @@
                 <td><input type="text" name="personnels_saisonniers_net" class="form-control net" placeholder="0"></td>
                 <td><input type="text" name="personnels_saisonniers_revers" class="form-control revers" placeholder="0"></td>
                 <td><input type="text" name="personnels_saisonniers_total_courant" class="form-control total_courant" readonly></td>
-                <td><input type="text" name="personnels_saisonniers_salaire_ancien" class="form-control ancien_salaire" value="{{ $previousData->personnels_saisonniers_total_courant ?? 0 }}" readonly></td>
+                <td><input type="text" name="personnels_saisonniers_salaire_ancien" class="form-control ancien_salaire" data-champ="personnels_saisonniers_total_courant" value="{{ $previousData?->personnels_saisonniers_total_courant ?? 0 }}" readonly></td>
                 <td><input type="text" name="personnels_saisonniers_total_demande" class="form-control total_demande" readonly></td>
             </tr>
 
@@ -81,7 +81,7 @@
                 <td><input type="text" name="epn_net" class="form-control net" placeholder="0"></td>
                 <td><input type="text" name="epn_revers" class="form-control revers" placeholder="0"></td>
                 <td><input type="text" name="epn_total_courant" class="form-control total_courant" readonly></td>
-                <td><input type="text" name="epn_salaire_ancien" class="form-control ancien_salaire" value="{{ $previousData->epn_total_courant ?? 0 }}" readonly></td>
+                <td><input type="text" name="epn_salaire_ancien" class="form-control ancien_salaire" data-champ="epn_total_courant" value="{{ $previousData?->epn_total_courant ?? 0 }}" readonly></td>
                 <td><input type="text" name="epn_total_demande" class="form-control total_demande" readonly></td>
             </tr>
 
@@ -92,7 +92,7 @@
                 <td><input type="text" name="ced_net" class="form-control net" placeholder="0"></td>
                 <td><input type="text" name="ced_revers" class="form-control revers" placeholder="0"></td>
                 <td><input type="text" name="ced_total_courant" class="form-control total_courant" readonly></td>
-                <td><input type="text" name="ced_salaire_ancien" class="form-control ancien_salaire" value="{{ $previousData->ced_total_courant ?? 0 }}" readonly></td>
+                <td><input type="text" name="ced_salaire_ancien" class="form-control ancien_salaire" data-champ="ced_total_courant" value="{{ $previousData?->ced_total_courant ?? 0 }}" readonly></td>
                 <td><input type="text" name="ced_total_demande" class="form-control total_demande" readonly></td>
             </tr>
 
@@ -103,7 +103,7 @@
                 <td><input type="text" name="ecom_net" class="form-control net" placeholder="0"></td>
                 <td><input type="text" name="ecom_revers" class="form-control revers" placeholder="0"></td>
                 <td><input type="text" name="ecom_total_courant" class="form-control total_courant" readonly></td>
-                <td><input type="text" name="ecom_salaire_ancien" class="form-control ancien_salaire" value="{{ $previousData->ecom_total_courant ?? 0 }}" readonly></td>
+                <td><input type="text" name="ecom_salaire_ancien" class="form-control ancien_salaire" data-champ="ecom_total_courant" value="{{ $previousData?->ecom_total_courant ?? 0 }}" readonly></td>
                 <td><input type="text" name="ecom_total_demande" class="form-control total_demande" readonly></td>
             </tr>
 
@@ -114,7 +114,7 @@
                 <td><input type="text" name="cfp_cpam_net" class="form-control net" placeholder="0"></td>
                 <td><input type="text" name="cfp_cpam_revers" class="form-control revers" placeholder="0"></td>
                 <td><input type="text" name="cfp_cpam_total_courant" class="form-control total_courant" readonly></td>
-                <td><input type="text" name="cfp_cpam_salaire_ancien" class="form-control ancien_salaire" value="{{ $previousData->cfp_cpam_total_courant ?? 0 }}" readonly></td>
+                <td><input type="text" name="cfp_cpam_salaire_ancien" class="form-control ancien_salaire" data-champ="cfp_cpam_total_courant" value="{{ $previousData?->cfp_cpam_total_courant ?? 0 }}" readonly></td>
                 <td><input type="text" name="cfp_cpam_total_demande" class="form-control total_demande" readonly></td>
             </tr>
 
@@ -131,6 +131,7 @@
             </tr>
         </tbody>
     </table>
+    <div id="salaire-anterieur-info" class="px-3 pb-3 small text-body-secondary"></div>
 </div>
 @push('scripts')
 <script>
@@ -158,6 +159,10 @@
         const totalDemandeField = document.getElementById('total_demande');
         const montantDisponibleField = document.getElementById('montant_disponible');
         const soldeField = document.getElementById('solde');
+        const moisField = document.getElementById('mois');
+        const anneeField = document.getElementById('annee');
+        const infoField = document.getElementById('salaire-anterieur-info');
+        const salairePrecedentUrl = @json(route('demandes-fonds.salaire-mois-precedent'));
 
         function calculateTotals() {
             let totalNet = 0;
@@ -209,6 +214,85 @@
         reversFields.forEach(field => field.addEventListener('input', handleInput));
         salaireAncienFields.forEach(field => field.addEventListener('input', handleInput));
         montantDisponibleField.addEventListener('input', handleInput);
+
+        function appliquerSalairesAnterieurs(totaux) {
+            salaireAncienFields.forEach(function (field) {
+                const champ = field.dataset.champ;
+                const valeur = champ && totaux[champ] !== undefined ? totaux[champ] : 0;
+                field.value = formatNumber(valeur);
+            });
+            calculateTotals();
+        }
+
+        function libelleMois(mois) {
+            const labels = { Fevrier: 'Février', Aout: 'Août', Decembre: 'Décembre' };
+            return labels[mois] || mois;
+        }
+
+        let chargementSalaire = null;
+
+        function chargerSalaireMoisPrecedent() {
+            if (!moisField || !anneeField || !salairePrecedentUrl) {
+                return;
+            }
+
+            const mois = moisField.value;
+            const annee = anneeField.value;
+            const posteInput = document.querySelector('input[name="poste_id"]');
+            const posteId = posteInput ? posteInput.value : '';
+
+            if (!mois || !annee) {
+                return;
+            }
+
+            if (infoField) {
+                infoField.textContent = 'Chargement du salaire du mois antérieur…';
+            }
+
+            if (chargementSalaire) {
+                chargementSalaire.abort();
+            }
+            chargementSalaire = new AbortController();
+
+            const params = new URLSearchParams({ mois, annee });
+            if (posteId) {
+                params.set('poste_id', posteId);
+            }
+
+            fetch(salairePrecedentUrl + '?' + params.toString(), {
+                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                signal: chargementSalaire.signal,
+            })
+                .then(function (response) { return response.json(); })
+                .then(function (data) {
+                    appliquerSalairesAnterieurs(data.totaux || {});
+
+                    if (!infoField) {
+                        return;
+                    }
+
+                    if (data.trouve && data.periode) {
+                        infoField.textContent = 'Salaire antérieur repris de '
+                            + libelleMois(data.periode.mois) + ' ' + data.periode.annee + '.';
+                    } else if (data.periode) {
+                        infoField.textContent = data.message
+                            || ('Aucune demande pour ' + libelleMois(data.periode.mois) + ' ' + data.periode.annee + '.');
+                    } else {
+                        infoField.textContent = data.message || 'Aucune donnée antérieure disponible.';
+                    }
+                })
+                .catch(function (error) {
+                    if (error.name !== 'AbortError' && infoField) {
+                        infoField.textContent = 'Impossible de charger le salaire du mois antérieur.';
+                    }
+                });
+        }
+
+        if (moisField && anneeField) {
+            moisField.addEventListener('change', chargerSalaireMoisPrecedent);
+            anneeField.addEventListener('change', chargerSalaireMoisPrecedent);
+            chargerSalaireMoisPrecedent();
+        }
 
         document.querySelector('form').addEventListener('submit', function(e) {
             const numericFields = document.querySelectorAll('.net, .revers, .total_courant, .ancien_salaire, .total_demande, #total_net, #total_revers, #total_courant, #total_salaire_ancien, #total_demande, #montant_disponible, #solde');

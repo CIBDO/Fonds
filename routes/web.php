@@ -125,6 +125,8 @@ Route::get('/demandes-fonds/consolide-detaille/export-pdf', [DemandeFondsControl
 
     // Routes spécifiques pour la création et la mise à jour des demandes de fonds
     Route::middleware(['role:tresorier,admin'])->group(function () {
+        Route::get('/demandes-fonds/salaire-mois-precedent', [DemandeFondsController::class, 'salaireMoisPrecedent'])
+            ->name('demandes-fonds.salaire-mois-precedent');
         Route::resource('demandes-fonds', DemandeFondsController::class); // Ajouter la route index
     });
 

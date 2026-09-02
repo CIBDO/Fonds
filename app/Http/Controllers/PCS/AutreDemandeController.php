@@ -8,6 +8,7 @@ use App\Models\AutreDemandeEchelon;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use RealRashid\SweetAlert\Facades\Alert;
 use App\Notifications\PcsAutreDemandeSoumise;
@@ -151,14 +152,15 @@ class AutreDemandeController extends Controller
         $statut = $request->input('action') === 'soumettre' ? 'soumis' : 'brouillon';
         $demandesCreees = [];
         $erreurs = [];
-        $lotReference = (string) \Illuminate\Support\Str::uuid();
+        $lotReference = $this->lotReferenceActif()
+            ? (string) \Illuminate\Support\Str::uuid()
+            : null;
 
         // Créer chaque demande
         foreach ($request->input('demandes') as $index => $demandeData) {
             try {
-                $demande = AutreDemande::create([
+                $payload = [
                     'poste_id' => $user->poste_id,
-                    'lot_reference' => $lotReference,
                     'designation' => $demandeData['designation'],
                     'montant' => $demandeData['montant'],
                     'observation' => $demandeData['observation'] ?? null,
@@ -166,7 +168,13 @@ class AutreDemandeController extends Controller
                     'annee' => $request->input('annee_globale'),
                     'statut' => $statut,
                     'saisi_par' => $user->id,
-                ]);
+                ];
+
+                if ($lotReference !== null) {
+                    $payload['lot_reference'] = $lotReference;
+                }
+
+                $demande = AutreDemande::create($payload);
 
                 // Joindre la preuve de paiement si un fichier est fourni
                 if ($request->hasFile("demandes.{$index}.preuve_paiement")) {
@@ -965,7 +973,6 @@ class AutreDemandeController extends Controller
 
         $demande = $demandesGroupe->first();
         $montantDemande = $demandesGroupe->sum(fn ($d) => (float) $d->montant);
-        $montantAccorde = $demandesGroupe->sum(fn ($d) => $d->montant_accord !== null ? (float) $d->montant_accord : 0);
         $montantVerse = $demandesGroupe->sum(fn ($d) => $d->montant_verse_cumule);
         $montantRestant = $demandesGroupe->sum(fn ($d) => $d->montant_restant_accord);
 
@@ -978,7 +985,6 @@ class AutreDemandeController extends Controller
             'demande',
             'demandesGroupe',
             'montantDemande',
-            'montantAccorde',
             'montantVerse',
             'montantRestant',
             'aDetailVersements',
@@ -997,7 +1003,7 @@ class AutreDemandeController extends Controller
     {
         $relations = ['poste', 'saisiPar', 'validePar', 'echelons'];
 
-        if ($demande->lot_reference) {
+        if ($this->lotReferenceActif() && $demande->lot_reference) {
             return AutreDemande::with($relations)
                 ->where('lot_reference', $demande->lot_reference)
                 ->orderBy('id')
@@ -1007,6 +1013,17 @@ class AutreDemandeController extends Controller
         $demande->load($relations);
 
         return collect([$demande]);
+    }
+
+    private function lotReferenceActif(): bool
+    {
+        static $actif = null;
+
+        if ($actif === null) {
+            $actif = Schema::hasColumn('autres_demandes', 'lot_reference');
+        }
+
+        return $actif;
     }
 }
 

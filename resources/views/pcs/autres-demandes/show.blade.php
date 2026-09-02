@@ -2,8 +2,15 @@
 
 @php
     $montantAccordeDefini = $demande->montant_accord !== null;
-    $aDesVersements = $demande->montant_verse > 0;
-    $surplusAccorde = $montantAccordeDefini && $demande->montant_accord > $demande->montant;
+    $montantVerse = (float) $demande->montant_verse_cumule;
+    $aDesVersements = $montantVerse > 0;
+    $resteAVerser = (float) $demande->montant_restant_accord;
+    $surplusVerse = $aDesVersements && $montantVerse > $demande->montant
+        ? $montantVerse - $demande->montant
+        : 0;
+    $pourcentageDuDemande = $demande->montant > 0 && $aDesVersements
+        ? min(100, round(($montantVerse / $demande->montant) * 100, 1))
+        : null;
     $peutValider = auth()->user()->peut_valider_pcs || auth()->user()->hasRole('acct') || auth()->user()->hasRole('admin');
     $peutModifier = in_array($demande->statut, ['brouillon', 'soumis', 'rejete']) && $demande->saisi_par == auth()->id();
 @endphp
@@ -33,11 +40,13 @@
         <x-vuexy.card>
             <div class="text-body-secondary small mb-1"><i class="icon-base ti tabler-checks me-1"></i>Montant versé</div>
             <div class="fs-5 fw-bold {{ $aDesVersements ? 'text-success' : 'text-body-secondary' }}">
-                {{ number_format($demande->montant_verse_cumule, 0, ',', ' ') }}
+                {{ number_format($montantVerse, 0, ',', ' ') }}
                 <small class="fs-6 fw-normal">FCFA</small>
             </div>
-            @if($aDesVersements)
-                <span class="badge bg-label-info mt-2">{{ $demande->pourcentage_accorde }}% du demandé</span>
+            @if($aDesVersements && $surplusVerse > 0)
+                <span class="badge bg-label-info mt-2">+{{ number_format($surplusVerse, 0, ',', ' ') }} au-delà du demandé</span>
+            @elseif($aDesVersements && $pourcentageDuDemande !== null)
+                <span class="badge bg-label-info mt-2">{{ $pourcentageDuDemande }}% du demandé</span>
             @elseif(in_array($demande->statut, ['soumis', 'brouillon']))
                 <span class="badge bg-label-secondary mt-2">Aucun versement</span>
             @endif
@@ -46,36 +55,29 @@
     <div class="col-md-6 col-xl-3">
         <x-vuexy.card>
             @if($demande->statut === 'rejete')
-                <div class="text-body-secondary small mb-1"><i class="icon-base ti tabler-circle-x me-1"></i>Accord</div>
+                <div class="text-body-secondary small mb-1"><i class="icon-base ti tabler-circle-x me-1"></i>Reste à verser</div>
                 <div class="fs-6 fw-medium text-danger">Demande rejetée</div>
-                <span class="badge bg-label-danger mt-2">Aucun accord</span>
+                <span class="badge bg-label-danger mt-2">Aucun paiement</span>
             @elseif($demande->statut === 'brouillon')
-                <div class="text-body-secondary small mb-1"><i class="icon-base ti tabler-clock me-1"></i>Accord</div>
-                <div class="fs-6 fw-medium text-body-secondary">En attente de soumission</div>
-                <span class="badge bg-label-secondary mt-2">Non transmise</span>
-            @elseif(!$montantAccordeDefini)
-                <div class="text-body-secondary small mb-1"><i class="icon-base ti tabler-hourglass me-1"></i>Accord</div>
+                <div class="text-body-secondary small mb-1"><i class="icon-base ti tabler-clock me-1"></i>Reste à verser</div>
                 <div class="fs-5 fw-bold text-body-secondary">—</div>
-                <span class="badge bg-label-warning mt-2">
-                    @if($demande->estPartiellementValidee())
-                        Versement en cours
-                    @else
-                        En cours d'examen
-                    @endif
-                </span>
+                <span class="badge bg-label-secondary mt-2">Non transmise</span>
+            @elseif(!$montantAccordeDefini && !$aDesVersements)
+                <div class="text-body-secondary small mb-1"><i class="icon-base ti tabler-hourglass me-1"></i>Reste à verser</div>
+                <div class="fs-5 fw-bold text-body-secondary">—</div>
+                <span class="badge bg-label-warning mt-2">En cours d'examen</span>
             @else
-                <div class="text-body-secondary small mb-1"><i class="icon-base ti tabler-file-certificate me-1"></i>Montant accordé</div>
-                <div class="fs-5 fw-bold">
-                    {{ number_format($demande->montant_accord, 0, ',', ' ') }}
+                <div class="text-body-secondary small mb-1"><i class="icon-base ti tabler-cash me-1"></i>Reste à verser</div>
+                <div class="fs-5 fw-bold {{ $resteAVerser > 0 ? 'text-warning' : 'text-success' }}">
+                    {{ number_format($resteAVerser, 0, ',', ' ') }}
                     <small class="fs-6 fw-normal">FCFA</small>
                 </div>
-                @if($demande->statut === 'soumis' && !$demande->estValidationComplete())
-                    <span class="badge bg-label-warning mt-2">Accord partiel</span>
-                @elseif($demande->statut === 'valide')
-                    <span class="badge bg-label-success mt-2">Accord confirmé</span>
-                @endif
-                @if($surplusAccorde)
-                    <span class="badge bg-label-info mt-2">+{{ number_format($demande->montant_accord - $demande->montant, 0, ',', ' ') }} au-delà</span>
+                @if($resteAVerser > 0)
+                    <span class="badge bg-label-warning mt-2">Solde restant</span>
+                @elseif($aDesVersements)
+                    <span class="badge bg-label-success mt-2">Demande soldée</span>
+                @elseif($montantAccordeDefini)
+                    <span class="badge bg-label-info mt-2">En attente de versement</span>
                 @endif
             @endif
         </x-vuexy.card>
@@ -89,14 +91,12 @@
                     'partiel' => $demande->estPartiellementValidee(),
                 ])
             </div>
-            @if($montantAccordeDefini && $demande->montant_restant_accord > 0 && $demande->statut !== 'valide')
-                <div class="small text-warning fw-semibold">
-                    Reste à verser : {{ number_format($demande->montant_restant_accord, 0, ',', ' ') }} FCFA
-                </div>
-            @elseif($demande->statut === 'soumis' && !$montantAccordeDefini)
+            @if($demande->statut === 'soumis' && !$montantAccordeDefini && !$aDesVersements)
                 <div class="small text-body-secondary">Décision en attente</div>
-            @elseif($demande->statut === 'valide' && $demande->montant_restant_accord <= 0)
+            @elseif($demande->statut === 'valide' && $resteAVerser <= 0)
                 <div class="small text-body-secondary">Versements complémentaires possibles</div>
+            @elseif($demande->estPartiellementValidee())
+                <div class="small text-warning fw-semibold">Versement en cours</div>
             @endif
         </x-vuexy.card>
     </div>

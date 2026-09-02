@@ -23,10 +23,10 @@
                         <th colspan="2" class="text-end">Total versé</th>
                         <th class="text-end text-success">{{ number_format($demande->montant_verse, 0, ',', ' ') }} FCFA</th>
                     </tr>
-                    @if($demande->montant_accord !== null && $demande->montant_verse > 0 && abs($demande->montant_accord - $demande->montant_verse) > 0.01 && $demande->statut !== 'valide')
+                    @if($demande->montant_restant_accord > 0)
                     <tr>
-                        <th colspan="2" class="text-end">Montant accordé (plafond)</th>
-                        <th class="text-end">{{ number_format($demande->montant_accord, 0, ',', ' ') }} FCFA</th>
+                        <th colspan="2" class="text-end">Reste à verser</th>
+                        <th class="text-end text-warning">{{ number_format($demande->montant_restant_accord, 0, ',', ' ') }} FCFA</th>
                     </tr>
                     @endif
                 </tfoot>

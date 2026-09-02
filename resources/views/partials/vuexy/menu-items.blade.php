@@ -7,7 +7,8 @@
     $isDashboardActive = request()->routeIs('dashboard.*') || request()->routeIs('superviseur.dashboard');
 
     $fondsActive = request()->routeIs('demandes-fonds.*');
-    $pcsActive = request()->routeIs('pcs.*');
+    $pcsActive = request()->routeIs('pcs.*') && !request()->routeIs('pcs.etats-consolides.*');
+    $autresDemandesActive = request()->routeIs('pcs.autres-demandes.*');
     $trieActive = request()->routeIs('trie.*');
     $adminActive = request()->routeIs('users.*') || request()->routeIs('postes.*');
 @endphp
@@ -90,9 +91,12 @@
 @php
     $showPcsPoste = (Auth::user()->peut_saisir_pcs || Auth::user()->poste_id) && !Auth::user()->peut_valider_pcs && !Auth::user()->hasRole('acct') && !Auth::user()->hasRole('admin');
     $showPcsAcct = Auth::user()->peut_valider_pcs || Auth::user()->hasRole('acct') || Auth::user()->hasRole('admin');
+    $pcsMenuActive = $showPcsPoste
+        ? request()->routeIs('pcs.declarations.*')
+        : $pcsActive;
 @endphp
 @if ($showPcsPoste || $showPcsAcct)
-<li class="menu-item {{ $pcsActive ? 'active open' : '' }}">
+<li class="menu-item {{ $pcsMenuActive ? 'active open' : '' }}">
     <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon icon-base ti tabler-file-invoice"></i>
         <div>Déclaration PC</div>
@@ -106,14 +110,6 @@
             @endif
             <li class="menu-item {{ request()->routeIs('pcs.declarations.index') ? 'active' : '' }}">
                 <a href="{{ route('pcs.declarations.index') }}" class="menu-link"><div>Mes Déclarations</div></a>
-            </li>
-            @if (Auth::user()->peut_saisir_pcs || Auth::user()->poste_id)
-                <li class="menu-item {{ request()->routeIs('pcs.autres-demandes.create') ? 'active' : '' }}">
-                    <a href="{{ route('pcs.autres-demandes.create') }}" class="menu-link"><div>Nouvelle Autre Demande</div></a>
-                </li>
-            @endif
-            <li class="menu-item {{ request()->routeIs('pcs.autres-demandes.index') ? 'active' : '' }}">
-                <a href="{{ route('pcs.autres-demandes.index') }}" class="menu-link"><div>Mes Autres Demandes</div></a>
             </li>
         @endif
         @if ($showPcsAcct)
@@ -145,6 +141,32 @@
 </li>
 @endif
 
+{{-- Autres Demandes (postes) --}}
+@if ($showPcsPoste)
+<li class="menu-item {{ $autresDemandesActive ? 'active open' : '' }}">
+    <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon icon-base ti tabler-file-description"></i>
+        <div>Autres Demandes</div>
+    </a>
+    <ul class="menu-sub">
+        @if (Auth::user()->peut_saisir_pcs || Auth::user()->poste_id)
+            <li class="menu-item {{ request()->routeIs('pcs.autres-demandes.create') ? 'active' : '' }}">
+                <a href="{{ route('pcs.autres-demandes.create') }}" class="menu-link">
+                    <i class="menu-icon icon-base ti tabler-circle-plus"></i>
+                    <div>Nouvelle Demande</div>
+                </a>
+            </li>
+        @endif
+        <li class="menu-item {{ request()->routeIs('pcs.autres-demandes.index') || request()->routeIs('pcs.autres-demandes.show') ? 'active' : '' }}">
+            <a href="{{ route('pcs.autres-demandes.index') }}" class="menu-link">
+                <i class="menu-icon icon-base ti tabler-list"></i>
+                <div>Mes Demandes</div>
+            </a>
+        </li>
+    </ul>
+</li>
+@endif
+
 {{-- Fonds de garantie (TRIE) --}}
 <li class="menu-item {{ $trieActive ? 'active open' : '' }}">
     <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -164,14 +186,6 @@
             <a href="{{ route('trie.cotisations.index') }}" class="menu-link"><div>Cotisations</div></a>
         </li>
     </ul>
-</li>
-
-{{-- États consolidés --}}
-<li class="menu-item {{ request()->routeIs('pcs.etats-consolides.*') ? 'active' : '' }}">
-    <a href="{{ route('pcs.etats-consolides.index') }}" class="menu-link">
-        <i class="menu-icon icon-base ti tabler-chart-line"></i>
-        <div>États Consolidés</div>
-    </a>
 </li>
 
 {{-- Messagerie --}}

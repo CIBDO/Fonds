@@ -153,11 +153,10 @@
     <table>
         <thead>
             <tr>
-                <th style="width: 40%;">DÉSIGNATION</th>
-                <th style="width: 15%;">MONTANT DEMANDÉ</th>
-                <th style="width: 15%;">MONTANT ACCORDÉ</th>
-                <th style="width: 15%;">MONTANT VERSÉ</th>
-                <th style="width: 15%;">RESTE À VERSER</th>
+                <th style="width: 50%;">DÉSIGNATION</th>
+                <th style="width: 17%;">MONTANT DEMANDÉ</th>
+                <th style="width: 17%;">MONTANT VERSÉ</th>
+                <th style="width: 16%;">RESTE À VERSER</th>
             </tr>
         </thead>
         <tbody>
@@ -165,22 +164,19 @@
             <tr>
                 <td>{{ $ligne->designation }}</td>
                 <td class="text-right">{{ number_format($ligne->montant, 0, ',', ' ') }}</td>
-                <td class="text-right">
-                    {{ $ligne->montant_accord !== null ? number_format($ligne->montant_accord, 0, ',', ' ') : '—' }}
-                </td>
                 <td class="text-right">{{ number_format($ligne->montant_verse_cumule, 0, ',', ' ') }}</td>
                 <td class="text-right">{{ number_format($ligne->montant_restant_accord, 0, ',', ' ') }}</td>
             </tr>
             @if($ligne->observation)
             <tr>
-                <td colspan="5" style="font-style: italic; font-size: 8px;">
+                <td colspan="4" style="font-style: italic; font-size: 8px;">
                     Observation : {{ $ligne->observation }}
                 </td>
             </tr>
             @endif
             @if($ligne->motif_rejet)
             <tr>
-                <td colspan="5" style="font-style: italic; font-size: 8px; color: #a00;">
+                <td colspan="4" style="font-style: italic; font-size: 8px; color: #a00;">
                     Motif du rejet : {{ $ligne->motif_rejet }}
                 </td>
             </tr>
@@ -191,7 +187,6 @@
             <tr class="total-row">
                 <td class="text-right">TOTAUX</td>
                 <td class="text-right">{{ number_format($montantDemande, 0, ',', ' ') }}</td>
-                <td class="text-right">{{ $montantAccorde > 0 ? number_format($montantAccorde, 0, ',', ' ') : '—' }}</td>
                 <td class="text-right">{{ number_format($montantVerse, 0, ',', ' ') }}</td>
                 <td class="text-right">{{ number_format($montantRestant, 0, ',', ' ') }}</td>
             </tr>

@@ -53,6 +53,87 @@ class DemandeFondsController extends Controller
         return false;
     }
 
+    private const CATEGORIES_SALAIRE = [
+        'fonctionnaires_bcs',
+        'collectivite_sante',
+        'collectivite_education',
+        'personnels_saisonniers',
+        'epn',
+        'ced',
+        'ecom',
+        'cfp_cpam',
+    ];
+
+    private function listeMois(): array
+    {
+        return ['Janvier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Aout', 'Septembre', 'Octobre', 'Novembre', 'Decembre'];
+    }
+
+    private function variantesMois(string $mois): array
+    {
+        $aliases = [
+            'Fevrier' => ['Fevrier', 'Février'],
+            'Février' => ['Fevrier', 'Février'],
+            'Aout' => ['Aout', 'Août'],
+            'Août' => ['Aout', 'Août'],
+            'Decembre' => ['Decembre', 'Décembre'],
+            'Décembre' => ['Decembre', 'Décembre'],
+        ];
+
+        return $aliases[$mois] ?? [$mois];
+    }
+
+    private function normaliserMois(string $mois): ?string
+    {
+        foreach ($this->listeMois() as $nomMois) {
+            if (in_array($mois, $this->variantesMois($nomMois), true)) {
+                return $nomMois;
+            }
+        }
+
+        return null;
+    }
+
+    private function periodeMoisPrecedent(string $mois, int $annee): array
+    {
+        $moisList = $this->listeMois();
+        $moisNormalise = $this->normaliserMois($mois);
+        $index = $moisNormalise !== null ? array_search($moisNormalise, $moisList, true) : false;
+
+        if ($index === false) {
+            return ['mois' => $mois, 'annee' => $annee];
+        }
+
+        if ($index === 0) {
+            return ['mois' => $moisList[11], 'annee' => $annee - 1];
+        }
+
+        return ['mois' => $moisList[$index - 1], 'annee' => $annee];
+    }
+
+    private function trouverDemandeMoisPrecedent(string $mois, int $annee, int $posteId): ?DemandeFonds
+    {
+        $precedent = $this->periodeMoisPrecedent($mois, $annee);
+
+        return DemandeFonds::where('poste_id', $posteId)
+            ->where('annee', $precedent['annee'])
+            ->whereIn('mois', $this->variantesMois($precedent['mois']))
+            ->orderByDesc('created_at')
+            ->first();
+    }
+
+    private function extraireTotauxCourants(?DemandeFonds $demande): array
+    {
+        $totaux = [];
+
+        foreach (self::CATEGORIES_SALAIRE as $categorie) {
+            $champ = $categorie . '_total_courant';
+            $totaux[$champ] = $demande ? (float) ($demande->{$champ} ?? 0) : 0.0;
+        }
+
+        return $totaux;
+    }
+
 
     public function index(Request $request)
     {
@@ -97,49 +178,50 @@ class DemandeFondsController extends Controller
     public function create()
     {
         $this->authorizeRole(['tresorier', 'admin']);
-        $postes = \App\Models\Poste::all();
+        $postes = Poste::all();
+        $moisList = $this->listeMois();
+        $moisCourant = $moisList[(int) date('n') - 1];
+        $anneeCourante = (int) date('Y');
+        $posteId = (int) Auth::user()->poste_id;
 
-        // Tableau des mois
-        $mois = [
-            'Janvier',
-            'Février',
-            'Mars',
-            'Avril',
-            'Mai',
-            'Juin',
-            'Juillet',
-            'Août',
-            'Septembre',
-            'Octobre',
-            'Novembre',
-            'Décembre'
-        ];
+        $previousData = $posteId
+            ? $this->trouverDemandeMoisPrecedent($moisCourant, $anneeCourante, $posteId)
+            : null;
 
-        // Obtenir le mois actuel avec la première lettre en majuscule
-        $currentMonthName = ucfirst(Carbon::now()->locale('fr')->translatedFormat('F'));
-        $currentMonthIndex = array_search($currentMonthName, $mois);
+        return view('demandes.create', compact('postes', 'previousData', 'moisList', 'moisCourant', 'anneeCourante'));
+    }
 
-        // Si l'index n'est pas trouvé, renvoyer une erreur
-        if ($currentMonthIndex === false) {
-            return back()->withErrors(['message' => 'Le mois actuel est invalide : ' . $currentMonthName]);
+    public function salaireMoisPrecedent(Request $request)
+    {
+        $this->authorizeRole(['tresorier', 'admin']);
+
+        $request->validate([
+            'mois' => 'required|string',
+            'annee' => 'required|integer|min:2020|max:2099',
+            'poste_id' => 'nullable|integer',
+        ]);
+
+        $posteId = (int) ($request->poste_id ?: Auth::user()->poste_id);
+        if ($posteId <= 0) {
+            return response()->json([
+                'trouve' => false,
+                'message' => 'Poste non défini.',
+                'periode' => null,
+                'totaux' => $this->extraireTotauxCourants(null),
+            ]);
         }
 
-        // Calculer l'index du mois précédent
-        $previousMonthIndex = ($currentMonthIndex === 0) ? 11 : $currentMonthIndex - 1;
-        $previousMonth = $mois[$previousMonthIndex];
-        $previousYear = ($currentMonthIndex === 0) ? Carbon::now()->subYear()->format('Y') : Carbon::now()->format('Y');
+        $periode = $this->periodeMoisPrecedent($request->mois, (int) $request->annee);
+        $demande = $this->trouverDemandeMoisPrecedent($request->mois, (int) $request->annee, $posteId);
 
-        // Récupérer les données du mois précédent
-        $previousData = DemandeFonds::where('mois', $previousMonth)
-            ->where('annee', $previousYear)
-            ->where('user_id', Auth::id())
-            ->first();
-        /*
-        if (!$previousData) {
-            return back()->withErrors(['message' => 'Aucune donnée trouvée pour le mois précédent (' . $previousMonth . ').']);
-        }
- */
-        return view('demandes.create', compact('postes', 'previousData'));
+        return response()->json([
+            'trouve' => $demande !== null,
+            'message' => $demande
+                ? null
+                : 'Aucune demande trouvée pour ' . $periode['mois'] . ' ' . $periode['annee'] . '.',
+            'periode' => $periode,
+            'totaux' => $this->extraireTotauxCourants($demande),
+        ]);
     }
 
 

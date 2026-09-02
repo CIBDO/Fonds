@@ -4,8 +4,8 @@
 
 @section('content')
 <x-vuexy.page-header
-    title="Trésorerie Régionale — {{ Auth::user()->poste->nom ?? 'Mon Poste' }}"
-    subtitle="Suivi en temps réel des demandes de fonds de votre poste douanier"
+    title="Poste Comptable — {{ Auth::user()->poste->nom ?? 'Mon Poste' }}"
+    subtitle="Suivi en temps réel des demandes de fonds de votre poste comptable"
 />
 
 @include('partials.dashboard.analytics-charts')
