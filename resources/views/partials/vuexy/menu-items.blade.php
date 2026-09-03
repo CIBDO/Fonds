@@ -188,6 +188,16 @@
     </ul>
 </li>
 
+{{-- États consolidés (ACCT / Admin) --}}
+@if (Auth::user()->hasAnyRole(['acct', 'admin']))
+<li class="menu-item {{ request()->routeIs('pcs.etats-consolides.*') ? 'active' : '' }}">
+    <a href="{{ route('pcs.etats-consolides.index') }}" class="menu-link">
+        <i class="menu-icon icon-base ti tabler-chart-line"></i>
+        <div>États Consolidés</div>
+    </a>
+</li>
+@endif
+
 {{-- Messagerie --}}
 <li class="menu-item {{ request()->routeIs('messages.*') ? 'active' : '' }}">
     <a href="{{ route('messages.index') }}" class="menu-link">
