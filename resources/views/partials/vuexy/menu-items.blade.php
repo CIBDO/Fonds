@@ -199,12 +199,12 @@
 @endif
 
 {{-- Messagerie --}}
-<li class="menu-item {{ request()->routeIs('messages.*') ? 'active' : '' }}">
+{{-- <li class="menu-item {{ request()->routeIs('messages.*') ? 'active' : '' }}">
     <a href="{{ route('messages.index') }}" class="menu-link">
         <i class="menu-icon icon-base ti tabler-mail"></i>
         <div>Messagerie</div>
     </a>
-</li>
+</li> --}}
 
 {{-- Administration --}}
 @if (Auth::user()->hasRole('admin'))
