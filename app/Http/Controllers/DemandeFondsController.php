@@ -458,13 +458,13 @@ class DemandeFondsController extends Controller
         // Filtrer par poste si un poste est fourni dans la requête
         if ($request->filled('poste')) {
             $query->whereHas('poste', function ($q) use ($request) {
-                $q->where('nom', 'like', '%' . $request->poste . '%');
+                $q->where('nom', $request->poste);
             });
         }
 
         // Filtrer par mois si un mois est fourni dans la requête
         if ($request->filled('mois')) {
-            $query->where('mois', 'like', '%' . $request->mois . '%');
+            $query->where('mois', $request->mois);
         }
 
         // Filtrer par année (demandes d'une année civile antérieure ou actuelle)
@@ -488,8 +488,10 @@ class DemandeFondsController extends Controller
             ->paginate(21)
             ->appends($request->except('page'));
 
+        $postes = Poste::orderBy('nom')->get();
+
         // Retourner la vue avec les résultats filtrés
-        return view('demandes.envois', compact('demandeFonds'));
+        return view('demandes.envois', compact('demandeFonds', 'postes'));
     }
 
 

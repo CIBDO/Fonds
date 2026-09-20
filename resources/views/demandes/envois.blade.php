@@ -43,11 +43,23 @@
     <form action="{{ route('demandes-fonds.envois') }}" method="GET" class="row g-3 mb-4">
         <div class="col-lg-2 col-md-6">
             <label class="form-label small">Poste</label>
-            <input type="text" name="poste" class="form-control form-control-sm" value="{{ request('poste') }}">
+            <select name="poste" class="form-select form-select-sm">
+                <option value="">Tous les postes</option>
+                @foreach($postes as $poste)
+                    <option value="{{ $poste->nom }}" {{ request('poste') == $poste->nom ? 'selected' : '' }}>
+                        {{ $poste->nom }}
+                    </option>
+                @endforeach
+            </select>
         </div>
         <div class="col-lg-2 col-md-6">
             <label class="form-label small">Mois</label>
-            <input type="text" name="mois" class="form-control form-control-sm" value="{{ request('mois') }}">
+            <select name="mois" class="form-select form-select-sm">
+                <option value="">Tous</option>
+                @foreach(['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'] as $m)
+                    <option value="{{ $m }}" {{ request('mois') == $m ? 'selected' : '' }}>{{ $m }}</option>
+                @endforeach
+            </select>
         </div>
         <div class="col-lg-2 col-md-6">
             <label class="form-label small">Année</label>

@@ -53,6 +53,16 @@ class DeclarationPcsController extends Controller
             $query->where('statut', $request->statut);
         }
 
+        if ($request->filled('poste_id')) {
+            $posteIdFiltre = $request->poste_id;
+            $query->where(function ($q) use ($posteIdFiltre) {
+                $q->where('poste_id', $posteIdFiltre)
+                  ->orWhereHas('bureauDouane', function ($q2) use ($posteIdFiltre) {
+                      $q2->where('poste_rgd_id', $posteIdFiltre);
+                  });
+            });
+        }
+
         // ACCT et admin voient toutes les déclarations ; les autres voient uniquement leur poste
         $estValideurOuAcct = $user->peut_valider_pcs || $user->hasRole('acct') || $user->hasRole('admin');
         if (!$estValideurOuAcct) {
@@ -93,7 +103,11 @@ class DeclarationPcsController extends Controller
         // Ajouter le total de déclarations pour info
         $totalDeclarations = $toutesDeclarations->count();
 
-        return view('pcs.declarations.index', compact('declarations', 'totalDeclarations'));
+        $postes = $estValideurOuAcct
+            ? Poste::orderBy('nom')->get()
+            : ($user->poste_id ? Poste::where('id', $user->poste_id)->get() : collect());
+
+        return view('pcs.declarations.index', compact('declarations', 'totalDeclarations', 'postes', 'estValideurOuAcct'));
     }
 
     /**

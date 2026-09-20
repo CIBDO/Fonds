@@ -29,6 +29,24 @@
 
 <x-vuexy.card title="Filtres" icon="tabler-filter" class="mb-4">
             <form method="GET" action="{{ route('pcs.declarations.index') }}" class="row g-3">
+                @if($estValideurOuAcct && $postes->count() > 1)
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Poste</label>
+                    <select name="poste_id" class="form-select">
+                        <option value="">Tous les postes</option>
+                        @foreach($postes as $poste)
+                            <option value="{{ $poste->id }}" {{ request('poste_id') == $poste->id ? 'selected' : '' }}>
+                                {{ $poste->nom }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                @else
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Poste</label>
+                    <input type="text" class="form-control" value="{{ $postes->first()->nom ?? 'N/A' }}" disabled>
+                </div>
+                @endif
                 <div class="col-md-2">
                     <label class="form-label fw-bold">Programme</label>
                     <select name="programme" class="form-select">
@@ -57,7 +75,7 @@
                         @endfor
                     </select>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label class="form-label fw-bold">Statut</label>
                     <select name="statut" class="form-select">
                         <option value="">Tous</option>
@@ -67,7 +85,7 @@
                         <option value="rejete" {{ request('statut') == 'rejete' ? 'selected' : '' }}>Rejeté</option>
                     </select>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label class="form-label">&nbsp;</label>
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-primary">

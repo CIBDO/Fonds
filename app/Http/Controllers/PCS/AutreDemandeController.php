@@ -5,6 +5,7 @@ namespace App\Http\Controllers\PCS;
 use App\Http\Controllers\Controller;
 use App\Models\AutreDemande;
 use App\Models\AutreDemandeEchelon;
+use App\Models\Poste;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -43,20 +44,28 @@ class AutreDemandeController extends Controller
             $query->where('statut', $request->statut);
         }
 
+        if ($request->filled('poste_id')) {
+            $query->where('poste_id', $request->poste_id);
+        }
+
         // ACCT et admin voient toutes les demandes ; les autres voient uniquement leur poste
         $estValideurOuAcct = $user->peut_valider_pcs || $user->hasRole('acct') || $user->hasRole('admin');
         if (!$estValideurOuAcct) {
             $query->where('poste_id', $user->poste_id);
         }
 
-        $demandes = $query->paginate(12);
+        $demandes = $query->paginate(12)->appends($request->query());
         $demandes->getCollection()->transform(function ($demande) {
             $demande->reparerEchelonsLegacySiNecessaire();
 
             return $demande->load('echelons');
         });
 
-        return view('pcs.autres-demandes.index', compact('demandes'));
+        $postes = $estValideurOuAcct
+            ? Poste::orderBy('nom')->get()
+            : ($user->poste_id ? Poste::where('id', $user->poste_id)->get() : collect());
+
+        return view('pcs.autres-demandes.index', compact('demandes', 'postes', 'estValideurOuAcct'));
     }
 
     /**

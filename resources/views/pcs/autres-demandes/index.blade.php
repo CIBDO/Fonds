@@ -18,7 +18,25 @@
 
 <x-vuexy.card title="Filtres" icon="tabler-filter" class="mb-4">
     <form method="GET" class="row g-3">
-        <div class="col-md-4">
+        @if($estValideurOuAcct && $postes->count() > 1)
+        <div class="col-md-3">
+            <label class="form-label fw-bold">Poste</label>
+            <select name="poste_id" class="form-select">
+                <option value="">Tous les postes</option>
+                @foreach($postes as $poste)
+                    <option value="{{ $poste->id }}" {{ request('poste_id') == $poste->id ? 'selected' : '' }}>
+                        {{ $poste->nom }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        @else
+        <div class="col-md-3">
+            <label class="form-label fw-bold">Poste</label>
+            <input type="text" class="form-control" value="{{ $postes->first()->nom ?? 'N/A' }}" disabled>
+        </div>
+        @endif
+        <div class="col-md-3">
             <label class="form-label fw-bold">Année</label>
             <select name="annee" class="form-select">
                 <option value="">Toutes</option>
@@ -27,7 +45,7 @@
                 @endfor
             </select>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <label class="form-label fw-bold">Statut</label>
             <select name="statut" class="form-select">
                 <option value="">Tous</option>
@@ -37,7 +55,7 @@
                 <option value="rejete" {{ request('statut') == 'rejete' ? 'selected' : '' }}>Rejeté</option>
             </select>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <label class="form-label">&nbsp;</label>
             <button type="submit" class="btn btn-primary d-block w-100">
                 <i class="icon-base ti tabler-filter me-1"></i>Filtrer
