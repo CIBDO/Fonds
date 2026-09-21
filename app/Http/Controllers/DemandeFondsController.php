@@ -1377,10 +1377,11 @@ class DemandeFondsController extends Controller
         $mois = $request->input('mois', ucfirst(Carbon::now()->locale('fr')->translatedFormat('F')));
         $annee = $request->input('annee', Carbon::now()->year);
 
-        // Récupérer les demandes de fonds groupées par poste pour le mois et l'année sélectionnés
+        // Récupérer uniquement les demandes validées (approuvées) pour le mois et l'année
         $demandesParPoste = DemandeFonds::with('poste')
             ->where('mois', $mois)
             ->where('annee', $annee)
+            ->where('status', 'approuve')
             ->get()
             ->groupBy('poste.nom')
             ->map(function ($demandes) {
@@ -1397,7 +1398,7 @@ class DemandeFondsController extends Controller
 
                 // Si la recette douanière est supérieure au salaire brut, pas d'envoi de salaire
                 $montantAffiche = null;
-                if ($montantDisponible <= $salaireBrut && $demande->status === 'approuve') {
+                if ($montantDisponible <= $salaireBrut) {
                     $montantAffiche = $demande->montant;
                 }
 
@@ -1420,8 +1421,14 @@ class DemandeFondsController extends Controller
             }),
         ];
 
-        // Si c'est une requête d'impression ou PDF
+        // Impression / PDF uniquement s'il existe au moins une demande validée
         if ($request->has('print') || $request->has('pdf')) {
+            if ($demandesParPoste->isEmpty()) {
+                return redirect()
+                    ->route('demandes-fonds.situation-mensuelle', ['mois' => $mois, 'annee' => $annee])
+                    ->with('error', 'Impossible d\'imprimer ou générer le PDF : aucune demande validée pour ' . $mois . ' ' . $annee . '.');
+            }
+
             if ($request->has('pdf')) {
                 $pdf = FacadePdf::loadView('demandes.situation_mensuelle_pdf', compact('demandesParPoste', 'totalGeneral', 'mois', 'annee'))
                     ->setPaper('a4', 'portrait');

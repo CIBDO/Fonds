@@ -4,6 +4,13 @@
 
 @section('content')
 
+@if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show">
+        <i class="icon-base ti tabler-alert-circle me-2"></i>{{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+
 <x-vuexy.card title="Filtres" icon="tabler-filter" class="mb-4">
     <form method="GET" action="{{ route('demandes-fonds.situation-mensuelle') }}" class="row g-3 align-items-end">
         <div class="col-md-3">
@@ -26,6 +33,7 @@
             <button type="submit" class="btn btn-primary"><i class="icon-base ti tabler-search me-1"></i>Filtrer</button>
         </div>
         <div class="col-md-3 d-flex gap-2 justify-content-md-end">
+            @if($demandesParPoste->count() > 0)
             <a href="{{ route('demandes-fonds.situation-mensuelle', array_merge(request()->all(), ['print' => 1])) }}"
                class="btn btn-label-secondary" target="_blank">
                 <i class="icon-base ti tabler-printer me-1"></i>Imprimer
@@ -34,6 +42,14 @@
                class="btn btn-label-secondary">
                 <i class="icon-base ti tabler-file-type-pdf me-1"></i>PDF
             </a>
+            @else
+            <button type="button" class="btn btn-label-secondary" disabled title="Aucune demande validée">
+                <i class="icon-base ti tabler-printer me-1"></i>Imprimer
+            </button>
+            <button type="button" class="btn btn-label-secondary" disabled title="Aucune demande validée">
+                <i class="icon-base ti tabler-file-type-pdf me-1"></i>PDF
+            </button>
+            @endif
         </div>
     </form>
 </x-vuexy.card>
@@ -69,7 +85,7 @@
                     <td>—</td>
                 </tr>
                 @empty
-                <tr><td colspan="6" class="text-center text-body-secondary py-4">Aucune donnée pour {{ $mois }} {{ $annee }}</td></tr>
+                <tr><td colspan="6" class="text-center text-body-secondary py-4">Aucune demande validée pour {{ $mois }} {{ $annee }}. Validez les envois avant de consulter ou imprimer la situation.</td></tr>
                 @endforelse
             </tbody>
             @if($demandesParPoste->count() > 0)
