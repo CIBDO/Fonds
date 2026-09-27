@@ -70,6 +70,11 @@ class Poste extends Model
         return $this->hasMany(CotisationTrie::class, 'poste_id');
     }
 
+    public function paiementsFnl()
+    {
+        return $this->hasMany(PaiementFnl::class, 'poste_id');
+    }
+
     /**
      * Méthode : Vérifier si c'est la RGD
      */

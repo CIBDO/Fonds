@@ -48,6 +48,7 @@
                     <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
                     <option value="tresorier" {{ old('role', $user->role) == 'tresorier' ? 'selected' : '' }}>Trésorier</option>
                     <option value="acct" {{ old('role', $user->role) == 'acct' ? 'selected' : '' }}>ACCT</option>
+                    <option value="accd" {{ old('role', $user->role) == 'accd' ? 'selected' : '' }}>ACCD</option>
                     <option value="superviseur" {{ old('role', $user->role) == 'superviseur' ? 'selected' : '' }}>Superviseur</option>
                 </select>
             </div>
@@ -59,8 +60,8 @@
                 </select>
             </div>
             <div class="col-12">
-                <label class="form-label">Poste <span class="text-danger">*</span></label>
-                <select class="form-select" name="poste_id" {{ auth()->user()->role === 'tresorier' ? 'disabled' : '' }} required>
+                <label class="form-label">Poste <span class="text-danger" id="poste-requis">*</span></label>
+                <select class="form-select" name="poste_id" id="poste_id" {{ auth()->user()->role === 'tresorier' ? 'disabled' : '' }}>
                     <option value="">Choisir un poste</option>
                     @foreach ($postes as $poste)
                         <option value="{{ $poste->id }}" {{ old('poste_id', $user->poste_id) == $poste->id ? 'selected' : '' }}>{{ $poste->nom }}</option>
@@ -78,3 +79,21 @@
     </form>
 </x-vuexy.card>
 @endsection
+
+@push('scripts')
+<script>
+(function () {
+    const role = document.querySelector('select[name="role"]');
+    const poste = document.getElementById('poste_id');
+    const marque = document.getElementById('poste-requis');
+    if (!role || !poste || role.disabled) return;
+    const sync = () => {
+        const accd = role.value === 'accd';
+        poste.required = !accd;
+        if (marque) marque.style.display = accd ? 'none' : '';
+    };
+    role.addEventListener('change', sync);
+    sync();
+})();
+</script>
+@endpush

@@ -24,8 +24,9 @@ class UserController extends Controller
         $name = $request->input('name');
         $email = $request->input('email');
         $nom = $request->input('nom');
+        $role = $request->input('role');
         // On récupère tous les utilisateurs
-        $users = User::where(function ($query) use ($name, $email, $nom) {
+        $users = User::where(function ($query) use ($name, $email, $nom, $role) {
             if ($name) {
                 $query->where('name', 'like', '%' . $name . '%');
             }
@@ -37,8 +38,11 @@ class UserController extends Controller
                     $query->where('nom', 'like', '%' . $nom . '%');
                 });
             }
+            if ($role) {
+                $query->where('role', $role);
+            }
 
-        })->paginate(10)->appends($request->only(['name', 'email', 'nom']));
+        })->paginate(10)->appends($request->only(['name', 'email', 'nom', 'role']));
         $postes = Poste::all();
         return view('users.index', compact('users', 'postes', 'name', 'email', 'nom'));
     }
@@ -58,9 +62,9 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:tresorier,acct,direction,superviseur,admin',
+            'role' => 'required|in:tresorier,acct,accd,direction,superviseur,admin',
             'active' => 'required|boolean',
-            'poste_id' => 'required|exists:postes,id',
+            'poste_id' => 'required_unless:role,accd|nullable|exists:postes,id',
         ]);
 
         User::create([
@@ -69,7 +73,7 @@ class UserController extends Controller
             'password' => Hash::make($request->password),
             'role' => $request->role,
                 'active' => $request->active, // Ajouter l'activation
-            'poste_id' => $request->poste_id,
+            'poste_id' => $request->role === 'accd' ? ($request->poste_id ?: null) : $request->poste_id,
         ]);
         alert()->success('Success', 'Utilisateur créé avec succès.');
         return redirect()->route('users.index');
@@ -165,10 +169,13 @@ class UserController extends Controller
         } else {
             // Valider les champs supplémentaires uniquement pour l'admin
             $additionalValidation = $request->validate([
-                'role' => 'required|in:admin,tresorier,acct,superviseur',
+                'role' => 'required|in:admin,tresorier,acct,accd,superviseur',
                 'active' => 'required|boolean',
-                'poste_id' => 'required|exists:postes,id',
+                'poste_id' => 'required_unless:role,accd|nullable|exists:postes,id',
             ]);
+            if (($additionalValidation['role'] ?? null) === 'accd' && empty($additionalValidation['poste_id'])) {
+                $additionalValidation['poste_id'] = null;
+            }
 
             // Ajouter les champs validés aux données de mise à jour
             $validatedData = array_merge($validatedData, $additionalValidation);

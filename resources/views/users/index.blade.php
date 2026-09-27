@@ -30,6 +30,9 @@
                 <option value="">Tous les rôles</option>
                 <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
                 <option value="tresorier" {{ request('role') == 'tresorier' ? 'selected' : '' }}>Trésorier</option>
+                <option value="acct" {{ request('role') == 'acct' ? 'selected' : '' }}>ACCT</option>
+                <option value="accd" {{ request('role') == 'accd' ? 'selected' : '' }}>ACCD</option>
+                <option value="superviseur" {{ request('role') == 'superviseur' ? 'selected' : '' }}>Superviseur</option>
             </select>
         </div>
         <div class="col-md-2">
@@ -96,11 +99,19 @@
                             @endif
                         </td>
                         <td>
-                            @if($user->role === 'admin')
-                                <span class="badge bg-label-warning">Administrateur</span>
-                            @else
-                                <span class="badge bg-label-primary">Employé</span>
-                            @endif
+                            @php
+                                $rolesLibelles = [
+                                    'admin' => 'Administrateur',
+                                    'tresorier' => 'Trésorier',
+                                    'acct' => 'ACCT',
+                                    'accd' => 'ACCD',
+                                    'superviseur' => 'Superviseur',
+                                    'direction' => 'Direction',
+                                ];
+                            @endphp
+                            <span class="badge {{ $user->role === 'admin' ? 'bg-label-warning' : 'bg-label-primary' }}">
+                                {{ $rolesLibelles[$user->role] ?? $user->role }}
+                            </span>
                         </td>
                         <td>
                             <span class="badge bg-label-secondary">{{ $user->poste->nom ?? 'Non défini' }}</span>

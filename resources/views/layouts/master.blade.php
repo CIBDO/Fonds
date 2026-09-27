@@ -27,7 +27,7 @@
     @yield('vendor-style')
     @stack('vendor-style')
 
-    <link rel="stylesheet" href="{{ asset('vuexy/assets/css/dgtcp-overrides.css') }}?v=5">
+    <link rel="stylesheet" href="{{ asset('vuexy/assets/css/dgtcp-overrides.css') }}?v=7">
     <link rel="stylesheet" href="{{ asset('vuexy/assets/vendor/libs/sweetalert2/sweetalert2.css') }}">
     @yield('page-style')
     @stack('styles')

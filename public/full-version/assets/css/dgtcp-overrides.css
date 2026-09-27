@@ -219,17 +219,17 @@ table.dgtcp-table {
   background: var(--bs-paper-bg);
 }
 
-/* Empêche le chevauchement texte / icônes */
+/* Une seule ligne, espacement et police d'origine */
 .layout-horizontal .menu-horizontal .menu-inner {
-  flex-wrap: wrap;
-  overflow: visible;
-  row-gap: 0.25rem;
-  column-gap: 0.25rem;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  row-gap: 0;
+  column-gap: 0;
 }
 
 .layout-horizontal .menu-horizontal .menu-inner > .menu-item {
-  flex-shrink: 0;
-  margin-inline: 0.125rem !important;
+  flex: 0 1 auto;
+  margin-inline: 0.15rem !important;
 }
 
 .layout-horizontal .menu-horizontal .menu-inner > .menu-item > .menu-link {
@@ -237,19 +237,17 @@ table.dgtcp-table {
   align-items: center;
   gap: 0.5rem;
   font-weight: 500;
-  font-size: 0.9rem;
-  padding-inline-start: 0.875rem;
-  padding-inline-end: 0.875rem;
+  font-size: inherit;
+  padding-inline: 1rem;
   white-space: nowrap;
 }
 
-/* Réserve l'espace pour la flèche des sous-menus */
 .layout-horizontal .menu-horizontal .menu-inner > .menu-item > .menu-link.menu-toggle {
-  padding-inline-end: calc(0.875rem + 1.4em);
+  padding-inline-end: calc(1rem + 1.65em);
 }
 
 .layout-horizontal .menu-horizontal .menu-inner > .menu-item > .menu-link.menu-toggle::after {
-  inset-inline-end: 0.5rem;
+  inset-inline-end: 0.8rem;
 }
 
 .layout-horizontal .menu-horizontal .menu-inner > .menu-item > .menu-link > div {

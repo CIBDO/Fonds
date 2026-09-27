@@ -31,6 +31,8 @@ use App\Http\Controllers\TRIE\{
     EtatTrieController,
 };
 
+use App\Http\Controllers\FNL\PaiementFnlController;
+
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -46,6 +48,8 @@ Route::get('/dashboard', function () {
         return redirect()->route('dashboard.tresorier');
     } elseif ($user && $user->role === 'acct') {
         return redirect()->route('dashboard.acct');
+    } elseif ($user && $user->role === 'accd') {
+        return redirect()->route('fnl.paiements.index');
     }
     // Ajoutez une redirection par défaut ou une gestion d'erreur ici si nécessaire
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -369,6 +373,22 @@ Route::middleware(['auth'])->prefix('trie')->name('trie.')->group(function () {
         });
     });
 }); // FIN DU GROUPE TRIE
+
+// ===== MODULE FNL - FONDS NATIONAL DE LOGEMENTS =====
+Route::middleware(['auth'])->prefix('fnl')->name('fnl.')->group(function () {
+    Route::controller(PaiementFnlController::class)->prefix('paiements')->name('paiements.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+        Route::get('situation-mensuelle', 'situationMensuelle')->name('situation-mensuelle');
+        Route::get('{paiement}/preuve', 'preuve')->name('preuve');
+        Route::get('{paiement}', 'show')->name('show');
+        Route::get('{paiement}/edit', 'edit')->name('edit');
+        Route::put('{paiement}', 'update')->name('update');
+        Route::post('{paiement}/valider', 'valider')->name('valider');
+        Route::post('{paiement}/rejeter', 'rejeter')->name('rejeter');
+    });
+});
 
 // Ajoutez la route d'authentification
 require __DIR__.'/auth.php';

@@ -2,7 +2,8 @@
     $dashboardUrl = Auth::user()->hasRole('admin') ? route('dashboard.admin')
         : (Auth::user()->hasRole('tresorier') ? route('dashboard.tresorier')
         : (Auth::user()->hasRole('superviseur') ? route('superviseur.dashboard')
-        : route('dashboard.acct')));
+        : (Auth::user()->hasRole('accd') ? route('fnl.paiements.index')
+        : route('dashboard.acct'))));
 
     $isDashboardActive = request()->routeIs('dashboard.*') || request()->routeIs('superviseur.dashboard');
 
@@ -10,6 +11,7 @@
     $pcsActive = request()->routeIs('pcs.*') && !request()->routeIs('pcs.etats-consolides.*');
     $autresDemandesActive = request()->routeIs('pcs.autres-demandes.*');
     $trieActive = request()->routeIs('trie.*');
+    $fnlActive = request()->routeIs('fnl.*');
     $adminActive = request()->routeIs('users.*') || request()->routeIs('postes.*');
 @endphp
 
@@ -187,6 +189,26 @@
         </li>
     </ul>
 </li>
+
+{{-- Paiement FNL --}}
+@if (Auth::user()->hasAnyRole(['accd', 'admin']) || (Auth::user()->hasRole('tresorier') && Auth::user()->poste_id))
+<li class="menu-item {{ $fnlActive ? 'active open' : '' }}">
+    <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon icon-base ti tabler-home"></i>
+        <div>Paiement FNL</div>
+    </a>
+    <ul class="menu-sub">
+        @if (Auth::user()->hasRole('tresorier') && Auth::user()->poste_id)
+            <li class="menu-item {{ request()->routeIs('fnl.paiements.create') ? 'active' : '' }}">
+                <a href="{{ route('fnl.paiements.create') }}" class="menu-link"><div>Nouveau paiement</div></a>
+            </li>
+        @endif
+        <li class="menu-item {{ request()->routeIs('fnl.paiements.index') || request()->routeIs('fnl.paiements.show') ? 'active' : '' }}">
+            <a href="{{ route('fnl.paiements.index') }}" class="menu-link"><div>Paiements</div></a>
+        </li>
+    </ul>
+</li>
+@endif
 
 {{-- États consolidés (ACCT / Admin) --}}
 @if (Auth::user()->hasAnyRole(['acct', 'admin']))
