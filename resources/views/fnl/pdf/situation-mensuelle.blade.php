@@ -35,7 +35,7 @@
             <div class="subtitle">DIRECTION GÉNÉRALE DU TRÉSOR</div>
             <div class="subtitle">ET DE LA COMPTABILITÉ PUBLIQUE</div>
             <div class="stars" style="margin-left: 40px;">**************</div>
-            <div class="subtitle">AGENCE COMPTABLE CENTRALE DES DEPÔTS</div>
+            {{-- <div class="subtitle">AGENCE COMPTABLE CENTRALE DES DEPÔTS</div> --}}
         </div>
         <div class="header-right">
             <div class="title">RÉPUBLIQUE DU MALI</div>
@@ -116,7 +116,7 @@
             Bamako, le {{ \Carbon\Carbon::now()->format('d/m/Y') }}
         </div>
         <div class="agent-signature">
-            L'Agent Comptable Central des Dépôts
+            Le Responsable du Poste comptable
         </div>
     </div>
 </body>
