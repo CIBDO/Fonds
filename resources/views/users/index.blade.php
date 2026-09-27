@@ -155,7 +155,7 @@ $(document).ready(function() {
     $('#usersDataTable').DataTable({
         responsive: true,
         paging: false,
-        searching: true,
+        searching: false,
         ordering: true,
         order: [[1, 'asc']],
         language: typeof datatablesFrench !== 'undefined' ? datatablesFrench : window.DGTCP_DATATABLES_FR,
