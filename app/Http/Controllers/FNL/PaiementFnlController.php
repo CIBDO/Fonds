@@ -80,17 +80,6 @@ class PaiementFnlController extends Controller
         $validated = $this->validerSaisie($request);
         $validated['poste_id'] = $user->poste_id;
 
-        $existe = PaiementFnl::where('poste_id', $validated['poste_id'])
-            ->where('mois', $validated['mois'])
-            ->where('annee', $validated['annee'])
-            ->exists();
-
-        if ($existe) {
-            throw ValidationException::withMessages([
-                'mois' => 'Un paiement FNL existe déjà pour ce poste et cette période.',
-            ]);
-        }
-
         $paiement = PaiementFnl::create([
             'poste_id' => $validated['poste_id'],
             'mois' => $validated['mois'],
@@ -367,19 +356,6 @@ class PaiementFnlController extends Controller
             'observation' => 'nullable|string',
             'preuve_paiement' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx|max:10240',
         ]);
-
-        $posteId = $paiement?->poste_id ?? Auth::user()->poste_id;
-        $doublon = PaiementFnl::where('poste_id', $posteId)
-            ->where('mois', $validated['mois'])
-            ->where('annee', $validated['annee'])
-            ->when($paiement, fn ($query) => $query->where('id', '!=', $paiement->id))
-            ->exists();
-
-        if ($doublon) {
-            throw ValidationException::withMessages([
-                'mois' => 'Un paiement FNL existe déjà pour ce poste et cette période.',
-            ]);
-        }
 
         return $validated;
     }
