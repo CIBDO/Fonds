@@ -227,7 +227,7 @@ class DemandeFondsController extends Controller
 
     public function store(Request $request)
     {
-        $this->authorizeRole(['tresorier', 'admin', '']);
+        $this->authorizeRole(['tresorier', 'admin']);
 
         // Nettoyage des champs numériques pour retirer les espaces insécables et les convertir en nombres
         $cleanData = collect($request->all())->map(function ($value, $key) {
@@ -546,7 +546,7 @@ class DemandeFondsController extends Controller
 
     public function SituationDF(Request $request)
     {
-        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+        $this->authorizeRole(['acct', 'admin', 'superviseur', 'accd']);
 
         // Requête initiale
         $query = DemandeFonds::with('user', 'poste')
@@ -577,7 +577,7 @@ class DemandeFondsController extends Controller
     }
     public function SituationFE(Request $request)
     {
-        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+        $this->authorizeRole(['acct', 'admin', 'superviseur', 'accd']);
 
         // Commencer par obtenir toutes les demandes de fonds avec les statuts "approuvé" ou "rejeté"
         $query = DemandeFonds::with('user', 'poste')
@@ -615,7 +615,7 @@ class DemandeFondsController extends Controller
 
     public function Recap(Request $request)
     {
-        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+        $this->authorizeRole(['acct', 'admin', 'superviseur', 'accd']);
 
         // Initialiser la requête pour récupérer les demandes de fonds approuvées ou rejetées
         $query = DemandeFonds::with('user', 'poste')
@@ -662,7 +662,7 @@ class DemandeFondsController extends Controller
 
     public function Paiement(Request $request, $demande)
     {
-        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+        $this->authorizeRole(['acct', 'admin', 'superviseur', 'accd']);
         // Commencer par obtenir toutes les demandes de fonds avec les statuts "approuvé" ou "rejeté"
         $query = DemandeFonds::with('user', 'poste')
             ->whereIn('status', ['approuve', 'rejete']);
@@ -701,7 +701,7 @@ class DemandeFondsController extends Controller
 
     public function detail(Request $request)
     {
-        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+        $this->authorizeRole(['acct', 'admin', 'superviseur', 'accd']);
         $query = DemandeFonds::with('user', 'poste')
             ->whereIn('status', ['approuve', 'rejete']);
 
@@ -808,7 +808,7 @@ class DemandeFondsController extends Controller
     }
     public function export(Request $request,)
     {
-        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+        $this->authorizeRole(['acct', 'admin', 'superviseur', 'accd']);
 
         $demande = DemandeFonds::findOrFail($request->demande);
 
@@ -907,7 +907,7 @@ class DemandeFondsController extends Controller
 
     public function Recettes(Request $request)
     {
-        $this->authorizeRole(['acct', 'admin', 'superviseur', 'tresorier']);
+        $this->authorizeRole(['acct', 'admin', 'superviseur', 'tresorier', 'accd']);
 
         // Initialiser la requête pour récupérer les demandes de fonds approuvées ou rejetées
         $query = DemandeFonds::with('user', 'poste');
@@ -946,7 +946,7 @@ class DemandeFondsController extends Controller
 
     public function Solde(Request $request)
     {
-        $this->authorizeRole(['acct', 'admin', 'superviseur', 'tresorier']);
+        $this->authorizeRole(['acct', 'admin', 'superviseur', 'tresorier', 'accd']);
         // Commencer par obtenir toutes les demandes de fonds avec les statuts "approuvé" ou "rejeté"
         $query = DemandeFonds::with('user', 'poste');
         // Filtrer par poste si un poste est fourni dans la requête
@@ -990,7 +990,7 @@ class DemandeFondsController extends Controller
 
     /* public function Fonctionnaires(Request $request)
     {
-        $this->authorizeRole(['acct', 'admin', 'superviseur', 'tresorier']);
+        $this->authorizeRole(['acct', 'admin', 'superviseur', 'tresorier', 'accd']);
         // Commencer par obtenir toutes les demandes de fonds avec les statuts "approuvé" ou "rejeté"
         $query = DemandeFonds::with('user', 'poste');
         // Filtrer par poste si un poste est fourni dans la requête
@@ -1015,7 +1015,7 @@ class DemandeFondsController extends Controller
 
     public function Fonctionnaires(Request $request)
     {
-        $this->authorizeRole(['acct', 'admin', 'superviseur', 'tresorier']);
+        $this->authorizeRole(['acct', 'admin', 'superviseur', 'tresorier', 'accd']);
 
         // Initialiser la requête pour récupérer les demandes de fonds approuvées ou rejetées
         $query = DemandeFonds::with('user', 'poste')
@@ -1064,7 +1064,7 @@ class DemandeFondsController extends Controller
 
     public function totauxParMois(Request $request)
     {
-        $this->authorizeRole(['tresorier', 'admin', 'acct', 'superviseur']);
+        $this->authorizeRole(['tresorier', 'admin', 'acct', 'superviseur', 'accd']);
 
         // Récupérer l'année sélectionnée ou utiliser l'année actuelle par défaut
         $annee = $request->input('annee', Carbon::now()->year);
@@ -1237,7 +1237,7 @@ class DemandeFondsController extends Controller
 
     public function show($id)
     {
-        $this->authorizeRole(['tresorier', 'admin', 'acct', 'superviseur']);
+        $this->authorizeRole(['tresorier', 'admin', 'acct', 'superviseur', 'accd']);
         // Récupération de la demande de fonds par ID
         $demandeFonds = DemandeFonds::with('poste')->findOrFail($id);
 
@@ -1289,7 +1289,7 @@ class DemandeFondsController extends Controller
 
     public function generatePDF($id)
     {
-        $this->authorizeRole(['tresorier', 'admin', 'acct', 'superviseur']);
+        $this->authorizeRole(['tresorier', 'admin', 'acct', 'superviseur', 'accd']);
         // Récupérer la demande de fonds par son ID
         $demandeFonds = DemandeFonds::findOrFail($id);
 
@@ -1371,7 +1371,7 @@ class DemandeFondsController extends Controller
 
     public function situationMensuelle(Request $request)
     {
-        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+        $this->authorizeRole(['acct', 'admin', 'superviseur', 'accd']);
 
         // Obtenir le mois et l'année sélectionnés ou utiliser les valeurs actuelles par défaut
         $mois = $request->input('mois', ucfirst(Carbon::now()->locale('fr')->translatedFormat('F')));
@@ -1443,7 +1443,7 @@ class DemandeFondsController extends Controller
 
     public function etatAvantEnvoi(Request $request)
     {
-        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+        $this->authorizeRole(['acct', 'admin', 'superviseur', 'accd']);
 
         // Obtenir le mois et l'année sélectionnés ou utiliser les valeurs actuelles par défaut
         $mois = $request->input('mois', ucfirst(Carbon::now()->locale('fr')->translatedFormat('F')));
@@ -1491,7 +1491,7 @@ class DemandeFondsController extends Controller
 
     public function etatDetailleAvantEnvoi(Request $request)
     {
-        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+        $this->authorizeRole(['acct', 'admin', 'superviseur', 'accd']);
 
         // Obtenir le mois et l'année sélectionnés ou utiliser les valeurs actuelles par défaut
         $mois = $request->input('mois', ucfirst(Carbon::now()->locale('fr')->translatedFormat('F')));
@@ -1548,7 +1548,7 @@ class DemandeFondsController extends Controller
      */
     public function consolide(Request $request)
     {
-        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+        $this->authorizeRole(['acct', 'admin', 'superviseur', 'accd']);
 
         // Initialiser la requête
         $query = DemandeFonds::with('user', 'poste');
@@ -1641,7 +1641,7 @@ class DemandeFondsController extends Controller
      */
     public function consolideExportCsv(Request $request)
     {
-        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+        $this->authorizeRole(['acct', 'admin', 'superviseur', 'accd']);
 
         // Appliquer les mêmes filtres que la méthode consolide
         $query = DemandeFonds::with('user', 'poste');
@@ -1756,7 +1756,7 @@ class DemandeFondsController extends Controller
      */
     public function consolideExportPdf(Request $request)
     {
-        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+        $this->authorizeRole(['acct', 'admin', 'superviseur', 'accd']);
 
         // Appliquer les mêmes filtres
         $query = DemandeFonds::with('user', 'poste');
@@ -1824,7 +1824,7 @@ class DemandeFondsController extends Controller
      */
     public function consolideDetaille(Request $request)
     {
-        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+        $this->authorizeRole(['acct', 'admin', 'superviseur', 'accd']);
 
         // Initialiser la requête
         $query = DemandeFonds::with('user', 'poste');
@@ -1981,7 +1981,7 @@ class DemandeFondsController extends Controller
      */
     public function consolideDetailleExportCsv(Request $request)
     {
-        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+        $this->authorizeRole(['acct', 'admin', 'superviseur', 'accd']);
 
         // Appliquer les mêmes filtres
         $query = DemandeFonds::with('user', 'poste');
@@ -2154,7 +2154,7 @@ class DemandeFondsController extends Controller
      */
     public function consolideDetailleExportPdf(Request $request)
     {
-        $this->authorizeRole(['acct', 'admin', 'superviseur']);
+        $this->authorizeRole(['acct', 'admin', 'superviseur', 'accd']);
 
         // Appliquer les mêmes filtres
         $query = DemandeFonds::with('user', 'poste');

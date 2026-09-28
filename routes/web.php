@@ -10,6 +10,7 @@ use App\Http\Controllers\{
     AdminController,
     TresorierController,
     AcctController,
+    AccdController,
     PosteController,
     EnvoisFondsController,
     SuperviseurController,
@@ -42,16 +43,31 @@ Route::get('/demandes-fonds/totaux-par-mois', [DemandeFondsController::class, 't
 // Route pour le tableau de bord
 Route::get('/dashboard', function () {
     $user = Auth::user();
-    if ($user && $user->role === 'admin') {
-        return redirect()->route('dashboard.admin');
-    } elseif ($user && $user->role === 'tresorier') {
-        return redirect()->route('dashboard.tresorier');
-    } elseif ($user && $user->role === 'acct') {
-        return redirect()->route('dashboard.acct');
-    } elseif ($user && $user->role === 'accd') {
-        return redirect()->route('fnl.paiements.index');
+    if (! $user) {
+        return redirect()->route('login');
     }
-    // Ajoutez une redirection par défaut ou une gestion d'erreur ici si nécessaire
+    $role = strtolower(trim((string) $user->role));
+    // Fallback : si le rôle est vide mais le poste s'appelle ACCD (maj ou min)
+    $posteNom = $user->poste ? strtolower(trim((string) $user->poste->nom)) : null;
+
+    if ($role === 'admin') {
+        return redirect()->route('dashboard.admin');
+    } elseif ($role === 'tresorier') {
+        return redirect()->route('dashboard.tresorier');
+    } elseif ($role === 'acct') {
+        return redirect()->route('dashboard.acct');
+    } elseif ($role === 'superviseur') {
+        return redirect()->route('superviseur.dashboard');
+    } elseif ($role === 'accd' || ($role === '' && $posteNom === 'accd')) {
+        return redirect()->route('dashboard.accd');
+    }
+
+    // Fallback par défaut : éviter la page blanche
+    if (Auth::user()->hasAnyRole(['accd']) || $posteNom === 'accd') {
+        return redirect()->route('dashboard.accd');
+    }
+
+    return redirect()->route('fnl.paiements.index');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Routes protégées par authentification
@@ -59,67 +75,67 @@ Route::middleware(['auth'])->group(function () {
     // Route pour les demandes de fonds
     /* Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard'); */
     Route::get('/demandes-fonds/recettes', [DemandeFondsController::class, 'Recettes'])
-        ->middleware('role:acct,admin,superviseur,tresorier') // Tous les rôles sauf trésorier
+        ->middleware('role:acct,accd,admin,superviseur,tresorier')
         ->name('demandes-fonds.recettes');
     Route::get('/demandes-fonds/solde', [DemandeFondsController::class, 'Solde'])
-        ->middleware('role:acct,admin,superviseur,tresorier') // Tous les rôles sauf trésorier
+        ->middleware('role:acct,accd,admin,superviseur,tresorier')
         ->name('demandes-fonds.solde');
     Route::get('/demandes-fonds/fonctionnaires', [DemandeFondsController::class, 'Fonctionnaires'])
-        ->middleware('role:acct,admin,superviseur,tresorier') // Tous les rôles sauf trésorier
+        ->middleware('role:acct,accd,admin,superviseur,tresorier')
         ->name('demandes-fonds.fonctionnaires');
     Route::get('/demandes-fonds/situation-mensuelle', [DemandeFondsController::class, 'situationMensuelle'])
-        ->middleware('role:acct,admin,superviseur') // Accès pour admin, acct et superviseur
+        ->middleware('role:acct,accd,admin,superviseur')
         ->name('demandes-fonds.situation-mensuelle');
     Route::get('/demandes-fonds/etat-avant-envoi', [DemandeFondsController::class, 'etatAvantEnvoi'])
-        ->middleware('role:acct,admin,superviseur') // Accès pour admin, acct et superviseur
+        ->middleware('role:acct,accd,admin,superviseur')
         ->name('demandes-fonds.etat-avant-envoi');
     Route::get('/demandes-fonds/etat-detaille-avant-envoi', [DemandeFondsController::class, 'etatDetailleAvantEnvoi'])
-        ->middleware('role:acct,admin,superviseur') // Accès pour admin, acct et superviseur
+        ->middleware('role:acct,accd,admin,superviseur')
         ->name('demandes-fonds.etat-detaille-avant-envoi');
     Route::get('/notifications', [MessageController::class, 'notifications'])->name('messages.notifications');
     Route::get('/demandes/export', [DemandeFondsController::class, 'export'])->name('demandes-fonds.export');
     Route::get('/demandes-fonds/detail', [DemandeFondsController::class, 'Detail'])->name('demandes-fonds.detail');
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('/demandes-fonds/envois', [DemandeFondsController::class, 'EnvoisFonds'])
-        ->middleware('role:acct,admin,superviseur') // Accès pour tous sauf trésorier
+        ->middleware('role:acct,accd,admin,superviseur')
         ->name('demandes-fonds.envois');
 
     Route::get('/demandes-fonds/situation', [DemandeFondsController::class, 'SituationFonds'])
-        ->middleware('role:acct,admin,superviseur,tresorier') // Tous les rôles sauf trésorier
+        ->middleware('role:acct,accd,admin,superviseur,tresorier')
         ->name('demandes-fonds.situation');
 
     Route::get('/demandes-fonds/situationDF', [DemandeFondsController::class, 'SituationDF'])
-        ->middleware('role:acct,admin,superviseur') // Tous les rôles sauf trésorier
+        ->middleware('role:acct,accd,admin,superviseur')
         ->name('demandes-fonds.situationDF');
 
     Route::get('/demandes-fonds/situationFE', [DemandeFondsController::class, 'SituationFE'])
-        ->middleware('role:acct,admin,superviseur') // Tous les rôles sauf trésorier
+        ->middleware('role:acct,accd,admin,superviseur')
         ->name('demandes-fonds.situationFE');
 
     Route::get('/demandes-fonds/recap', [DemandeFondsController::class, 'Recap'])
-        ->middleware('role:acct,admin,superviseur') // Tous les rôles sauf trésorier
+        ->middleware('role:acct,accd,admin,superviseur')
         ->name('demandes-fonds.recap');
 
     // Routes pour la vue consolidée
     Route::get('/demandes-fonds/consolide', [DemandeFondsController::class, 'consolide'])
-        ->middleware('role:acct,admin,superviseur')
+        ->middleware('role:acct,accd,admin,superviseur')
         ->name('demandes-fonds.consolide');
     Route::get('/demandes-fonds/consolide/export-csv', [DemandeFondsController::class, 'consolideExportCsv'])
-        ->middleware('role:acct,admin,superviseur')
+        ->middleware('role:acct,accd,admin,superviseur')
         ->name('demandes-fonds.consolide.export-csv');
 Route::get('/demandes-fonds/consolide/export-pdf', [DemandeFondsController::class, 'consolideExportPdf'])
-    ->middleware('role:acct,admin,superviseur')
+    ->middleware('role:acct,accd,admin,superviseur')
     ->name('demandes-fonds.consolide.export-pdf');
 
 // Vue consolidée détaillée par type de personnel
 Route::get('/demandes-fonds/consolide-detaille', [DemandeFondsController::class, 'consolideDetaille'])
-    ->middleware('role:acct,admin,superviseur')
+    ->middleware('role:acct,accd,admin,superviseur')
     ->name('demandes-fonds.consolide-detaille');
 Route::get('/demandes-fonds/consolide-detaille/export-csv', [DemandeFondsController::class, 'consolideDetailleExportCsv'])
-    ->middleware('role:acct,admin,superviseur')
+    ->middleware('role:acct,accd,admin,superviseur')
     ->name('demandes-fonds.consolide-detaille.export-csv');
 Route::get('/demandes-fonds/consolide-detaille/export-pdf', [DemandeFondsController::class, 'consolideDetailleExportPdf'])
-    ->middleware('role:acct,admin,superviseur')
+    ->middleware('role:acct,accd,admin,superviseur')
     ->name('demandes-fonds.consolide-detaille.export-pdf');
 
     Route::post('/users/{user}/deactivate', [UserController::class, 'deactivate'])->name('users.deactivate');
@@ -141,7 +157,7 @@ Route::get('/demandes-fonds/consolide-detaille/export-pdf', [DemandeFondsControl
     // Route pour générer le PDF consolidé des demandes par mois
     Route::get('/demandes-fonds/mois/{mois}/{annee}/pdf', [DemandeFondsController::class, 'generateMonthlyPdf'])
         ->name('demandes-fonds.monthly.pdf')
-        ->middleware('role:acct,admin,superviseur,tresorier');
+        ->middleware('role:acct,accd,admin,superviseur,tresorier');
 
     // Autres routes protégées
     Route::resource('users', UserController::class);
@@ -180,8 +196,8 @@ Route::middleware(['auth', 'role:tresorier'])->group(function () {
 
 });
 
-// Routes pour les comptes ACCT
-Route::middleware(['auth', 'role:acct,superviseur,tresorier,admin',])->group(function () {
+// Routes pour les comptes ACCT (et ACCD en lecture)
+Route::middleware(['auth', 'role:acct,superviseur,tresorier,admin,accd',])->group(function () {
     Route::get('/acct', [AcctController::class, 'index'])->name('dashboard.acct');
     Route::put('/demandes-fonds/{id}/update-status', [DemandeFondsController::class, 'updateStatus'])->name('demandes-fonds.update-status');
     Route::get('/demandes-fonds', [DemandeFondsController::class, 'index'])->name('demandes-fonds.index');
@@ -202,6 +218,11 @@ Route::middleware(['auth', 'role:acct,superviseur,tresorier,admin',])->group(fun
     Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
     Route::get('messages/{id}', [MessageController::class, 'show'])->name('messages.show');
 
+});
+
+// Routes pour le tableau de bord ACCD
+Route::middleware(['auth', 'role:accd'])->group(function () {
+    Route::get('/accd', [AccdController::class, 'index'])->name('dashboard.accd');
 });
 
 // Routes pour les superviseurs
@@ -252,7 +273,7 @@ Route::middleware(['auth'])->prefix('pcs')->name('pcs.')->group(function () {
         Route::get('pdf/reversements', 'generatePdfReversements')->name('pdf.reversements');
 
         // États consolidés (ACCT uniquement)
-        Route::middleware('role:admin,acct')->group(function () {
+        Route::middleware('role:admin,acct,accd')->group(function () {
             Route::get('etat-consolide/reversements', 'etatConsolideReversements')->name('etat-consolide.reversements');
 
             // Filtrage et génération d'états personnalisés pour déclarations
@@ -271,7 +292,7 @@ Route::middleware(['auth'])->prefix('pcs')->name('pcs.')->group(function () {
         ->name('etat-references.poste-emetteur');
 
     // ===== ÉTATS CONSOLIDÉS UNIFIÉS =====
-    Route::middleware('role:admin,acct')->controller(\App\Http\Controllers\PCS\EtatsConsolidesController::class)->prefix('etats-consolides')->name('etats-consolides.')->group(function () {
+    Route::middleware('role:admin,acct,accd')->controller(\App\Http\Controllers\PCS\EtatsConsolidesController::class)->prefix('etats-consolides')->name('etats-consolides.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('generer', 'generer')->name('generer');
         Route::get('apercu', 'apercu')->name('apercu');
@@ -280,7 +301,7 @@ Route::middleware(['auth'])->prefix('pcs')->name('pcs.')->group(function () {
     });
 
     // ===== DÉSTOCKAGES PCS (ACCT uniquement) =====
-    Route::middleware('role:admin,acct')->controller(\App\Http\Controllers\PCS\DestockagePcsController::class)->prefix('destockages')->name('destockages.')->group(function () {
+    Route::middleware('role:admin,acct,accd')->controller(\App\Http\Controllers\PCS\DestockagePcsController::class)->prefix('destockages')->name('destockages.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('collecte', 'collecte')->name('collecte');
         Route::get('etats', 'etats')->name('etats');
@@ -304,12 +325,14 @@ Route::middleware(['auth'])->prefix('pcs')->name('pcs.')->group(function () {
         Route::put('{demande}', 'update')->name('update');
         Route::delete('{demande}', 'destroy')->name('destroy');
 
-        // Validation
+        // Validation (écriture : ACCT uniquement)
         Route::middleware('role:admin,acct')->group(function () {
             Route::post('{demande}/valider', 'valider')->name('valider');
             Route::post('{demande}/rejeter', 'rejeter')->name('rejeter');
+        });
 
-            // États consolidés
+        // États consolidés (lecture : ACCT + ACCD)
+        Route::middleware('role:admin,acct,accd')->group(function () {
             Route::get('etat-consolide/autres-demandes', 'etatConsolideAutresDemandes')->name('etat-consolide.autres-demandes');
 
             // Filtrage et génération d'états personnalisés
@@ -366,8 +389,8 @@ Route::middleware(['auth'])->prefix('trie')->name('trie.')->group(function () {
     Route::controller(EtatTrieController::class)->prefix('etats')->name('etats.')->group(function () {
         Route::get('/', 'index')->name('index');
 
-        // Génération des PDF (ACCT/Admin uniquement)
-        Route::middleware('role:admin,acct')->group(function () {
+        // Génération des PDF (ACCT/Admin/ACCD uniquement)
+        Route::middleware('role:admin,acct,accd')->group(function () {
             Route::get('mensuel', 'etatMensuel')->name('mensuel');
             Route::get('consolide', 'etatConsolide')->name('consolide');
         });

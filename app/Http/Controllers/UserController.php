@@ -12,11 +12,11 @@ use App\Models\Poste;
 class UserController extends Controller
 {
     private function authorizeRole(array $roles)
-{
-    if (!in_array(Auth::user()->role, $roles)) {
-        abort(403, '🚫 Accès refusé ! Vous n\'avez pas les permissions nécessaires pour accéder à cette page. Si vous pensez qu\'il s\'agit d\'une erreur, veuillez contacter votre administrateur.');
+    {
+        if (! Auth::check() || ! Auth::user()->hasAnyRole($roles)) {
+            abort(403, '🚫 Accès refusé ! Vous n\'avez pas les permissions nécessaires pour accéder à cette page. Si vous pensez qu\'il s\'agit d\'une erreur, veuillez contacter votre administrateur.');
+        }
     }
-}
 
     public function index(Request $request)
     {
@@ -160,24 +160,32 @@ class UserController extends Controller
         // Exclure le password des données de mise à jour principales
         unset($validatedData['password']);
 
-        // Si l'utilisateur connecté est un trésorier
-        if (Auth::user()->role === 'tresorier') {
-            // Forcer les valeurs existantes pour les champs qu'il ne peut pas modifier
+        $isAdmin = Auth::user()->hasRole('admin');
+
+        if (! $isAdmin) {
+            // Ni trésorier ni ACCD/ACCT ne peuvent modifier rôle/active/poste
             $validatedData['role'] = $user->role;
             $validatedData['active'] = $user->active;
             $validatedData['poste_id'] = $user->poste_id;
         } else {
-            // Valider les champs supplémentaires uniquement pour l'admin
-            $additionalValidation = $request->validate([
-                'role' => 'required|in:admin,tresorier,acct,accd,superviseur',
+            $roleRaw = $request->input('role', $user->role);
+            $activeRaw = $request->input('active', $user->active ? '1' : '0');
+            $posteIdRaw = $request->input('poste_id', $user->poste_id);
+
+            $additionalValidation = validator([
+                'role' => $roleRaw,
+                'active' => $activeRaw,
+                'poste_id' => $posteIdRaw,
+            ], [
+                'role' => 'required|in:admin,tresorier,acct,accd,superviseur,direction',
                 'active' => 'required|boolean',
                 'poste_id' => 'required_unless:role,accd|nullable|exists:postes,id',
-            ]);
+            ])->validate();
+
             if (($additionalValidation['role'] ?? null) === 'accd' && empty($additionalValidation['poste_id'])) {
                 $additionalValidation['poste_id'] = null;
             }
 
-            // Ajouter les champs validés aux données de mise à jour
             $validatedData = array_merge($validatedData, $additionalValidation);
         }
 

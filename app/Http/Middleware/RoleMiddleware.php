@@ -16,9 +16,13 @@ class Rolemiddleware
      */
     public function handle(Request $request, Closure $next, ...$roles)
     {
-        if (!in_array($request->user()->role, $roles)) {
+        $userRole = strtolower(trim((string) $request->user()->role));
+        $normalizedRoles = array_map(fn ($r) => strtolower(trim((string) $r)), $roles);
+
+        if (! in_array($userRole, $normalizedRoles, true)) {
             return redirect('/dashboard'); // Redirection si l'utilisateur n'a pas le bon rôle
         }
+
         return $next($request);
     }
 }

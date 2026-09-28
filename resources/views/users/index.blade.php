@@ -100,6 +100,7 @@
                         </td>
                         <td>
                             @php
+                                $userRole = strtolower(trim((string) $user->role));
                                 $rolesLibelles = [
                                     'admin' => 'Administrateur',
                                     'tresorier' => 'Trésorier',
@@ -108,9 +109,28 @@
                                     'superviseur' => 'Superviseur',
                                     'direction' => 'Direction',
                                 ];
+                                $posteNom = strtolower(trim((string) ($user->poste->nom ?? '')));
+                                $roleLabel = $rolesLibelles[$userRole] ?? $user->role;
+
+                                if ($roleLabel === '' || $roleLabel === null) {
+                                    // Rôle non défini en base : alerte rouge
+                                    $roleLabel = $posteNom === 'accd' ? 'Rôle à définir (Poste ACCD)' : 'Non défini';
+                                    $badgeClass = 'bg-label-danger';
+                                } else {
+                                    // Rôle défini → couleur fonction du rôle (pas du poste !)
+                                    $badgeClass = match ($userRole) {
+                                        'admin' => 'bg-label-warning',
+                                        'tresorier' => 'bg-label-success',
+                                        'acct' => 'bg-label-info',
+                                        'accd' => 'bg-label-primary',
+                                        'superviseur' => 'bg-label-secondary',
+                                        'direction' => 'bg-label-dark',
+                                        default => 'bg-label-primary',
+                                    };
+                                }
                             @endphp
-                            <span class="badge {{ $user->role === 'admin' ? 'bg-label-warning' : 'bg-label-primary' }}">
-                                {{ $rolesLibelles[$user->role] ?? $user->role }}
+                            <span class="badge {{ $badgeClass }}">
+                                {{ $roleLabel }}
                             </span>
                         </td>
                         <td>

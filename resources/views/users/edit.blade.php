@@ -43,25 +43,33 @@
             </div>
             <div class="col-md-6">
                 <label class="form-label">Rôle <span class="text-danger">*</span></label>
-                <select class="form-select" name="role" {{ auth()->user()->role === 'tresorier' ? 'disabled' : '' }} required>
+                @php
+                    $selectedRole = strtolower(trim((string) old('role', $user->role ?? '')));
+                    $isTresorier = Auth::user()->hasRole('tresorier');
+                @endphp
+                <select class="form-select" name="role" {{ $isTresorier ? 'disabled' : '' }} required>
                     <option value="">Choisir un rôle</option>
-                    <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
-                    <option value="tresorier" {{ old('role', $user->role) == 'tresorier' ? 'selected' : '' }}>Trésorier</option>
-                    <option value="acct" {{ old('role', $user->role) == 'acct' ? 'selected' : '' }}>ACCT</option>
-                    <option value="accd" {{ old('role', $user->role) == 'accd' ? 'selected' : '' }}>ACCD</option>
-                    <option value="superviseur" {{ old('role', $user->role) == 'superviseur' ? 'selected' : '' }}>Superviseur</option>
+                    <option value="admin" {{ $selectedRole === 'admin' ? 'selected' : '' }}>Administrateur</option>
+                    <option value="tresorier" {{ $selectedRole === 'tresorier' ? 'selected' : '' }}>Trésorier</option>
+                    <option value="acct" {{ $selectedRole === 'acct' ? 'selected' : '' }}>ACCT</option>
+                    <option value="accd" {{ $selectedRole === 'accd' ? 'selected' : '' }}>ACCD</option>
+                    <option value="superviseur" {{ $selectedRole === 'superviseur' ? 'selected' : '' }}>Superviseur</option>
+                    <option value="direction" {{ $selectedRole === 'direction' ? 'selected' : '' }}>Direction</option>
                 </select>
+                @if ($selectedRole === '' && strtolower(trim((string) ($user->poste->nom ?? ''))) === 'accd')
+                    <small class="text-danger">⚠️ Poste = ACCD mais aucun rôle défini. Sélectionnez « ACCD » puis enregistrez.</small>
+                @endif
             </div>
             <div class="col-md-6">
                 <label class="form-label">Statut <span class="text-danger">*</span></label>
-                <select class="form-select" name="active" {{ auth()->user()->role === 'tresorier' ? 'disabled' : '' }} required>
+                <select class="form-select" name="active" {{ $isTresorier ? 'disabled' : '' }} required>
                     <option value="1" {{ old('active', $user->active) == '1' ? 'selected' : '' }}>Actif</option>
                     <option value="0" {{ old('active', $user->active) == '0' ? 'selected' : '' }}>Inactif</option>
                 </select>
             </div>
             <div class="col-12">
                 <label class="form-label">Poste <span class="text-danger" id="poste-requis">*</span></label>
-                <select class="form-select" name="poste_id" id="poste_id" {{ auth()->user()->role === 'tresorier' ? 'disabled' : '' }}>
+                <select class="form-select" name="poste_id" id="poste_id" {{ $isTresorier ? 'disabled' : '' }}>
                     <option value="">Choisir un poste</option>
                     @foreach ($postes as $poste)
                         <option value="{{ $poste->id }}" {{ old('poste_id', $user->poste_id) == $poste->id ? 'selected' : '' }}>{{ $poste->nom }}</option>

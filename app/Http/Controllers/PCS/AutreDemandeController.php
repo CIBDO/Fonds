@@ -48,8 +48,8 @@ class AutreDemandeController extends Controller
             $query->where('poste_id', $request->poste_id);
         }
 
-        // ACCT et admin voient toutes les demandes ; les autres voient uniquement leur poste
-        $estValideurOuAcct = $user->peut_valider_pcs || $user->hasRole('acct') || $user->hasRole('admin');
+        // ACCT, ACCD et admin voient toutes les demandes ; les autres voient uniquement leur poste
+        $estValideurOuAcct = $user->peut_valider_pcs || $user->hasRole('acct') || $user->hasRole('accd') || $user->hasRole('admin');
         if (!$estValideurOuAcct) {
             $query->where('poste_id', $user->poste_id);
         }
@@ -967,7 +967,7 @@ class AutreDemandeController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        $estValideurOuAcct = $user->peut_valider_pcs || $user->hasRole('acct') || $user->hasRole('admin');
+        $estValideurOuAcct = $user->peut_valider_pcs || $user->hasRole('acct') || $user->hasRole('accd') || $user->hasRole('admin');
         if (! $estValideurOuAcct && $demande->poste_id !== $user->poste_id) {
             Alert::error('Erreur', 'Vous n\'avez pas accès à cette demande');
             return redirect()->route('pcs.autres-demandes.index');

@@ -16,7 +16,7 @@ class EtatTrieController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('role:admin,acct')->except(['index']);
+        $this->middleware('role:admin,acct,accd')->except(['index']);
     }
 
     /**

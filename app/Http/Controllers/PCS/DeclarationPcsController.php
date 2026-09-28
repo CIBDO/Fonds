@@ -63,8 +63,8 @@ class DeclarationPcsController extends Controller
             });
         }
 
-        // ACCT et admin voient toutes les déclarations ; les autres voient uniquement leur poste
-        $estValideurOuAcct = $user->peut_valider_pcs || $user->hasRole('acct') || $user->hasRole('admin');
+        // ACCT, ACCD et admin voient toutes les déclarations ; les autres voient uniquement leur poste
+        $estValideurOuAcct = $user->peut_valider_pcs || $user->hasRole('acct') || $user->hasRole('accd') || $user->hasRole('admin');
         if (!$estValideurOuAcct) {
             $posteId = $user->poste_id;
             $query->where(function ($q) use ($posteId) {

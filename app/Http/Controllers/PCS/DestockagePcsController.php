@@ -34,6 +34,17 @@ class DestockagePcsController extends Controller
     }
 
     /**
+     * Vérifier que l'utilisateur est ACCT, Admin ou ACCD (lecture seule)
+     */
+    private function authorizeLecture()
+    {
+        $user = Auth::user();
+        if (!in_array($user->role, ['acct', 'admin', 'accd'])) {
+            abort(403, 'Accès refusé.');
+        }
+    }
+
+    /**
      * Vue de collecte - Afficher les fonds collectés par poste
      */
     public function collecte(Request $request)
@@ -54,10 +65,10 @@ class DestockagePcsController extends Controller
 
         // Organiser les données par poste/bureau
         $collectesParPoste = [];
-        
+
         foreach ($declarations as $declaration) {
             $entiteId = $declaration->poste_id ?? 'bureau_' . $declaration->bureau_douane_id;
-            $nomEntite = $declaration->poste_id 
+            $nomEntite = $declaration->poste_id
                 ? ($declaration->poste->nom ?? 'N/A')
                 : ($declaration->bureauDouane->libelle ?? 'N/A');
             $typeEntite = $declaration->poste_id ? 'poste' : 'bureau';
@@ -81,7 +92,7 @@ class DestockagePcsController extends Controller
         // Calculer les montants déjà déstockés pour chaque poste
         foreach ($collectesParPoste as $entiteId => &$collecte) {
             $dejaDestocke = 0;
-            
+
             if ($collecte['type'] === 'poste') {
                 $dejaDestocke = DestockagePcsPoste::where('poste_id', $collecte['poste_id'])
                     ->whereHas('destockage', function ($q) use ($programme, $mois, $annee) {
@@ -148,10 +159,10 @@ class DestockagePcsController extends Controller
             ->get();
 
         $collectesParPoste = [];
-        
+
         foreach ($declarations as $declaration) {
             $entiteId = $declaration->poste_id ?? 'bureau_' . $declaration->bureau_douane_id;
-            $nomEntite = $declaration->poste_id 
+            $nomEntite = $declaration->poste_id
                 ? ($declaration->poste->nom ?? 'N/A')
                 : ($declaration->bureauDouane->libelle ?? 'N/A');
             $typeEntite = $declaration->poste_id ? 'poste' : 'bureau';
@@ -174,7 +185,7 @@ class DestockagePcsController extends Controller
 
         foreach ($collectesParPoste as $entiteId => &$collecte) {
             $dejaDestocke = 0;
-            
+
             if ($collecte['type'] === 'poste') {
                 $dejaDestocke = DestockagePcsPoste::where('poste_id', $collecte['poste_id'])
                     ->whereHas('destockage', function ($q) use ($programme, $mois, $annee) {
@@ -280,7 +291,7 @@ class DestockagePcsController extends Controller
             foreach ($postesSelectionnes as $posteData) {
                 $entiteId = $posteData['id'];
                 $montantDestocke = $posteData['montant_destocke'];
-                
+
                 // Déterminer si c'est un poste ou un bureau
                 if (str_starts_with($entiteId, 'bureau_')) {
                     $bureauId = str_replace('bureau_', '', $entiteId);
@@ -366,7 +377,7 @@ class DestockagePcsController extends Controller
      */
     public function index(Request $request)
     {
-        $this->authorizeAcct();
+        $this->authorizeLecture();
 
         $query = DestockagePcs::with(['creePar', 'postes.poste', 'postes.bureauDouane'])
             ->orderBy('periode_annee', 'desc')
@@ -407,7 +418,7 @@ class DestockagePcsController extends Controller
      */
     public function show(DestockagePcs $destockage)
     {
-        $this->authorizeAcct();
+        $this->authorizeLecture();
 
         $destockage->load(['creePar', 'postes.poste', 'postes.bureauDouane']);
 
@@ -419,7 +430,7 @@ class DestockagePcsController extends Controller
      */
     public function pdf(DestockagePcs $destockage)
     {
-        $this->authorizeAcct();
+        $this->authorizeLecture();
 
         $destockage->load(['creePar', 'postes.poste', 'postes.bureauDouane']);
 
@@ -434,7 +445,7 @@ class DestockagePcsController extends Controller
      */
     public function etatCollectePdf(Request $request)
     {
-        $this->authorizeAcct();
+        $this->authorizeLecture();
 
         $programme = $request->get('programme', 'UEMOA');
         $annee = $request->get('annee', date('Y'));
@@ -453,10 +464,10 @@ class DestockagePcsController extends Controller
         $totalCollecteGeneral = 0;
 
         foreach ($declarations as $declaration) {
-            $nomPoste = $declaration->poste_id 
+            $nomPoste = $declaration->poste_id
                 ? ($declaration->poste->nom ?? 'N/A')
                 : ($declaration->bureauDouane->libelle ?? 'N/A');
-            
+
             if (!isset($collectesParPoste[$nomPoste])) {
                 $collectesParPoste[$nomPoste] = [
                     'mois' => array_fill(1, 12, 0),
@@ -507,8 +518,8 @@ class DestockagePcsController extends Controller
      */
     public function etats()
     {
-        $this->authorizeAcct();
-        
+        $this->authorizeLecture();
+
         return view('pcs.destockages.etats');
     }
 
@@ -517,7 +528,7 @@ class DestockagePcsController extends Controller
      */
     public function etatConsolidePdf(Request $request)
     {
-        $this->authorizeAcct();
+        $this->authorizeLecture();
 
         $programme = $request->get('programme', 'UEMOA');
         $annee = $request->get('annee', date('Y'));
@@ -536,10 +547,10 @@ class DestockagePcsController extends Controller
 
         foreach ($destockages as $destockage) {
             foreach ($destockage->postes as $posteDestockage) {
-                $nomPoste = $posteDestockage->poste_id 
+                $nomPoste = $posteDestockage->poste_id
                     ? ($posteDestockage->poste->nom ?? 'N/A')
                     : ($posteDestockage->bureauDouane->libelle ?? 'N/A');
-                
+
                 if (!isset($destockagesParPoste[$nomPoste])) {
                     $destockagesParPoste[$nomPoste] = [
                         'mois' => array_fill(1, 12, 0),
