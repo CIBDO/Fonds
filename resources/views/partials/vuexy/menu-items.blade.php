@@ -13,12 +13,12 @@
 
     $isDashboardActive = request()->routeIs('dashboard.*') || request()->routeIs('superviseur.dashboard');
 
-    $fondsActive = request()->routeIs('demandes-fonds.*');
+    $fondsActive = request()->routeIs('demandes-fonds.*') || request()->routeIs('virements.*');
     $pcsActive = request()->routeIs('pcs.*') && !request()->routeIs('pcs.etats-consolides.*');
     $autresDemandesActive = request()->routeIs('pcs.autres-demandes.*');
     $trieActive = request()->routeIs('trie.*');
     $fnlActive = request()->routeIs('fnl.*');
-    $adminActive = request()->routeIs('users.*') || request()->routeIs('postes.*');
+    $adminActive = request()->routeIs('users.*') || request()->routeIs('postes.*') || request()->routeIs('alertes-mail.*');
     $etatsConsolidesActive = request()->routeIs('pcs.etats-consolides.*');
 @endphp
 
@@ -165,12 +165,30 @@
                         <div>Situation</div>
                     </a>
                 </li>
+                <li class="menu-item {{ request()->routeIs('virements.poste.*') ? 'active' : '' }}">
+                    <a href="{{ route('virements.poste.index') }}" class="menu-link">
+                        <i class="menu-icon icon-base ti tabler-building-bank"></i>
+                        <div>Propositions de virements</div>
+                    </a>
+                </li>
             @endif
             @if (Auth::user()->hasAnyRole(['acct', 'admin']))
                 <li class="menu-item {{ request()->routeIs('demandes-fonds.envois') ? 'active' : '' }}">
                     <a href="{{ route('demandes-fonds.envois') }}" class="menu-link">
                         <i class="menu-icon icon-base ti tabler-send"></i>
                         <div>Envoi de Fonds</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ request()->routeIs('virements.acct.index') || request()->routeIs('virements.acct.show') ? 'active' : '' }}">
+                    <a href="{{ route('virements.acct.index') }}" class="menu-link">
+                        <i class="menu-icon icon-base ti tabler-building-bank"></i>
+                        <div>Virements salaires</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ request()->routeIs('virements.acct.consolidation*') ? 'active' : '' }}">
+                    <a href="{{ route('virements.acct.consolidation') }}" class="menu-link">
+                        <i class="menu-icon icon-base ti tabler-chart-dots"></i>
+                        <div>Consolidation VIR</div>
                     </a>
                 </li>
             @endif
@@ -345,6 +363,16 @@
     </a>
 </li> --}}
 
+{{-- Alertes e-mail (ACCT / Admin) --}}
+@if (Auth::user()->hasAnyRole(['acct', 'admin']))
+<li class="menu-item {{ request()->routeIs('alertes-mail.*') ? 'active' : '' }}">
+    <a href="{{ route('alertes-mail.index') }}" class="menu-link">
+        <i class="menu-icon icon-base ti tabler-mail-cog"></i>
+        <div>Alertes e-mail</div>
+    </a>
+</li>
+@endif
+
 {{-- Administration (ADMIN SEUL - pour tous les rôles si admin) --}}
 @if (Auth::user()->hasRole('admin'))
 <li class="menu-item {{ $adminActive ? 'active open' : '' }}">
@@ -361,6 +389,9 @@
         </li>
         <li class="menu-item {{ request()->routeIs('postes.index') ? 'active' : '' }}">
             <a href="{{ route('postes.index') }}" class="menu-link"><div>Postes</div></a>
+        </li>
+        <li class="menu-item {{ request()->routeIs('alertes-mail.*') ? 'active' : '' }}">
+            <a href="{{ route('alertes-mail.index') }}" class="menu-link"><div>Alertes e-mail</div></a>
         </li>
     </ul>
 </li>

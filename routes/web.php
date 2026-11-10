@@ -33,9 +33,21 @@ use App\Http\Controllers\TRIE\{
 };
 
 use App\Http\Controllers\FNL\PaiementFnlController;
+use App\Http\Controllers\BordereauVirementController;
+use App\Http\Controllers\AcctVirementController;
+use App\Http\Controllers\DestinataireMailAlerteController;
+use App\Models\BordereauVirement;
+use App\Models\DestinataireMailAlerte;
+use App\Models\LigneVirement;
+use App\Models\Virement;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+
+Route::bind('bordereau', fn ($value) => BordereauVirement::findOrFail($value));
+Route::bind('virement', fn ($value) => Virement::findOrFail($value));
+Route::bind('ligne', fn ($value) => LigneVirement::findOrFail($value));
+Route::bind('destinataire', fn ($value) => DestinataireMailAlerte::findOrFail($value));
 
 // Route pour la page d'accueil (connexion)
 Route::get('/', fn() => view('auth.login'))->name('custom.login');
@@ -125,6 +137,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/demandes-fonds/consolide', [DemandeFondsController::class, 'consolide'])
         ->middleware('role:acct,accd,admin,superviseur')
         ->name('demandes-fonds.consolide');
+    Route::get('/demandes-fonds/consolide/export-excel', [DemandeFondsController::class, 'consolideExportExcel'])
+        ->middleware('role:acct,accd,admin,superviseur')
+        ->name('demandes-fonds.consolide.export-excel');
     Route::get('/demandes-fonds/consolide/export-csv', [DemandeFondsController::class, 'consolideExportCsv'])
         ->middleware('role:acct,accd,admin,superviseur')
         ->name('demandes-fonds.consolide.export-csv');
@@ -136,6 +151,9 @@ Route::get('/demandes-fonds/consolide/export-pdf', [DemandeFondsController::clas
 Route::get('/demandes-fonds/consolide-detaille', [DemandeFondsController::class, 'consolideDetaille'])
     ->middleware('role:acct,accd,admin,superviseur')
     ->name('demandes-fonds.consolide-detaille');
+Route::get('/demandes-fonds/consolide-detaille/export-excel', [DemandeFondsController::class, 'consolideDetailleExportExcel'])
+    ->middleware('role:acct,accd,admin,superviseur')
+    ->name('demandes-fonds.consolide-detaille.export-excel');
 Route::get('/demandes-fonds/consolide-detaille/export-csv', [DemandeFondsController::class, 'consolideDetailleExportCsv'])
     ->middleware('role:acct,accd,admin,superviseur')
     ->name('demandes-fonds.consolide-detaille.export-csv');
@@ -417,6 +435,44 @@ Route::middleware(['auth'])->prefix('fnl')->name('fnl.')->group(function () {
         Route::post('{paiement}/valider', 'valider')->name('valider');
         Route::post('{paiement}/rejeter', 'rejeter')->name('rejeter');
     });
+});
+
+// ===== MODULE VIREMENTS SALAIRES (bordereaux / VIR / consolidation) =====
+Route::middleware(['auth'])->prefix('virements')->name('virements.')->group(function () {
+    // Côté poste (trésorier)
+    Route::middleware('role:tresorier,admin')->prefix('poste')->name('poste.')->group(function () {
+        Route::get('/', [BordereauVirementController::class, 'index'])->name('index');
+        Route::get('template-excel', [BordereauVirementController::class, 'templateExcel'])->name('template');
+        Route::get('create', [BordereauVirementController::class, 'create'])->name('create');
+        Route::post('/', [BordereauVirementController::class, 'store'])->name('store');
+        Route::get('{bordereau}', [BordereauVirementController::class, 'show'])->name('show');
+        Route::post('{bordereau}/soumettre', [BordereauVirementController::class, 'soumettre'])->name('soumettre');
+        Route::post('{bordereau}/virements', [BordereauVirementController::class, 'storeVirement'])->name('virements.store');
+        Route::put('{bordereau}/virements/{virement}', [BordereauVirementController::class, 'updateVirement'])->name('virements.update');
+        Route::delete('{bordereau}/virements/{virement}', [BordereauVirementController::class, 'destroyVirement'])->name('virements.destroy');
+        Route::post('{bordereau}/virements/{virement}/lignes', [BordereauVirementController::class, 'storeLigne'])->name('lignes.store');
+        Route::delete('{bordereau}/virements/{virement}/lignes/{ligne}', [BordereauVirementController::class, 'destroyLigne'])->name('lignes.destroy');
+        Route::post('{bordereau}/virements/{virement}/import-excel', [BordereauVirementController::class, 'importLignes'])->name('lignes.import');
+    });
+
+    // Côté ACCT
+    Route::middleware('role:acct,admin')->prefix('acct')->name('acct.')->group(function () {
+        Route::get('/', [AcctVirementController::class, 'index'])->name('index');
+        Route::get('consolidation', [AcctVirementController::class, 'consolidation'])->name('consolidation');
+        Route::get('export-excel', [AcctVirementController::class, 'exportExcel'])->name('export');
+        Route::get('consolidation/export-excel', [AcctVirementController::class, 'exportConsolidationExcel'])->name('consolidation.export');
+        Route::post('marquer-paye', [AcctVirementController::class, 'marquerPaye'])->name('marquer-paye');
+        Route::get('{virement}', [AcctVirementController::class, 'show'])->name('show');
+    });
+});
+
+// Destinataires alertes e-mail (ACCT / Admin)
+Route::middleware(['auth', 'role:acct,admin'])->prefix('alertes-mail')->name('alertes-mail.')->group(function () {
+    Route::get('/', [DestinataireMailAlerteController::class, 'index'])->name('index');
+    Route::post('/', [DestinataireMailAlerteController::class, 'store'])->name('store');
+    Route::put('{destinataire}', [DestinataireMailAlerteController::class, 'update'])->name('update');
+    Route::delete('{destinataire}', [DestinataireMailAlerteController::class, 'destroy'])->name('destroy');
+    Route::post('{destinataire}/test', [DestinataireMailAlerteController::class, 'test'])->name('test');
 });
 
 // Ajoutez la route d'authentification

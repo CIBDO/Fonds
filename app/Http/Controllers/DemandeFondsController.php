@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\View; // Pour utiliser la vue
 use RealRashid\SweetAlert\Facades\Alert;
 use App\Notifications\DemandeFondsStatusUpdated; // Assurez-vous que le chemin est correct
 use App\Notifications\DemandeStatusUpdated; // Assurez-vous que le chemin d'importation est correct
+use App\Services\MailAlerteService;
+use App\Services\ExcelVirementService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Policies\UserPolicy;
 use Illuminate\Routing\Controller as BaseController; // Ajoutez cette ligne
@@ -386,6 +388,7 @@ class DemandeFondsController extends Controller
         foreach ($acctUsers as $acctUser) {
             $acctUser->notify(new DemandeFondsNotification($demandeFonds));
         }
+        MailAlerteService::notifyEvenement('fonds_soumise', new DemandeFondsNotification($demandeFonds));
 
         Alert::success('Success', 'Demande de fonds créée avec succès.');
         return redirect()->route('demandes-fonds.index')
@@ -440,8 +443,10 @@ class DemandeFondsController extends Controller
         // Enregistrer les modifications dans la base de données
         $demande->save();
 
-        // Envoyer une notification à l'utilisateur
-        $demande->user->notify(new DemandeFondsStatusNotification($demande));
+        // Envoyer une notification à l'utilisateur + destinataires diligence
+        $statusNotif = new DemandeFondsStatusNotification($demande);
+        $demande->user->notify($statusNotif);
+        MailAlerteService::notifyEvenement('fonds_statut', $statusNotif);
 
         // Retourner avec un message de succès
         Alert::success('Succès', 'Fonds envoyés avec succès');
@@ -1637,29 +1642,63 @@ class DemandeFondsController extends Controller
     }
 
     /**
-     * Export CSV de la vue consolidée
+     * Export Excel de la vue consolidée
      */
-    public function consolideExportCsv(Request $request)
+    public function consolideExportExcel(Request $request)
     {
         $this->authorizeRole(['acct', 'admin', 'superviseur', 'accd']);
 
-        // Appliquer les mêmes filtres que la méthode consolide
         $query = DemandeFonds::with('user', 'poste');
+        $this->applyConsolideFilters($query, $request);
+        $demandes = $query->orderBy('created_at', 'desc')->get();
 
-        if ($request->filled('poste')) {
-            $query->whereHas('poste', function ($q) use ($request) {
-                $q->where('nom', 'like', '%' . $request->poste . '%');
-            });
+        $headers = [
+            'Poste', 'Mois', 'Année', 'Total Courant (FCFA)', 'Montant Disponible (FCFA)',
+            'Solde (FCFA)', 'Montant Envoyé (FCFA)', 'Date Envoi',
+        ];
+        $rows = [];
+        foreach ($demandes as $demande) {
+            $rows[] = [
+                $demande->poste->nom ?? 'N/A',
+                $demande->mois,
+                $demande->annee,
+                (float) $demande->total_courant,
+                (float) $demande->montant_disponible,
+                (float) $demande->solde,
+                $demande->status === 'approuve' ? (float) $demande->montant : '',
+                $demande->date_envois ? Carbon::parse($demande->date_envois)->format('d/m/Y') : '',
+            ];
         }
 
+        return ExcelVirementService::exportSimple(
+            $headers,
+            $rows,
+            'demandes_consolidees_'.date('Y-m-d_His').'.xlsx',
+            'Consolidé'
+        );
+    }
+
+    /**
+     * @deprecated Utiliser consolideExportExcel
+     */
+    public function consolideExportCsv(Request $request)
+    {
+        return $this->consolideExportExcel($request);
+    }
+
+    private function applyConsolideFilters($query, Request $request): void
+    {
+        if ($request->filled('poste')) {
+            $query->whereHas('poste', function ($q) use ($request) {
+                $q->where('nom', 'like', '%'.$request->poste.'%');
+            });
+        }
         if ($request->filled('mois')) {
             $query->where('mois', $request->mois);
         }
-
         if ($request->filled('annee')) {
             $query->where('annee', $request->annee);
         }
-
         if ($request->filled('status')) {
             if (is_array($request->status)) {
                 $query->whereIn('status', $request->status);
@@ -1667,14 +1706,11 @@ class DemandeFondsController extends Controller
                 $query->where('status', $request->status);
             }
         }
-
         if ($request->filled('user_id')) {
             $query->where('user_id', $request->user_id);
         }
-
         if ($request->filled('date_type') && ($request->filled('date_debut') || $request->filled('date_fin'))) {
             $dateField = $request->date_type;
-
             if ($request->filled('date_debut') && $request->filled('date_fin')) {
                 $query->whereBetween($dateField, [$request->date_debut, $request->date_fin]);
             } elseif ($request->filled('date_debut')) {
@@ -1683,72 +1719,6 @@ class DemandeFondsController extends Controller
                 $query->where($dateField, '<=', $request->date_fin);
             }
         }
-
-        // Récupérer toutes les demandes (sans pagination)
-        $demandes = $query->orderBy('created_at', 'desc')->get();
-
-        $fileName = 'demandes_consolidees_' . date('Y-m-d_His') . '.csv';
-
-        $headers = [
-            "Content-type" => "text/csv; charset=UTF-8",
-            "Content-Disposition" => "attachment; filename=$fileName",
-            "Pragma" => "no-cache",
-            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
-            "Expires" => "0"
-        ];
-
-        $columns = [
-            'Poste',
-            'Mois',
-            'Année',
-            'Total Courant (FCFA)',
-            'Montant Disponible (FCFA)',
-            'Solde (FCFA)',
-            'Montant Envoyé (FCFA)',
-            'Date Envoi'
-        ];
-
-        $callback = function () use ($demandes, $columns) {
-            $file = fopen('php://output', 'w');
-
-            // Ajouter le BOM UTF-8 pour Excel
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
-
-            // En-têtes
-            fputcsv($file, $columns, ';');
-
-            // Données
-            foreach ($demandes as $demande) {
-                fputcsv($file, [
-                    $demande->poste->nom ?? 'N/A',
-                    $demande->mois,
-                    $demande->annee,
-                    number_format($demande->total_courant, 0, ',', ' '),
-                    number_format($demande->montant_disponible, 0, ',', ' '),
-                    number_format($demande->solde, 0, ',', ' '),
-                    $demande->status === 'approuve' ? number_format($demande->montant, 0, ',', ' ') : '-',
-                    $demande->date_envois ? Carbon::parse($demande->date_envois)->format('d/m/Y') : '-'
-                ], ';');
-            }
-
-            // Ligne de totaux
-            fputcsv($file, [], ';');
-            fputcsv($file, [
-                '',
-                '',
-                '',
-                'TOTAUX',
-                number_format($demandes->sum('total_courant'), 0, ',', ' '),
-                number_format($demandes->sum('montant_disponible'), 0, ',', ' '),
-                number_format($demandes->sum('solde'), 0, ',', ' '),
-                number_format($demandes->where('status', 'approuve')->sum('montant'), 0, ',', ' '),
-                ''
-            ], ';');
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
     }
 
     /**
@@ -1977,178 +1947,56 @@ class DemandeFondsController extends Controller
     }
 
     /**
-     * Export CSV de la vue consolidée détaillée
+     * Export Excel de la vue consolidée détaillée
      */
-    public function consolideDetailleExportCsv(Request $request)
+    public function consolideDetailleExportExcel(Request $request)
     {
         $this->authorizeRole(['acct', 'admin', 'superviseur', 'accd']);
 
-        // Appliquer les mêmes filtres
-        $query = DemandeFonds::with('user', 'poste');
+        $query = DemandeFonds::query();
+        $this->applyConsolideFilters($query, $request);
 
-        if ($request->filled('poste')) {
-            $query->whereHas('poste', function ($q) use ($request) {
-                $q->where('nom', 'like', '%' . $request->poste . '%');
-            });
-        }
-
-        if ($request->filled('mois')) {
-            $query->where('mois', $request->mois);
-        }
-
-        if ($request->filled('annee')) {
-            $query->where('annee', $request->annee);
-        }
-
-        if ($request->filled('status')) {
-            if (is_array($request->status)) {
-                $query->whereIn('status', $request->status);
-            } else {
-                $query->where('status', $request->status);
-            }
-        }
-
-        if ($request->filled('user_id')) {
-            $query->where('user_id', $request->user_id);
-        }
-
-        if ($request->filled('date_type') && ($request->filled('date_debut') || $request->filled('date_fin'))) {
-            $dateField = $request->date_type;
-
-            if ($request->filled('date_debut') && $request->filled('date_fin')) {
-                $query->whereBetween($dateField, [$request->date_debut, $request->date_fin]);
-            } elseif ($request->filled('date_debut')) {
-                $query->where($dateField, '>=', $request->date_debut);
-            } elseif ($request->filled('date_fin')) {
-                $query->where($dateField, '<=', $request->date_fin);
-            }
-        }
-
-        // Calculer les totaux agrégés par type de personnel
-        $typesPersonnel = [
-            [
-                'designation' => 'Fonctionnaires BCS',
-                'net' => $query->sum('fonctionnaires_bcs_net'),
-                'revers' => $query->sum('fonctionnaires_bcs_revers'),
-                'total_courant' => $query->sum('fonctionnaires_bcs_total_courant'),
-                'salaire_ancien' => $query->sum('fonctionnaires_bcs_salaire_ancien'),
-                'total_demande' => $query->sum('fonctionnaires_bcs_total_demande'),
-            ],
-            [
-                'designation' => 'Collectivité Santé',
-                'net' => $query->sum('collectivite_sante_net'),
-                'revers' => $query->sum('collectivite_sante_revers'),
-                'total_courant' => $query->sum('collectivite_sante_total_courant'),
-                'salaire_ancien' => $query->sum('collectivite_sante_salaire_ancien'),
-                'total_demande' => $query->sum('collectivite_sante_total_demande'),
-            ],
-            [
-                'designation' => 'Collectivité Education',
-                'net' => $query->sum('collectivite_education_net'),
-                'revers' => $query->sum('collectivite_education_revers'),
-                'total_courant' => $query->sum('collectivite_education_total_courant'),
-                'salaire_ancien' => $query->sum('collectivite_education_salaire_ancien'),
-                'total_demande' => $query->sum('collectivite_education_total_demande'),
-            ],
-            [
-                'designation' => 'Personnels Saisonniers',
-                'net' => $query->sum('personnels_saisonniers_net'),
-                'revers' => $query->sum('personnels_saisonniers_revers'),
-                'total_courant' => $query->sum('personnels_saisonniers_total_courant'),
-                'salaire_ancien' => $query->sum('personnels_saisonniers_salaire_ancien'),
-                'total_demande' => $query->sum('personnels_saisonniers_total_demande'),
-            ],
-            [
-                'designation' => 'Personnels EPN',
-                'net' => $query->sum('epn_net'),
-                'revers' => $query->sum('epn_revers'),
-                'total_courant' => $query->sum('epn_total_courant'),
-                'salaire_ancien' => $query->sum('epn_salaire_ancien'),
-                'total_demande' => $query->sum('epn_total_demande'),
-            ],
-            [
-                'designation' => 'Personnels CED',
-                'net' => $query->sum('ced_net'),
-                'revers' => $query->sum('ced_revers'),
-                'total_courant' => $query->sum('ced_total_courant'),
-                'salaire_ancien' => $query->sum('ced_salaire_ancien'),
-                'total_demande' => $query->sum('ced_total_demande'),
-            ],
-            [
-                'designation' => 'Personnels ECOM',
-                'net' => $query->sum('ecom_net'),
-                'revers' => $query->sum('ecom_revers'),
-                'total_courant' => $query->sum('ecom_total_courant'),
-                'salaire_ancien' => $query->sum('ecom_salaire_ancien'),
-                'total_demande' => $query->sum('ecom_total_demande'),
-            ],
-            [
-                'designation' => 'Personnels CFP/CPAM',
-                'net' => $query->sum('cfp_cpam_net'),
-                'revers' => $query->sum('cfp_cpam_revers'),
-                'total_courant' => $query->sum('cfp_cpam_total_courant'),
-                'salaire_ancien' => $query->sum('cfp_cpam_salaire_ancien'),
-                'total_demande' => $query->sum('cfp_cpam_total_demande'),
-            ],
+        $types = [
+            ['Fonctionnaires BCS', 'fonctionnaires_bcs'],
+            ['Collectivité Santé', 'collectivite_sante'],
+            ['Collectivité Éducation', 'collectivite_education'],
+            ['Personnels Saisonniers', 'personnels_saisonniers'],
+            ['Personnels EPN', 'epn'],
+            ['Personnels CED', 'ced'],
+            ['Personnels ECOM', 'ecom'],
+            ['Personnels CFP/CPAM', 'cfp_cpam'],
         ];
 
-        $fileName = 'types_personnel_' . date('Y-m-d_His') . '.csv';
+        $rows = [];
+        foreach ($types as [$label, $prefix]) {
+            $rows[] = [
+                $label,
+                (float) $query->sum($prefix.'_net'),
+                (float) $query->sum($prefix.'_revers'),
+                (float) $query->sum($prefix.'_total_courant'),
+                (float) $query->sum($prefix.'_salaire_ancien'),
+                (float) $query->sum($prefix.'_total_demande'),
+            ];
+        }
 
-        $headers = [
-            "Content-type" => "text/csv; charset=UTF-8",
-            "Content-Disposition" => "attachment; filename=$fileName",
-            "Pragma" => "no-cache",
-            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
-            "Expires" => "0"
-        ];
-
-        $columns = [
-            'Désignation',
-            'Salaire Net (FCFA)',
-            'Reversement (FCFA)',
-            'Total Courant (FCFA)',
-            'Salaire Ancien (FCFA)',
-            'Total Demande (FCFA)'
-        ];
-
-        $callback = function () use ($typesPersonnel, $columns) {
-            $file = fopen('php://output', 'w');
-
-            // Ajouter le BOM UTF-8 pour Excel
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
-
-            // En-têtes
-            fputcsv($file, $columns, ';');
-
-            // Données agrégées
-            foreach ($typesPersonnel as $type) {
-                fputcsv($file, [
-                    $type['designation'],
-                    number_format($type['net'], 0, ',', ' '),
-                    number_format($type['revers'], 0, ',', ' '),
-                    number_format($type['total_courant'], 0, ',', ' '),
-                    number_format($type['salaire_ancien'], 0, ',', ' '),
-                    number_format($type['total_demande'], 0, ',', ' '),
-                ], ';');
-            }
-
-            // Ligne de totaux
-            fputcsv($file, [], ';');
-            fputcsv($file, [
-                'TOTAUX GÉNÉRAUX',
-                number_format(collect($typesPersonnel)->sum('net'), 0, ',', ' '),
-                number_format(collect($typesPersonnel)->sum('revers'), 0, ',', ' '),
-                number_format(collect($typesPersonnel)->sum('total_courant'), 0, ',', ' '),
-                number_format(collect($typesPersonnel)->sum('salaire_ancien'), 0, ',', ' '),
-                number_format(collect($typesPersonnel)->sum('total_demande'), 0, ',', ' '),
-            ], ';');
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
+        return ExcelVirementService::exportSimple(
+            ['Désignation', 'Salaire Net (FCFA)', 'Reversement (FCFA)', 'Total Courant (FCFA)', 'Salaire Ancien (FCFA)', 'Total Demande (FCFA)'],
+            $rows,
+            'types_personnel_'.date('Y-m-d_His').'.xlsx',
+            'Personnel'
+        );
     }
 
+    /**
+     * @deprecated Utiliser consolideDetailleExportExcel
+     */
+    public function consolideDetailleExportCsv(Request $request)
+    {
+        return $this->consolideDetailleExportExcel($request);
+    }
+
+    /**
+     * Export PDF de la vue consolidée détaillée
     /**
      * Export PDF de la vue consolidée détaillée
      */

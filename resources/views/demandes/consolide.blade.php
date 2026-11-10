@@ -77,7 +77,7 @@
             </div>
             <div class="col-md-6 d-flex flex-wrap gap-2">
                 <button type="submit" class="btn btn-primary"><i class="icon-base ti tabler-filter me-1"></i>Filtrer</button>
-                <button type="button" class="btn btn-label-secondary" onclick="exportCSV()"><i class="icon-base ti tabler-file-spreadsheet me-1"></i>CSV</button>
+                <button type="button" class="btn btn-label-secondary" onclick="exportExcel()"><i class="icon-base ti tabler-file-spreadsheet me-1"></i>Excel</button>
                 <button type="button" class="btn btn-label-secondary" onclick="exportPDF()"><i class="icon-base ti tabler-file-type-pdf me-1"></i>PDF</button>
             </div>
         </div>
@@ -147,8 +147,8 @@
 
 @push('scripts')
 <script>
-function exportCSV() {
-    const url = new URL('{{ route("demandes-fonds.consolide.export-csv") }}', window.location.origin);
+function exportExcel() {
+    const url = new URL('{{ route("demandes-fonds.consolide.export-excel") }}', window.location.origin);
     new FormData(document.getElementById('filterForm')).forEach((v, k) => { if (v) url.searchParams.append(k, v); });
     window.location.href = url.toString();
 }

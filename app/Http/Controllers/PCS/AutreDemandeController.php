@@ -15,6 +15,7 @@ use RealRashid\SweetAlert\Facades\Alert;
 use App\Notifications\PcsAutreDemandeSoumise;
 use App\Notifications\PcsAutreDemandeValidee;
 use App\Notifications\PcsAutreDemandeRejetee;
+use App\Services\MailAlerteService;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class AutreDemandeController extends Controller
@@ -406,7 +407,9 @@ class AutreDemandeController extends Controller
         $demande->load('echelons');
 
         if ($demande->saisiPar) {
-            $demande->saisiPar->notify(new PcsAutreDemandeValidee($demande, $etaitValide));
+            $valideeNotif = new PcsAutreDemandeValidee($demande, $etaitValide);
+            $demande->saisiPar->notify($valideeNotif);
+            MailAlerteService::notifyEvenement('autre_validee', $valideeNotif);
         }
 
         if ($etaitValide) {
@@ -447,7 +450,9 @@ class AutreDemandeController extends Controller
 
         // Notifier le demandeur
         if ($demande->saisiPar) {
-            $demande->saisiPar->notify(new PcsAutreDemandeRejetee($demande));
+            $rejetNotif = new PcsAutreDemandeRejetee($demande);
+            $demande->saisiPar->notify($rejetNotif);
+            MailAlerteService::notifyEvenement('autre_rejetee', $rejetNotif);
         }
 
         Alert::success('Succès', 'Demande rejetée');
@@ -483,13 +488,12 @@ class AutreDemandeController extends Controller
      */
     private function envoyerNotificationSoumission($demande)
     {
-        // Récupérer tous les utilisateurs ACCT pour les notifier
         $acctUsers = User::whereIn('role', ['acct', 'admin'])->get();
 
-        // Envoyer notification à chaque utilisateur ACCT
         foreach ($acctUsers as $acctUser) {
             $acctUser->notify(new PcsAutreDemandeSoumise($demande));
         }
+        MailAlerteService::notifyEvenement('autre_soumise', new PcsAutreDemandeSoumise($demande));
     }
 
     /**

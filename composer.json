@@ -12,7 +12,7 @@
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
         "maatwebsite/excel": "^1.1",
-        "phpoffice/phpspreadsheet": "*",
+        "phpoffice/phpspreadsheet": "^5.11",
         "realrashid/sweet-alert": "^7.2",
         "yajra/laravel-datatables-oracle": "^11.1"
     },

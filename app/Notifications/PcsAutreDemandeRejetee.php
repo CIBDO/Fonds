@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\AutreDemande;
 use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Str;
 
@@ -20,7 +21,17 @@ class PcsAutreDemandeRejetee extends Notification
 
     public function via($notifiable)
     {
-        return ['database'];
+        return ['database', 'mail'];
+    }
+
+    public function toMail($notifiable)
+    {
+        return (new MailMessage)
+            ->subject('Demande financière rejetée')
+            ->greeting('Bonjour '.($notifiable->name ?? ''))
+            ->line("Votre demande « {$this->demande->designation} » a été rejetée.")
+            ->line('Motif : '.($this->demande->motif_rejet ?: '—'))
+            ->action('Voir la demande', route('pcs.autres-demandes.show', $this->demande->id));
     }
 
     public function toArray($notifiable)
@@ -28,11 +39,11 @@ class PcsAutreDemandeRejetee extends Notification
         return [
             'demande_id' => $this->demande->id,
             'title' => 'Demande Financière Rejetée',
-            'message' => "Votre demande '{$this->demande->designation}' a été rejetée. Motif: " . Str::limit($this->demande->motif_rejet, 100),
+            'message' => "Votre demande '{$this->demande->designation}' a été rejetée. Motif: ".Str::limit($this->demande->motif_rejet, 100),
             'url' => route('pcs.autres-demandes.show', $this->demande->id),
             'type' => 'pcs_autre_demande',
             'icon' => 'fas fa-times-circle',
-            'color' => 'danger'
+            'color' => 'danger',
         ];
     }
 }

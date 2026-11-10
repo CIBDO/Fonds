@@ -84,4 +84,9 @@ class DemandeFonds extends Model
     {
         return $this->belongsTo(Poste::class);
     }
+
+    public function bordereauVirement()
+    {
+        return $this->hasOne(BordereauVirement::class, 'demande_fonds_id');
+    }
 }

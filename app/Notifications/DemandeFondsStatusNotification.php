@@ -4,8 +4,9 @@ namespace App\Notifications;
 
 use App\Models\DemandeFonds;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
+
 class DemandeFondsStatusNotification extends Notification
 {
     use Queueable;
@@ -16,26 +17,24 @@ class DemandeFondsStatusNotification extends Notification
 
     public function via($notifiable)
     {
-        return ['database'];
+        return ['database', 'mail'];
     }
-    /* public function toMail($notifiable)
-    {
-        // Déterminer le message en fonction du statut de la demande
-        $statusMessage = $this->demande->status == 'approuve' ? 'approuvée' : 'rejetée';
 
-        // Lien vers la situation de la demande de fonds
-        $url = route('demandes-fonds.situation');
+    public function toMail($notifiable)
+    {
+        $statusMessage = $this->demande->status == 'approuve' ? 'approuvée' : 'rejetée';
+        $montant = number_format((float) ($this->demande->montant ?? 0), 0, ',', ' ');
 
         return (new MailMessage)
             ->subject('Mise à jour du statut de votre demande de fonds')
-            ->greeting('Bonjour ' . $notifiable->name)
+            ->greeting('Bonjour '.($notifiable->name ?? ''))
             ->line("Votre demande de fonds pour le mois de {$this->demande->mois} a été {$statusMessage}.")
-            ->line("Montant de la demande : {$this->demande->montant}")
-            ->line("Observation : {$this->demande->observation}")
-            ->line('Vous pouvez consulter les détails de votre demande en suivant ce lien :')
-            ->action('Voir la demande', $url) // Lien vers la page de situation de la demande
-            ->from('bdokeita100@gmail.com', 'Système de gestion des fonds');
-    } */
+            ->line("Montant : {$montant} FCFA")
+            ->line('Observation : '.($this->demande->observation ?: '—'))
+            ->action('Voir la situation', route('demandes-fonds.situation'))
+            ->line('Merci de votre diligence.');
+    }
+
     public function toArray($notifiable)
     {
         $statusMessage = $this->demande->status == 'approuve' ? 'approuvée' : 'rejetée';
@@ -47,8 +46,7 @@ class DemandeFondsStatusNotification extends Notification
             'montant' => $this->demande->montant,
             'observation' => $this->demande->observation,
             'type' => 'status_update',
-            /* 'url' => url("/demandes-fonds/{$this->demande->id}")   */
-            'url' => route('demandes-fonds.situation')
+            'url' => route('demandes-fonds.situation'),
         ];
     }
 }

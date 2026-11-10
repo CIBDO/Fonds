@@ -14,13 +14,10 @@ class ExcelVirementService
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Detail VIR');
-        $headers = ['N° BE', 'N° Mdt', 'Ord.', 'Programme', 'Créancier', 'N° Compte', 'Montant'];
-        foreach ($headers as $i => $header) {
-            $sheet->setCellValue([$i + 1, 1], $header);
-        }
         $sheet->fromArray([
+            ['N° BE', 'N° Mdt', 'Ord.', 'Programme', 'Créancier', 'N° Compte', 'Montant'],
             ['767', '1356', '906', '2045', 'BNDA - BANQUE NATIONALE DE DEVELOPPEMENT AGRICOLE', 'NEANT', 1000000],
-        ], null, 'A2');
+        ], null, 'A1');
 
         return self::download($spreadsheet, 'template_lignes_virements.xlsx');
     }
@@ -111,6 +108,23 @@ class ExcelVirementService
                 $row['non_paye'],
             ]], null, 'A'.$r);
             $r++;
+        }
+
+        return self::download($spreadsheet, $filename);
+    }
+
+    /**
+     * @param  array<int, string>  $headers
+     * @param  array<int, array<int, mixed>>  $rows
+     */
+    public static function exportSimple(array $headers, array $rows, string $filename, string $sheetTitle = 'Export'): StreamedResponse
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle(mb_substr($sheetTitle, 0, 31));
+        $sheet->fromArray([$headers], null, 'A1');
+        if ($rows !== []) {
+            $sheet->fromArray($rows, null, 'A2');
         }
 
         return self::download($spreadsheet, $filename);

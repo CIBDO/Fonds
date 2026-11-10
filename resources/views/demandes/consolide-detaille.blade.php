@@ -74,7 +74,7 @@
             <div class="col-md-6 d-flex flex-wrap gap-2">
                 <button type="submit" class="btn btn-primary"><i class="icon-base ti tabler-filter me-1"></i>Filtrer</button>
                 <a href="{{ route('demandes-fonds.consolide-detaille') }}" class="btn btn-label-secondary"><i class="icon-base ti tabler-x me-1"></i>Réinitialiser</a>
-                <a href="{{ route('demandes-fonds.consolide-detaille.export-csv', request()->query()) }}" class="btn btn-label-secondary"><i class="icon-base ti tabler-file-spreadsheet me-1"></i>CSV</a>
+                <a href="{{ route('demandes-fonds.consolide-detaille.export-excel', request()->query()) }}" class="btn btn-label-secondary"><i class="icon-base ti tabler-file-spreadsheet me-1"></i>Excel</a>
                 <a href="{{ route('demandes-fonds.consolide-detaille.export-pdf', request()->query()) }}" class="btn btn-label-secondary"><i class="icon-base ti tabler-file-type-pdf me-1"></i>PDF</a>
             </div>
         </div>
