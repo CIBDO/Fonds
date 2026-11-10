@@ -148,16 +148,29 @@ document.addEventListener('DOMContentLoaded', function () {
   const gaugeEl = document.querySelector('#chartGauge');
   if (gaugeEl && data.kpis) {
     new ApexCharts(gaugeEl, {
-      chart: { type: 'radialBar', height: 280, fontFamily: chartFont },
+      chart: { type: 'radialBar', height: 300, fontFamily: chartFont },
       series: [data.kpis.taux_validation],
       colors: [colors.primary],
       plotOptions: {
         radialBar: {
-          hollow: { size: '62%' },
+          hollow: { size: '65%' },
           track: { background: '#e7e7e8' },
           dataLabels: {
-            name: { fontSize: '14px', color: '#6e6b7b', offsetY: 24 },
-            value: { fontSize: '28px', fontWeight: 700, formatter: (v) => v + '%' },
+            name: {
+              show: true,
+              fontSize: '13px',
+              fontWeight: 400,
+              color: '#6e6b7b',
+              offsetY: -18,
+            },
+            value: {
+              show: true,
+              fontSize: '28px',
+              fontWeight: 700,
+              color: '#5d596c',
+              offsetY: 10,
+              formatter: (v) => v + '%',
+            },
           },
         },
       },

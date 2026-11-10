@@ -220,5 +220,5 @@
 
 @push('scripts')
 <script>window.dgtcpDashboard = @json($analytics);</script>
-<script src="{{ asset('vuexy/assets/js/dgtcp-dashboard.js') }}?v=1"></script>
+<script src="{{ asset('vuexy/assets/js/dgtcp-dashboard.js') }}?v=2"></script>
 @endpush
