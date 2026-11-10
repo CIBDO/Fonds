@@ -5,12 +5,7 @@
 @endpush
 
 @push('vendor-script')
+{{-- Bundle Vuexy : DataTables + Responsive + Buttons + JSZip + pdfMake --}}
 <script src="{{ asset('vuexy/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js') }}"></script>
-<script src="{{ asset('vuexy/assets/vendor/libs/datatables-buttons/datatables-buttons.js') }}"></script>
-<script src="{{ asset('vuexy/assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.js') }}"></script>
-<script src="{{ asset('vuexy/assets/vendor/libs/jszip/jszip.js') }}"></script>
-<script src="{{ asset('vuexy/assets/vendor/libs/pdfmake/pdfmake.js') }}"></script>
-<script src="{{ asset('vuexy/assets/vendor/libs/datatables-buttons/buttons.html5.js') }}"></script>
-<script src="{{ asset('vuexy/assets/vendor/libs/datatables-buttons/buttons.print.js') }}"></script>
 <script src="{{ asset('assets/js/datatables-fr.js') }}"></script>
 @endpush
