@@ -100,7 +100,7 @@
 <script>
     $(document).ready(function() {
         $('#bureaux-table').DataTable({
-            language: datatablesFrench,
+            language: window.DGTCP_DATATABLES_FR,
             order: [[0, 'asc']],
             pageLength: 25,
             dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rt<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p">>'

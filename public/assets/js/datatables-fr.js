@@ -2,7 +2,7 @@
  * Traduction française DataTables (local — évite CORS CDN)
  * @see https://datatables.net/plug-ins/i18n/French
  */
-window.DGTCP_DATATABLES_FR = {
+window.DGTCP_DATATABLES_FR = window.datatablesFrench = {
     emptyTable: 'Aucune donnée disponible dans le tableau',
     info: 'Affichage de _START_ à _END_ sur _TOTAL_ entrées',
     infoEmpty: 'Affichage de 0 à 0 sur 0 entrées',
