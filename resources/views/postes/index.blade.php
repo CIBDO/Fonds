@@ -5,7 +5,22 @@
 @include('partials.vuexy.datatables-assets')
 
 @section('content')
-<div class="d-flex justify-content-end mb-4">
+@if(session('import_rp_erreurs'))
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <h6 class="alert-heading mb-2">Lignes non importées</h6>
+        <ul class="mb-0">
+            @foreach(session('import_rp_erreurs') as $erreur)
+                <li>{{ $erreur }}</li>
+            @endforeach
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+    </div>
+@endif
+
+<div class="d-flex justify-content-end gap-2 mb-4">
+    <button class="btn btn-label-primary btn-sm" data-bs-toggle="modal" data-bs-target="#importRpModal">
+        <i class="icon-base ti tabler-file-spreadsheet me-1"></i>Importer des RP
+    </button>
     <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addPosteModal">
         <i class="icon-base ti tabler-plus me-1"></i>Nouveau Poste / RP
     </button>
@@ -88,6 +103,7 @@
 </x-vuexy.card>
 
 @include('postes.add')
+@include('postes.import')
 @include('postes.edit')
 @endsection
 
@@ -109,6 +125,13 @@ $(document).ready(function() {
         const input = parentWrap.querySelector('select, input');
         if (input) input.required = select.value === 'rp';
     }
+
+    @if($errors->has('fichier') || $errors->has('parent_id'))
+    const importModal = document.getElementById('importRpModal');
+    if (importModal && window.bootstrap) {
+        bootstrap.Modal.getOrCreateInstance(importModal).show();
+    }
+    @endif
 
     document.querySelectorAll('[data-poste-type]').forEach(function (select) {
         const wrap = document.querySelector(select.dataset.posteType);

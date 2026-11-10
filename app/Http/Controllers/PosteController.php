@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Poste;
+use App\Services\PosteRpImportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -55,6 +56,71 @@ class PosteController extends Controller
         Poste::create($validated);
 
         alert()->success('Succès', 'Poste créé avec succès.');
+
+        return redirect()->route('postes.index');
+    }
+
+    public function templateImportRp()
+    {
+        $this->authorizeRole(['admin']);
+
+        return PosteRpImportService::templateResponse();
+    }
+
+    public function importRp(Request $request)
+    {
+        $this->authorizeRole(['admin']);
+
+        $request->validate([
+            'fichier' => 'required|file|max:5120',
+            'parent_id' => 'nullable|exists:postes,id',
+        ]);
+
+        $extension = strtolower($request->file('fichier')->getClientOriginalExtension());
+        if (!in_array($extension, ['xlsx', 'xls', 'csv'], true)) {
+            throw ValidationException::withMessages([
+                'fichier' => 'Le fichier doit être au format Excel (.xlsx, .xls) ou CSV.',
+            ]);
+        }
+
+        $parentDefaut = null;
+        if ($request->filled('parent_id')) {
+            $parentDefaut = Poste::find($request->integer('parent_id'));
+            if (!$parentDefaut || !$parentDefaut->isSuperieur()) {
+                throw ValidationException::withMessages([
+                    'parent_id' => 'Le poste par défaut doit être un poste supérieur.',
+                ]);
+            }
+        }
+
+        $resultat = PosteRpImportService::importer(
+            $request->file('fichier')->getRealPath(),
+            $extension,
+            $parentDefaut
+        );
+
+        $message = sprintf(
+            '%d RP créée(s), %d mise(s) à jour, %d déjà en place.',
+            $resultat['creees'],
+            $resultat['mises_a_jour'],
+            $resultat['inchangees']
+        );
+
+        if ($resultat['erreurs'] !== []) {
+            session()->flash('import_rp_erreurs', $resultat['erreurs']);
+        }
+
+        if ($resultat['creees'] === 0 && $resultat['mises_a_jour'] === 0 && $resultat['erreurs'] !== []) {
+            alert()->error('Import impossible', $message);
+
+            return redirect()->route('postes.index');
+        }
+
+        if ($resultat['erreurs'] !== []) {
+            alert()->warning('Import partiel', $message.' '.count($resultat['erreurs']).' ligne(s) en erreur.');
+        } else {
+            alert()->success('Import terminé', $message);
+        }
 
         return redirect()->route('postes.index');
     }

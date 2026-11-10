@@ -187,6 +187,8 @@ Route::get('/demandes-fonds/consolide-detaille/export-pdf', [DemandeFondsControl
     Route::resource('receptions-fonds', ReceptionFondsController::class);
     Route::resource('rapports-paiements', RapportPaiementController::class);
     Route::resource('attachments', AttachmentController::class);
+    Route::get('postes/import-rp/template', [PosteController::class, 'templateImportRp'])->name('postes.import-rp.template');
+    Route::post('postes/import-rp', [PosteController::class, 'importRp'])->name('postes.import-rp');
     Route::resource('postes', PosteController::class);
 
     Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
