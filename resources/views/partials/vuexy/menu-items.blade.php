@@ -1,10 +1,15 @@
 @php
-    $isAccd = Auth::user()->hasRole('accd');
-    $dashboardUrl = Auth::user()->hasRole('admin') ? route('dashboard.admin')
-        : (Auth::user()->hasRole('tresorier') ? route('dashboard.tresorier')
-        : (Auth::user()->hasRole('superviseur') ? route('superviseur.dashboard')
+    $authUser = Auth::user();
+    $isAccd = $authUser->hasRole('accd');
+    // RP = uniquement FNL | TR (poste supérieur) = menu complet inchangé
+    $isRpUser = $authUser->isRecettePerception();
+
+    $dashboardUrl = $authUser->hasRole('admin') ? route('dashboard.admin')
+        : ($isRpUser ? route('fnl.paiements.index')
+        : ($authUser->hasRole('tresorier') ? route('dashboard.tresorier')
+        : ($authUser->hasRole('superviseur') ? route('superviseur.dashboard')
         : ($isAccd ? route('dashboard.accd')
-        : route('dashboard.acct'))));
+        : route('dashboard.acct')))));
 
     $isDashboardActive = request()->routeIs('dashboard.*') || request()->routeIs('superviseur.dashboard');
 
@@ -17,19 +22,34 @@
     $etatsConsolidesActive = request()->routeIs('pcs.etats-consolides.*');
 @endphp
 
-{{-- Tableau de bord (TOUS LES RÔLES) --}}
-<li class="menu-item {{ $isDashboardActive ? 'active' : '' }}">
-    <a href="{{ $dashboardUrl }}" class="menu-link">
-        <i class="menu-icon icon-base ti tabler-dashboard"></i>
-        <div>Tableau de Bord</div>
-    </a>
-</li>
+@if ($isRpUser)
+    {{-- Menu restreint RP : uniquement FNL --}}
+    <li class="menu-item {{ $fnlActive ? 'active open' : '' }}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon icon-base ti tabler-home"></i>
+            <div>Paiement FNL</div>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item {{ request()->routeIs('fnl.paiements.create') ? 'active' : '' }}">
+                <a href="{{ route('fnl.paiements.create') }}" class="menu-link"><div>Nouveau paiement</div></a>
+            </li>
+            <li class="menu-item {{ request()->routeIs('fnl.paiements.index') || request()->routeIs('fnl.paiements.show') || request()->routeIs('fnl.paiements.edit') ? 'active' : '' }}">
+                <a href="{{ route('fnl.paiements.index') }}" class="menu-link"><div>Paiements</div></a>
+            </li>
+        </ul>
+    </li>
+@elseif ($isAccd)
+    {{-- ========================================================= --}}
+    {{--  MENU SPÉCIFIQUE ACCD                                    --}}
+    {{--  Dashboard + Paiements FNL + Autres Demandes + États     --}}
+    {{-- ========================================================= --}}
 
-@if ($isAccd)
-    {{-- ========================================================= --}}
-    {{--  MENU SPÉCIFIQUE ACCD (juste après le dashboard)        --}}
-    {{--  1. Paiements FNL     2. Autres Demandes   3. États Consolidés --}}
-    {{-- ========================================================= --}}
+    <li class="menu-item {{ $isDashboardActive ? 'active' : '' }}">
+        <a href="{{ $dashboardUrl }}" class="menu-link">
+            <i class="menu-icon icon-base ti tabler-dashboard"></i>
+            <div>Tableau de Bord</div>
+        </a>
+    </li>
 
     {{-- 1. Paiement FNL (1er menu ACCD) - lien direct, PAS de toggle pour éviter l'erreur Menu._getItem --}}
     <li class="menu-item {{ $fnlActive ? 'active' : '' }}">
@@ -111,8 +131,16 @@
 
 @else
     {{-- ========================================================= --}}
-    {{--  MENU DES AUTRES RÔLES (admin, tresorier, acct, superviseur) --}}
+    {{--  MENU DES AUTRES RÔLES (admin, tresorier TR, acct, superviseur) --}}
     {{-- ========================================================= --}}
+
+    {{-- Tableau de bord --}}
+    <li class="menu-item {{ $isDashboardActive ? 'active' : '' }}">
+        <a href="{{ $dashboardUrl }}" class="menu-link">
+            <i class="menu-icon icon-base ti tabler-dashboard"></i>
+            <div>Tableau de Bord</div>
+        </a>
+    </li>
 
     {{-- Demande de fonds --}}
     @if (Auth::user()->hasAnyRole(['tresorier', 'admin', 'acct', 'superviseur']))

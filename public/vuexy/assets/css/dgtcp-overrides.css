@@ -219,12 +219,20 @@ table.dgtcp-table {
   background: var(--bs-paper-bg);
 }
 
-/* Une seule ligne, espacement et police d'origine */
+/* Une seule ligne, centrée, espacement et police d'origine */
+.layout-horizontal .menu-horizontal > .container-fluid {
+  justify-content: center;
+}
+
 .layout-horizontal .menu-horizontal .menu-inner {
   flex-wrap: nowrap;
+  justify-content: center;
+  width: auto;
+  max-width: 100%;
   overflow: hidden;
   row-gap: 0;
   column-gap: 0;
+  margin-inline: auto;
 }
 
 .layout-horizontal .menu-horizontal .menu-inner > .menu-item {

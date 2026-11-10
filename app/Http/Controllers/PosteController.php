@@ -4,85 +4,132 @@ namespace App\Http\Controllers;
 
 use App\Models\Poste;
 use Illuminate\Http\Request;
-use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
+
 class PosteController extends Controller
 {
     private function authorizeRole(array $roles)
-{
-    if (!in_array(Auth::user()->role, $roles)) {
-        abort(403, '🚫 Accès refusé ! Vous n\'avez pas les permissions nécessaires pour accéder à cette page. Si vous pensez qu\'il s\'agit d\'une erreur, veuillez contacter votre administrateur.');
+    {
+        if (!in_array(Auth::user()->role, $roles)) {
+            abort(403, 'Accès refusé. Vous n\'avez pas les permissions nécessaires.');
+        }
     }
-}
 
-    // Afficher la liste des postes
     public function index(Request $request)
     {
         $this->authorizeRole(['admin']);
+
         $nom = $request->input('nom');
-        $postes = Poste::paginate(10)->appends($request->only(['nom']));
-        return view('postes.index', compact('postes', 'nom'));
+        $type = $request->input('type');
+
+        $query = Poste::with('parent')->orderBy('type')->orderBy('nom');
+
+        if ($nom) {
+            $query->where('nom', 'like', '%'.$nom.'%');
+        }
+        if (in_array($type, [Poste::TYPE_SUPERIEUR, Poste::TYPE_RP], true)) {
+            $query->where('type', $type);
+        }
+
+        $postes = $query->paginate(20)->appends($request->only(['nom', 'type']));
+        $postesSuperieurs = Poste::where('type', Poste::TYPE_SUPERIEUR)->orderBy('nom')->get();
+
+        return view('postes.index', compact('postes', 'nom', 'type', 'postesSuperieurs'));
     }
 
-    // Afficher le formulaire pour créer un nouveau poste
     public function create()
     {
         $this->authorizeRole(['admin']);
+
         return view('postes.add');
     }
 
-    // Enregistrer un nouveau poste
     public function store(Request $request)
     {
         $this->authorizeRole(['admin']);
-        // Valider la requête
-        $request->validate([
-        'nom' => 'required|string|max:255',
-    ]);
 
-    // Créer le poste
-    Poste::create([
-        'nom' => $request->nom,
-    ]);
+        $validated = $this->validerPoste($request);
 
-    alert()->success('Success', 'Poste créé avec succès.');
+        Poste::create($validated);
+
+        alert()->success('Succès', 'Poste créé avec succès.');
+
         return redirect()->route('postes.index');
     }
 
-    // Afficher les détails d'un poste
     public function show(Poste $poste)
     {
         return view('postes.show', compact('poste'));
     }
 
-    // Afficher le formulaire pour éditer un poste
     public function edit(Poste $poste)
     {
         $this->authorizeRole(['admin']);
+
         return view('postes.edit', compact('poste'));
     }
 
-    // Mettre à jour un poste
     public function update(Request $request, Poste $poste)
     {
         $this->authorizeRole(['admin']);
-        $request->validate([
-            'nom' => 'required|string|max:255',
-        ]);
 
-        $poste->update($request->all());
+        $validated = $this->validerPoste($request, $poste);
+        $poste->update($validated);
 
-        alert()->success('Success', 'Poste mis à jour avec succès.');
+        alert()->success('Succès', 'Poste mis à jour avec succès.');
+
         return redirect()->route('postes.index');
     }
 
-    // Supprimer un poste
     public function destroy(Poste $poste)
     {
         $this->authorizeRole(['admin']);
+
+        if ($poste->recettesPerceptions()->exists()) {
+            alert()->error('Erreur', 'Impossible de supprimer un poste qui a des recettes-perceptions rattachées.');
+
+            return redirect()->route('postes.index');
+        }
+
         $poste->delete();
 
-        alert()->success('Success', 'Poste supprimé avec succès.');
+        alert()->success('Succès', 'Poste supprimé avec succès.');
+
         return redirect()->route('postes.index');
+    }
+
+    private function validerPoste(Request $request, ?Poste $poste = null): array
+    {
+        $validated = $request->validate([
+            'nom' => 'required|string|max:255',
+            'type' => ['required', Rule::in([Poste::TYPE_SUPERIEUR, Poste::TYPE_RP])],
+            'parent_id' => [
+                Rule::requiredIf(fn () => $request->input('type') === Poste::TYPE_RP),
+                'nullable',
+                'exists:postes,id',
+            ],
+            'intitule_officiel' => 'nullable|string|max:255',
+            'region' => 'nullable|string|max:255',
+        ]);
+
+        if ($validated['type'] === Poste::TYPE_SUPERIEUR) {
+            $validated['parent_id'] = null;
+        } else {
+            $parent = Poste::find($validated['parent_id'] ?? null);
+            if (!$parent || !$parent->isSuperieur()) {
+                throw ValidationException::withMessages([
+                    'parent_id' => 'La RP doit être rattachée à un poste supérieur.',
+                ]);
+            }
+            if ($poste && (int) $validated['parent_id'] === (int) $poste->id) {
+                throw ValidationException::withMessages([
+                    'parent_id' => 'Un poste ne peut pas être son propre parent.',
+                ]);
+            }
+        }
+
+        return $validated;
     }
 }

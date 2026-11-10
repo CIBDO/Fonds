@@ -13,6 +13,7 @@ class PaiementFnl extends Model
 
     protected $fillable = [
         'poste_id',
+        'libelle',
         'mois',
         'annee',
         'retenue_fnl',
@@ -42,6 +43,23 @@ class PaiementFnl extends Model
             5 => 'Mai', 6 => 'Juin', 7 => 'Juillet', 8 => 'Août',
             9 => 'Septembre', 10 => 'Octobre', 11 => 'Novembre', 12 => 'Décembre',
         ];
+    }
+
+    public function getLibelleAfficheAttribute(): string
+    {
+        return $this->poste?->libelleAffiche()
+            ?: ($this->libelle ?: '—');
+    }
+
+    public function aEteSaisiParRp(): bool
+    {
+        $saisiPar = $this->relationLoaded('saisiPar') ? $this->saisiPar : $this->saisiPar()->first();
+        if (!$saisiPar || !$this->poste) {
+            return false;
+        }
+
+        return $this->poste->isRp()
+            && (int) $saisiPar->poste_id === (int) $this->poste_id;
     }
 
     public function getNomMoisAttribute(): string

@@ -3,23 +3,25 @@
 @section('title', 'Paiements FNL')
 
 @section('content')
-@if(auth()->user()->hasRole('tresorier') && auth()->user()->poste_id)
 <div class="d-flex justify-content-end flex-wrap gap-2 mb-4">
-    <a href="{{ route('fnl.paiements.create') }}" class="btn btn-primary btn-sm">
-        <i class="icon-base ti tabler-plus me-1"></i>Nouveau paiement
-    </a>
+    @if(auth()->user()->hasRole('tresorier') && auth()->user()->poste_id)
+        <a href="{{ route('fnl.paiements.create') }}" class="btn btn-primary btn-sm">
+            <i class="icon-base ti tabler-plus me-1"></i>Nouveau paiement
+        </a>
+    @endif
 </div>
-@endif
 
 <x-vuexy.card title="Filtres" icon="tabler-filter" class="mb-4">
     <form method="GET" action="{{ route('fnl.paiements.index') }}" class="row g-3 align-items-end">
         @if(auth()->user()->hasAnyRole(['accd', 'admin']))
         <div class="col-md-3">
-            <label class="form-label">Poste</label>
+            <label class="form-label">Poste / RP</label>
             <select name="poste_id" class="form-select">
                 <option value="">Tous les postes</option>
                 @foreach($postes as $poste)
-                    <option value="{{ $poste->id }}" {{ request('poste_id') == $poste->id ? 'selected' : '' }}>{{ $poste->nom }}</option>
+                    <option value="{{ $poste->id }}" {{ request('poste_id') == $poste->id ? 'selected' : '' }}>
+                        {{ $poste->libelleAffiche() }}@if($poste->isRp() && $poste->parent) — {{ $poste->parent->nom }}@endif
+                    </option>
                 @endforeach
             </select>
         </div>
@@ -51,13 +53,24 @@
                 <option value="rejete" {{ request('statut') == 'rejete' ? 'selected' : '' }}>Rejeté</option>
             </select>
         </div>
-        <div class="col-md-3 d-flex gap-2">
-            <button type="submit" class="btn btn-primary flex-grow-1">
-                <i class="icon-base ti tabler-filter me-1"></i>Filtrer
-            </button>
-            <button type="submit" class="btn btn-label-secondary flex-grow-1" formaction="{{ route('fnl.paiements.situation-mensuelle') }}">
-                <i class="icon-base ti tabler-printer me-1"></i>Imprimer
-            </button>
+        <div class="col-12">
+            <div class="d-flex flex-nowrap align-items-center gap-2 overflow-auto">
+                <button type="submit" class="btn btn-primary text-nowrap">
+                    <i class="icon-base ti tabler-filter me-1"></i>Filtrer
+                </button>
+                <button type="submit" class="btn btn-label-secondary text-nowrap" formaction="{{ route('fnl.paiements.situation-mensuelle') }}" formtarget="_blank"
+                        onclick="this.form.preview && (this.form.preview.value=''); this.form.querySelector('[name=preview]')?.remove();">
+                    <i class="icon-base ti tabler-printer me-1"></i>PDF
+                </button>
+                <button type="submit" name="preview" value="1" class="btn btn-label-secondary text-nowrap" formaction="{{ route('fnl.paiements.situation-mensuelle') }}">
+                    <i class="icon-base ti tabler-eye me-1"></i>État
+                </button>
+                @if(auth()->user()->hasAnyRole(['accd', 'admin']))
+                    <button type="submit" class="btn btn-success text-nowrap" formaction="{{ route('fnl.paiements.export-excel') }}">
+                        <i class="icon-base ti tabler-file-spreadsheet me-1"></i>Excel
+                    </button>
+                @endif
+            </div>
         </div>
     </form>
 </x-vuexy.card>
@@ -71,7 +84,8 @@
             <thead class="table-light">
                 <tr>
                     <th>Période</th>
-                    <th>Poste</th>
+                    <th>Poste / RP</th>
+                    <th>Libellé</th>
                     <th class="text-end">Retenue FNL</th>
                     <th>Statut</th>
                     <th class="text-end">Actions</th>
@@ -81,7 +95,13 @@
                 @forelse($paiements as $paiement)
                 <tr>
                     <td class="fw-medium">{{ $paiement->nom_mois }} {{ $paiement->annee }}</td>
-                    <td>{{ $paiement->poste->nom ?? '—' }}</td>
+                    <td>
+                        {{ $paiement->poste?->libelleAffiche() ?? '—' }}
+                        @if($paiement->poste?->isRp())
+                            <span class="badge bg-label-info ms-1">RP</span>
+                        @endif
+                    </td>
+                    <td>{{ $paiement->libelle_affiche }}</td>
                     <td class="text-end">{{ number_format($paiement->retenue_fnl, 0, ',', ' ') }}</td>
                     <td>
                         @if($paiement->statut === 'valide')
@@ -109,7 +129,7 @@
                                     data-bs-target="#modalRejetFnl"
                                     data-action="{{ route('fnl.paiements.rejeter', $paiement) }}"
                                     data-rejet-id="{{ $paiement->id }}"
-                                    data-label="{{ $paiement->nom_mois }} {{ $paiement->annee }} — {{ $paiement->poste->nom ?? 'Poste' }}"
+                                    data-label="{{ $paiement->nom_mois }} {{ $paiement->annee }} — {{ $paiement->libelle_affiche }}"
                                     title="Rejeter">
                                 <i class="icon-base ti tabler-x icon-22px"></i>
                             </button>
@@ -120,17 +140,24 @@
                            title="Consulter">
                             <i class="icon-base ti tabler-eye icon-22px"></i>
                         </a>
-                        <a href="{{ route('fnl.paiements.situation-mensuelle', ['mois' => $paiement->mois, 'annee' => $paiement->annee, 'poste_id' => $paiement->poste_id, 'statut' => $paiement->statut]) }}"
+                        @php
+                            $posteEtatId = auth()->user()->isRecettePerception()
+                                ? auth()->user()->poste_id
+                                : ($paiement->poste?->isRp()
+                                    ? ($paiement->poste->parent_id ?? $paiement->poste_id)
+                                    : $paiement->poste_id);
+                        @endphp
+                        <a href="{{ route('fnl.paiements.situation-mensuelle', ['mois' => $paiement->mois, 'annee' => $paiement->annee, 'poste_id' => $posteEtatId, 'preview' => 1]) }}"
                            class="btn btn-icon btn-sm btn-text-secondary rounded-pill"
                            data-bs-toggle="tooltip"
-                           title="Imprimer">
-                            <i class="icon-base ti tabler-printer icon-22px"></i>
+                           title="Voir l'état">
+                            <i class="icon-base ti tabler-file-text icon-22px"></i>
                         </a>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="text-center text-body-secondary py-4">Aucun paiement FNL pour ces critères.</td>
+                    <td colspan="6" class="text-center text-body-secondary py-4">Aucun paiement FNL pour ces critères.</td>
                 </tr>
                 @endforelse
             </tbody>

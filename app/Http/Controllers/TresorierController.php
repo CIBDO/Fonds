@@ -14,6 +14,12 @@ class TresorierController extends Controller
     public function index()
     {
         $user = Auth::user();
+
+        // Une RP n'a pas le dashboard TR : uniquement le module FNL
+        if ($user->isRecettePerception()) {
+            return redirect()->route('fnl.paiements.index');
+        }
+
         $posteId = $user->poste_id;
 
         $demandesFonds = DemandeFonds::where('poste_id', $posteId)

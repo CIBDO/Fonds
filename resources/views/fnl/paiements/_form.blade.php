@@ -2,9 +2,33 @@
     $valeur = function (string $champ, $defaut = null) use ($paiement) {
         return old($champ, $paiement?->$champ ?? $defaut);
     };
+    $posteCourant = $poste ?? $posteUser ?? $paiement?->poste;
+    $cibles = $cibles ?? collect([$posteCourant])->filter();
+    $posteIdSelectionne = (int) $valeur('poste_id', $paiement?->poste_id ?? $posteCourant?->id);
 @endphp
 
 <div class="row g-3">
+    @if($cibles->count() > 1)
+    <div class="col-md-6">
+        <label class="form-label">Entité (TR / RP) <span class="text-danger">*</span></label>
+        <select name="poste_id" id="fnl_poste_id" class="form-select" required>
+            @foreach($cibles as $cible)
+                <option value="{{ $cible->id }}" {{ $posteIdSelectionne === (int) $cible->id ? 'selected' : '' }}>
+                    {{ $cible->libelleAffiche() }}
+                    @if($cible->isRp()) (RP) @endif
+                </option>
+            @endforeach
+        </select>
+        <small class="text-body-secondary">Le poste supérieur peut saisir au nom d'une RP non encore renseignée.</small>
+    </div>
+    @else
+        <input type="hidden" name="poste_id" value="{{ $cibles->first()?->id ?? $posteCourant?->id }}">
+        <div class="col-md-6">
+            <label class="form-label">Entité</label>
+            <input type="text" class="form-control" value="{{ ($cibles->first() ?? $posteCourant)?->libelleAffiche() }}" readonly>
+        </div>
+    @endif
+
     <div class="col-md-4">
         <label class="form-label">Mois <span class="text-danger">*</span></label>
         <select name="mois" class="form-select" required>
@@ -38,7 +62,7 @@
     </div>
     <div class="col-md-6">
         <label class="form-label">Référence de paiement</label>
-        <input type="text" name="reference_paiement" class="form-control" value="{{ $valeur('reference_paiement') }}">
+        <input type="text" name="reference_paiement" class="form-control" value="{{ $valeur('reference_paiement') }}" placeholder="Ex. CH-1250529 BDM">
     </div>
     <div class="col-md-6">
         <label class="form-label">Preuve de paiement</label>
@@ -81,15 +105,6 @@
         const pos = Math.max(0, (debut || 0) + delta);
         this.setSelectionRange(pos, pos);
     });
-
-    input.value = formatMontant(input.value);
-
-    const form = input.closest('form');
-    if (form) {
-        form.addEventListener('submit', function () {
-            input.value = input.value.replace(/\s/g, '').replace(',', '.');
-        });
-    }
 })();
 </script>
 @endpush

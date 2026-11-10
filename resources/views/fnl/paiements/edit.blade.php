@@ -9,7 +9,7 @@
     </a>
 </div>
 
-<x-vuexy.card title="Correction du paiement FNL — {{ $paiement->poste->nom }}" icon="tabler-edit">
+<x-vuexy.card title="Correction du paiement FNL — {{ $paiement->libelle_affiche }}" icon="tabler-edit">
     @if ($errors->any())
         <div class="alert alert-danger">
             <ul class="mb-0">
@@ -29,7 +29,11 @@
     <form method="POST" action="{{ route('fnl.paiements.update', $paiement) }}" enctype="multipart/form-data">
         @csrf
         @method('PUT')
-        @include('fnl.paiements._form', ['paiement' => $paiement])
+        @include('fnl.paiements._form', [
+            'paiement' => $paiement,
+            'posteUser' => $posteUser,
+            'cibles' => $cibles,
+        ])
         <div class="d-flex justify-content-end mt-4">
             <button type="submit" class="btn btn-primary">
                 <i class="icon-base ti tabler-send me-1"></i>Renvoyer à l'ACCD

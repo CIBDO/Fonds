@@ -53,6 +53,11 @@ Route::get('/dashboard', function () {
     if ($role === 'admin') {
         return redirect()->route('dashboard.admin');
     } elseif ($role === 'tresorier') {
+        // RP → FNL uniquement ; TR (poste supérieur) → dashboard classique
+        if ($user->isRecettePerception()) {
+            return redirect()->route('fnl.paiements.index');
+        }
+
         return redirect()->route('dashboard.tresorier');
     } elseif ($role === 'acct') {
         return redirect()->route('dashboard.acct');
@@ -404,6 +409,7 @@ Route::middleware(['auth'])->prefix('fnl')->name('fnl.')->group(function () {
         Route::get('create', 'create')->name('create');
         Route::post('/', 'store')->name('store');
         Route::get('situation-mensuelle', 'situationMensuelle')->name('situation-mensuelle');
+        Route::get('export-excel', 'exportExcel')->name('export-excel');
         Route::get('{paiement}/preuve', 'preuve')->name('preuve');
         Route::get('{paiement}', 'show')->name('show');
         Route::get('{paiement}/edit', 'edit')->name('edit');

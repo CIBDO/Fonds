@@ -20,15 +20,27 @@
             <i class="icon-base ti tabler-edit me-1"></i>Corriger
         </a>
     @endif
-    <a href="{{ route('fnl.paiements.situation-mensuelle', ['mois' => $paiement->mois, 'annee' => $paiement->annee, 'poste_id' => $paiement->poste_id]) }}"
+    @php
+        // RP reste sur sa propre entité ; TR/ACCD consolident via le poste supérieur
+        $posteEtatId = auth()->user()->isRecettePerception()
+            ? auth()->user()->poste_id
+            : ($paiement->poste?->isRp()
+                ? ($paiement->poste->parent_id ?? $paiement->poste_id)
+                : $paiement->poste_id);
+    @endphp
+    <a href="{{ route('fnl.paiements.situation-mensuelle', ['mois' => $paiement->mois, 'annee' => $paiement->annee, 'poste_id' => $posteEtatId, 'preview' => 1]) }}"
        class="btn btn-label-secondary btn-sm">
-        <i class="icon-base ti tabler-printer me-1"></i>Imprimer l'état
+        <i class="icon-base ti tabler-eye me-1"></i>Voir l'état
+    </a>
+    <a href="{{ route('fnl.paiements.situation-mensuelle', ['mois' => $paiement->mois, 'annee' => $paiement->annee, 'poste_id' => $posteEtatId]) }}"
+       class="btn btn-label-secondary btn-sm">
+        <i class="icon-base ti tabler-printer me-1"></i>PDF
     </a>
 </div>
 
 <div class="row g-4">
     <div class="col-lg-8">
-        <x-vuexy.card title="Paiement FNL — {{ $paiement->poste->nom ?? 'Poste' }}" icon="tabler-home" class="mb-4">
+        <x-vuexy.card title="Paiement FNL — {{ $paiement->libelle_affiche }}" icon="tabler-home" class="mb-4">
             <x-slot:header>
                 <span class="badge {{ $statutBadge[0] }}">{{ $statutBadge[1] }}</span>
             </x-slot:header>
@@ -42,6 +54,21 @@
             </div>
 
             <div class="row g-3">
+                <div class="col-sm-4">
+                    <div class="border rounded p-3 h-100">
+                        <div class="text-body-secondary small mb-1">Poste</div>
+                        <div class="fw-medium">{{ $paiement->poste?->libelleAffiche() ?? '—' }}</div>
+                        @if($paiement->poste?->isRp() && $paiement->poste->parent)
+                            <small class="text-body-secondary">Rattaché à {{ $paiement->poste->parent->nom }}</small>
+                        @endif
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="border rounded p-3 h-100">
+                        <div class="text-body-secondary small mb-1">Libellé</div>
+                        <div class="fw-medium">{{ $paiement->libelle_affiche }}</div>
+                    </div>
+                </div>
                 <div class="col-sm-4">
                     <div class="border rounded p-3 h-100">
                         <div class="text-body-secondary small mb-1">Période</div>
@@ -80,6 +107,7 @@
             @include('partials.pcs.preuve-paiement', [
                 'model' => $paiement,
                 'downloadRoute' => 'fnl.paiements.preuve',
+                'showPreview' => false,
             ])
         </x-vuexy.card>
         @endif

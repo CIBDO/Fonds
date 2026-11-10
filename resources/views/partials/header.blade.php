@@ -3,3 +3,6 @@
     Conservé temporairement pour référence. Ne plus inclure dans les layouts.
 --}}
 @include('partials.vuexy.navbar')
+.3
+.
+.

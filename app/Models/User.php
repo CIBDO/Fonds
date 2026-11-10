@@ -85,6 +85,30 @@ class User extends Authenticatable
         return $this->hasRole('tresorier');
     }
 
+    /**
+     * Trésorier rattaché à une Recette-Perception (menu FNL uniquement).
+     */
+    public function isRecettePerception(): bool
+    {
+        $this->loadMissing('poste');
+
+        return $this->hasRole('tresorier')
+            && $this->poste
+            && $this->poste->isRp();
+    }
+
+    /**
+     * Trésorier d'un poste supérieur (menu TR complet).
+     */
+    public function isTresorierPosteSuperieur(): bool
+    {
+        $this->loadMissing('poste');
+
+        return $this->hasRole('tresorier')
+            && $this->poste
+            && $this->poste->isSuperieur();
+    }
+
     /* public function notifications()
     {
         return $this->hasMany(Notification::class);
