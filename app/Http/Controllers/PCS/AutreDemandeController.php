@@ -48,10 +48,13 @@ class AutreDemandeController extends Controller
             $query->where('poste_id', $request->poste_id);
         }
 
-        // ACCT, ACCD et admin voient toutes les demandes ; les autres voient uniquement leur poste
-        $estValideurOuAcct = $user->peut_valider_pcs || $user->hasRole('acct') || $user->hasRole('accd') || $user->hasRole('admin');
-        if (!$estValideurOuAcct) {
-            $query->where('poste_id', $user->poste_id);
+        // ACCT / admin / validateurs PCS voient tout.
+        // ACCD : uniquement ses propres demandes (son poste), comme un poste émetteur.
+        $estValideurGlobal = $user->peut_valider_pcs || $user->hasRole('acct') || $user->hasRole('admin');
+        $estAccd = $user->hasRole('accd');
+
+        if (!$estValideurGlobal) {
+            $this->restreindreAuxPropresDemandes($query, $user);
         }
 
         $demandes = $query->paginate(12)->appends($request->query());
@@ -61,11 +64,12 @@ class AutreDemandeController extends Controller
             return $demande->load('echelons');
         });
 
-        $postes = $estValideurOuAcct
+        $estValideurOuAcct = $estValideurGlobal; // utilisé par la vue (filtre postes, actions)
+        $postes = $estValideurGlobal
             ? Poste::orderBy('nom')->get()
             : ($user->poste_id ? Poste::where('id', $user->poste_id)->get() : collect());
 
-        return view('pcs.autres-demandes.index', compact('demandes', 'postes', 'estValideurOuAcct'));
+        return view('pcs.autres-demandes.index', compact('demandes', 'postes', 'estValideurOuAcct', 'estAccd'));
     }
 
     /**
@@ -244,6 +248,8 @@ class AutreDemandeController extends Controller
      */
     public function show(AutreDemande $demande)
     {
+        $this->autoriserConsultationDemande($demande);
+
         $demande->load(['poste', 'saisiPar', 'validePar', 'echelons']);
         $demande->reparerEchelonsLegacySiNecessaire();
         $demande->load('echelons');
@@ -454,14 +460,20 @@ class AutreDemandeController extends Controller
      */
     public function statistiques(Request $request)
     {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
         $annee = $request->input('annee', date('Y'));
 
-        $stats = AutreDemande::selectRaw('poste_id, COUNT(*) as nombre, SUM(montant) as total_montant, SUM(montant_accord) as total_montant_accord')
+        $query = AutreDemande::selectRaw('poste_id, COUNT(*) as nombre, SUM(montant) as total_montant, SUM(montant_accord) as total_montant_accord')
             ->where('annee', $annee)
-            ->where('statut', 'valide')
-            ->groupBy('poste_id')
-            ->with('poste')
-            ->get();
+            ->where('statut', 'valide');
+
+        // ACCD / postes : stats limitées à leur périmètre
+        if (!($user->peut_valider_pcs || $user->hasRole('acct') || $user->hasRole('admin'))) {
+            $this->restreindreAuxPropresDemandes($query, $user);
+        }
+
+        $stats = $query->groupBy('poste_id')->with('poste')->get();
 
         return view('pcs.autres-demandes.statistiques', compact('stats', 'annee'));
     }
@@ -485,13 +497,20 @@ class AutreDemandeController extends Controller
      */
     public function etatConsolideAutresDemandes(Request $request)
     {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
         $annee = $request->get('annee', date('Y'));
 
         // Récupérer les données des autres demandes
-        $autresDemandes = AutreDemande::with(['poste', 'echelons'])
+        $query = AutreDemande::with(['poste', 'echelons'])
             ->where('annee', $annee)
-            ->orderBy('date_demande')
-            ->get();
+            ->orderBy('date_demande');
+
+        if (!($user->peut_valider_pcs || $user->hasRole('acct') || $user->hasRole('admin'))) {
+            $this->restreindreAuxPropresDemandes($query, $user);
+        }
+
+        $autresDemandes = $query->get();
 
         // Organiser les données par poste et mois
         $demandesSoumisesParPoste = [];
@@ -612,7 +631,12 @@ class AutreDemandeController extends Controller
      */
     public function filtreEtat()
     {
-        $postes = \App\Models\Poste::orderBy('nom')->get();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $postes = ($user->peut_valider_pcs || $user->hasRole('acct') || $user->hasRole('admin'))
+            ? Poste::orderBy('nom')->get()
+            : ($user->poste_id ? Poste::where('id', $user->poste_id)->get() : collect());
+
         return view('pcs.autres-demandes.filtre-etat', compact('postes'));
     }
 
@@ -638,10 +662,17 @@ class AutreDemandeController extends Controller
         $statut = $validated['statut'];
         $format = $validated['format'] ?? 'pdf';
 
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
         // Construire la requête avec filtres
         $query = AutreDemande::with(['poste', 'echelons'])
             ->whereBetween('date_demande', [$dateDebut, $dateFin])
             ->where('annee', $annee);
+
+        if (!($user->peut_valider_pcs || $user->hasRole('acct') || $user->hasRole('admin'))) {
+            $this->restreindreAuxPropresDemandes($query, $user);
+        }
 
         if ($posteId) {
             $query->where('poste_id', $posteId);
@@ -788,7 +819,13 @@ class AutreDemandeController extends Controller
      */
     public function statsRapides(Request $request)
     {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
         $query = AutreDemande::query();
+
+        if (!($user->peut_valider_pcs || $user->hasRole('acct') || $user->hasRole('admin'))) {
+            $this->restreindreAuxPropresDemandes($query, $user);
+        }
 
         if ($request->filled('date_debut') && $request->filled('date_fin')) {
             $query->whereBetween('date_demande', [$request->date_debut, $request->date_fin]);
@@ -821,7 +858,13 @@ class AutreDemandeController extends Controller
      */
     public function apercu(Request $request)
     {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
         $query = AutreDemande::with('poste');
+
+        if (!($user->peut_valider_pcs || $user->hasRole('acct') || $user->hasRole('admin'))) {
+            $this->restreindreAuxPropresDemandes($query, $user);
+        }
 
         if ($request->filled('date_debut') && $request->filled('date_fin')) {
             $query->whereBetween('date_demande', [$request->date_debut, $request->date_fin]);
@@ -967,8 +1010,7 @@ class AutreDemandeController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        $estValideurOuAcct = $user->peut_valider_pcs || $user->hasRole('acct') || $user->hasRole('accd') || $user->hasRole('admin');
-        if (! $estValideurOuAcct && $demande->poste_id !== $user->poste_id) {
+        if (!$this->peutConsulterDemande($user, $demande)) {
             Alert::error('Erreur', 'Vous n\'avez pas accès à cette demande');
             return redirect()->route('pcs.autres-demandes.index');
         }
@@ -1033,6 +1075,40 @@ class AutreDemandeController extends Controller
         }
 
         return $actif;
+    }
+
+    /**
+     * Limite la requête aux demandes du poste ACCD / trésorier connecté.
+     */
+    private function restreindreAuxPropresDemandes($query, $user): void
+    {
+        if ($user->poste_id) {
+            $query->where('poste_id', $user->poste_id);
+        } else {
+            $query->where('saisi_par', $user->id);
+        }
+    }
+
+    private function peutConsulterDemande($user, AutreDemande $demande): bool
+    {
+        if ($user->peut_valider_pcs || $user->hasRole('acct') || $user->hasRole('admin')) {
+            return true;
+        }
+
+        if ($user->poste_id) {
+            return (int) $demande->poste_id === (int) $user->poste_id;
+        }
+
+        return (int) $demande->saisi_par === (int) $user->id;
+    }
+
+    private function autoriserConsultationDemande(AutreDemande $demande): void
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        if (!$this->peutConsulterDemande($user, $demande)) {
+            abort(403, 'Vous n\'avez pas accès à cette demande.');
+        }
     }
 }
 

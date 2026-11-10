@@ -59,29 +59,25 @@
         </a>
     </li>
 
-    {{-- 2. Autres Demandes (menu autonome pour ACCD - consultation) --}}
+    {{-- 2. Autres Demandes (ACCD : uniquement ses propres demandes) --}}
     <li class="menu-item {{ $autresDemandesActive ? 'active open' : '' }}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
             <i class="menu-icon icon-base ti tabler-file-description"></i>
             <div>Autres Demandes</div>
         </a>
         <ul class="menu-sub">
-            <li class="menu-item {{ request()->routeIs('pcs.autres-demandes.index') || request()->routeIs('pcs.autres-demandes.show') ? 'active' : '' }}">
+            @if ($authUser->poste_id)
+                <li class="menu-item {{ request()->routeIs('pcs.autres-demandes.create') ? 'active' : '' }}">
+                    <a href="{{ route('pcs.autres-demandes.create') }}" class="menu-link">
+                        <i class="menu-icon icon-base ti tabler-circle-plus"></i>
+                        <div>Nouvelle Demande</div>
+                    </a>
+                </li>
+            @endif
+            <li class="menu-item {{ request()->routeIs('pcs.autres-demandes.index') || request()->routeIs('pcs.autres-demandes.show') || request()->routeIs('pcs.autres-demandes.edit') ? 'active' : '' }}">
                 <a href="{{ route('pcs.autres-demandes.index') }}" class="menu-link">
                     <i class="menu-icon icon-base ti tabler-list"></i>
-                    <div>Liste des Demandes</div>
-                </a>
-            </li>
-            <li class="menu-item {{ request()->routeIs('pcs.autres-demandes.statistiques') ? 'active' : '' }}">
-                <a href="{{ route('pcs.autres-demandes.statistiques') }}" class="menu-link">
-                    <i class="menu-icon icon-base ti tabler-chart-bar"></i>
-                    <div>Statistiques</div>
-                </a>
-            </li>
-            <li class="menu-item {{ request()->routeIs('pcs.autres-demandes.etat-consolide.autres-demandes') || request()->routeIs('pcs.autres-demandes.etat-consolide.filtre') || request()->routeIs('pcs.autres-demandes.etat-consolide.poste-emetteur') || request()->routeIs('pcs.autres-demandes.filtre-etat') || request()->routeIs('pcs.autres-demandes.apercu') ? 'active' : '' }}">
-                <a href="{{ route('pcs.autres-demandes.etat-consolide.autres-demandes') }}" class="menu-link">
-                    <i class="menu-icon icon-base ti tabler-chart-pie"></i>
-                    <div>États Consolidés</div>
+                    <div>Mes Demandes</div>
                 </a>
             </li>
         </ul>
