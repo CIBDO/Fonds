@@ -11,6 +11,7 @@ use App\Models\Virement;
 use App\Notifications\BordereauVirementSoumis;
 use App\Services\ExcelVirementService;
 use App\Services\MailAlerteService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -286,6 +287,54 @@ class BordereauVirementController extends Controller
     public function templateExcel()
     {
         return ExcelVirementService::templateDetailResponse();
+    }
+
+    public function pdf(BordereauVirement $bordereau)
+    {
+        $this->authorizePoste($bordereau->poste_id);
+        $bordereau->load(['demandeFonds', 'poste', 'virements.banque', 'virements.lignes']);
+
+        $poste = $bordereau->poste;
+        $intituleOfficiel = $poste?->intitulePourEntete() ?? 'AGENCE COMPTABLE CENTRALE DU TRÉSOR';
+        $regionLibelle = $poste?->regionPourEntete();
+        $posteNom = $poste?->libelleAffiche() ?? ($poste->nom ?? '');
+
+        $pdf = Pdf::loadView('virements.pdf.bordereau', compact(
+            'bordereau',
+            'intituleOfficiel',
+            'regionLibelle',
+            'posteNom'
+        ))->setPaper('a4', 'landscape');
+
+        $suffixe = preg_replace('/\s+/', '_', (string) ($posteNom ?: 'poste'));
+        $filename = "Bordereau_VIR_{$suffixe}_{$bordereau->mois}_{$bordereau->annee}.pdf";
+
+        return $pdf->download($filename);
+    }
+
+    public function pdfVirement(BordereauVirement $bordereau, Virement $virement)
+    {
+        $this->authorizePoste($bordereau->poste_id);
+        $this->ensureVirementBelongs($bordereau, $virement);
+        $virement->load(['poste', 'banque', 'lignes', 'payePar']);
+
+        $poste = $virement->poste ?? $bordereau->poste;
+        $intituleOfficiel = $poste?->intitulePourEntete() ?? 'AGENCE COMPTABLE CENTRALE DU TRÉSOR';
+        $regionLibelle = $poste?->regionPourEntete();
+        $posteNom = $poste?->libelleAffiche() ?? ($poste->nom ?? '');
+        $signatureLibelle = 'Le Responsable du Poste comptable';
+
+        $pdf = Pdf::loadView('virements.pdf.fiche-vir', compact(
+            'virement',
+            'intituleOfficiel',
+            'regionLibelle',
+            'posteNom',
+            'signatureLibelle'
+        ))->setPaper('a4', 'landscape');
+
+        $numero = preg_replace('/[^\w\-]+/', '_', (string) $virement->numero_vir);
+
+        return $pdf->download("Fiche_VIR_{$numero}.pdf");
     }
 
     public function soumettre(BordereauVirement $bordereau)

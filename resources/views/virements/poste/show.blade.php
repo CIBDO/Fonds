@@ -22,6 +22,9 @@
         </div>
     </div>
     <div class="d-flex gap-2">
+        <a href="{{ route('virements.poste.pdf', $bordereau) }}" class="btn btn-label-danger btn-sm">
+            <i class="ti tabler-file-type-pdf me-1"></i>PDF bordereau
+        </a>
         <a href="{{ route('virements.poste.index') }}" class="btn btn-label-secondary btn-sm">Retour</a>
         @if($bordereau->isBrouillon())
             <form action="{{ route('virements.poste.soumettre', $bordereau) }}" method="POST" onsubmit="return confirm('Soumettre ce bordereau à l\'ACCT ?');">
@@ -79,6 +82,11 @@
 
 @foreach($bordereau->virements as $virement)
 <x-vuexy.card class="mb-4" title="VIR {{ $virement->numero_vir }} — {{ $virement->banque->nom ?? '' }}" icon="tabler-building-bank">
+    <div class="d-flex justify-content-end mb-2">
+        <a href="{{ route('virements.poste.virements.pdf', [$bordereau, $virement]) }}" class="btn btn-sm btn-label-danger">
+            <i class="ti tabler-file-type-pdf me-1"></i>PDF VIR
+        </a>
+    </div>
     <div class="row mb-3">
         <div class="col-md-3"><strong>Poste :</strong> {{ $bordereau->poste->nom }}</div>
         <div class="col-md-2"><strong>Mois :</strong> {{ $virement->mois }} {{ $virement->annee }}</div>

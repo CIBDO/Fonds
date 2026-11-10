@@ -448,6 +448,8 @@ Route::middleware(['auth'])->prefix('virements')->name('virements.')->group(func
         Route::get('create', [BordereauVirementController::class, 'create'])->name('create');
         Route::post('/', [BordereauVirementController::class, 'store'])->name('store');
         Route::get('{bordereau}', [BordereauVirementController::class, 'show'])->name('show');
+        Route::get('{bordereau}/pdf', [BordereauVirementController::class, 'pdf'])->name('pdf');
+        Route::get('{bordereau}/virements/{virement}/pdf', [BordereauVirementController::class, 'pdfVirement'])->name('virements.pdf');
         Route::post('{bordereau}/soumettre', [BordereauVirementController::class, 'soumettre'])->name('soumettre');
         Route::post('{bordereau}/virements', [BordereauVirementController::class, 'storeVirement'])->name('virements.store');
         Route::put('{bordereau}/virements/{virement}', [BordereauVirementController::class, 'updateVirement'])->name('virements.update');
@@ -462,8 +464,11 @@ Route::middleware(['auth'])->prefix('virements')->name('virements.')->group(func
         Route::get('/', [AcctVirementController::class, 'index'])->name('index');
         Route::get('consolidation', [AcctVirementController::class, 'consolidation'])->name('consolidation');
         Route::get('export-excel', [AcctVirementController::class, 'exportExcel'])->name('export');
+        Route::get('export-pdf', [AcctVirementController::class, 'exportPdf'])->name('export-pdf');
         Route::get('consolidation/export-excel', [AcctVirementController::class, 'exportConsolidationExcel'])->name('consolidation.export');
+        Route::get('consolidation/export-pdf', [AcctVirementController::class, 'exportConsolidationPdf'])->name('consolidation.export-pdf');
         Route::post('marquer-paye', [AcctVirementController::class, 'marquerPaye'])->name('marquer-paye');
+        Route::get('{virement}/pdf', [AcctVirementController::class, 'pdf'])->name('pdf');
         Route::get('{virement}', [AcctVirementController::class, 'show'])->name('show');
     });
 });

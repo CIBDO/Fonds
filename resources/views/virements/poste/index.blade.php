@@ -78,6 +78,9 @@
                         <td class="text-end">{{ $b->virements->count() }}</td>
                         <td class="text-end">{{ number_format($b->virements->sum('montant'), 0, ',', ' ') }}</td>
                         <td class="text-end">
+                            <a href="{{ route('virements.poste.pdf', $b) }}" class="btn btn-sm btn-label-danger" title="PDF">
+                                <i class="ti tabler-file-type-pdf"></i>
+                            </a>
                             <a href="{{ route('virements.poste.show', $b) }}" class="btn btn-sm btn-label-primary">Ouvrir</a>
                         </td>
                     </tr>

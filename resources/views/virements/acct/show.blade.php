@@ -5,7 +5,12 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h4 class="mb-0">VIR {{ $virement->numero_vir }}</h4>
-    <a href="{{ route('virements.acct.index') }}" class="btn btn-label-secondary btn-sm">Retour</a>
+    <div class="d-flex gap-2">
+        <a href="{{ route('virements.acct.pdf', $virement) }}" class="btn btn-label-danger btn-sm">
+            <i class="ti tabler-file-type-pdf me-1"></i>PDF
+        </a>
+        <a href="{{ route('virements.acct.index') }}" class="btn btn-label-secondary btn-sm">Retour</a>
+    </div>
 </div>
 
 <x-vuexy.card title="Informations capitales" icon="tabler-info-circle" class="mb-4">

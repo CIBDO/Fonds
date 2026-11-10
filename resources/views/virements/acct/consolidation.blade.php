@@ -7,6 +7,9 @@
     <h4 class="mb-0"><i class="ti tabler-chart-bar me-2"></i>Consolidation par banque</h4>
     <div class="d-flex gap-2">
         <a href="{{ route('virements.acct.index', request()->query()) }}" class="btn btn-label-secondary btn-sm">Liste VIR</a>
+        <a href="{{ route('virements.acct.consolidation.export-pdf', request()->query()) }}" class="btn btn-label-danger btn-sm">
+            <i class="ti tabler-file-type-pdf me-1"></i>Exporter PDF
+        </a>
         <a href="{{ route('virements.acct.consolidation.export', request()->query()) }}" class="btn btn-success btn-sm">
             <i class="ti tabler-file-spreadsheet me-1"></i>Exporter Excel
         </a>

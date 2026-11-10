@@ -14,6 +14,9 @@
     <h4 class="mb-0"><i class="ti tabler-building-bank me-2"></i>Virements salaires</h4>
     <div class="d-flex gap-2">
         <a href="{{ route('virements.acct.consolidation', request()->query()) }}" class="btn btn-label-primary btn-sm">Consolidation</a>
+        <a href="{{ route('virements.acct.export-pdf', request()->query()) }}" class="btn btn-label-danger btn-sm">
+            <i class="ti tabler-file-type-pdf me-1"></i>Exporter PDF
+        </a>
         <a href="{{ route('virements.acct.export', request()->query()) }}" class="btn btn-success btn-sm">
             <i class="ti tabler-file-spreadsheet me-1"></i>Exporter Excel
         </a>
@@ -120,6 +123,9 @@
                                 @endif
                             </td>
                             <td class="text-end">
+                                <a href="{{ route('virements.acct.pdf', $v) }}" class="btn btn-sm btn-label-danger" title="PDF">
+                                    <i class="ti tabler-file-type-pdf"></i>
+                                </a>
                                 <a href="{{ route('virements.acct.show', $v) }}" class="btn btn-sm btn-label-primary">Détail</a>
                             </td>
                         </tr>
