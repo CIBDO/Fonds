@@ -87,7 +87,7 @@
 
             <div class="login-card__footer">
                 <i class="fas fa-headset" aria-hidden="true"></i>
-                Besoin d'aide ? <a href="mailto:dsi@dgtcp.gov.ml">DGTCP-DSI</a>
+                Besoin d'aide ? <a href="mailto:d.keita@tresor.ml">DGTCP-DSI</a>
             </div>
         </div>
     </main>
