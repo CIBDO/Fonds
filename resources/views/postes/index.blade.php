@@ -30,7 +30,7 @@
     <form method="GET" action="{{ route('postes.index') }}" class="row g-3 align-items-end">
         <div class="col-md-4">
             <label class="form-label">Nom</label>
-            <input type="text" name="nom" class="form-control" value="{{ $nom }}">
+            <input type="text" name="nom" class="form-control" value="{{ $nom }}" placeholder="Ex. TDB — affiche aussi les RP liées">
         </div>
         <div class="col-md-3">
             <label class="form-label">Type</label>

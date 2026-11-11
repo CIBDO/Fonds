@@ -25,16 +25,50 @@ class PosteController extends Controller
         $nom = $request->input('nom');
         $type = $request->input('type');
 
-        $query = Poste::with('parent')->orderBy('type')->orderBy('nom');
+        $query = Poste::with('parent')
+            // Regrouper : poste supérieur puis ses RP
+            ->orderByRaw('COALESCE(parent_id, id)')
+            ->orderByRaw('CASE WHEN parent_id IS NULL THEN 0 ELSE 1 END')
+            ->orderBy('nom');
 
         if ($nom) {
-            $query->where('nom', 'like', '%'.$nom.'%');
+            $term = '%'.$nom.'%';
+            // Inclure le poste trouvé + toutes les entités liées (RP enfants / parent)
+            $idsCorrespondants = Poste::query()
+                ->where(function ($q) use ($term) {
+                    $q->where('nom', 'like', $term)
+                        ->orWhere('intitule_officiel', 'like', $term)
+                        ->orWhere('region', 'like', $term);
+                })
+                ->pluck('id');
+
+            $query->where(function ($q) use ($term, $idsCorrespondants) {
+                $q->where('nom', 'like', $term)
+                    ->orWhere('intitule_officiel', 'like', $term)
+                    ->orWhere('region', 'like', $term)
+                    ->orWhereHas('parent', function ($parent) use ($term) {
+                        $parent->where('nom', 'like', $term)
+                            ->orWhere('intitule_officiel', 'like', $term)
+                            ->orWhere('region', 'like', $term);
+                    });
+
+                if ($idsCorrespondants->isNotEmpty()) {
+                    $q->orWhereIn('parent_id', $idsCorrespondants)
+                        ->orWhereIn('id', function ($sub) use ($idsCorrespondants) {
+                            $sub->select('parent_id')
+                                ->from('postes')
+                                ->whereIn('id', $idsCorrespondants)
+                                ->whereNotNull('parent_id');
+                        });
+                }
+            });
         }
         if (in_array($type, [Poste::TYPE_SUPERIEUR, Poste::TYPE_RP], true)) {
             $query->where('type', $type);
         }
 
-        $postes = $query->paginate(20)->appends($request->only(['nom', 'type']));
+        // Recherche : afficher toute la famille liée (pas seulement 20 lignes)
+        $postes = $query->paginate($nom ? 500 : 20)->appends($request->only(['nom', 'type']));
         $postesSuperieurs = Poste::where('type', Poste::TYPE_SUPERIEUR)->orderBy('nom')->get();
 
         return view('postes.index', compact('postes', 'nom', 'type', 'postesSuperieurs'));
