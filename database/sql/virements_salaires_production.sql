@@ -104,6 +104,7 @@ CREATE TABLE IF NOT EXISTS `destinataires_mail_alertes` (
   `autre_rejetee` tinyint(1) NOT NULL DEFAULT 0,
   `vir_soumission` tinyint(1) NOT NULL DEFAULT 1,
   `vir_paiement` tinyint(1) NOT NULL DEFAULT 1,
+  `fnl_soumise` tinyint(1) NOT NULL DEFAULT 1,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),

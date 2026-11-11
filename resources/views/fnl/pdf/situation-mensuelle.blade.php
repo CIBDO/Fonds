@@ -178,7 +178,7 @@
                 @else
                     <tr>
                         <td class="text-left">{{ $ligne['libelle'] }}</td>
-                        <td class="text-right">
+                        <td>
                             @if($ligne['montant'] !== null && $ligne['montant'] !== '')
                                 {{ number_format((float) $ligne['montant'], 0, ',', ' ') }}
                             @endif
@@ -190,7 +190,7 @@
             @endforeach
             <tr class="total-row">
                 <td class="text-left">TOTAL</td>
-                <td class="text-right">{{ number_format((float) $totalRetenue, 0, ',', ' ') }}</td>
+                <td>{{ number_format((float) $totalRetenue, 0, ',', ' ') }}</td>
                 <td></td>
                 <td></td>
             </tr>

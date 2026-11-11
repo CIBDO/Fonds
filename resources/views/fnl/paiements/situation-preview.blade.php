@@ -32,7 +32,7 @@
             <thead class="table-light">
                 <tr>
                     <th>Libellés</th>
-                    <th class="text-end">Montant FCFA</th>
+                    <th class="text-center">Montant FCFA</th>
                     <th>Réf de Paiement</th>
                     <th>Observation</th>
                     <th class="text-end">Actions</th>
@@ -48,7 +48,7 @@
                         @php $paiementLigne = $ligne['paiement'] ?? null; @endphp
                         <tr>
                             <td>{{ $ligne['libelle'] }}</td>
-                            <td class="text-end">
+                            <td class="text-center">
                                 @if($ligne['montant'] !== null && $ligne['montant'] !== '')
                                     {{ number_format((float) $ligne['montant'], 0, ',', ' ') }}
                                 @else
@@ -76,7 +76,7 @@
                 @endforeach
                 <tr class="table-secondary fw-semibold">
                     <td>TOTAL</td>
-                    <td class="text-end">{{ number_format((float) $totalRetenue, 0, ',', ' ') }}</td>
+                    <td class="text-center">{{ number_format((float) $totalRetenue, 0, ',', ' ') }}</td>
                     <td colspan="3"></td>
                 </tr>
             </tbody>

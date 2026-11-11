@@ -59,6 +59,7 @@
                 : $valeur('retenue_fnl', '');
         @endphp
         <input type="text" name="retenue_fnl" id="retenue_fnl" class="form-control" inputmode="decimal" required value="{{ $retenueAffichee }}" autocomplete="off">
+        <small class="text-body-secondary">Plusieurs paiements sont autorisés pour le même mois (virements partiels). L’état mensuel reconstitue le total.</small>
     </div>
     <div class="col-md-6">
         <label class="form-label">Référence de paiement</label>

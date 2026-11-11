@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\PaiementFnl;
 use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class FnlPaiementSoumis extends Notification
@@ -12,20 +13,35 @@ class FnlPaiementSoumis extends Notification
 
     public function __construct(protected PaiementFnl $paiement)
     {
+        $this->paiement->loadMissing('poste');
     }
 
     public function via($notifiable)
     {
-        return ['database'];
+        return ['database', 'mail'];
+    }
+
+    public function toMail($notifiable): MailMessage
+    {
+        $poste = $this->paiement->poste?->libelleAffiche() ?? 'Poste inconnu';
+        $mois = $this->paiement->nom_mois;
+        $annee = $this->paiement->annee;
+        $retenue = number_format($this->paiement->retenue_fnl ?? 0, 0, ',', ' ');
+
+        return (new MailMessage)
+            ->subject("Paiement FNL soumis — {$poste}")
+            ->greeting('Bonjour')
+            ->line("Un paiement FNL a été soumis et attend validation.")
+            ->line("Poste / RP : {$poste}")
+            ->line("Période : {$mois} {$annee}")
+            ->line("Retenue FNL : {$retenue} FCFA")
+            ->action('Voir le paiement', route('fnl.paiements.show', $this->paiement->id))
+            ->line('Merci de procéder à la validation.');
     }
 
     public function toArray($notifiable)
     {
-        if (!$this->paiement->relationLoaded('poste')) {
-            $this->paiement->load('poste');
-        }
-
-        $poste = $this->paiement->poste ? $this->paiement->poste->nom : 'Poste inconnu';
+        $poste = $this->paiement->poste?->libelleAffiche() ?? 'Poste inconnu';
         $mois = $this->paiement->nom_mois;
         $annee = $this->paiement->annee;
         $retenue = number_format($this->paiement->retenue_fnl ?? 0, 0, ',', ' ');

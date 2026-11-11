@@ -35,7 +35,7 @@
                 @foreach($evenements as $key => $label)
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="{{ $key }}" value="1" id="new_{{ $key }}"
-                            @checked(in_array($key, ['fonds_soumise','autre_soumise','vir_soumission','vir_paiement'], true))>
+                            @checked(in_array($key, ['fonds_soumise','autre_soumise','vir_soumission','vir_paiement','fnl_soumise'], true))>
                         <label class="form-check-label" for="new_{{ $key }}">{{ $label }}</label>
                     </div>
                 @endforeach

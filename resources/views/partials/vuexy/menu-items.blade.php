@@ -18,7 +18,7 @@
     $autresDemandesActive = request()->routeIs('pcs.autres-demandes.*');
     $trieActive = request()->routeIs('trie.*');
     $fnlActive = request()->routeIs('fnl.*');
-    $adminActive = request()->routeIs('users.*') || request()->routeIs('postes.*') || request()->routeIs('alertes-mail.*');
+    $adminActive = request()->routeIs('users.*') || request()->routeIs('postes.*') || request()->routeIs('banques.*') || request()->routeIs('alertes-mail.*');
     $etatsConsolidesActive = request()->routeIs('pcs.etats-consolides.*');
 @endphp
 
@@ -389,6 +389,9 @@
         </li>
         <li class="menu-item {{ request()->routeIs('postes.index') ? 'active' : '' }}">
             <a href="{{ route('postes.index') }}" class="menu-link"><div>Postes</div></a>
+        </li>
+        <li class="menu-item {{ request()->routeIs('banques.*') ? 'active' : '' }}">
+            <a href="{{ route('banques.index') }}" class="menu-link"><div>Banques</div></a>
         </li>
         <li class="menu-item {{ request()->routeIs('alertes-mail.*') ? 'active' : '' }}">
             <a href="{{ route('alertes-mail.index') }}" class="menu-link"><div>Alertes e-mail</div></a>

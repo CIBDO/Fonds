@@ -33,6 +33,7 @@ use App\Http\Controllers\TRIE\{
 };
 
 use App\Http\Controllers\FNL\PaiementFnlController;
+use App\Http\Controllers\BanqueController;
 use App\Http\Controllers\BordereauVirementController;
 use App\Http\Controllers\AcctVirementController;
 use App\Http\Controllers\DestinataireMailAlerteController;
@@ -190,6 +191,13 @@ Route::get('/demandes-fonds/consolide-detaille/export-pdf', [DemandeFondsControl
     Route::get('postes/import-rp/template', [PosteController::class, 'templateImportRp'])->name('postes.import-rp.template');
     Route::post('postes/import-rp', [PosteController::class, 'importRp'])->name('postes.import-rp');
     Route::resource('postes', PosteController::class);
+
+    // Référentiel banques (paramètres / module virements)
+    Route::middleware('role:admin')->group(function () {
+        Route::resource('banques', BanqueController::class)->except(['show']);
+        Route::post('banques/{banque}/toggle-actif', [BanqueController::class, 'toggleActif'])
+            ->name('banques.toggle-actif');
+    });
 
     Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
     Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');

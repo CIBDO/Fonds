@@ -79,6 +79,7 @@ return new class extends Migration
             $table->boolean('autre_rejetee')->default(false);
             $table->boolean('vir_soumission')->default(true);
             $table->boolean('vir_paiement')->default(true);
+            $table->boolean('fnl_soumise')->default(true);
             $table->timestamps();
 
             $table->unique('email');

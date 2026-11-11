@@ -14,7 +14,7 @@
 <x-vuexy.card title="Filtres" icon="tabler-filter" class="mb-4">
     <form method="GET" action="{{ route('fnl.paiements.index') }}" class="row g-3 align-items-end">
         @if(auth()->user()->hasAnyRole(['accd', 'admin']))
-        <div class="col-md-3">
+        <div class="col-lg">
             <label class="form-label">Poste / RP</label>
             <select name="poste_id" class="form-select">
                 <option value="">Tous les postes</option>
@@ -26,7 +26,7 @@
             </select>
         </div>
         @endif
-        <div class="col-md-2">
+        <div class="col-lg-2 col-md-3">
             <label class="form-label">Mois</label>
             <select name="mois" class="form-select">
                 <option value="">Tous</option>
@@ -35,7 +35,7 @@
                 @endforeach
             </select>
         </div>
-        <div class="col-md-2">
+        <div class="col-lg-2 col-md-3">
             <label class="form-label">Année</label>
             <select name="annee" class="form-select">
                 <option value="">Toutes</option>
@@ -44,7 +44,7 @@
                 @endforeach
             </select>
         </div>
-        <div class="col-md-2">
+        <div class="col-lg-2 col-md-3">
             <label class="form-label">Statut</label>
             <select name="statut" class="form-select">
                 <option value="">Tous</option>
@@ -53,8 +53,8 @@
                 <option value="rejete" {{ request('statut') == 'rejete' ? 'selected' : '' }}>Rejeté</option>
             </select>
         </div>
-        <div class="col-12">
-            <div class="d-flex flex-nowrap align-items-center gap-2 overflow-auto">
+        <div class="col-lg-auto">
+            <div class="d-flex flex-nowrap align-items-center gap-2">
                 <button type="submit" class="btn btn-primary text-nowrap">
                     <i class="icon-base ti tabler-filter me-1"></i>Filtrer
                 </button>
@@ -74,6 +74,24 @@
         </div>
     </form>
 </x-vuexy.card>
+
+@if(!empty($reconstitution))
+    <div class="alert alert-primary d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4" role="status">
+        <div>
+            <div class="fw-semibold">Total reconstitué — {{ $reconstitution['periode'] }}</div>
+            <div class="small mb-0">
+                Somme des paiements validés
+                @if($reconstitution['poste'])
+                    pour {{ $reconstitution['poste']->libelleAffiche() }}
+                @endif
+                ({{ $reconstitution['nb'] }} virement{{ $reconstitution['nb'] > 1 ? 's' : '' }})
+            </div>
+        </div>
+        <div class="fs-5 fw-semibold text-nowrap">
+            {{ number_format($reconstitution['montant'], 0, ',', ' ') }} FCFA
+        </div>
+    </div>
+@endif
 
 <x-vuexy.card title="Paiements FNL" icon="tabler-home">
     <x-slot:header>

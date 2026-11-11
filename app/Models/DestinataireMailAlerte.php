@@ -16,6 +16,7 @@ class DestinataireMailAlerte extends Model
         'autre_rejetee' => 'Autre demande — rejet',
         'vir_soumission' => 'VIR — soumission bordereau',
         'vir_paiement' => 'VIR — marquage payé',
+        'fnl_soumise' => 'FNL — soumission paiement',
     ];
 
     protected $fillable = [
@@ -29,6 +30,7 @@ class DestinataireMailAlerte extends Model
         'autre_rejetee',
         'vir_soumission',
         'vir_paiement',
+        'fnl_soumise',
     ];
 
     protected $casts = [
@@ -40,6 +42,7 @@ class DestinataireMailAlerte extends Model
         'autre_rejetee' => 'boolean',
         'vir_soumission' => 'boolean',
         'vir_paiement' => 'boolean',
+        'fnl_soumise' => 'boolean',
     ];
 
     public function scopeActifs($query)

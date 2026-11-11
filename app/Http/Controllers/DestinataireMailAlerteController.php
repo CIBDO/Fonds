@@ -85,6 +85,7 @@ class DestinataireMailAlerteController extends Controller
             'autre_rejetee' => 'nullable|boolean',
             'vir_soumission' => 'nullable|boolean',
             'vir_paiement' => 'nullable|boolean',
+            'fnl_soumise' => 'nullable|boolean',
         ]);
 
         foreach (array_keys(DestinataireMailAlerte::EVENEMENTS) as $flag) {
