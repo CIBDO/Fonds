@@ -240,67 +240,83 @@ class PaiementFnlController extends Controller
         $user = $this->utilisateurAutorise();
         $moisList = PaiementFnl::moisList();
 
-        if (!$request->filled('mois') || !$request->filled('annee')) {
-            Alert::warning('Attention', 'Sélectionnez le mois et l\'année pour générer l\'état FNL.');
+        if (!$request->filled('annee')) {
+            Alert::warning('Attention', 'Sélectionnez au moins l\'année pour générer l\'état FNL.');
 
             return redirect()->route('fnl.paiements.index', $request->only(['poste_id', 'mois', 'annee', 'statut']));
         }
 
-        $mois = (int) $request->get('mois');
         $annee = (int) $request->get('annee');
-        if ($mois < 1 || $mois > 12 || $annee < 2020) {
+        $mois = $request->filled('mois') ? (int) $request->get('mois') : null;
+        if ($annee < 2020 || ($mois !== null && ($mois < 1 || $mois > 12))) {
             Alert::warning('Attention', 'Période invalide pour l\'état FNL.');
 
             return redirect()->route('fnl.paiements.index', $request->only(['poste_id', 'mois', 'annee', 'statut']));
         }
-        $nomMois = $moisList[$mois] ?? (string) $mois;
 
-        if ($this->estValidateur($user) && !$request->filled('poste_id')) {
-            Alert::warning('Attention', 'Sélectionnez un poste supérieur pour générer le tableau FNL.');
+        $nomMois = $mois !== null ? ($moisList[$mois] ?? (string) $mois) : 'Tous les mois';
+        $periodeLibelle = $mois !== null
+            ? mb_strtoupper($nomMois).' '.$annee
+            : 'ANNÉE '.$annee;
 
-            return redirect()->route('fnl.paiements.index', $request->only(['mois', 'annee', 'statut']));
-        }
-
-        $posteUser = $user->poste_id ? Poste::with('recettesPerceptions')->find($user->poste_id) : null;
-        $estRp = $posteUser && $posteUser->isRp();
-
-        // RP : uniquement sa propre entité. TR/ACCD : poste supérieur + toutes ses RP.
-        $poste = $this->resoudrePosteSituation($request, $user, $estRp);
-        $poste->loadMissing('recettesPerceptions', 'parent');
-
-        // Les états (prévisualisation / PDF) ne reprennent que les paiements validés
+        // Les états officiels ne reprennent que les paiements validés
         $statutFiltre = 'valide';
+        $estGlobal = $this->estValidateur($user) && !$request->filled('poste_id');
+        $posteUser = $user->poste_id ? Poste::with('recettesPerceptions')->find($user->poste_id) : null;
+        $estRp = !$estGlobal && $posteUser && $posteUser->isRp();
 
-        if ($estRp) {
-            $posteIds = collect([(int) $posteUser->id]);
-            $lignesScope = 'rp';
-        } else {
-            $posteIds = collect([(int) $poste->id])
-                ->merge($poste->recettesPerceptions->pluck('id')->map(fn ($id) => (int) $id))
-                ->unique()
-                ->values();
-            $lignesScope = 'tr';
-        }
-
-        $query = PaiementFnl::with(['poste', 'saisiPar'])
-            ->whereIn('poste_id', $posteIds->all())
-            ->where('mois', $mois)
+        $query = PaiementFnl::with(['poste.parent', 'saisiPar'])
             ->where('annee', $annee)
             ->where('statut', 'valide');
-
-        $paiements = $query->get();
-        $lignes = $lignesScope === 'rp'
-            ? $this->construireLignesEtatRp($posteUser, $paiements)
-            : $this->construireLignesEtat($poste, $paiements);
-        $totalRetenue = collect($lignes)->where('type', '!=', 'section')->sum(fn ($l) => (float) ($l['montant'] ?? 0));
-        $periodeLibelle = mb_strtoupper($nomMois).' '.$annee;
-        $intituleOfficiel = $estRp ? $posteUser->libelleAffiche() : $poste->intitulePourEntete();
-        $regionLibelle = $estRp ? ($posteUser->regionPourEntete()) : $poste->regionPourEntete();
-        $posteNom = $estRp ? $posteUser->libelleAffiche() : $poste->nom;
-        $afficherStatut = false;
-        if ($estRp) {
-            $poste = $posteUser;
+        if ($mois !== null) {
+            $query->where('mois', $mois);
         }
+
+        $afficherPeriode = $mois === null;
+
+        if ($estGlobal) {
+            $paiements = $query->orderBy('mois')->orderBy('poste_id')->get();
+            $lignes = $this->construireLignesEtatGlobal($paiements, $afficherPeriode);
+            $poste = null;
+            $intituleOfficiel = 'DIRECTION GÉNÉRALE DU TRÉSOR ET DE LA COMPTABILITÉ PUBLIQUE';
+            $regionLibelle = 'Situation globale — tous les postes';
+            $posteNom = 'Consolidation FNL';
+        } else {
+            $poste = $this->resoudrePosteSituation($request, $user, $estRp);
+            $poste->loadMissing('recettesPerceptions', 'parent');
+
+            if ($estRp) {
+                $posteIds = collect([(int) $posteUser->id]);
+                $lignesScope = 'rp';
+            } else {
+                $posteIds = collect([(int) $poste->id])
+                    ->merge($poste->recettesPerceptions->pluck('id')->map(fn ($id) => (int) $id))
+                    ->unique()
+                    ->values();
+                $lignesScope = 'tr';
+            }
+
+            $paiements = $query->whereIn('poste_id', $posteIds->all())->orderBy('mois')->get();
+            $lignes = $lignesScope === 'rp'
+                ? $this->construireLignesEtatRp($posteUser, $paiements, $afficherPeriode)
+                : $this->construireLignesEtat($poste, $paiements, $afficherPeriode);
+
+            $intituleOfficiel = $estRp ? $posteUser->libelleAffiche() : $poste->intitulePourEntete();
+            $regionLibelle = $estRp ? $posteUser->regionPourEntete() : $poste->regionPourEntete();
+            $posteNom = $estRp ? $posteUser->libelleAffiche() : $poste->nom;
+            if ($estRp) {
+                $poste = $posteUser;
+            }
+        }
+
+        $totalRetenue = collect($lignes)->where('type', '!=', 'section')->sum(fn ($l) => (float) ($l['montant'] ?? 0));
+        $afficherStatut = false;
+        $filtresActifs = [
+            'annee' => $annee,
+            'mois' => $mois,
+            'poste_id' => $request->input('poste_id'),
+            'global' => $estGlobal,
+        ];
 
         if ($request->boolean('preview')) {
             return view('fnl.paiements.situation-preview', compact(
@@ -313,7 +329,9 @@ class PaiementFnlController extends Controller
                 'mois',
                 'annee',
                 'nomMois',
-                'statutFiltre'
+                'statutFiltre',
+                'estGlobal',
+                'filtresActifs'
             ));
         }
 
@@ -327,12 +345,13 @@ class PaiementFnlController extends Controller
             'posteNom',
             'intituleOfficiel',
             'regionLibelle',
-            'afficherStatut'
+            'afficherStatut',
+            'estGlobal'
         ));
         $pdf->setPaper('A4', 'landscape');
 
         $suffixePoste = '_'.preg_replace('/\s+/', '_', $posteNom);
-        $suffixePeriode = "_{$nomMois}_{$annee}";
+        $suffixePeriode = $mois !== null ? "_{$nomMois}_{$annee}" : "_{$annee}";
 
         return $pdf->download("Tableau_Paiement_FNL{$suffixePoste}{$suffixePeriode}.pdf");
     }
@@ -467,25 +486,27 @@ class PaiementFnlController extends Controller
     }
 
     /**
-     * Total reconstitué (paiements validés) quand mois + année sont filtrés.
-     * Le filtre poste est optionnel (ACCD/admin) ; le trésorier reste scoté à ses postes accessibles.
+     * Total reconstitué (paiements validés) dès qu'une année est filtrée.
+     * Mois / poste optionnels (mois vide = tous les mois).
      */
     private function reconstitutionIndex(Request $request, $user, array $moisList): ?array
     {
-        if (!$request->filled('mois') || !$request->filled('annee')) {
+        if (!$request->filled('annee')) {
             return null;
         }
 
-        $mois = (int) $request->mois;
         $annee = (int) $request->annee;
-        if ($mois < 1 || $mois > 12 || $annee < 2020) {
+        $mois = $request->filled('mois') ? (int) $request->mois : null;
+        if ($annee < 2020 || ($mois !== null && ($mois < 1 || $mois > 12))) {
             return null;
         }
 
         $query = PaiementFnl::query()
-            ->where('mois', $mois)
             ->where('annee', $annee)
             ->where('statut', 'valide');
+        if ($mois !== null) {
+            $query->where('mois', $mois);
+        }
 
         $posteFiltre = null;
         if (!$this->estValidateur($user)) {
@@ -499,11 +520,14 @@ class PaiementFnlController extends Controller
 
         $nb = (clone $query)->count();
         $montant = (float) (clone $query)->sum('retenue_fnl');
+        $periode = $mois !== null
+            ? ($moisList[$mois] ?? (string) $mois).' '.$annee
+            : 'Année '.$annee.' (tous les mois)';
 
         return [
             'mois' => $mois,
             'annee' => $annee,
-            'periode' => ($moisList[$mois] ?? (string) $mois).' '.$annee,
+            'periode' => $periode,
             'montant' => $montant,
             'nb' => $nb,
             'poste' => $posteFiltre,
@@ -647,21 +671,34 @@ class PaiementFnlController extends Controller
         return $poste;
     }
 
-    private function construireLignesEtat(Poste $posteSuperieur, $paiements): array
+    private function construireLignesEtat(Poste $posteSuperieur, $paiements, bool $afficherPeriode = false): array
     {
         $lignes = [];
         $parPoste = collect($paiements)->groupBy(fn ($p) => (int) $p->poste_id);
 
-        // Détail : une ligne par virement validé (total en bas du tableau)
+        // Détail : une ligne par virement — uniquement les entités qui ont envoyé des données
         foreach ($this->lignesEtatDetaillees(
             $posteSuperieur->libelleAffiche(),
             $parPoste->get((int) $posteSuperieur->id, collect()),
-            (int) $posteSuperieur->id
+            (int) $posteSuperieur->id,
+            $afficherPeriode
         ) as $ligne) {
             $lignes[] = $ligne;
         }
 
-        if ($posteSuperieur->recettesPerceptions->isNotEmpty()) {
+        $lignesRp = [];
+        foreach ($posteSuperieur->recettesPerceptions as $rp) {
+            foreach ($this->lignesEtatDetaillees(
+                $rp->libelleAffiche(),
+                $parPoste->get((int) $rp->id, collect()),
+                (int) $rp->id,
+                $afficherPeriode
+            ) as $ligne) {
+                $lignesRp[] = $ligne;
+            }
+        }
+
+        if ($lignesRp !== []) {
             $lignes[] = [
                 'type' => 'section',
                 'libelle' => 'Recettes-Perceptions',
@@ -673,22 +710,15 @@ class PaiementFnlController extends Controller
                 'paiements' => collect(),
                 'poste_id' => null,
             ];
-
-            foreach ($posteSuperieur->recettesPerceptions as $rp) {
-                foreach ($this->lignesEtatDetaillees(
-                    $rp->libelleAffiche(),
-                    $parPoste->get((int) $rp->id, collect()),
-                    (int) $rp->id
-                ) as $ligne) {
-                    $lignes[] = $ligne;
-                }
+            foreach ($lignesRp as $ligne) {
+                $lignes[] = $ligne;
             }
         }
 
         return $lignes;
     }
 
-    private function construireLignesEtatRp(Poste $rp, $paiements): array
+    private function construireLignesEtatRp(Poste $rp, $paiements, bool $afficherPeriode = false): array
     {
         $paiementsRp = collect($paiements)
             ->filter(fn ($p) => (int) $p->poste_id === (int) $rp->id)
@@ -697,15 +727,68 @@ class PaiementFnlController extends Controller
             $paiementsRp = collect($paiements)->values();
         }
 
-        return $this->lignesEtatDetaillees($rp->libelleAffiche(), $paiementsRp, (int) $rp->id);
+        return $this->lignesEtatDetaillees($rp->libelleAffiche(), $paiementsRp, (int) $rp->id, $afficherPeriode);
     }
 
     /**
-     * Une ligne d'état par virement (détail) ; ligne vide si aucun paiement.
+     * Situation globale : un bloc par poste supérieur ayant des paiements validés.
+     */
+    private function construireLignesEtatGlobal($paiements, bool $afficherPeriode = false): array
+    {
+        $paiements = collect($paiements)->filter(fn ($p) => $p->poste);
+        if ($paiements->isEmpty()) {
+            return [];
+        }
+
+        $parRacine = $paiements->groupBy(function (PaiementFnl $paiement) {
+            $poste = $paiement->poste;
+            if ($poste->isRp()) {
+                return (int) ($poste->parent_id ?? $poste->id);
+            }
+
+            return (int) $poste->id;
+        });
+
+        $lignes = [];
+        $racineIds = $parRacine->keys()->map(fn ($id) => (int) $id)->filter()->values();
+        $racines = Poste::with('recettesPerceptions')
+            ->whereIn('id', $racineIds->all())
+            ->orderBy('nom')
+            ->get()
+            ->keyBy('id');
+
+        foreach ($racines as $racineId => $racine) {
+            $groupe = $parRacine->get($racineId, collect());
+            $lignesPoste = $this->construireLignesEtat($racine, $groupe, $afficherPeriode);
+            if ($lignesPoste === []) {
+                continue;
+            }
+
+            $lignes[] = [
+                'type' => 'section',
+                'libelle' => $racine->intitulePourEntete(),
+                'montant' => null,
+                'reference' => null,
+                'observation' => null,
+                'nb_virements' => 0,
+                'paiement' => null,
+                'paiements' => collect(),
+                'poste_id' => (int) $racine->id,
+            ];
+            foreach ($lignesPoste as $ligne) {
+                $lignes[] = $ligne;
+            }
+        }
+
+        return $lignes;
+    }
+
+    /**
+     * Une ligne d'état par virement (détail). Aucune ligne si pas de données.
      *
      * @return array<int, array<string, mixed>>
      */
-    private function lignesEtatDetaillees(string $libelle, $paiements, ?int $posteId = null): array
+    private function lignesEtatDetaillees(string $libelle, $paiements, ?int $posteId = null, bool $afficherPeriode = false): array
     {
         $collection = collect($paiements)
             ->sortBy([
@@ -715,26 +798,19 @@ class PaiementFnlController extends Controller
             ->values();
 
         if ($collection->isEmpty()) {
-            return [[
-                'type' => 'ligne',
-                'libelle' => $libelle,
-                'montant' => null,
-                'reference' => '',
-                'observation' => '',
-                'nb_virements' => 0,
-                'paiement' => null,
-                'paiements' => collect(),
-                'poste_id' => $posteId,
-            ]];
+            return [];
         }
 
-        return $collection->map(function (PaiementFnl $paiement) use ($libelle) {
+        return $collection->map(function (PaiementFnl $paiement) use ($libelle, $afficherPeriode) {
+            $periode = $paiement->nom_mois.' '.$paiement->annee;
+
             return [
                 'type' => 'ligne',
-                'libelle' => $libelle,
+                'libelle' => $afficherPeriode ? $libelle.' — '.$periode : $libelle,
                 'montant' => (float) $paiement->retenue_fnl,
                 'reference' => $this->formaterReference($paiement),
                 'observation' => trim((string) ($paiement->observation ?? '')),
+                'periode' => $periode,
                 'nb_virements' => 1,
                 'paiement' => $paiement,
                 'paiements' => collect([$paiement]),

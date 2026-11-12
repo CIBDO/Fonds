@@ -6,20 +6,20 @@
     <style>
         @page {
             size: A4 landscape;
-            margin: 10mm;
+            margin: 8mm;
         }
 
         body {
             font-family: DejaVu Sans, Arial, sans-serif;
             margin: 0;
-            padding: 10px;
-            font-size: 10px;
-            line-height: 1.2;
+            padding: 4px;
+            font-size: 9px;
+            line-height: 1.15;
             color: #000;
         }
 
         .header {
-            margin-bottom: 25px;
+            margin-bottom: 10px;
         }
 
         .header-left {
@@ -42,54 +42,54 @@
 
         .title {
             font-weight: bold;
-            font-size: 12px;
-            margin: 3px 0;
+            font-size: 11px;
+            margin: 1px 0;
         }
 
         .subtitle {
-            font-size: 10px;
-            margin: 2px 0;
+            font-size: 9px;
+            margin: 1px 0;
         }
 
         .stars {
-            font-size: 8px;
-            margin: 3px 0;
+            font-size: 7px;
+            margin: 2px 0;
         }
 
         .main-title {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: bold;
             text-decoration: underline;
-            margin: 25px 0 8px 0;
+            margin: 10px 0 4px 0;
             text-align: center;
             text-transform: uppercase;
         }
 
         .region {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
             text-align: center;
-            margin-bottom: 12px;
+            margin-bottom: 4px;
         }
 
         .note-montants {
-            font-size: 9px;
+            font-size: 8px;
             font-style: italic;
             text-align: center;
-            margin: 8px 0 15px;
+            margin: 2px 0 8px;
             color: #666;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 15px 0;
-            font-size: 10px;
+            margin: 6px 0 8px;
+            font-size: 9px;
         }
 
         th, td {
             border: 1px solid #000;
-            padding: 6px 8px;
+            padding: 3px 5px;
             text-align: center;
             vertical-align: middle;
         }
@@ -97,11 +97,12 @@
         th {
             background-color: #f0f0f0;
             font-weight: bold;
-            font-size: 9px;
+            font-size: 8px;
         }
 
         .text-left { text-align: left; }
         .text-right { text-align: right; }
+        .text-center { text-align: center; }
 
         .section-row td {
             background-color: #cfe8f3;
@@ -114,19 +115,21 @@
             font-weight: bold;
         }
 
-        .signature {
-            margin-right: 100px;
+        .signature-block {
+            page-break-inside: avoid;
+            break-inside: avoid;
+            margin-top: 14px;
+            margin-right: 80px;
             text-align: right;
-            margin-top: 30px;
         }
 
         .date-signature {
-            font-size: 10px;
-            margin-bottom: 50px;
+            font-size: 9px;
+            margin-bottom: 28px;
         }
 
         .agent-signature {
-            font-size: 10px;
+            font-size: 9px;
             font-weight: bold;
         }
     </style>
@@ -140,7 +143,9 @@
             <div class="subtitle">DIRECTION GÉNÉRALE DU TRÉSOR</div>
             <div class="subtitle">ET DE LA COMPTABILITÉ PUBLIQUE</div>
             <div class="stars" style="margin-left: 40px;">**************</div>
-            <div class="subtitle">{{ $intituleOfficiel }}</div>
+            @if(empty($estGlobal))
+                <div class="subtitle">{{ $intituleOfficiel }}</div>
+            @endif
         </div>
 
         <div class="header-right">
@@ -170,7 +175,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($lignes as $ligne)
+            @forelse($lignes as $ligne)
                 @if(($ligne['type'] ?? '') === 'section')
                     <tr class="section-row">
                         <td colspan="4">{{ $ligne['libelle'] }}</td>
@@ -178,7 +183,7 @@
                 @else
                     <tr>
                         <td class="text-left">{{ $ligne['libelle'] }}</td>
-                        <td>
+                        <td class="text-center">
                             @if($ligne['montant'] !== null && $ligne['montant'] !== '')
                                 {{ number_format((float) $ligne['montant'], 0, ',', ' ') }}
                             @endif
@@ -187,22 +192,30 @@
                         <td class="text-left">{{ $ligne['observation'] }}</td>
                     </tr>
                 @endif
-            @endforeach
+            @empty
+                <tr>
+                    <td colspan="4">Aucun paiement validé pour cette période.</td>
+                </tr>
+            @endforelse
             <tr class="total-row">
                 <td class="text-left">TOTAL</td>
-                <td>{{ number_format((float) $totalRetenue, 0, ',', ' ') }}</td>
+                <td class="text-center">{{ number_format((float) $totalRetenue, 0, ',', ' ') }}</td>
                 <td></td>
                 <td></td>
             </tr>
         </tbody>
     </table>
 
-    <div class="signature">
+    <div class="signature-block">
         <div class="date-signature">
             {{ $posteNom ?? '' }}, le {{ \Carbon\Carbon::now()->format('d/m/Y') }}
         </div>
         <div class="agent-signature">
-            Le Responsable du Poste comptable
+            @if(!empty($estGlobal))
+                L'Agent Comptable Central du Trésor
+            @else
+                Le Responsable du Poste comptable
+            @endif
         </div>
     </div>
 </body>

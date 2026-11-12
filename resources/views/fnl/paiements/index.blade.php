@@ -29,7 +29,7 @@
         <div class="col-lg-2 col-md-3">
             <label class="form-label">Mois</label>
             <select name="mois" class="form-select">
-                <option value="">Tous</option>
+                <option value="">Tous les mois</option>
                 @foreach($moisList as $moisNum => $moisNom)
                     <option value="{{ $moisNum }}" {{ request('mois') == $moisNum ? 'selected' : '' }}>{{ $moisNom }}</option>
                 @endforeach
@@ -59,10 +59,12 @@
                     <i class="icon-base ti tabler-filter me-1"></i>Filtrer
                 </button>
                 <button type="submit" class="btn btn-label-secondary text-nowrap" formaction="{{ route('fnl.paiements.situation-mensuelle') }}" formtarget="_blank"
+                        title="Année obligatoire. Sans poste = état global. Sans mois = tous les mois."
                         onclick="this.form.preview && (this.form.preview.value=''); this.form.querySelector('[name=preview]')?.remove();">
                     <i class="icon-base ti tabler-printer me-1"></i>PDF
                 </button>
-                <button type="submit" name="preview" value="1" class="btn btn-label-secondary text-nowrap" formaction="{{ route('fnl.paiements.situation-mensuelle') }}">
+                <button type="submit" name="preview" value="1" class="btn btn-label-secondary text-nowrap" formaction="{{ route('fnl.paiements.situation-mensuelle') }}"
+                        title="Année obligatoire. Sans poste = état global. Sans mois = tous les mois.">
                     <i class="icon-base ti tabler-eye me-1"></i>État
                 </button>
                 @if(auth()->user()->hasAnyRole(['accd', 'admin']))
