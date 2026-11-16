@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\PaiementFnl;
 use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -18,7 +19,12 @@ class FnlPaiementSoumis extends Notification
 
     public function via($notifiable)
     {
-        return ['database', 'mail'];
+        // Mail uniquement via MailAlerteService (destinataires paramétrés)
+        if ($notifiable instanceof AnonymousNotifiable) {
+            return ['mail'];
+        }
+
+        return ['database'];
     }
 
     public function toMail($notifiable): MailMessage

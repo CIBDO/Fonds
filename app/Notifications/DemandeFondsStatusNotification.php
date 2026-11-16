@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\DemandeFonds;
 use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -17,6 +18,12 @@ class DemandeFondsStatusNotification extends Notification
 
     public function via($notifiable)
     {
+        // Diligence (MailAlerteService) : mail uniquement
+        if ($notifiable instanceof AnonymousNotifiable) {
+            return ['mail'];
+        }
+
+        // Demandeur : notification in-app + e-mail personnel
         return ['database', 'mail'];
     }
 

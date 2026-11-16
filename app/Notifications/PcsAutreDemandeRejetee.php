@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\AutreDemande;
 use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Str;
@@ -21,6 +22,12 @@ class PcsAutreDemandeRejetee extends Notification
 
     public function via($notifiable)
     {
+        // Diligence (MailAlerteService) : mail uniquement
+        if ($notifiable instanceof AnonymousNotifiable) {
+            return ['mail'];
+        }
+
+        // Saisi par : notification in-app + e-mail personnel
         return ['database', 'mail'];
     }
 
