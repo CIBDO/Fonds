@@ -6,6 +6,9 @@
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show">{{ session('success') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
 @endif
+@if(session('warning'))
+    <div class="alert alert-danger alert-dismissible fade show"><i class="ti tabler-alert-triangle me-1"></i>{{ session('warning') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+@endif
 @if(session('error'))
     <div class="alert alert-danger alert-dismissible fade show">{{ session('error') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
 @endif
@@ -113,8 +116,8 @@
                             <td><strong>{{ $v->numero_vir }}</strong></td>
                             <td>{{ $v->poste->nom ?? '-' }}</td>
                             <td>{{ $v->banque->nom ?? '-' }}</td>
-                            <td>{{ $v->mois }} {{ $v->annee }}</td>
-                            <td class="text-end">{{ number_format((float) $v->montant, 0, ',', ' ') }}</td>
+                            <td class="text-nowrap">{{ $v->mois }} {{ $v->annee }}</td>
+                            <td class="text-end text-nowrap">{{ number_format((float) $v->montant, 0, ',', ' ') }}</td>
                             <td>
                                 @if($v->isPaye())
                                     <span class="badge bg-label-success">Payé</span>
@@ -140,7 +143,11 @@
                 </tbody>
             </table>
         </div>
-        {{ $virements->links() }}
+        @if($virements->hasPages())
+            <div class="d-flex justify-content-center mt-3">
+                {{ $virements->links('custom.pagination') }}
+            </div>
+        @endif
     </x-vuexy.card>
 </form>
 

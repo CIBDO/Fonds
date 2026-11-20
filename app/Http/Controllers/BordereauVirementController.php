@@ -87,7 +87,17 @@ class BordereauVirementController extends Controller
     public function show(BordereauVirement $bordereau)
     {
         $this->authorizePoste($bordereau->poste_id);
-        $bordereau->load(['demandeFonds', 'poste', 'virements.banque', 'virements.lignes']);
+        $bordereau->load(['demandeFonds', 'poste', 'virements.banque']);
+
+        foreach ($bordereau->virements as $virement) {
+            $virement->setRelation(
+                'lignes',
+                $virement->lignes()
+                    ->orderBy('id')
+                    ->paginate(20, ['*'], 'vir'.$virement->id)
+                    ->withQueryString()
+            );
+        }
 
         return view('virements.poste.show', [
             'bordereau' => $bordereau,
@@ -157,7 +167,9 @@ class BordereauVirementController extends Controller
             }
         });
 
-        return back()->with('success', $msg);
+        $flash = str_contains($msg, 'Attention :') ? 'warning' : 'success';
+
+        return back()->with($flash, $msg);
     }
 
     public function updateVirement(Request $request, BordereauVirement $bordereau, Virement $virement)
@@ -278,11 +290,13 @@ class BordereauVirementController extends Controller
 
         $somme = $virement->sommeLignes();
         $msg = count($lignes).' ligne(s) importée(s). Somme détail : '.number_format($somme, 0, ',', ' ').' FCFA';
+        $flash = 'success';
         if (abs($somme - (float) $virement->montant) > 0.5) {
-            $msg .= ' — attention : différent du montant VIR ('.number_format((float) $virement->montant, 0, ',', ' ').').';
+            $msg .= ' — Attention : différent du montant VIR ('.number_format((float) $virement->montant, 0, ',', ' ').').';
+            $flash = 'warning';
         }
 
-        return back()->with('success', $msg);
+        return back()->with($flash, $msg);
     }
 
     public function pdf(BordereauVirement $bordereau)

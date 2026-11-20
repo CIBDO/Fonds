@@ -6,6 +6,9 @@
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show"><i class="ti tabler-check me-1"></i>{{ session('success') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
 @endif
+@if(session('warning'))
+    <div class="alert alert-danger alert-dismissible fade show"><i class="ti tabler-alert-triangle me-1"></i>{{ session('warning') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+@endif
 @if(session('error'))
     <div class="alert alert-danger alert-dismissible fade show"><i class="ti tabler-alert-circle me-1"></i>{{ session('error') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
 @endif
@@ -87,6 +90,10 @@
             </tbody>
         </table>
     </div>
-    {{ $bordereaux->links() }}
+    @if($bordereaux->hasPages())
+        <div class="d-flex justify-content-center mt-3">
+            {{ $bordereaux->links('custom.pagination') }}
+        </div>
+    @endif
 </x-vuexy.card>
 @endsection

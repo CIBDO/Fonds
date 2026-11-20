@@ -6,6 +6,9 @@
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show">{{ session('success') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
 @endif
+@if(session('warning'))
+    <div class="alert alert-danger alert-dismissible fade show"><i class="ti tabler-alert-triangle me-1"></i>{{ session('warning') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+@endif
 @if(session('error'))
     <div class="alert alert-danger alert-dismissible fade show">{{ session('error') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
 @endif
@@ -98,7 +101,7 @@
                 <span class="badge bg-label-secondary">Non payé</span>
             @endif
         </div>
-        <div class="col-md-2 text-muted small">Détail : {{ number_format($virement->lignes->sum('montant'), 0, ',', ' ') }}</div>
+        <div class="col-md-2 text-muted small">Détail : {{ number_format($virement->sommeLignes(), 0, ',', ' ') }}</div>
     </div>
 
     @if($bordereau->isBrouillon())
@@ -153,6 +156,11 @@
                 @endforelse
             </tbody>
         </table>
+        @if($virement->lignes instanceof \Illuminate\Pagination\AbstractPaginator && $virement->lignes->hasPages())
+            <div class="d-flex justify-content-center mt-2">
+                {{ $virement->lignes->links('custom.pagination') }}
+            </div>
+        @endif
     </div>
 
     @if($bordereau->isBrouillon())

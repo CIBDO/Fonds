@@ -3,6 +3,16 @@
 @section('title', 'Détail VIR '.$virement->numero_vir)
 
 @section('content')
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show">{{ session('success') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+@endif
+@if(session('warning'))
+    <div class="alert alert-danger alert-dismissible fade show"><i class="ti tabler-alert-triangle me-1"></i>{{ session('warning') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+@endif
+@if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show">{{ session('error') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+@endif
+
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h4 class="mb-0">VIR {{ $virement->numero_vir }}</h4>
     <div class="d-flex gap-2">
@@ -56,7 +66,7 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($virement->lignes as $ligne)
+                @forelse($lignes as $ligne)
                     <tr>
                         <td>{{ $ligne->num_be }}</td>
                         <td>{{ $ligne->num_mdt }}</td>
@@ -64,7 +74,7 @@
                         <td>{{ $ligne->programme }}</td>
                         <td>{{ $ligne->creancier_libelle }}</td>
                         <td>{{ $ligne->num_compte }}</td>
-                        <td class="text-end">{{ number_format((float) $ligne->montant, 0, ',', ' ') }}</td>
+                        <td class="text-end text-nowrap">{{ number_format((float) $ligne->montant, 0, ',', ' ') }}</td>
                     </tr>
                 @empty
                     <tr><td colspan="7" class="text-center text-muted">Pas de lignes détail</td></tr>
@@ -73,10 +83,15 @@
             <tfoot>
                 <tr>
                     <th colspan="6" class="text-end">Total lignes</th>
-                    <th class="text-end">{{ number_format($virement->lignes->sum('montant'), 0, ',', ' ') }}</th>
+                    <th class="text-end text-nowrap">{{ number_format($virement->sommeLignes(), 0, ',', ' ') }}</th>
                 </tr>
             </tfoot>
         </table>
     </div>
+    @if($lignes->hasPages())
+        <div class="d-flex justify-content-center mt-3">
+            {{ $lignes->links('custom.pagination') }}
+        </div>
+    @endif
 </x-vuexy.card>
 @endsection

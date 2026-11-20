@@ -32,9 +32,14 @@ class AcctVirementController extends Controller
     public function show(Virement $virement)
     {
         abort_unless($virement->bordereau && $virement->bordereau->isSoumis(), 404);
-        $virement->load(['poste', 'banque', 'bordereau.demandeFonds', 'lignes', 'payePar']);
+        $virement->load(['poste', 'banque', 'bordereau.demandeFonds', 'payePar']);
 
-        return view('virements.acct.show', compact('virement'));
+        $lignes = $virement->lignes()
+            ->orderBy('id')
+            ->paginate(20)
+            ->withQueryString();
+
+        return view('virements.acct.show', compact('virement', 'lignes'));
     }
 
     public function destroy(Virement $virement)
