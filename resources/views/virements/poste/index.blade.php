@@ -12,9 +12,6 @@
 
 <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
     <h4 class="mb-0"><i class="ti tabler-building-bank me-2"></i>Propositions de virements</h4>
-    <a href="{{ route('virements.poste.template') }}" class="btn btn-label-secondary btn-sm">
-        <i class="ti tabler-file-spreadsheet me-1"></i>Template Excel lignes
-    </a>
 </div>
 
 @if($demandesApprouvees->isNotEmpty())

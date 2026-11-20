@@ -452,7 +452,6 @@ Route::middleware(['auth'])->prefix('virements')->name('virements.')->group(func
     // Côté poste (trésorier)
     Route::middleware('role:tresorier,admin')->prefix('poste')->name('poste.')->group(function () {
         Route::get('/', [BordereauVirementController::class, 'index'])->name('index');
-        Route::get('template-excel', [BordereauVirementController::class, 'templateExcel'])->name('template');
         Route::get('create', [BordereauVirementController::class, 'create'])->name('create');
         Route::post('/', [BordereauVirementController::class, 'store'])->name('store');
         Route::get('{bordereau}', [BordereauVirementController::class, 'show'])->name('show');

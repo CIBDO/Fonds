@@ -45,8 +45,8 @@
 @if($bordereau->isBrouillon())
 <x-vuexy.card title="Ajouter un VIR (1 banque = 1 VIR)" icon="tabler-plus" class="mb-4">
     <p class="text-muted small mb-3">
-        Renseignez le VIR puis chargez le fichier Excel des lignes détail (BE, Mdt, Ord, Prog, Créancier, Compte, Montant).
-        <a href="{{ route('virements.poste.template') }}">Télécharger le template Excel</a>
+        Renseignez le VIR puis importez le <strong>bordereau détaillé Excel généré par le SI</strong>
+        (colonnes N° B.E, N° Mdt, Ord., Programme, Noms Créanciers, N° Compte, Montant).
     </p>
     <form action="{{ route('virements.poste.virements.store', $bordereau) }}" method="POST" enctype="multipart/form-data" class="row g-3">
         @csrf
@@ -68,7 +68,7 @@
             <input type="text" name="montant" class="form-control montant-sep" inputmode="numeric" placeholder="ex. 1 250 000" required>
         </div>
         <div class="col-md-8">
-            <label class="form-label">Fichier Excel des détails <span class="text-danger">*</span></label>
+            <label class="form-label">Excel SI (bordereau détaillé) <span class="text-danger">*</span></label>
             <input type="file" name="fichier_excel" class="form-control" accept=".xlsx,.xls" required>
         </div>
         <div class="col-md-4 d-flex align-items-end">

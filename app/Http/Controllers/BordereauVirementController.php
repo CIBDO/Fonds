@@ -59,7 +59,6 @@ class BordereauVirementController extends Controller
             'demande_fonds_id' => 'required|exists:demande_fonds,id',
             'periode_debut' => 'nullable|date',
             'periode_fin' => 'nullable|date|after_or_equal:periode_debut',
-            'fichier_joint' => 'nullable|file|mimes:pdf,jpg,jpeg,png,xlsx,xls|max:10240',
         ]);
 
         $demande = $this->findDemandeApprouvee((int) $data['demande_fonds_id']);
@@ -67,11 +66,6 @@ class BordereauVirementController extends Controller
 
         if (BordereauVirement::where('demande_fonds_id', $demande->id)->exists()) {
             return back()->with('error', 'Un bordereau existe déjà pour cette demande.');
-        }
-
-        $path = null;
-        if ($request->hasFile('fichier_joint')) {
-            $path = $request->file('fichier_joint')->store('bordereaux-virements', 'public');
         }
 
         $bordereau = BordereauVirement::create([
@@ -83,7 +77,6 @@ class BordereauVirementController extends Controller
             'periode_debut' => $data['periode_debut'] ?? null,
             'periode_fin' => $data['periode_fin'] ?? null,
             'status' => 'brouillon',
-            'fichier_joint' => $path,
         ]);
 
         return redirect()
@@ -282,11 +275,6 @@ class BordereauVirementController extends Controller
         }
 
         return back()->with('success', $msg);
-    }
-
-    public function templateExcel()
-    {
-        return ExcelVirementService::templateDetailResponse();
     }
 
     public function pdf(BordereauVirement $bordereau)
