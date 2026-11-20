@@ -122,11 +122,16 @@
                                     <span class="badge bg-label-warning">Non payé</span>
                                 @endif
                             </td>
-                            <td class="text-end">
+                            <td class="text-end text-nowrap">
                                 <a href="{{ route('virements.acct.pdf', $v) }}" class="btn btn-sm btn-label-danger" title="PDF">
                                     <i class="ti tabler-file-type-pdf"></i>
                                 </a>
                                 <a href="{{ route('virements.acct.show', $v) }}" class="btn btn-sm btn-label-primary">Détail</a>
+                                @if(! $v->isPaye() && auth()->user()->hasRole('admin'))
+                                    <button type="submit" form="del-acct-vir-{{ $v->id }}" class="btn btn-sm btn-label-danger" title="Supprimer" onclick="return confirm('Supprimer le VIR {{ $v->numero_vir }} ?');">
+                                        <i class="ti tabler-trash"></i>
+                                    </button>
+                                @endif
                             </td>
                         </tr>
                     @empty
@@ -138,6 +143,14 @@
         {{ $virements->links() }}
     </x-vuexy.card>
 </form>
+
+@foreach($virements as $v)
+    @if(! $v->isPaye() && auth()->user()->hasRole('admin'))
+        <form id="del-acct-vir-{{ $v->id }}" action="{{ route('virements.acct.destroy', $v) }}" method="POST" class="d-none">
+            @csrf @method('DELETE')
+        </form>
+    @endif
+@endforeach
 
 <script>
 document.getElementById('check-all')?.addEventListener('change', function () {

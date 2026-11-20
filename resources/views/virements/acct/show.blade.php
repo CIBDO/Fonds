@@ -9,6 +9,14 @@
         <a href="{{ route('virements.acct.pdf', $virement) }}" class="btn btn-label-danger btn-sm">
             <i class="ti tabler-file-type-pdf me-1"></i>PDF
         </a>
+        @if(! $virement->isPaye() && auth()->user()->hasRole('admin'))
+            <form action="{{ route('virements.acct.destroy', $virement) }}" method="POST" onsubmit="return confirm('Supprimer ce VIR non payé ?');">
+                @csrf @method('DELETE')
+                <button class="btn btn-label-danger btn-sm">
+                    <i class="ti tabler-trash me-1"></i>Supprimer
+                </button>
+            </form>
+        @endif
         <a href="{{ route('virements.acct.index') }}" class="btn btn-label-secondary btn-sm">Retour</a>
     </div>
 </div>

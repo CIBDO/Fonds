@@ -112,6 +112,13 @@
             </div>
         </form>
         <form id="del-vir-{{ $virement->id }}" action="{{ route('virements.poste.virements.destroy', [$bordereau, $virement]) }}" method="POST">@csrf @method('DELETE')</form>
+    @elseif(! $virement->isPaye() && auth()->user()->hasRole('admin'))
+        <div class="mb-3 text-end">
+            <form action="{{ route('virements.poste.virements.destroy', [$bordereau, $virement]) }}" method="POST" class="d-inline" onsubmit="return confirm('Supprimer ce VIR non payé ? Cette action est réservée aux administrateurs.');">
+                @csrf @method('DELETE')
+                <button class="btn btn-sm btn-label-danger">Supprimer VIR</button>
+            </form>
+        </div>
     @endif
 
     <div class="table-responsive mb-3">

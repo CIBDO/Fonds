@@ -476,6 +476,7 @@ Route::middleware(['auth'])->prefix('virements')->name('virements.')->group(func
         Route::get('consolidation/export-pdf', [AcctVirementController::class, 'exportConsolidationPdf'])->name('consolidation.export-pdf');
         Route::post('marquer-paye', [AcctVirementController::class, 'marquerPaye'])->name('marquer-paye');
         Route::get('{virement}/pdf', [AcctVirementController::class, 'pdf'])->name('pdf');
+        Route::delete('{virement}', [AcctVirementController::class, 'destroy'])->name('destroy');
         Route::get('{virement}', [AcctVirementController::class, 'show'])->name('show');
     });
 });

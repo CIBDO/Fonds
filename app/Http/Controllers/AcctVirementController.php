@@ -37,6 +37,19 @@ class AcctVirementController extends Controller
         return view('virements.acct.show', compact('virement'));
     }
 
+    public function destroy(Virement $virement)
+    {
+        abort_unless(Auth::user()->hasRole('admin'), 403, 'Seul un administrateur peut supprimer un VIR.');
+        abort_unless($virement->bordereau && $virement->bordereau->isSoumis(), 404);
+        abort_unless(! $virement->isPaye(), 422, 'Impossible de supprimer un VIR déjà payé.');
+
+        $virement->delete();
+
+        return redirect()
+            ->route('virements.acct.index')
+            ->with('success', 'VIR '.$virement->numero_vir.' supprimé.');
+    }
+
     public function consolidation(Request $request)
     {
         $query = Virement::query()

@@ -188,8 +188,16 @@ class BordereauVirementController extends Controller
     public function destroyVirement(BordereauVirement $bordereau, Virement $virement)
     {
         $this->authorizePoste($bordereau->poste_id);
-        $this->ensureBrouillon($bordereau);
         $this->ensureVirementBelongs($bordereau, $virement);
+
+        if ($bordereau->isBrouillon()) {
+            // Trésorier / admin : suppression libre en brouillon
+        } elseif (! $virement->isPaye()) {
+            abort_unless(Auth::user()->hasRole('admin'), 403, 'Seul un administrateur peut supprimer un VIR non payé.');
+        } else {
+            abort(422, 'Impossible de supprimer un VIR déjà payé.');
+        }
+
         $virement->delete();
 
         return back()->with('success', 'VIR supprimé.');
